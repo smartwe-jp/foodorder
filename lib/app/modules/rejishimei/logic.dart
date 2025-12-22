@@ -12,6 +12,7 @@ import 'package:foodorder/app/modules/rejishimei/state.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
@@ -109,8 +110,7 @@ class RejishimeLogic extends GetxController {
     );
   }
 
-  requestShimeInfo(
-      code, machineCode) async {
+  requestShimeInfo(code, machineCode) async {
     _showEasyLoading();
 
     final param = {
@@ -143,19 +143,20 @@ class RejishimeLogic extends GetxController {
         showToast('レジ情報がありません');
       }
     }).catchError((e) {
+      logE("Rejishimei request error: $e");
       EasyLoading.dismiss();
       showToast('レジ情報の取得に失敗しました');
     }).timeout(
       const Duration(seconds: 60),
       onTimeout: () {
+        logE("Rejishimei request timeout");
         EasyLoading.dismiss();
         showToast('レジ情報の取得にタイムアウトしました');
       },
     );
   }
 
-  _comfirmShimeInfo(
-      code, printData) async {
+  _comfirmShimeInfo(code, printData) async {
     _showEasyLoading();
 
     final param = {
@@ -191,11 +192,10 @@ class RejishimeLogic extends GetxController {
     );
   }
 
-  _comfirmGloryShimeInfo(code, printData,
-      {skip = false}) async {
-    final outResult = await _outCash( () {
+  _comfirmGloryShimeInfo(code, printData, {skip = false}) async {
+    final outResult = await _outCash(() {
       //_comfirmGloryShimeInfo(code, printData, settingController, skip: true);
-      _directRejishime(code, printData, null);//
+      _directRejishime(code, printData, null); //
       return;
     });
 
@@ -211,8 +211,7 @@ class RejishimeLogic extends GetxController {
     await _printRejishime(printData, state.printLength);
   }
 
-  _printRejishime(
-      data, double length) async {
+  _printRejishime(data, double length) async {
     //_showEasyLoading();
     if (Platform.isAndroid) {
       ByteData byteData = await WidgetToImage.widgetToImage(
@@ -276,7 +275,7 @@ class RejishimeLogic extends GetxController {
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
-          saveService.addPrintJob(printData, category: 'rejishime');
+        saveService.addPrintJob(printData, category: 'rejishime');
         //printView(response['data']);
         success = true;
       } else {
@@ -428,8 +427,7 @@ class RejishimeLogic extends GetxController {
                           await _comfirmGloryShimeInfo(
                               state.verifyCode, printData);
                         } else {
-                          _comfirmShimeInfo(
-                              state.verifyCode, printData);
+                          _comfirmShimeInfo(state.verifyCode, printData);
                         }
                         //_printRejishime(printData,printLength);
                         //Get.back();

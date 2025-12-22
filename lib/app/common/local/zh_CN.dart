@@ -6,6 +6,7 @@ const Map<String, String> zh_CN = {
         "show_price_front":"含税",
         "tax_out":"不含税",
         "tax":"含税",
+        "out_tax":"外税",
         "taxout_price":"小计",
         "original_price":"原价",
         "show_original_price_front":"原价",
@@ -227,5 +228,6 @@ const Map<String, String> zh_CN = {
         "order_success_tips":"感谢您的下单",
         "order_success_subtips":"%%秒后自动返回首页",
         "origin_home":"返回首页",
+        "voucher_amount":"代金券",
 
 };

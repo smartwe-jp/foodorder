@@ -43,6 +43,12 @@ class SelectPaymentPage extends StatelessWidget {
     return (int.parse(shopCartTotalPrice) - tax8 - tax10).toString();
   }
 
+  String get taxText {
+    return machineInfo.taxSystem
+        ? "tax".tr
+        : "out_tax".tr;
+  }
+
   Widget selectPrintType() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1653,7 +1659,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       children: [
                                         //taxin
                                         Text(
-                                          "tax".tr + " 10%",
+                                          taxText + " 10%",
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),
@@ -1693,7 +1699,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       children: [
                                         //taxin
                                         Text(
-                                          "tax".tr + " 8%",
+                                          taxText + " 8%",
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),

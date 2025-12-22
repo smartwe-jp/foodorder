@@ -58,6 +58,12 @@ class CreatePrintImageController extends GetxController {
     fontWeight: FontWeight.w200,
   );
 
+  String get taxText {
+    return machineInfo.taxSystem
+        ? "　  内    消費税"
+        : "　  外    消費税";
+  }
+
   @override
   void onInit() async {
     super.onInit();
@@ -65,17 +71,17 @@ class CreatePrintImageController extends GetxController {
   }
 
   //_getPrintLogoImageData() async {
-    // String logoImageInfo = machineInfo.printLogoImageUrl;
-    // if (logoImageInfo != "") {
-    //   printLogoImage.value = logoImageInfo;
-    // }
-    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    //machineMode.value = machineInfo.machineMode;
+  // String logoImageInfo = machineInfo.printLogoImageUrl;
+  // if (logoImageInfo != "") {
+  //   printLogoImage.value = logoImageInfo;
+  // }
+  //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+  //machineMode.value = machineInfo.machineMode;
 
-    //usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
-    //machineCode.value = machineInfo.machineCode;
+  //usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
+  //machineCode.value = machineInfo.machineCode;
 
-    //change(null, status: RxStatus.success());
+  //change(null, status: RxStatus.success());
   //}
 
   UsbDeviceInfo? get curUsbPrinter {
@@ -477,6 +483,7 @@ class CreatePrintImageController extends GetxController {
   tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     debugPrint('printData:$printData');
+    int voucherAmount = printData["voucherAmount"] ?? 0;
     int discount = printData["discount"] ?? 0;
     int finalPrice = int.parse(printData["price"] ?? '0');
     int originalPrice = finalPrice + discount;
@@ -746,7 +753,7 @@ class CreatePrintImageController extends GetxController {
       _publicSplitLine(),
     );
 
-    if (discount != 0)
+    if (discount != 0 || voucherAmount > 0)
       categoryMenus.add(
         _publicTwoColumnsTxtNew("定価", 26.0, FontWeight.w200,
             "${formatMoney(originalPrice)}", 26.0, FontWeight.w200, true),
@@ -755,7 +762,7 @@ class CreatePrintImageController extends GetxController {
     if (discount != 0)
       categoryMenus.add(
         _publicTwoColumnsTxtNew("割引", 26.0, FontWeight.w200,
-            "${formatMoney(discount)}", 26.0, FontWeight.w200, true),
+            "-${formatMoney(discount)}", 26.0, FontWeight.w200, true),
       );
 //合计
     categoryMenus.add(
@@ -811,7 +818,7 @@ class CreatePrintImageController extends GetxController {
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
-            "　  内    消費税",
+            taxText,
             24.0,
             FontWeight.w100,
             //(printData["takeOut"] == true) ?
@@ -835,7 +842,7 @@ class CreatePrintImageController extends GetxController {
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
-            "　  内    消費税",
+            taxText,
             24.0,
             FontWeight.w100,
             "${formatMoney(printData["tax1"] ?? 0)})",
@@ -848,6 +855,12 @@ class CreatePrintImageController extends GetxController {
         _publicSplitLine(),
       );
     }
+
+    if (voucherAmount > 0)
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew("代金券・売掛", 26.0, FontWeight.w200,
+            "${formatMoney(voucherAmount)}", 26.0, FontWeight.w200, true),
+      );
 
     if (printData["payMethod"] != "現金支払") {
       lineZeng += 33;

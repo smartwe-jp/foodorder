@@ -93,7 +93,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   height: ScreenAdapter.height(30),
                 ),
                 _payCountTitle(checkoutLogic.totalPrice.value,
-                    checkoutLogic.discount.value, checkoutLogic.containTax, checkoutLogic.tax8.value, checkoutLogic.tax10.value),
+                    checkoutLogic.discount.value, checkoutLogic.containTax, checkoutLogic.voucherAmount.value, checkoutLogic.payableAmount.value, checkoutLogic.tax8.value, checkoutLogic.tax10.value),
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
@@ -203,10 +203,15 @@ class ScanDetailPagePage extends StatelessWidget {
         ));
   }
 
-  Widget _payCountTitle(int count, int discount, bool containTax, int tax8, int tax10) {
+  Widget _payCountTitle(int count, int discount, bool containTax, 
+  int kuuponAmount, int payableAmount, int tax8, int tax10) {
 
-    int taxOutPrice = count - tax8 - tax10 + discount;
-    int taxInPrice = count + discount;
+    int taxOutPrice = count - tax8 - tax10 + discount - kuuponAmount;
+    int taxInPrice = count + discount - kuuponAmount;
+
+
+    String taxText = containTax ? "tax".tr :"out_tax".tr;
+  
     
     return Container(
         padding: EdgeInsets.only(
@@ -280,7 +285,7 @@ class ScanDetailPagePage extends StatelessWidget {
                       children: [
                         //taxin
                         Text(
-                          "tax".tr + " 10%",
+                          taxText + " 10%",
                           style: TextStyle(
                               color: ColorsUtil.hexToColor(
                                   Gcolor.mainTitleColor),
@@ -320,7 +325,7 @@ class ScanDetailPagePage extends StatelessWidget {
                       children: [
                         //taxin
                         Text(
-                          "tax".tr + " 8%",
+                          taxText + " 8%",
                           style: TextStyle(
                               color: ColorsUtil.hexToColor(
                                   Gcolor.mainTitleColor),
@@ -364,9 +369,8 @@ class ScanDetailPagePage extends StatelessWidget {
                     ),
 
                      //原价显示： 原价：2000
-                  if(discount != 0 && containTax)
+                  if((discount != 0 && containTax) || kuuponAmount != 0)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("settlement_original_price".tr,
                           style: TextStyle(
@@ -374,9 +378,19 @@ class ScanDetailPagePage extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(35.0))),
-                      SizedBox(
-                        width: ScreenAdapter.width(20),
-                      ),
+
+                      Spacer(),
+                      Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
                       Text(
                           "${count.formatIntSum()}",
                           style: TextStyle(
@@ -394,7 +408,6 @@ class ScanDetailPagePage extends StatelessWidget {
                   ),
                   if(discount != 0)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("settlement_discount".tr,
                           style: TextStyle(
@@ -402,11 +415,58 @@ class ScanDetailPagePage extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(35.0))),
-                      SizedBox(
-                        width: ScreenAdapter.width(20),
-                      ),
+                      Spacer(),
+                      Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
                       Text(
                           "${discount.formatIntSum()}",
+                          style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(35.0),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                          )
+                      ),
+                    ],
+                  ),
+
+                  if (kuuponAmount != 0)
+                  SizedBox(
+                    height: ScreenAdapter.height(10),
+                  ),
+                  if(kuuponAmount != 0)
+                  Row(
+                    children: [
+                      
+                      Text("voucher_amount".tr,
+                          style: TextStyle(
+                            //color: ColorsUtil.hexToColor("#FFFFFF"),
+                              fontWeight: FontWeight.w600,
+                              fontFamily: GFont.getFontFamily(),
+                              fontSize: ScreenAdapter.fontSize(35.0))),
+                      Spacer(),
+                      Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
+                      Text(
+                          "${kuuponAmount.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),

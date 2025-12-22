@@ -6,6 +6,7 @@ const Map<String, String> ko_KR = {
         "show_price_front":"세금 포함",//含税
         "tax_out":"상품 금액",//不含税
         "tax":"세금 포함",//含税
+        "out_tax":"세금 별도",//不含税
         "taxout_price":"상품 금액",//金额
         "original_price":"원가",//原价
         "show_original_price_front":"원가",
@@ -227,5 +228,6 @@ const Map<String, String> ko_KR = {
         "order_success_tips":"주문해 주셔서 감사합니다.",
         "order_success_subtips":"%%초 후에 자동으로 처음 화면으로 돌아갑니다.",
         "origin_home":"홈으로 돌아가기",
+        "voucher_amount":"바우처 할인",
 
 };

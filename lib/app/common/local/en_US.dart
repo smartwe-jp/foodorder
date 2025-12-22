@@ -5,6 +5,7 @@ const Map<String, String> en_US = {
         "show_price_front":"Tax-In",
         "tax_out":"Subtotal",
         "tax":"Incl. Tax",
+        "out_tax":"Excl. Tax",
         "taxout_price":"Subtotal",
         "original_price":"Original Price",
         "show_original_price_front":"Orig",
@@ -226,5 +227,6 @@ const Map<String, String> en_US = {
         "order_success_tips":"Thank you for your order.",
         "order_success_subtips":"Returning to the home screen in %% seconds.",
         "origin_home":"Back to Home",
+        "voucher_amount":"Voucher Discount",
 
 };

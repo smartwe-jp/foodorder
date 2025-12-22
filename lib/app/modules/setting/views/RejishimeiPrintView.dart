@@ -210,6 +210,7 @@ class RejishimePrintViewState extends State<PrintView> {
   }
 
   Widget _miroWidget() {
+    final voucherAmount = _printInfo['voucherAmountTotal'] ?? 0;
     return Column(
       children: [
         _mainTitle(_printInfo['shopName'] ?? "0"),
@@ -264,6 +265,9 @@ class RejishimePrintViewState extends State<PrintView> {
                   ),
                   _twoContentRow(
                       "現金", "¥ ${formatSum(_printInfo['cashTotal'])}"),
+                  if (voucherAmount > 0)
+                    _twoContentRow(
+                        "代金券・売掛", "¥ ${formatSum(voucherAmount)}"),
                   _twoContentRow(
                       "クレジット", "¥ ${formatSum(_printInfo['creditCardTotal'])}"),
                   _twoContentRow(
