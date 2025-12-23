@@ -59,9 +59,7 @@ class CreatePrintImageController extends GetxController {
   );
 
   String get taxText {
-    return machineInfo.taxSystem
-        ? "　  内    消費税"
-        : "　  外    消費税";
+    return machineInfo.taxSystem ? "　  内    消費税" : "　  内    消費税";
   }
 
   @override
@@ -762,7 +760,7 @@ class CreatePrintImageController extends GetxController {
     if (discount != 0)
       categoryMenus.add(
         _publicTwoColumnsTxtNew("割引", 26.0, FontWeight.w200,
-            "-${formatMoney(discount)}", 26.0, FontWeight.w200, true),
+            "-${formatMoney(discount)}", 26.0, FontWeight.w200, false),
       );
 //合计
     categoryMenus.add(
@@ -856,11 +854,13 @@ class CreatePrintImageController extends GetxController {
       );
     }
 
-    if (voucherAmount > 0)
+    if (voucherAmount > 0) {
+      lineZeng += 33;
       categoryMenus.add(
         _publicTwoColumnsTxtNew("代金券・売掛", 26.0, FontWeight.w200,
             "${formatMoney(voucherAmount)}", 26.0, FontWeight.w200, true),
       );
+    }
 
     if (printData["payMethod"] != "現金支払") {
       lineZeng += 33;
