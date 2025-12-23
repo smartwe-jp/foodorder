@@ -131,7 +131,7 @@ class TransitPageController extends GetxController {
       request('webBootActivatev3', method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        LogUtil.d("getMachineActivate response: $response");
+        logger.info("getMachineActivate response: $response");
         if (response != null &&
             response['code'] == 200 &&
             response['data'] != null) {

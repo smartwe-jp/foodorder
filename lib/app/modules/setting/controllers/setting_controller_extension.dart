@@ -428,7 +428,7 @@ extension SettingControllerExtension on SettingController {
   //清空上报
 
   gloryEmptyReport(String verifyCode, String verifyEmail) async {
-    debugPrint("gloryEmptyReposrt");
+    logger.info("gloryEmptyReposrt");
 
     var success = false;
 
@@ -446,7 +446,7 @@ extension SettingControllerExtension on SettingController {
       'verifyEmail': verifyEmail,
     };
 
-    debugPrint("gloryEmptyReposrt formData: $formData");
+    logger.info("gloryEmptyReposrt formData: $formData");
 
     await request(
       'webBootGloryEmpty',
@@ -455,7 +455,7 @@ extension SettingControllerExtension on SettingController {
     ).then((value) {
       debugPrint("gloryEmptyReport value: $value");
       final response = json.decode(value.toString());
-      debugPrint("response: $response");
+      logger.info("response: $response");
       if (response["code"] == 200) {
         success = true;
       } else {
@@ -504,7 +504,7 @@ extension SettingControllerExtension on SettingController {
   }
 
   gloryConfirmSync({bool showLoading = true}) async {
-    debugPrint("---gloryConfirmSync---");
+    logger.info("---gloryConfirmSync---");
 
     //
     if (showLoading) {
@@ -519,7 +519,7 @@ extension SettingControllerExtension on SettingController {
       'machineCode': machineCode,
       'shopCode': shopCode,
     };
-    debugPrint("formData: $formData");
+    logger.info("formData: $formData");
     request(
       'webGloryConfirmSync',
       method: 'POST',
@@ -527,7 +527,7 @@ extension SettingControllerExtension on SettingController {
     ).then((value) async {
       debugPrint("gloryConfirmSync value: $value");
       final response = json.decode(value.toString());
-      debugPrint("response: $response");
+      logger.info("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         if (showLoading) {
@@ -552,6 +552,7 @@ extension SettingControllerExtension on SettingController {
   reportReplanishInfo(printView) async {
     //该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
     //showEasyLoading();
+    logger.info('-- reportReplanishInfo --');
     ignoreNotify.value = true;
     if (!await closeDeposit()) {
       taskTouch = false;
@@ -563,7 +564,7 @@ extension SettingControllerExtension on SettingController {
       'machineCode': machineCode, //'PAZK8N7KKE8evkXks4'
       'shopCode': shopCode,
     };
-    debugPrint("formData: $formData");
+    logger.info("formData: $formData");
     request(
       'webBootGlorySupplement',
       method: 'POST',
@@ -572,7 +573,7 @@ extension SettingControllerExtension on SettingController {
       taskTouch = false;
       debugPrint("reportReplanishInfo value: $value");
       final response = json.decode(value.toString());
-      debugPrint("response: $response");
+      logger.info("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         if (printView != null) {

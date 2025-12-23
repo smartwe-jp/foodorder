@@ -141,7 +141,7 @@ extension HomeControllerExtension on HomeController {
           logger.info('-- stopCashChanger success --');
           await Future.delayed(Duration(milliseconds: 200));
           if (next) {
-            closeCashChanger();
+            getMachineCashInfo();
           }
         },
         onRetry: () async {
@@ -153,6 +153,21 @@ extension HomeControllerExtension on HomeController {
           logger.info('-- stopCashChanger error: $error --');
           debugPrint("stopCashChanger error: $error");
         });
+  }
+
+  Future<void> getMachineCashInfo() async {
+    debugPrint("getMachineCashInfo 0");
+    logger.info('-- getMachineCashInfo --');
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        logger.info('-- getMachineCashInfo : $value --');
+      },
+      catchError: (error) {
+        debugPrint("getMachineCashInfo error: $error");
+        logger.info('-- getMachineCashInfo error: $error --');
+      },
+    );
+    closeCashChanger();
   }
 
   closeCashChanger() async {

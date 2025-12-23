@@ -146,7 +146,7 @@ extension ExchangeControllerExtension on SettingController {
     //   return MapEntry(catValFromInt(cash[0]), cash[1]);
     // });
     // debugPrint('resultMap: ${resultMap}');
-    debugPrint('resultMap: ${resultMap}');
+    logI('resultMap: ${resultMap}');
     return resultMap;
   }
 

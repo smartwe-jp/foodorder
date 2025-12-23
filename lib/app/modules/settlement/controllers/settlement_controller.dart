@@ -1724,10 +1724,10 @@ class SettlementController extends GetxController with StateMixin {
       "operation": operation,
       "coinForbidden": Platform.isAndroid ? int.parse(machineInfo.is_allow_oneyen) : 1
     };
-    print("webBootToReportV1==${formData}");
+    logger.info("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
-          debugPrint("----上报订单成功----");
+          logger.info("----上报订单成功----");
           isReportCash.value = false;
       //var response = json.decode(value.toString());
       // if (response['code'] == 200) {

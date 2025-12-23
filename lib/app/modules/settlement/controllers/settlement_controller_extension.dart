@@ -529,7 +529,7 @@ extension SettlementControllerExtension on SettlementController {
       'shopCode': machineInfo.shopCode,
     };
 
-    debugPrint('formData: $formData');
+    logger.info('formData: $formData');
 
     await request(
       'webBootGloryExchange',
