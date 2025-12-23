@@ -206,7 +206,7 @@ class ScanDetailPagePage extends StatelessWidget {
   Widget _payCountTitle(int count, int discount, bool containTax, 
   int kuuponAmount, int payableAmount, int tax8, int tax10) {
 
-    int taxOutPrice = count - tax8 - tax10 + discount - kuuponAmount;
+    int taxOutPrice = count - tax8 - tax10;
     int taxInPrice = count + discount - kuuponAmount;
 
 
@@ -229,7 +229,7 @@ class ScanDetailPagePage extends StatelessWidget {
             ),
 
             Expanded(
-              flex: 1, // 左边占 44%
+              flex: 2, // 左边占 44%
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -375,9 +375,9 @@ class ScanDetailPagePage extends StatelessWidget {
                       Text("settlement_original_price".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(35.0))),
+                              fontSize: 30)),
 
                       Spacer(),
                       Text(
@@ -395,8 +395,8 @@ class ScanDetailPagePage extends StatelessWidget {
                           "${count.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(35.0),
-                            fontWeight: FontWeight.w600,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black,
                           ),
                       )
@@ -412,28 +412,18 @@ class ScanDetailPagePage extends StatelessWidget {
                       Text("settlement_discount".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(35.0))),
+                              fontSize: 30)),
                       Spacer(),
-                      Text(
-                          "¥ ",
-                          //GString.getToString(this._checkLanguage, "show_price_front"),
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontFamily: GFont.getFontFamily(),
-                            fontWeight: FontWeight.w500,
-                            color: ColorsUtil.hexToColor(
-                                Gcolor.mainTitleColor),
-                          ),
-                        ),
+                      
                       Text(
                           "${discount.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(35.0),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           )
                       ),
                     ],
@@ -450,28 +440,18 @@ class ScanDetailPagePage extends StatelessWidget {
                       Text("voucher_amount".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(35.0))),
+                              fontSize: 30)),
                       Spacer(),
+                      
                       Text(
-                          "¥ ",
-                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          "-${kuuponAmount.formatIntSum()}",
                           style: TextStyle(
-                            fontSize: 28,
                             fontFamily: GFont.getFontFamily(),
+                            fontSize: 30,
                             fontWeight: FontWeight.w500,
-                            color: ColorsUtil.hexToColor(
-                                Gcolor.mainTitleColor),
-                          ),
-                        ),
-                      Text(
-                          "${kuuponAmount.formatIntSum()}",
-                          style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(35.0),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                            color: Colors.black,
                           )
                       ),
                     ],
@@ -484,7 +464,7 @@ class ScanDetailPagePage extends StatelessWidget {
                       children: [
                         //taxin
                         Text(
-                          "tag_amount".tr,
+                          "settlement_orderPrice".tr,
                           style: TextStyle(
                               color: ColorsUtil.hexToColor(
                                   Gcolor.mainTitleColor),
