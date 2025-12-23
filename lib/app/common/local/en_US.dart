@@ -6,6 +6,7 @@ const Map<String, String> en_US = {
   "show_price_front":"Tax-In",
   "tax_out":"Subtotal",
   "tax":"Incl. Tax",
+  "out_tax":"Excl. Tax",
   "taxout_price":"Subtotal",
   "original_price":"Original Price",
   "show_original_price_front":"Orig",
@@ -164,5 +165,5 @@ const Map<String, String> en_US = {
 
   "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
   "pos_cancel_wait_tips": "Transaction in progress, cannot cancel at the moment, please wait. Maximum wait time is 2 minutes.",
-
+  "voucher_amount":"Voucher Discount",
 };

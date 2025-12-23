@@ -49,6 +49,8 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxString orderId = "".obs;
   RxInt totalPrice = 0.obs;
+  RxInt voucherAmount = 0.obs;
+  RxInt payableAmount = 0.obs;
   RxString tableNum = "0".obs;
   RxString tableNumText = "0".obs;
   RxInt tax10 = 0.obs;
@@ -354,6 +356,8 @@ class CheckoutPageController extends GetxController with StateMixin {
           tableNumText.value = response["data"]["tableNumText"] ?? "";
           tax10.value = response["data"]["tax1"] ?? 0;
           tax8.value = response["data"]["tax2"] ?? 0;
+          voucherAmount.value = response["data"]["voucherAmount"] ?? 0;
+          payableAmount.value = response["data"]["payableAmount"] ?? 0;
 
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
           orderLines.value = response["data"]["orderLines"] ?? [];
@@ -409,7 +413,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         SelectPaymentPage(
             checkLanguage: selectLanguage,
             menuCount: itemCount.value,
-            shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
+            shopCartTotalPrice:(totalPrice.value + discount.value - voucherAmount.value).toString(),
             tableNum: tableNum.value,
             tableName: tableNumText.value,
             tax10: tax10.value,
@@ -477,7 +481,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           "checkLanguage": selectLanguage,
           "machineCode": machineInfo.machineCode,
           "orderId" : orderId.value,
-          "totalPrice" : (totalPrice.value + discount.value).toString(),
+          "totalPrice" : (totalPrice.value + discount.value - voucherAmount.value).toString(),
           "machineMode":"2",
           "showOpenPayment": showOpenPayment.value,
           "isScanCheckOut" : true,

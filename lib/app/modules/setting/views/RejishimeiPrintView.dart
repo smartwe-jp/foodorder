@@ -92,7 +92,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
   }
 
   Widget _miroWidget() {
-
+    final voucherAmount = printInfo['voucherAmountTotal'] ?? 0;
     return  Column(
             children: [
               _mainTitle( printInfo['shopName'] ?? "Unknown"),
@@ -134,6 +134,9 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                             color: ColorsUtil.hexToColor("#9C9C9C"),
                           ),
                           _twoContentRow("現金", "¥ ${formatSum(printInfo['cashTotal'])}"),
+                          if (voucherAmount > 0)
+                            _twoContentRow(
+                                "代金券・売掛", "¥ ${formatSum(voucherAmount)}"),
                           _twoContentRow("クレジット", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
                           _twoContentRow("PayPay", "¥ ${formatSum(printInfo['payPayTotal'])}"),
                           _twoContentRow("AliPay", "¥ ${formatSum(printInfo['aliPayTotal'])}"),

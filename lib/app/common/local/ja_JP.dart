@@ -6,6 +6,7 @@ const Map<String, String> ja_JP = {
   "show_price_front":"税込",
   "tax_out":"税抜",
   "tax":"内 消費税",
+  "out_tax":"外　消費税",
   "taxout_price":"小計",
   "original_price":"原価",
   "show_original_price_front":"定価",
@@ -166,4 +167,5 @@ const Map<String, String> ja_JP = {
   "order_success_tips":"ご利用いただきありがとうございました",
   "order_success_subtips":"%%秒後に自動で最初の画面に戻ります",
   "origin_home":"最初の画面に戻る",
+  "voucher_amount":"代金券・売掛",
 };
