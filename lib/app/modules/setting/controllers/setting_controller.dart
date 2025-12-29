@@ -676,10 +676,11 @@ class SettingController extends GetxController with StateMixin {
         return;
       }
       final result = await CashChanger.collectAll(); //该步骤失败如何处理
+      logI("recycleCash result: $result");
       await CashChanger.changerResultNext(
           resultCode: result,
           onSuccess: () async {
-            debugPrint("recycleCash onSuccess");
+            logI("recycleCash onSuccess");
             EasyLoading.dismiss();
             await clearTask();
             commonHandleDialog('回收しました');
@@ -690,7 +691,7 @@ class SettingController extends GetxController with StateMixin {
           },
           showError: (String error) {
             EasyLoading.dismiss();
-            debugPrint("recycleCash error: $error.tr");
+            logI("recycleCash error: $error.tr");
             //showToast('回收失败');
             commonHandleDialog("回收失败：$error.tr");
           });
@@ -710,6 +711,10 @@ class SettingController extends GetxController with StateMixin {
           showToast('回收に失敗しました');
           commonHandleDialog("回收に失敗しました：${response['code']}");
         }
+      }).timeout(const Duration(seconds: 15), onTimeout: () {
+        EasyLoading.dismiss();
+        logI("recycleCash timeout");
+        commonHandleDialog("通信タイムアウト");
       });
     }
   }

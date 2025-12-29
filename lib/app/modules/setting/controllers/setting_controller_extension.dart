@@ -474,6 +474,9 @@ extension SettingControllerExtension on SettingController {
       //showToast('回收失败!');
 
       success = false;
+    }).timeout(Duration(seconds: 15), onTimeout: () {
+      errorHandleDialog("通信タイムアウト");
+      success = false;
     });
 
     return success;
