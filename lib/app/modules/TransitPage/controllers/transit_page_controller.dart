@@ -114,7 +114,7 @@ class TransitPageController extends GetxController {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200 && response['data'] != null) {
-        logI("getMachineActivate" + response);
+        logI(response);
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
