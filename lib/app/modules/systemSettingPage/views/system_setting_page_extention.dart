@@ -309,7 +309,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     bool printOption = printerItem['option'] ?? false; // 打印选项
     bool isSingleMode = type == 11 ||  receipt == 1;
     bool printCategory = printerItem['printCategory'] ?? false; // 是否打印分类名称
-    bool printHead = printerItem['printHead'] ?? false; // 是否打印抬头
+    bool printHead = printerItem['printHead'] ?? true; // 是否打印抬头
 
         return
           Column(
