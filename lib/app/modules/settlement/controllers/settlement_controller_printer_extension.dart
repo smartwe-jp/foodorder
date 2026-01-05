@@ -502,7 +502,7 @@ class PrintService extends GetxService {
         // 先打印票号和基本信息
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printSize = printer['labelSize'] ?? '300x225';
-        final printHead = printer['labelHead'] ?? false;
+        final printHead = printer['labelHead'] ?? true;
         final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
         final printHeight = int.tryParse(printSize.split('x')[1]) ?? 225; // 获取标签高度
         // Add the head receipt widget to the print queue
