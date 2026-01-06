@@ -370,8 +370,10 @@ class Exchangeview extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 //if (changeCount == 0) {
-                await controller.exchangeFlow(
-                    moneyType, moneyCount, changeCount);
+                controller.confirmTimer(() {
+                  controller.exchangeFlow(
+                      moneyType, moneyCount, changeCount);
+                });
                 //}
               },
               child: Text(

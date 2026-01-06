@@ -187,6 +187,11 @@ extension ExchangeControllerExtension on SettingController {
         debugPrint(
             "_getOutsideInputMoney getPutMoney.value==${result.toString()}");
         getPutMoney.value = result;
+        showCashTimer?.cancel();
+        if (taskTouch) {
+          taskTouch = false;
+          EasyLoading.dismiss();
+        }
         getInputMoneyInfo();
       }
     };
@@ -334,11 +339,9 @@ extension ExchangeControllerExtension on SettingController {
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
     logI('exChangeFlow: $type, $count, $disconut');
+    //showEasyLoading();
 
-    showEasyLoading();
-
-    logI(
-        'exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+    logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
 
     String? localCashInfo = await getMachineCashInfo();
     if (localCashInfo == null) return;

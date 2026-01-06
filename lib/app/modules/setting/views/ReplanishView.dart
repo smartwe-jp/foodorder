@@ -330,7 +330,10 @@ class ReplanishView extends StatelessWidget {
                                         printInfo: controller.supplyInfo,
                                         printType: PrintType.SUPPLY),
                                   );
-                                  controller.confirmTimer(printWidget);
+                                  controller.confirmTimer(() {
+                                    controller
+                                        .reportReplanishInfo(printWidget);
+                                  });
                                 }
                               },
                               child: Text("確認",

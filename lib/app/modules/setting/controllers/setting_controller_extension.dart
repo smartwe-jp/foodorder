@@ -304,7 +304,7 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
-  confirmTimer(printView) async {
+  confirmTimer(Function task) async {
     if (taskTouch) return;
     taskTouch = true;
     showEasyLoading(content: 'お待ち下さい');
@@ -315,7 +315,7 @@ extension SettingControllerExtension on SettingController {
       seconds--;
       if (seconds == 0) {
         showCashTimer?.cancel();
-        reportReplanishInfo(printView);
+        task();
       }
     });
   }
@@ -673,6 +673,7 @@ extension SettingControllerExtension on SettingController {
     hasExchangeCash = false;
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
+    exchangeFromInfo = {};
     isStartPutMoney.value = false;
     //await gloryConfirmSync();
     if (syncCash) gloryConfirmSync();
