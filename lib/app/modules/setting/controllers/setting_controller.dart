@@ -15,6 +15,7 @@ import 'package:foodorder/app/modules/rejishimei/view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
+import 'package:foodorder/app/modules/setting/views/ExportCashView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
@@ -398,6 +399,11 @@ class SettingController extends GetxController with StateMixin {
     Get.dialog(barrierDismissible: false, Exchangeview(controller: this));
   }
 
+  showExportCashAlert() async {
+    isStartPutMoney.value = false;
+    Get.dialog(barrierDismissible: false, ExportCashView(controller: this));
+  }
+
   //获取版本号
   _getPackageInfo() async {
     debugPrint("SettingController _getPackageInfo");
@@ -632,7 +638,7 @@ class SettingController extends GetxController with StateMixin {
         "adjust": number,
       },
       "fromDeposit": true,
-      "fromDepositCatVal": _getDepositCatVal(depositCatVal),
+      "fromDepositCatVal": getDepositCatVal(depositCatVal),
       "fromDepositQty": depositQty,
       "machineCode": machineCode,
       "shopCode": shopCode,
@@ -806,7 +812,7 @@ class SettingController extends GetxController with StateMixin {
     }
   }
 
-  _getDepositCatVal(type) {
+  getDepositCatVal(type) {
     switch (type) {
       case "一万円":
         return "8A";

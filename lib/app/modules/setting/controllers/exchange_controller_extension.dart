@@ -416,6 +416,38 @@ extension ExchangeControllerExtension on SettingController {
     }
   }
 
+  Future<bool> exportCashFlow(type, int count) async {
+
+    logI('exportCashFlow: $type, $count');
+    showEasyLoading();
+
+    List<Map> puts = [{
+      'catVal': getDepositCatVal(type),
+      'val': 0,
+    }];
+    List<Map> pops = [
+      {
+      'catVal': getDepositCatVal(type),
+      'val': count,
+    }];
+    int moneyValue = int.parse(getCatVal(type));
+    String outInfo =  moneyValue > 500  ? ';$moneyValue:$count' : '$moneyValue:$count';
+    logI('outInfo: $outInfo');
+
+    int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
+    EasyLoading.dismiss();
+    if (resultCode == null || resultCode != 0) {
+      errorHandleDialog('出金に失敗しました。再度お試しください。',confirm:() => exportCashFlow(type, count));
+      return false;
+    }
+
+    await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+    clearTask();
+    Get.back();
+    
+    return true;
+  }
+
   //日文提示
   tipsTitle() {
     if (getPutMoney.value == 0) {
@@ -497,13 +529,13 @@ extension ExchangeControllerExtension on SettingController {
       } else {
         success = false;
         logI('---reportExchange failed: ${response["message"]}');
-        showToast('両替失败!', context: Get.context);
+        showToast('report 失败!', context: Get.context);
       }
     }).catchError((error) {
       logI('---reportExchange error: $error');
       success = false;
       EasyLoading.dismiss();
-      showToast('両替失败!', context: Get.context);
+      showToast('report 失败!', context: Get.context);
     });
     return success;
   }

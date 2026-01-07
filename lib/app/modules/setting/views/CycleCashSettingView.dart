@@ -224,7 +224,13 @@ extension CycleCashSettingView on SettingView {
               RecycleButton(
                 title: "両替",
                 onPressed: () async {
-                  await controller.showExchangeAlert();
+                  controller.showExchangeAlert();
+                },
+              ),
+              RecycleButton(
+                title: "出金",
+                onPressed: () async {
+                  controller.showExportCashAlert();
                 },
               )
             ])
