@@ -23,15 +23,18 @@ class RecycleButton extends StatelessWidget {
         },
         child: Container(
           alignment: Alignment.center,
-          width: ScreenAdapter.width(180),
+          //width: ScreenAdapter.width(180),
           height: ScreenAdapter.height(60),
+          margin: EdgeInsets.symmetric(
+              horizontal: ScreenAdapter.width(20),
+          ),
 
           //边框设置
           decoration: new BoxDecoration(
             //背景
             color: ColorsUtil.hexToColor("#dca550"),
             //设置四周圆角 角度
-            borderRadius: BorderRadius.all(Radius.circular(30)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
             //设置四周边框
             //border: new Border.all(width: 1, color: Colors.red),
           ),
