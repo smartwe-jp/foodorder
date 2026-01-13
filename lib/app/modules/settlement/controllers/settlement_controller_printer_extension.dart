@@ -1104,13 +1104,13 @@ class PrintService extends GetxService {
                     Expanded(
                       //flex: 2,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AutoSizeText(
                             remark,
                             maxLines: 4,
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 28,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
