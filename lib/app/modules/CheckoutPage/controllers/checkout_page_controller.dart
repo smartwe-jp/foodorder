@@ -314,7 +314,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   //{"msg":"success","code":200,"data":{"orderId":459105413798756352,"totalPrice":2250,"discount":0,"tableNum":"Ａ０２","machineCode":null,"orderQty":15,"orderKey":null,"language":null,"orderInfoMap":{"ミルクティー":3,"枝豆":2,"生ビール":1,"牛すじドテ焼大根日":7,"甘蘭牛肉麺":1,"コーラ":1,"アイス紅茶":1}}}
   requestOrderList(String scanText, {goDetail = true}) async {
-    debugPrint('qrCodeString: $scanText');
+    logI('qrCodeString: $scanText');
     scanTextValue = scanText;
     String orderKey = scanText;
     if (orderKey.isEmpty) {
@@ -326,19 +326,18 @@ class CheckoutPageController extends GetxController with StateMixin {
       //正则实现截取'?p='之后的字符串
       orderKey = _getOrderKey(scanText);
     }
-    debugPrint('orderKey : $orderKey');
+    logI('orderKey : $orderKey');
     var formData = {
       "orderKey": orderKey,
       "language": selectLanguage,
       "machineCode": machineInfo.machineCode
     };
 
-    debugPrint('formData: $formData');
+    logI('formData: $formData');
 
     request('webBootCalculateV2', method: 'POST', parameters: formData)
         .then((val) {
-      print('webBootCalculateV2:$val');
-
+      logI('webBootCalculateV2:$val');
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 
@@ -381,7 +380,14 @@ class CheckoutPageController extends GetxController with StateMixin {
         _showDialogError(response['msg']);
       }
     }).catchError((error) {
-      print('webBootCalculateV2 error:${error.toString()}');
+      logI('webBootCalculateV2 error:${error.toString()}');
+      EasyLoading.dismiss();
+      _resetScanState(false);
+      _showDialogError("tag_network_error".tr);
+    }).timeout(const Duration(seconds: 15), onTimeout: () {
+      EasyLoading.dismiss();
+      _resetScanState(false);
+      _showDialogError("tag_network_timeout".tr);
     });
   }
 
@@ -440,6 +446,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   postNewOrderId({orderIdIfTakeOut = ""}) {
 
+    logI('postNewOrderId called');
     if (orderId.value == "") {
       orderId.value = orderIdIfTakeOut;
     }
@@ -451,6 +458,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
+      logI('webBootToPayConfirm:$val');
 
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
