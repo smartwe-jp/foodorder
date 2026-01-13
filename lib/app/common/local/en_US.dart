@@ -229,4 +229,7 @@ const Map<String, String> en_US = {
         "origin_home":"Back to Home",
         "voucher_amount":"Voucher Discount",
 
+        "tag_scan_network_error":"Order request failed, please try again later.",
+        "tag_scan_network_timeout":"Order request timed out, please try again later.",
+
 };

@@ -230,4 +230,7 @@ const Map<String, String> zh_CN = {
         "origin_home":"返回首页",
         "voucher_amount":"代金券",
 
+        "tag_scan_network_error":"订单请求失败，请稍后重试。",
+        "tag_scan_network_timeout":"订单请求超时，请稍后重试。",
+
 };

@@ -381,11 +381,11 @@ class CheckoutPageController extends GetxController with StateMixin {
       logI('webBootCalculateV2 error:${error.toString()}');
       EasyLoading.dismiss();
       _resetScanState(false);
-      _showDialogError("tag_network_error".tr);
+      _showDialogError("tag_scan_network_error".tr);
     }).timeout(const Duration(seconds: 15), onTimeout: () {
       EasyLoading.dismiss();
       _resetScanState(false);
-      _showDialogError("tag_network_timeout".tr);
+      _showDialogError("tag_scan_network_timeout".tr);
     });
   }
 
