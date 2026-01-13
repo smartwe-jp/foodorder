@@ -168,4 +168,7 @@ const Map<String, String> ja_JP = {
   "order_success_subtips":"%%秒後に自動で最初の画面に戻ります",
   "origin_home":"最初の画面に戻る",
   "voucher_amount":"代金券・売掛",
+
+  "tag_scan_network_error": "注文リクエストに失敗しました。後でもう一度お試しください。",
+  "tag_scan_network_timeout": "注文リクエストがタイムアウトしました。後でもう一度お試しください。",
 };
