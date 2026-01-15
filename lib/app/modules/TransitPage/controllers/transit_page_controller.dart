@@ -124,14 +124,16 @@ class TransitPageController extends GetxController {
         return;
       }
       logger.info('-- getMachineActivate with loadActive --');
-      var formData = {
+      final formData = {
         "machineCode": _machineCode.value,
         "version": local_version.value
       };
-      request('webBootActivatev3', method: 'POST', parameters: formData)
-          .then((val) async {
-        var response = json.decode(val.toString());
-        logger.info("getMachineActivate response: $response");
+      final val = await request('webBootActivatev3', method: 'POST', parameters: formData)
+        .timeout(const Duration(seconds: 10));
+      final response = json.decode(val.toString());
+
+      logger.info("getMachineActivate response: $response");
+      
         if (response != null &&
             response['code'] == 200 &&
             response['data'] != null) {
@@ -280,17 +282,11 @@ class TransitPageController extends GetxController {
             //await downloadAndSaveImage(shopData["logoImage"]);
              _getSmartweSystemSettingInfo();
           }
-
-        } else {
-          if (Platform.isAndroid) {
-            // FirebaseAnalytics.instance.logEvent(
-            //     name: 'machine_activate_failure',
-            //     parameters: {'machine_activate_error': '${_machineCode.value}'});
-          }
-          _showErrorDialog(isActive: response['data'] == null);
-        }
-      }).catchError((e) {
-        LogUtil.d("getMachineActivate error: $e");
+          return;
+        } 
+        _showErrorDialog(isActive: response['data'] == null);
+      
+      } catch(e) {
         logger.warning('getMachineActivate error: $e');
         if (Platform.isAndroid) {
           // FirebaseAnalytics.instance.logEvent(
@@ -306,26 +302,10 @@ class TransitPageController extends GetxController {
           // 如果重试次数超过3次，显示错误对话框
           _showErrorDialog(error: e);
         }
-      })
-      .timeout(Duration(seconds: 10), onTimeout: () {
-        //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
-        //print('timeout');
-        LogUtil.d("getMachineActivate timeout");
-        logger.warning('getMachineActivate timeout');
-        if (retryCount < 3) {
-          // 如果超时，重试
-          Future.delayed(Duration(seconds: 2), () {
-            _getMachineActivate(retryCount: retryCount + 1);
-          });
-        } else {
-          // 如果重试次数超过3次，显示错误对话框
-          _showErrorDialog();
-        }
-      });
-    } finally {
-      logger.info('activation finished');
-      //_activating = false;
-    }
+      } finally {
+        logger.info('activation finished');
+        //_activating = false;
+      }
   }
 
   _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
@@ -378,7 +358,7 @@ class TransitPageController extends GetxController {
   }
 
   _getSmartweSystemSettingInfo() async {
-    debugPrint("getSmartweSystemSettingInfo");
+    logger.info("getSmartweSystemSettingInfo");
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     // var checkmachineMode = "1";
