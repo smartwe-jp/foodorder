@@ -115,12 +115,12 @@ class HomeView extends GetView<HomeController> {
         return;
       }
 
-      var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
-      printType: printTypeEnum,
-      argbWidthPx: argbWidth,
-      argbHeightPx: argbHeight,
-    );
+      final printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+        imgData: imageBytes,
+        printType: printTypeEnum,
+        argbWidthPx: argbWidth,
+        argbHeightPx: argbHeight,
+      );
 
       if (printerInfo.isUsbPrinter) {
         // usb 打印
