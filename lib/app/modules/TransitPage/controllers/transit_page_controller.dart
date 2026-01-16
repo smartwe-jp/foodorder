@@ -104,137 +104,140 @@ class TransitPageController extends GetxController {
       await _getSmartweSystemSettingInfo();
       return;
     }
-    debugPrint("getMachineActivate");
-    var formData = {
+
+    final formData = {
       "machineCode": _machineCode.value,
       "version":local_version.value
     };
-    //print(formData);
-    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());
+    logI("getMachineActivate formData: $formData");
+    try {
+      final val = await request('webBootActivatev3', method: 'POST', parameters: formData)
+          .timeout(const Duration(seconds: 10));
+      final response = json.decode(val.toString());
+
+      logI("getMachineActivate response: $response");
 
       if (response != null && response['code'] == 200 && response['data'] != null) {
-        logI(response);
-        var shopData = response['data'];
-        var _shopCode = "";
-        if (shopData["shopCode"] != null) {
-          _shopCode = shopData["shopCode"];
+          logI(response);
+          var shopData = response['data'];
+          var _shopCode = "";
+          if (shopData["shopCode"] != null) {
+            _shopCode = shopData["shopCode"];
+          }
+          var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
+          var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
+          var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
+          var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
+          var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
+          var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
+          var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
+          var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
+          var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
+
+          var _posEdy = shopData["linePayChannelMap"]["Edy"] != null ? shopData["linePayChannelMap"]["Edy"] :false;
+          var _posiD = shopData["linePayChannelMap"]["iD"] != null ? shopData["linePayChannelMap"]["iD"] :false;
+          var _posIC = shopData["linePayChannelMap"]["IC"] != null ? shopData["linePayChannelMap"]["IC"] :false;
+          var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null ? shopData["linePayChannelMap"]["QUICPay"] :false;
+          var _posWAON = shopData["linePayChannelMap"]["WAON"] != null ? shopData["linePayChannelMap"]["WAON"] :false;
+          var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null ? shopData["linePayChannelMap"]["nanaco"] :false;
+
+          var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
+          var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
+          var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
+          var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
+          var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
+          var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
+          var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
+          bool taxSystem = shopData['taxSystem'] ?? false;
+          var machineActivateData = {
+            "showCash": _showCash,
+            "showWechat":_showWechat,
+            "showAlipay":_showAlipay,
+            "showPayPay":_showPayPay,
+            "showCreditCard":_showCreditCard,
+            "au_Pay":_auPay,
+            "d_Pay":_dPay,
+            "R_Pay":_rPay,
+            "m_Pay":_mPay,
+            "pos_Edy":_posEdy,
+            "pos_iD":_posiD,
+            "pos_IC":_posIC,
+            "pos_QUICPay":_posQUICPay,
+            "pos_WAON":_posWAON,
+            "pos_nanaco":_posnanaco,
+            "show_visa":_visa,
+            "show_master":_master,
+            "show_jcb":_jcb,
+            "show_unionPay":_unionPay,
+            "show_americanExpress":_americanExpress,
+            "show_dinersClub":_dinersClub,
+            "show_discover":_discover,
+            "taxSystem": taxSystem,
+          };
+          //是否允许退款 1展示退款按钮 0 不展示
+          var reimburse = (shopData["reimburse"]==true) ? "1":"0";
+          Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+          Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
+
+          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+          Storage.setString('smartwe_reimburse', reimburse);
+          Storage.setString('smartwe_shopCode', _shopCode);
+
+          GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
+          GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
+          GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
+          GetxStorage.setData('smartwe_reimburse', reimburse);
+
+          var machineSettingBool = {
+            'machineLineup':shopData["lineup"],
+            'machineActuarial':shopData["actuarial"],
+          };
+
+          Storage.setString('machineSettingData', json.encode(machineSettingBool));
+          GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
+
+          _actuarial.value = shopData["actuarial"];
+
+          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+
+          await _getSmartweSystemSettingInfo(isLaunch: true);
+        } else {
+          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
+          _showErrorDialog();
         }
-        var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
-        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
-        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
-        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
-        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
-        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
-        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
-        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
 
-        var _posEdy = shopData["linePayChannelMap"]["Edy"] != null ? shopData["linePayChannelMap"]["Edy"] :false;
-        var _posiD = shopData["linePayChannelMap"]["iD"] != null ? shopData["linePayChannelMap"]["iD"] :false;
-        var _posIC = shopData["linePayChannelMap"]["IC"] != null ? shopData["linePayChannelMap"]["IC"] :false;
-        var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null ? shopData["linePayChannelMap"]["QUICPay"] :false;
-        var _posWAON = shopData["linePayChannelMap"]["WAON"] != null ? shopData["linePayChannelMap"]["WAON"] :false;
-        var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null ? shopData["linePayChannelMap"]["nanaco"] :false;
+    } catch(e) {
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
+        logI("machine_activate_error: $e");
 
-        var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
-        var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
-        var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
-        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
-        var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
-        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
-        var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
-        bool taxSystem = shopData['taxSystem'] ?? false;
-        var machineActivateData = {
-          "showCash": _showCash,
-          "showWechat":_showWechat,
-          "showAlipay":_showAlipay,
-          "showPayPay":_showPayPay,
-          "showCreditCard":_showCreditCard,
-          "au_Pay":_auPay,
-          "d_Pay":_dPay,
-          "R_Pay":_rPay,
-          "m_Pay":_mPay,
-          "pos_Edy":_posEdy,
-          "pos_iD":_posiD,
-          "pos_IC":_posIC,
-          "pos_QUICPay":_posQUICPay,
-          "pos_WAON":_posWAON,
-          "pos_nanaco":_posnanaco,
-          "show_visa":_visa,
-          "show_master":_master,
-          "show_jcb":_jcb,
-          "show_unionPay":_unionPay,
-          "show_americanExpress":_americanExpress,
-          "show_dinersClub":_dinersClub,
-          "show_discover":_discover,
-          "taxSystem": taxSystem,
-        };
-        //是否允许退款 1展示退款按钮 0 不展示
-        var reimburse = (shopData["reimburse"]==true) ? "1":"0";
-        Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
-        Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
-
-        Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-        Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-        Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-        Storage.setString('smartwe_reimburse', reimburse);
-        Storage.setString('smartwe_shopCode', _shopCode);
-
-        GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
-        GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
-        GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
-        GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
-        GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
-        GetxStorage.setData('smartwe_reimburse', reimburse);
-
-        var machineSettingBool = {
-          'machineLineup':shopData["lineup"],
-          'machineActuarial':shopData["actuarial"],
-        };
-
-        Storage.setString('machineSettingData', json.encode(machineSettingBool));
-        GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
-
-        _actuarial.value = shopData["actuarial"];
-
-        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-
-        await _getSmartweSystemSettingInfo(isLaunch: true);
-      } else {
-        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
-        _showErrorDialog();
-      }
-
-    })
-    .catchError((e) {
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
-      //print("error: $e");
-
-      if (retryCount < 3) {
-        // 如果失败，重试
-        Future.delayed(Duration(seconds: 2), () {
-          _getMachineActivate(retryCount: retryCount + 1);
-        });
-      } else {
-        // 如果重试次数超过3次，显示错误对话框
-        _showErrorDialog(error: e);
-      }
-    })
-    .timeout(Duration(seconds: 10), onTimeout: () {
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
-      //print('timeout');
-
-      if (retryCount < 3) {
-        // 如果超时，重试
-        Future.delayed(Duration(seconds: 2), () {
-          _getMachineActivate(retryCount: retryCount + 1);
-        });
-      } else {
-        // 如果重试次数超过3次，显示错误对话框
-        _showErrorDialog();
-      }
-    });
+        if (retryCount < 3) {
+          // 如果失败，重试
+          Future.delayed(Duration(seconds: 2), () {
+            _getMachineActivate(retryCount: retryCount + 1);
+          });
+        } else {
+          // 如果重试次数超过3次，显示错误对话框
+          _showErrorDialog(error: e);
+        }
+    }
+    // .timeout(Duration(seconds: 10), onTimeout: () {
+    //   FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+    //   //print('timeout');
+    //
+    //   if (retryCount < 3) {
+    //     // 如果超时，重试
+    //     Future.delayed(Duration(seconds: 2), () {
+    //       _getMachineActivate(retryCount: retryCount + 1);
+    //     });
+    //   } else {
+    //     // 如果重试次数超过3次，显示错误对话框
+    //     _showErrorDialog();
+    //   }
+    // });
   }
 
   _showErrorDialog({error}) =>
