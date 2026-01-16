@@ -450,7 +450,7 @@ class PrintService extends GetxService {
     final orderSnCode = data["order_sn_code"] ?? "";
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
-    final remark = data["remark"] ?? "";
+    String remark = data["remark"] ?? "";
     var payment_code = data["payment_code"] ?? "";
     bool isInShop = data["from_plate"] == "Shop";
     bool isTakeOut = orderType != 'Shop_In';// || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
@@ -505,6 +505,7 @@ class PrintService extends GetxService {
         final printHead = printer['labelHead'] ?? true;
         final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
         final printHeight = int.tryParse(printSize.split('x')[1]) ?? 225; // 获取标签高度
+        final printOptionCode = printer['printOptionCode'] ?? true;
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
         final time =
@@ -520,6 +521,7 @@ class PrintService extends GetxService {
           final qty = item["qty"] ?? 1;
           final name = item["name"] ?? "";
           final options = item["options"] ?? {};
+          String extend1qr = item["extend1qr"] ?? "";
 
           for (var i = 0; i < qty; i++) {
             // Generate the receipt widget
@@ -531,6 +533,8 @@ class PrintService extends GetxService {
                 printWidth.toDouble(),
                 printHeight.toDouble(),
                 _labelMaxLine(printHeight),
+                printOptionCode,
+                extend1qr,
                 rotate,
                 '$totalQty-$itemCount',
                 time);
@@ -538,7 +542,7 @@ class PrintService extends GetxService {
           }
         }
 
-        if (isTakeOut && printHead) {
+        if ((isTakeOut && printHead) || (isTakeOut && remark.isNotEmpty)) {
           final headReceipt = headReceiptWidget(
             fromPlate,
             orderSnCode,
@@ -899,6 +903,8 @@ class PrintService extends GetxService {
     double printWidth,
     double printHeight,
     int maxLines,
+    bool printOptionCode,
+    String extend1qr,
     bool rotate,
     String index,
     String time,
@@ -929,7 +935,7 @@ class PrintService extends GetxService {
                         maxLines: 2,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 23,
+                          fontSize: 32,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1011,6 +1017,15 @@ class PrintService extends GetxService {
                   ],
                 ),
               ),
+              if (extend1qr.isNotEmpty && printOptionCode)
+              Container(
+                margin: EdgeInsets.only(left: 10),
+                child: BarcodeWidget(
+                height: 140,
+                width: 140,
+                barcode: Barcode.qrCode(),
+                data: extend1qr,
+              ))
             ],
           ),
         ),

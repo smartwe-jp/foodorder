@@ -307,6 +307,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     bool isSingleMode = type == 11 ||  receipt == 1;
     bool printCategory = printerItem['printCategory'] ?? false; // 是否打印分类名称
     bool printHead = printerItem['printHead'] ?? true; // 是否打印抬头
+    bool printOptionCode = printerItem['printOptionCode'] ?? true; // 是否打印选项代码
 
         return
           Column(
@@ -465,6 +466,52 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     )
                   ],
                 ),
+
+              if (receipt == 1)//print option code
+              Table(
+                  border: TableBorder.all(),
+                  columnWidths: const <int, TableColumnWidth>{
+                    //0: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(200),
+                    1: FlexColumnWidth(550),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: <TableRow>[
+
+                    TableRow(
+                        children: <Widget>[
+                          Container(
+                            height: ScreenAdapter.height(80),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "オプションコード",
+                              style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                FlutterSwitch(
+                                  value: printOptionCode,
+                                  onToggle: (value) {
+                                    controller.updatePrinterInfo(type, receipt, printOptionCode: value);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ]
+                    )
+                  ],
+              ),
+
 
               //category print
               if (receipt != 1)
@@ -869,7 +916,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
     final _labelPrintSize = { "60x30":"450x225", "50x30":"375x225", "40x30":"300x225",
                               "60x40":"450x300", "50x40":"375x300", "40x40":"300x300",
-                              "60x50":"450x375", "50x50":"375x375", "40x50":"300x375"
+                              "60x50":"450x375", "60x60":"450x450", "50x50":"375x375", "40x50":"300x375"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
