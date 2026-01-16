@@ -1251,9 +1251,9 @@ class SettlementController extends GetxController with StateMixin {
     bool result = await payCube.startPayCube(onSuccess: () {
       debugPrint("onSuccess");
     }, catchError: (error) {
-      debugPrint("onError");
+      logI("onError");
     });
-    debugPrint("startPayCube==$result");
+    logI("startPayCube==$result");
     if (result) {
       debugPrint("打开现金机成功");
       //调用插件的监听
@@ -1640,7 +1640,8 @@ class SettlementController extends GetxController with StateMixin {
       "price": int.parse(getPutMoney.value),
       "operation": operation,
       "coinForbidden":int.parse(machineInfo.is_allow_oneyen)
-    };//print("webBootToReportV1==${formData}");
+    };//
+    logI("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
           logI("----上报订单成功----");
