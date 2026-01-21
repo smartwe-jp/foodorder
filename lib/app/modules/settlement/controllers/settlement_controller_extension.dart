@@ -94,6 +94,9 @@ extension SettlementControllerExtension on SettlementController {
       showOutMoney.value = "0";
       update();
     }
+    getPutMoney.value = totalPrice.value;
+    showPrintButton.value = true;
+    update();
 
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");

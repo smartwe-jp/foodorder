@@ -1141,6 +1141,81 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+    setIsAllowPrintOptions() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowPrintReceiptOptions(false);
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: !controller.machineInfo.printReceiptOptions ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("印刷しない",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: !controller.machineInfo.printReceiptOptions ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowPrintReceiptOptions(true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.machineInfo.printReceiptOptions) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("印刷する",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.machineInfo.printReceiptOptions) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
 
   //设置是否允许使用一元
   setIsAllowOneYen() {
@@ -2081,6 +2156,8 @@ class SystemSettingPageView extends GetView {
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
+                                      
+
                                       TableRow(
                                           children: <Widget>[
                                             Container(
@@ -2095,6 +2172,24 @@ class SystemSettingPageView extends GetView {
                                               ),
                                             ),
                                             setUSBPrint(),//usb打印机
+
+                                          ]
+                                      ),
+
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "レシートオプション",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                            ),
+                                            setIsAllowPrintOptions(),//usb打印机
 
                                           ]
                                       ),
@@ -2126,35 +2221,6 @@ class SystemSettingPageView extends GetView {
                       ),
                     ],
                   ),
-                  // Table(
-                  //     border: TableBorder.all(),
-                  //     columnWidths: const <int, TableColumnWidth>{
-                  //       //0: IntrinsicColumnWidth(),
-                  //       0: FlexColumnWidth(258),
-                  //       1: FlexColumnWidth(750),
-                  //     },
-                  //     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  //     children: <TableRow>[
-
-                  //       TableRow(
-                  //           children: <Widget>[
-                  //             Container(
-                  //               //height: ScreenAdapter.height(65),
-                  //               alignment: Alignment.center,
-                  //               child: Text(
-                  //                 "番号パネルIP",
-                  //                 style: TextStyle(
-                  //                     fontFamily: 'NotoSansJP',
-                  //                     fontSize: ScreenAdapter.fontSize(22),
-                  //                     fontWeight: FontWeight.w500
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //             setIsAllowPanelDisplay(),//是否开启pos机刷卡
-                  //           ]
-                  //       ),
-                  //     ]
-                  // ),
                   Table(
                       border: TableBorder.all(),
                       columnWidths: const <int, TableColumnWidth>{

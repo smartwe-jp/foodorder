@@ -813,6 +813,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _updateSystemSetting("isAllowReceipt", checkedType);
   }
 
+  checkIsAllowPrintReceiptOptions(checkedType) async {
+    machineInfo.printReceiptOptions = checkedType;
+    _updateSystemSetting("printReceiptOptions", checkedType);
+  }
+
   checkIsAllowReceiptMenu(checkedType) async {
     machineInfo.isPrintReceipt = checkedType;
     _updateSystemSetting("isAllowReceiptMenu", checkedType);
