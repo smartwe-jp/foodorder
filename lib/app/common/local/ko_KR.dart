@@ -233,4 +233,11 @@ const Map<String, String> ko_KR = {
         "tag_scan_network_error":"주문 요청에 실패했습니다. 나중에 다시 시도해 주세요.",
         "tag_scan_network_timeout":"주문 요청이 시간 초과되었습니다. 나중에 다시 시도해 주세요.",
 
+        'cash_alarm_tips':'금종@cash 이 한도에 도달했습니다.',
+        'cash_error_staff_title':'직원에게 긴급 점검 및 처리를 요청하십시오',
+        'cash_error_staff_tips':'현금기 오류가 발생하여 즉각적인 처리가 필요합니다',
+        'cash_error_title':'기계 오류',
+        'cash_error_pending_title':'처리되지 않은 입금 대기',
+        'go_settings_and_solve':'설정으로 이동하여 처리하기',
+
 };

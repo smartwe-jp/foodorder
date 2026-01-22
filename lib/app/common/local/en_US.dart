@@ -232,4 +232,11 @@ const Map<String, String> en_US = {
         "tag_scan_network_error":"Order request failed, please try again later.",
         "tag_scan_network_timeout":"Order request timed out, please try again later.",
 
+        'cash_alarm_tips':'The denomination @cash has reached its limit.',
+        'cash_error_staff_title':'Please contact staff for urgent inspection and handling.',
+        'cash_error_staff_tips':'Cash machine error has occurred and requires immediate attention.',
+        'cash_error_title':'Machine Error',
+        'cash_error_pending_title':'Pending Incomplete Transactions',
+        'go_settings_and_solve':'Go to Settings to resolve',
+
 };

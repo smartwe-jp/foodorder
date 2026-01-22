@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:foodorder/app/modules/settlement/views/machine_error_view.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
@@ -94,14 +96,15 @@ extension SettlementControllerExtension on SettlementController {
       showOutMoney.value = "0";
       update();
     }
-    getPutMoney.value = totalPrice.value;
-    showPrintButton.value = true;
-    update();
+    // getPutMoney.value = totalPrice.value;
+    // showPrintButton.value = true;
+    // update();
 
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");
       logger.info('-- getInputMoney onGetPutMoneyStringChange: $result--');
       if (result > 0) {
+        //_testFull();
         hasStartPayflow = true;
         //timer?.cancel();
         getPutMoney.value = result.toString();
@@ -133,31 +136,88 @@ extension SettlementControllerExtension on SettlementController {
       if (result == 'OK') {
         return;
       }
-      if (result == 'NEARFULL') {
-        _notifyMachineFull(false);
-        return;
-      }
-      if (result == 'FULL') {
+      // if (result == 'NEARFULL') {
+      //   _notifyMachineFull(false);
+      //   return;
+      // }
+      if (result == 'FULL' || result == 'NEARFULL') {
         //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
-        _notifyMachineFull(true);
-        String? machineChangeInfo = await getMachineCashInfo();
-        if (machineChangeInfo == null) {
-          return;
-        }
+        // _notifyMachineFull(true);
+        // String? machineChangeInfo = await getMachineCashInfo();
+        // if (machineChangeInfo == null) {
+        //   return;
+        // }
 
-        String cashList = machineChangeInfo.findMaxCash();
+        // String cashList = machineChangeInfo.findMaxCash();
 
-        errorHandleDialog('cash_full_tips'.tr
-                .trParams({'cash': '$cashList'}), confirm: () {
-          CashChanger.fixDeposit;
-          CashChanger.depositRepay;
-          Get.back();
-          Get.back();
-        });
+        // errorHandleDialog('cash_full_tips'.tr.trParams({'cash': '$cashList'}),
+        //     confirm: () {
+        //   CashChanger.fixDeposit;
+        //   CashChanger.depositRepay;
+        //   Get.back();
+        //   Get.back();
+        // });
+        _whileFull();
         return;
       }
       errorHandleDialog(result);
     };
+  }
+
+  _whileFull() async {
+    _notifyMachineFull(true);
+    String? machineChangeInfo = await getMachineCashInfo();
+    if (machineChangeInfo == null) {
+      return;
+    }
+
+    String cashList = machineChangeInfo.findMaxCash();
+    String errorMsg = 'cash_full_tips'.tr.trParams({'cash': '$cashList'});
+    String error = 'cash_alarm_tips'.tr.trParams({'cash': '「$cashList」'});
+
+    errorHandleDialog(errorMsg,
+        confirm: () {
+        _fullRepayFlow(error);
+    });
+  }
+
+  _fullRepayFlow(String errorMessage) async {
+    Get.back();
+    showEasyLoading();
+    final resultFixDeposit = await CashChanger.fixDeposit;
+    logger.info('-- full repayFlow fixDeposit result: $resultFixDeposit --');
+
+    final result = await CashChanger.depositRepay;
+    logger.info('-- full repayFlow depositRepay result: $result --');
+    EasyLoading.dismiss();
+    final pendingCashList = <PendingCashItem>[];
+    if (result != 0) {
+      //获取入金币种
+      String putMoneyCurrency = await _getPutMoneyCurrency();
+    
+      Map<String, int> inputInfo = MoneyParser.migrationGloryToMap(putMoneyCurrency);
+      inputInfo.forEach((key, value) {
+        if (value > 0) {
+          pendingCashList.add(PendingCashItem(
+            denomination: key.getHexCashName(),
+            amount: value * key.getHexCashValue(),
+            count: value,
+          ));
+        }
+      });
+    }
+
+    Get.to(
+      MachineErrorView(
+        errorMessage:errorMessage, 
+        settingsPassword: machineInfo.settingPassword, 
+        pendingCash: pendingCashList,
+        onGoToSettings: () async {
+          await Get.offNamedUntil(Routes.SETTING, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        },
+      )
+    );
+    
   }
 
   _notifyMachineFull(bool isFull) {
@@ -390,9 +450,7 @@ extension SettlementControllerExtension on SettlementController {
     debugPrint("resultCode: $result");
     if (!result) {
       EasyLoading.dismiss();
-      errorHandleDialog(
-          'repay_cash_error'.tr,
-          confirm: () {
+      errorHandleDialog('repay_cash_error'.tr, confirm: () {
         Get.back();
         Get.back();
       });
@@ -436,6 +494,28 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   //获取入金币种
+
+  _getPutMoneyCurrency() async {
+    String putMoneyCurrency = "";
+    logger.info('-- getPutMoneyCurrency --');
+    String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
+    debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
+
+    String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);
+    debugPrint("currencyCashStringresult==${currencyCashStringresult}");
+
+    if (currencyCoinStringresult != null &&
+        currencyCoinStringresult.length > 36) {
+      putMoneyCurrency = currencyCoinStringresult.substring(0, 18); //入金
+    }
+
+    if (currencyCashStringresult != null &&
+        currencyCashStringresult.length > 24) {
+      putMoneyCurrency += currencyCashStringresult.substring(0, 12);
+    }
+
+    return putMoneyCurrency;
+  }
 
   _getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
@@ -577,7 +657,8 @@ extension SettlementControllerExtension on SettlementController {
     CashStep.value = 4;
 
     debugPrint('cash showSuccessAlert');
-    logger.info('payCubeCloseTransaction cancel: $cancel isPrint: ${isPrint.value}');
+    logger.info(
+        'payCubeCloseTransaction cancel: $cancel isPrint: ${isPrint.value}');
     if (cancel) {
       if (isPrint.value == true) {
         gotonewBack();
@@ -586,12 +667,12 @@ extension SettlementControllerExtension on SettlementController {
       }
     } else {
       //showSuccessAlert(() {
-        // if (isPrint.value == true) {
-        //   gotonewBack();
-        // } else {
-        //   gotonewMenuPage();
-        // }
-        gotonewBack();
+      // if (isPrint.value == true) {
+      //   gotonewBack();
+      // } else {
+      //   gotonewMenuPage();
+      // }
+      gotonewBack();
       //});
     }
 
@@ -633,8 +714,7 @@ extension SettlementControllerExtension on SettlementController {
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
             title: "tag_title".tr,
-            confirmtitle: "cash_full_confirm".tr,
-            confirm: () {
+            confirmtitle: "cash_full_confirm".tr, confirm: () {
           allowClick.value == true;
           if (confirm != null) {
             confirm();
@@ -651,8 +731,7 @@ extension SettlementControllerExtension on SettlementController {
         barrierDismissible: false,
         DialogUtils.alert(message,
             title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr,
-            confirm: () {
+            confirmtitle: "tag_button_yes".tr, confirm: () {
           confirm();
           Get.back();
         }, cancle: () {

@@ -61,6 +61,7 @@ class MachineInfoController extends GetxController {
   String is_allow_oneyen = "0";
   bool showReceiptPage = false;
   bool printReceiptOptions = false;
+  String settingPassword = '';
 
   //theme info
   int themeColor = 0xFF1B5E20;
@@ -238,6 +239,8 @@ class MachineInfoController extends GetxController {
     //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
     // is_allow_wlanPrint_continuous_two =
     //     systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
+
+    settingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 

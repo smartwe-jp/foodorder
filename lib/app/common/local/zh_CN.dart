@@ -233,4 +233,11 @@ const Map<String, String> zh_CN = {
         "tag_scan_network_error":"订单请求失败，请稍后重试。",
         "tag_scan_network_timeout":"订单请求超时，请稍后重试。",
 
+        'cash_alarm_tips':'金种@cash 已达到上限。',
+        'cash_error_staff_title':'请店员紧急检查与处理',
+        'cash_error_staff_tips':'现金机异常已触发，需立即处理',
+        'cash_error_title':'故障情况',
+        'cash_error_pending_title':'已入金未处理',
+        'go_settings_and_solve':'去设置并处理',
+
 };

@@ -111,12 +111,12 @@ class MoneyParser {
     return intString;
   }
 
-  static Map migrationGloryToMap(String input) {
+  static Map<String, int> migrationGloryToMap(String input) {
     debugPrint("glory = ${input}");
     if (input.length % 3 != 0 || input.length < 30) {
       throw Exception('Invalid input');
     }
-    Map info = {};
+    Map<String, int> info = {};
     final int en500Amout = int.parse(input.substring(0, 3));
     if (en500Amout > 0) {
       info['66'] = en500Amout;

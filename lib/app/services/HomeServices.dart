@@ -536,8 +536,10 @@ class HomeServices {
     String? passwordinfo;
     try {
       //String machineInfoData = await GetxStorage.getString('machineSettingManagePassword');
-      String? machineInfoData =
-          await Storage.getString('machineSettingManagePassword');
+      final machineInfoData = await Storage.getString('machineSettingManagePassword');
+      if (machineInfoData == null || machineInfoData.isEmpty) {
+        return '';
+      }
       passwordinfo = machineInfoData;
     } catch (e) {
       passwordinfo = "";

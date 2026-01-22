@@ -230,4 +230,11 @@ const Map<String, String> ja_JP = {
 
         "tag_scan_network_error": "注文リクエストに失敗しました。後でもう一度お試しください。",
         "tag_scan_network_timeout": "注文リクエストがタイムアウトしました。後でもう一度お試しください。",
+
+        'cash_alarm_tips':'金種@cash が上限に達しました。',
+        'cash_error_staff_title':'スタッフに緊急確認と対応をお願いします',
+        'cash_error_staff_tips':'現金機に障害が発生しました。直ちに対応が必要です。',
+        'cash_error_title':'機械エラー',
+        'cash_error_pending_title':'未処理の入金があります',
+        'go_settings_and_solve':'設定に移動して対応する',
 };
