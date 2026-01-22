@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleButton.dart';
@@ -9,6 +10,17 @@ import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/common/NumberFormat.dart';
 
 extension CycleCashSettingView on SettingView {
+
+
+  Color _getCashColor(String type, int count) {
+    bool isMax = type.cashReachMax(count);
+    if (isMax) {
+      return Colors.red;
+    } else {
+      return Colors.black;
+    }
+  }
+
   cycleCashSetting() {
     //final cashListInfo = controller.cashInfoList.value;
 
@@ -90,7 +102,7 @@ extension CycleCashSettingView on SettingView {
                               fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
+                              color: _getCashColor(element.key, element.value),
                             )),
                       ),
                       Container(

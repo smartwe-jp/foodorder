@@ -46,6 +46,32 @@ extension CashString on String {
     return reachedMax.join(' ');
   }
 
+  bool cashReachMax(int count) {
+      switch (this) {
+        case "一万円":
+          return count == 100 || count >= 90;
+        case "五千円":
+          return count == 100 || count >= 90;
+        case "二千円":
+        case "千円":
+          return count == 200 || count >= 190;
+        case "五百円":
+          return count == 105 || count >= 95;
+        case "百円":
+          return count == 160 || count >= 150;
+        case "十円":
+          return count == 160 || count >= 150;
+        case "一円":
+          return count == 160 || count >= 150;
+        case "五十円":
+          return count == 120 || count >= 110;
+        case "五円":
+          return count == 120 || count >= 110;
+        default:
+          return false;
+      }
+    }
+
   String _getCashName(String value) {
     switch (value) {
       case '1':
