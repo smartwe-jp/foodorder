@@ -1127,10 +1127,11 @@ class SettlementController extends GetxController with StateMixin {
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
         //debugPrint("doPrintOrderMenu== $response");
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           if (response['data']["printInfo"] != null) {
-            printService.printData(response['data']["printInfo"], orderId: response['data']['order'] ?? "", fromSSE: false);
+            printService.printData(response['data']["printInfo"], 
+            orderId: response['data']['order'] ?? "", fromSSE: false, shopName: response['data']['shopName'] ?? "");
             saveService.addPrintJob(response['data']);
           }
           if(response['data']["orderType"] == 1 && machineInfo.isPrintReceipt == "1"){
