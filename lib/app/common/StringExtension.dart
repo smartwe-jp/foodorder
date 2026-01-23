@@ -22,9 +22,9 @@ extension CashString on String {
         case "500":
           return count == '105' || intValue >= 95;
         case "100":
-          return count == '160' || intValue >= 10;
+          return count == '160' || intValue >= 150;
         case "10":
-          return count == '160' || intValue >= 40;
+          return count == '160' || intValue >= 150;
         case "1":
           return count == '160' || intValue >= 150;
         case "50":
