@@ -173,7 +173,7 @@ extension SettlementControllerExtension on SettlementController {
 
     String cashList = machineChangeInfo.findMaxCash();
     String errorMsg = 'cash_full_tips'.tr.trParams({'cash': '$cashList'});
-    String error = 'cash_alarm_tips'.tr.trParams({'cash': '「$cashList」'});
+    String error = '金種@cash が上限に達しました。設定に調整してください。'.tr.trParams({'cash': '「$cashList」'});
 
     errorHandleDialog(errorMsg,
         confirm: () {

@@ -28,7 +28,7 @@ class MachineErrorView extends StatefulWidget {
 
   const MachineErrorView({
     super.key,
-    this.title = 'cash_error_staff_title',
+    this.title = 'スタッフに緊急確認と対応をお願いします',
     required this.errorMessage,
     this.faultDetails = const [],
     this.pendingCash = const [],
@@ -315,7 +315,7 @@ class _MachineErrorViewState extends State<MachineErrorView>
             ...widget.faultDetails.map(_buildDetailLine),
           ],
           const SizedBox(height: 100),
-          _buildSectionTitle('cash_error_pending_title'.tr),
+          _buildSectionTitle('未処理の入金があります'.tr),
           const SizedBox(height: 8),
           _buildPendingSection(),
           Spacer(),
@@ -330,7 +330,7 @@ class _MachineErrorViewState extends State<MachineErrorView>
             onPressed: _handleGoToSettings,
             icon: const Icon(Icons.settings, color: Colors.white),
             label: Text(
-              'go_settings_and_solve'.tr,
+              '設定に移動して対応する'.tr,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 26,
@@ -395,7 +395,7 @@ class _MachineErrorViewState extends State<MachineErrorView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.title.tr,
+                  widget.title,
                   style: TextStyle(
                     fontSize: 38,
                     fontWeight: FontWeight.bold,
@@ -404,7 +404,7 @@ class _MachineErrorViewState extends State<MachineErrorView>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'cash_error_staff_tips'.tr,
+                  '現金機に障害が発生しました。直ちに対応が必要です。',
                   style: TextStyle(
                     fontSize: 26,
                     color: Colors.red.shade700,
