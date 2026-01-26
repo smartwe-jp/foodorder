@@ -237,7 +237,7 @@ class SettingController extends GetxController with StateMixin {
       return null;
     }
 
-    print('Files compressed successfully. Output: $outputPath');
+    // print('Files compressed successfully. Output: $outputPath');
   }
 
   _getDate() {
@@ -523,7 +523,11 @@ class SettingController extends GetxController with StateMixin {
         // final result = await getMachineCashInfo();
         // debugPrint('MachineCashInfo: $result');
         update();
-      } else {}
+      } else {
+        showToast('現金機の状態を取得できませんでした。');
+        //change(null, status: RxStatus.error('获取现金机状态失败'));
+        //Get.back();
+      }
     }).catchError((error) {
       debugPrint("Error getting change state: $error");
       //

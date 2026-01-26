@@ -65,7 +65,7 @@ class SettingView extends GetView<SettingController> {
       rows.add(row);
     }
 
-    debugPrint("depositList: $rows");
+    //debugPrint("depositList: $rows");
     return Container(
       margin: EdgeInsets.only(
           top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),

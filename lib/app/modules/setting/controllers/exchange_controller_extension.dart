@@ -24,8 +24,8 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   getCashInfo({String? cashString}) async {
-    String? cash =  cashString ?? await getMachineCashInfo(showAlert: false);
-    logI('cashInfo: $cash'); //'1:12,5:5'
+    String? cash = cashString ?? await getMachineCashInfo(showAlert: false);
+    //logI('cashInfo: $cash'); //'1:12,5:5'
 
     if (cash != null) {
       Map result = await cash.split(',').asMap().map((key, value) {
@@ -34,9 +34,11 @@ extension ExchangeControllerExtension on SettingController {
       });
 
       cashInfoList.value = result;
-      logI('cashInfoList: $cashInfoList');
+      //logI('cashInfoList: $cashInfoList');
       cashInfo.value = await _changeMapKey(result, getCatVal);
-      debugPrint('cashInfo: $cashInfo');
+      int totalCash = getTotalCashCount();
+
+      logI('cashInfo: $cashInfo; totalCash: $totalCash');
       update();
     } else {
       //获取失败 是否重试
@@ -93,18 +95,19 @@ extension ExchangeControllerExtension on SettingController {
     return newCashInfoList;
   }
 
-  Future<String?> getMachineCashInfo({Function? retry, bool showAlert = true}) async {
-    debugPrint("getMachineCashInfo 0");
+  Future<String?> getMachineCashInfo(
+      {Function? retry, bool showAlert = true}) async {
+    //debugPrint("getMachineCashInfo 0");
     var result = null;
     logger.info('-- getMachineCashInfo --');
     await CashChanger.getCashBalance(
       onSuccess: (value) {
-        debugPrint("getMachineCashInfo 1");
+        //debugPrint("getMachineCashInfo 1");
         logger.info('-- getMachineCashInfo : $value --');
         result = value;
       },
       catchError: (error) {
-        debugPrint("getMachineCashInfo error: $error");
+        //debugPrint("getMachineCashInfo error: $error");
         logger.info('-- getMachineCashInfo error: $error --');
         if (showAlert) {
           if (retry == null) {
@@ -168,8 +171,7 @@ extension ExchangeControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("beginDepositOutside error: $error");
-          logger.info(
-              '-- beginDepositOutside error: ${error.tr} --');
+          logger.info('-- beginDepositOutside error: ${error.tr} --');
           errorHandleDialog(error.tr);
         });
   }
@@ -417,34 +419,38 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   Future<bool> exportCashFlow(type, int count) async {
-
     logI('exportCashFlow: $type, $count');
     showEasyLoading();
 
-    List<Map> puts = [{
-      'catVal': getDepositCatVal(type),
-      'val': 0,
-    }];
+    List<Map> puts = [
+      {
+        'catVal': getDepositCatVal(type),
+        'val': 0,
+      }
+    ];
     List<Map> pops = [
       {
-      'catVal': getDepositCatVal(type),
-      'val': count,
-    }];
+        'catVal': getDepositCatVal(type),
+        'val': count,
+      }
+    ];
     int moneyValue = int.parse(getCatVal(type));
-    String outInfo =  moneyValue > 500  ? ';$moneyValue:$count' : '$moneyValue:$count';
+    String outInfo =
+        moneyValue > 500 ? ';$moneyValue:$count' : '$moneyValue:$count';
     logI('outInfo: $outInfo');
 
     int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
     EasyLoading.dismiss();
     if (resultCode == null || resultCode != 0) {
-      errorHandleDialog('出金に失敗しました。再度お試しください。',confirm:() => exportCashFlow(type, count));
+      errorHandleDialog('出金に失敗しました。再度お試しください。',
+          confirm: () => exportCashFlow(type, count));
       return false;
     }
 
     await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
     clearTask();
     Get.back();
-    
+
     return true;
   }
 
@@ -452,8 +458,9 @@ extension ExchangeControllerExtension on SettingController {
   tipsTitle() {
     if (getPutMoney.value == 0) {
       return 'お金を入れてください';
-    } else if (getExchange().isNotEmpty && getExchange().length == 3 &&
-        getExchange()[2] > 0) { 
+    } else if (getExchange().isNotEmpty &&
+        getExchange().length == 3 &&
+        getExchange()[2] > 0) {
       //请继续投钱
       return '在庫が不足しているため、両替できません。キャンセルして再度お試しください。';
     } else if (getPutMoney.value > 0 && (getExchangeList().isEmpty)) {
@@ -490,9 +497,7 @@ extension ExchangeControllerExtension on SettingController {
           debugPrint("startOutPutMoney error: $error");
           logger.info('-- gloryOutputMoney error: $error --');
           success = false;
-          errorHandleDialog(error.tr,
-              confirm: () {
-            
+          errorHandleDialog(error.tr, confirm: () {
             cancelReplanish(shouldBack: false);
 
             //Get.back();
@@ -502,6 +507,7 @@ extension ExchangeControllerExtension on SettingController {
         });
     return success;
   }
+
   //添加重试3次逻辑 和最后失败弹框提示。
   reportExchange(puts, pops) async {
     var success = false;
