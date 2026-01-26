@@ -214,7 +214,7 @@ class TransitPageController extends GetxController {
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
         logI("machine_activate_error: $e");
 
-        if (retryCount < 3) {
+        if (retryCount < 2) {
           // 如果失败，重试
           Future.delayed(Duration(seconds: 2), () {
             _getMachineActivate(retryCount: retryCount + 1);
