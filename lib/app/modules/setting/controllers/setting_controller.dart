@@ -843,6 +843,33 @@ class SettingController extends GetxController with StateMixin {
     }
   }
 
+  getDepositHexVal(type) {
+    switch (type) {
+      case "8A":
+        return "一万円";
+      case "89":
+        return "五千円";
+      case "88":
+        return "二千円";
+      case "87":
+        return "千円";
+      case "66":
+        return "五百円";
+      case "65":
+        return "百円";
+      case "64":
+        return "五十円";
+      case "63":
+        return "十円";
+      case "62":
+        return "五円";
+      case "61":
+        return "一円";
+      default:
+        return "";
+    }
+  }
+
   getCashCountMaxVal(type) {
     switch (type) {
       case "一万円":

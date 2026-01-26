@@ -332,7 +332,7 @@ class ReplanishView extends StatelessWidget {
                                   );
                                   controller.confirmTimer(() {
                                     controller
-                                        .reportReplanishInfo(printWidget);
+                                        .askBeforeReplanish(printWidget);
                                   });
                                 }
                               },

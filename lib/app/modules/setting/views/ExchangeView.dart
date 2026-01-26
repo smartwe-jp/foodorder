@@ -371,8 +371,7 @@ class Exchangeview extends StatelessWidget {
               onPressed: () async {
                 //if (changeCount == 0) {
                 controller.confirmTimer(() {
-                  controller.exchangeFlow(
-                      moneyType, moneyCount, changeCount);
+                  controller.askBeforeExchange();
                 });
                 //}
               },

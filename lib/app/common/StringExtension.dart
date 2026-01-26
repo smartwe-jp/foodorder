@@ -13,25 +13,25 @@ extension CashString on String {
       int intValue = int.parse(count);
       switch (type) {
         case "10000":
-          return count == '100' || intValue > 90;
+          return intValue > 90;
         case "5000":
-          return count == '100' || intValue > 90;
+          return intValue > 90;
         case "2000":
-          return count == '200' || intValue > 190;
+          return intValue > 190;
         case "1000":
-          return count == '200' || intValue > 190;
+          return intValue > 190;
         case "500":
-          return count == '105' || intValue > 95;
+          return intValue > 95;
         case "100":
-          return count == '160' || intValue > 150;
+          return intValue > 150;
         case "10":
-          return count == '160' || intValue > 150;
+          return intValue > 150;
         case "1":
-          return count == '160' || intValue > 150;
+          return intValue > 150;
         case "50":
-          return count == '120' || intValue > 110;
+          return intValue > 110;
         case "5":
-          return count == '120' || intValue > 110;
+          return intValue > 110;
         default:
           return false;
       }

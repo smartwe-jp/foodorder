@@ -5,9 +5,11 @@ import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/showToast.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 
 extension ExchangeControllerExtension on SettingController {
@@ -338,8 +340,51 @@ extension ExchangeControllerExtension on SettingController {
     return map.entries.map((entry) => '${entry.key}:${entry.value}').join(',');
   }
 
+  void askBeforeExchange() {
+    EasyLoading.dismiss();
+    Get.dialog(
+      GetBuilder<SettingController>(
+        // init: this,        // 关键：绑定到当前这个实例
+        // global: false, 
+        builder: (_) {
+          List exchangeList = getExchange();
+          if (exchangeList.isEmpty) {
+            return DialogUtils.alertOneButton(
+              '両替情報がありません。お金を入れてください。',
+              title: "tag_title".tr,
+              confirmtitle: "OK",
+              confirm: () => Get.back(),
+            );
+          }
+
+          final type = exchangeList[0].toString();
+          final count = exchangeList[1];
+          final discount = exchangeList[2];
+          final message =
+              '入金は終わりましたか？今両替を実行しますか？\n\n両替種類: ${getCashName(type)}\n両替枚数: $count\nお釣り: $discount';
+          return DialogUtils.alert(
+            message,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
+            confirm: () {
+              Get.back();
+              exchangeFlow(type, count, discount);
+            },
+            cancle: () {
+              taskTouch = false;
+              ignoreNotify.value = false;
+              Get.back();
+            },
+          );
+        },
+      ),
+      barrierDismissible: false,
+    );
+  }
+
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
+    showEasyLoading();
     logI('exChangeFlow: $type, $count, $disconut');
     //showEasyLoading();
 

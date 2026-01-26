@@ -551,10 +551,43 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
+  void askBeforeReplanish(printView) {
+    EasyLoading.dismiss();
+    Get.dialog(
+      Obx(() {
+        final message =
+            '入金は終わりましたか？ 補充を実行しますか？ \n補充情報:\n${_replanishCashInfo()}';
+        return DialogUtils.alert(
+          message,
+          title: "tag_title".tr,
+          confirmtitle: "tag_button_yes".tr,
+          confirm: () {
+            Get.back();
+            reportReplanishInfo(printView);
+          },
+          cancle: () {
+            taskTouch = false;
+            ignoreNotify.value = false;
+            Get.back();
+          },
+        );
+      }),
+      barrierDismissible: false,
+    );
+  }
+
+  String _replanishCashInfo() {
+    String info = '';
+    uploadMoneyInfo.forEach((key, value) {
+      info += '種類: ${getDepositHexVal(key)}, 枚数: $value\n';
+    });
+    return info;
+  }
+
   //上报
   reportReplanishInfo(printView) async {
     //该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
-    //showEasyLoading();
+    showEasyLoading();
     logger.info('-- reportReplanishInfo --');
     ignoreNotify.value = true;
     if (!await closeDeposit()) {
@@ -697,7 +730,8 @@ extension SettingControllerExtension on SettingController {
         }));
   }
 
-  errorHandleDialogTwo(String message, Function confirm, {confirmtitle = ""}) {
+  errorHandleDialogTwo(String message, Function confirm,
+      {String confirmtitle = "", Function? cancel}) {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialogTwo: $message");
     Get.dialog(
@@ -710,7 +744,11 @@ extension SettingControllerExtension on SettingController {
           Get.back();
           confirm();
         }, cancle: () {
-          Get.back();
+          if (cancel != null) {
+            cancel();
+          } else {
+            Get.back();
+          }
         }));
   }
 }
