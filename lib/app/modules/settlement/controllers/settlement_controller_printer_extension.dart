@@ -529,7 +529,7 @@ class PrintService extends GetxService {
             itemCount += 1;
             Widget receiptWidget;
           
-            if (printOptionCode && printWidth >= 450) {
+            if (printOptionCode && printHeight >= 450 && printWidth >= 450) {
               receiptWidget = largeLabelItem(
                 name,
                 orderSnCode,
@@ -553,8 +553,6 @@ class PrintService extends GetxService {
                 printWidth.toDouble(),
                 printHeight.toDouble(),
                 _labelMaxLine(printHeight),
-                printOptionCode,
-                extend1qr,
                 rotate,
                 '$totalQty-$itemCount',
                 orderIdTime);
@@ -921,8 +919,6 @@ class PrintService extends GetxService {
     double printWidth,
     double printHeight,
     int maxLines,
-    bool printOptionCode,
-    String extend1qr,
     bool rotate,
     String index,
     String time,
@@ -1034,15 +1030,15 @@ class PrintService extends GetxService {
                   ],
                 ),
               ),
-              if (extend1qr.isNotEmpty && printOptionCode)
-              Container(
-                margin: EdgeInsets.only(left: 10),
-                child: BarcodeWidget(
-                height: 140,
-                width: 140,
-                barcode: Barcode.qrCode(),
-                data: extend1qr,
-              ))
+              // if (extend1qr.isNotEmpty && printOptionCode)
+              // Container(
+              //   margin: EdgeInsets.only(left: 10),
+              //   child: BarcodeWidget(
+              //   height: 140,
+              //   width: 140,
+              //   barcode: Barcode.qrCode(),
+              //   data: extend1qr,
+              // ))
             ],
           ),
         ),
@@ -1138,6 +1134,7 @@ class PrintService extends GetxService {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  if (extend1qr.isNotEmpty && printOptionCode)
                   Container(
                       margin: EdgeInsets.only(left: 10),
                       child: BarcodeWidget(
