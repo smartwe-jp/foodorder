@@ -96,7 +96,14 @@ class CheckoutPageView extends GetView {
 
 
 
-  int get buttonCount => controller.machineInfo.machineModeInfo.values
+  int get buttonCount => controller.machineInfo.machineModeInfo.entries
+      .map((e) {
+        if (e.key == 'checkout') {
+          return e.value && controller.machineInfo.actuarial;
+        } else {
+          return e.value;
+        }
+      })
       .where((value) => value == true)
       .length;
 
@@ -152,11 +159,9 @@ class CheckoutPageView extends GetView {
             },
           ),
 
-        if (controller.machineInfo.isCheckOn)
+        if (controller.machineInfo.isCheckOn && controller.machineInfo.actuarial)
+        ...[
           SizedBox(width: ScreenAdapter.width(50)),
-        if (controller.machineInfo.isCheckOn)
-          // Expanded(
-          //   child:
           BookingTypeButton(
             width: _getItemWidth(),
             bgColor: controller.themeColor,
@@ -173,13 +178,10 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
-        //),
+        ],
 
         if (controller.machineInfo.isTakeoutOn)
-          SizedBox(width: ScreenAdapter.width(50)),
-        if (controller.machineInfo.isTakeoutOn)
-          // Expanded(
-          //   child:
+        ...[SizedBox(width: ScreenAdapter.width(50)),
           BookingTypeButton(
             width: _getItemWidth(),
             bgColor: controller.themeColor,
@@ -196,7 +198,7 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
-        //),
+        ],
 
         // if (controller.machineInfo.isScanbuyOn)
         // Expanded(

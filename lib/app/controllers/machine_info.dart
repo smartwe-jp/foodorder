@@ -48,6 +48,7 @@ class MachineInfoController extends GetxController {
 
   late Map machineModeInfo;
   late String isAllowRejishime;
+  late bool actuarial;
 
   //settings
   double machinePrintWidth = 385.0;
@@ -256,6 +257,10 @@ class MachineInfoController extends GetxController {
     printLogoImageData = await HomeServices.getSmartweLogoImage() ?? "";
 
     printLogoImageUrl = await HomeServices.getSmartweLogoImagesData() ?? "";
+
+    Map smartweMachineSetting =
+        await HomeServices.getSmartweMachineSettingData() ?? {};
+    actuarial = smartweMachineSetting['actuarial'] ?? false;
 
     Map cashInfo = await HomeServices.getIsShowCash();
     cashOn = cashInfo['isCash'] ?? false;
