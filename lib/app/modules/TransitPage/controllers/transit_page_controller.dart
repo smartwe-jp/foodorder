@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/http_conf.dart';
@@ -203,7 +204,7 @@ class TransitPageController extends GetxController {
           _actuarial.value = shopData["actuarial"];
 
           FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-
+          await ensureImageLoaded(shopData["logoImage"]);
           await _getSmartweSystemSettingInfo(isLaunch: true);
         } else {
           FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
@@ -320,7 +321,7 @@ class TransitPageController extends GetxController {
         await GetxStorage.setData('smartwe_logoImageData', filePath);
 
         if (Get.context != null)
-          await precacheImage(FileImage(File(filePath)), Get.context!);
+           await precacheImage(FileImage(File(filePath)), Get.context!);
 
         print('Image downloaded and path stored successfully');
       } else {
@@ -329,6 +330,31 @@ class TransitPageController extends GetxController {
     } catch (e) {
       print('Error downloading image: $e');
     }
+  }
+
+  Future<void> ensureImageLoaded(String imageUrl) async {
+    if (imageUrl.isEmpty) return;
+
+    final provider = CachedNetworkImageProvider(imageUrl);
+    final config = ImageConfiguration.empty;
+    final Completer<void> completer = Completer<void>();
+
+    provider.resolve(config).addListener(
+      ImageStreamListener(
+            (ImageInfo image, bool synchronousCall) {
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (Object error, StackTrace? stackTrace) {
+          if (!completer.isCompleted) {
+            completer.completeError(error);
+          }
+        },
+      ),
+    );
+
+    await completer.future;
   }
 
   Future<bool> _checkShouldActive() async {
@@ -391,11 +417,15 @@ class TransitPageController extends GetxController {
     //}
 
     if (!Get.isRegistered<MachineInfoController>()) {
-      Get.put(MachineInfoController(systemSettingInfo), permanent: true);
-      debugPrint('put MachineInfoController');
+      final controller = MachineInfoController(systemSettingInfo);
+      await Get.putAsync<MachineInfoController>(() async {
+        await controller.loadMachineSettingInfo(); // 确保初始化完成
+        return controller;
+      }, permanent: true);
+      debugPrint('put MachineInfoController done');
     } else {
       await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingInfo);
-      debugPrint('update MachineInfoController');
+      debugPrint('update MachineInfoController done');
     }
     // await Get.delete<MachineInfoController>();
     // Get.put(MachineInfoController(systemSettingData));

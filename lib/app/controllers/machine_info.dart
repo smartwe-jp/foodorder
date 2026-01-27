@@ -61,6 +61,7 @@ class MachineInfoController extends GetxController {
   bool isAllow5 = true;
   String is_allow_oneyen = "0";
   bool showReceiptPage = false;
+  bool printReceiptOptions = false;
 
   //theme info
   int themeColor = 0xFF1B5E20;
@@ -222,6 +223,7 @@ class MachineInfoController extends GetxController {
     isAllow10 = systemSettingInfo['isAllow10'] ?? true;
     isAllow5 = systemSettingInfo['isAllow5'] ?? true;
     is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
+    printReceiptOptions = systemSettingInfo['printReceiptOptions'] ?? false;
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     //isReceiptPageShow = isAllowReceipt == "1" ? false : true;

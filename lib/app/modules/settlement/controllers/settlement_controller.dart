@@ -1056,11 +1056,11 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && machineInfo.isPrintReceipt == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            createPrintImageController.tpPrintnew(response['data'], printType);
+            createPrintImageController.tpPrintNew(response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(response['data']);
+              createPrintImageController.printReceipt(response['data']);
             }
           }
           //打印小票
@@ -1280,7 +1280,8 @@ class SettlementController extends GetxController with StateMixin {
         case 0:
           //debugPrint("putMoney==$value");
           logI("putMoney==$value");
-          _updatePutMoneyInfo(value);
+          //_updatePutMoneyInfo(value);
+          _updatePutMoneyInfo(totalPrice.value);
           break;
         case 1:
           //debugPrint("putCurrency==$value");
