@@ -442,7 +442,7 @@ class PrintService extends GetxService {
     }
   }
 
-  void printData(Map data, {bool fromSSE = true, String orderId = ""}) async {
+  void printData(Map data, {bool fromSSE = true, String orderId = "", shopName = ""}) async {
     logI("---printData---");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
@@ -508,8 +508,8 @@ class PrintService extends GetxService {
         final printOptionCode = printer['printOptionCode'] ?? true;
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
-        final time =
-            orderId + "#" + await DateTime.now().toString().substring(5, 16);
+        final time = await DateTime.now().toString().substring(5, 16);
+        final orderIdTime = orderId + "#" + time;
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
@@ -526,7 +526,10 @@ class PrintService extends GetxService {
           for (var i = 0; i < qty; i++) {
             // Generate the receipt widget
             itemCount += 1;
-            final receiptWidget = labelItem(
+            Widget receiptWidget;
+          
+            if (printOptionCode && printWidth >= 450) {
+              receiptWidget = largeLabelItem(
                 name,
                 orderSnCode,
                 options,
@@ -537,7 +540,25 @@ class PrintService extends GetxService {
                 extend1qr,
                 rotate,
                 '$totalQty-$itemCount',
-                time);
+                time,
+                orderId,
+                shopName
+                );
+            } else {
+              receiptWidget = labelItem(
+                name,
+                orderSnCode,
+                options,
+                printWidth.toDouble(),
+                printHeight.toDouble(),
+                _labelMaxLine(printHeight),
+                printOptionCode,
+                extend1qr,
+                rotate,
+                '$totalQty-$itemCount',
+                orderIdTime);
+            }
+
             labelPrintQueue.add(receiptWidget);
           }
         }
@@ -1026,6 +1047,152 @@ class PrintService extends GetxService {
                 barcode: Barcode.qrCode(),
                 data: extend1qr,
               ))
+            ],
+          ),
+        ),
+      ),
+      pagerWidth: printWidth,
+      pagerHeight: printHeight,
+    );
+  }
+
+    Widget largeLabelItem(
+    String name,
+    String number,
+    Map options,
+    double printWidth,
+    double printHeight,
+    int maxLines,
+    bool printOptionCode,
+    String extend1qr,
+    bool rotate,
+    String index,
+    String time,
+    String orderId,
+    String shopName,
+  ) {
+    return LabelConstrainedBox(
+      Transform(
+        transform: Matrix4.rotationZ(rotate ? pi : 0.0),
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.only(right: 3),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Text(
+                      name,
+                      maxLines: 2,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 36,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                    ),
+                  ),
+                  //Spacer(),
+                  SizedBox(width: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        ' # ' + number,
+                        textAlign: TextAlign.right,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      ),
+                      Text(
+                          index,
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      ),
+                      
+                    ],
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.black,
+                thickness: 2,
+              ),
+              
+
+              Expanded(
+                //flex: 2,
+                child:
+                Container(
+                  margin: EdgeInsets.only(top: 5, left: 10),
+                  width: double.infinity,
+                  child: optionList(options, maxLines),
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(left: 10),
+                      child: BarcodeWidget(
+                      height: 140,
+                      width: 140,
+                      barcode: Barcode.qrCode(),
+                      data: extend1qr,
+                    )
+                  ),
+                  
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        shopName,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        time,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        orderId,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ),
