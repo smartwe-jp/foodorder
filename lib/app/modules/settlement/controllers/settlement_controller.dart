@@ -1281,8 +1281,8 @@ class SettlementController extends GetxController with StateMixin {
         case 0:
           //debugPrint("putMoney==$value");
           logI("putMoney==$value");
-          //_updatePutMoneyInfo(value);
-          _updatePutMoneyInfo(totalPrice.value);
+          _updatePutMoneyInfo(value);
+          //_updatePutMoneyInfo(totalPrice.value);
           break;
         case 1:
           //debugPrint("putCurrency==$value");
