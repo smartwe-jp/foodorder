@@ -257,7 +257,7 @@ class MachineInfoController extends GetxController {
 
     Map smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData() ?? {};
-    actuarial = smartweMachineSetting['actuarial'] ?? false;
+    actuarial = smartweMachineSetting['machineActuarial'] ?? false;
 
     Map cashInfo = await HomeServices.getIsShowCash();
     cashOn = cashInfo['isCash'] ?? false;
