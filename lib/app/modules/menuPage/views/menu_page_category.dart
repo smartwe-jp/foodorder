@@ -2699,7 +2699,7 @@ extension MenuPageCategory on MenuPageController {
           child:
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             child:
             Column(mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -2879,7 +2879,7 @@ extension MenuPageCategory on MenuPageController {
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
