@@ -1078,33 +1078,26 @@ class PrintService extends GetxService {
         child: Container(
           padding: EdgeInsets.only(right: 3),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                //mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Text(
-                      name,
-                      maxLines: 2,
-                      textAlign: TextAlign.left,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      ' # ' + number,
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
                       style: TextStyle(
-                        fontSize: 36,
-                        color: Colors.black,
+                        fontSize: 44,
+                        color: const ui.Color.fromARGB(255, 42, 29, 29),
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                     ),
-                  ),
-                  //Spacer(),
-                  SizedBox(width: 10,),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        ' # ' + number,
+                    Text(
+                        index,
                         textAlign: TextAlign.right,
                         maxLines: 1,
                         style: TextStyle(
@@ -1113,23 +1106,23 @@ class PrintService extends GetxService {
                           fontWeight: FontWeight.bold,
                         ),
                         overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                      ),
-                      Text(
-                          index,
-                          textAlign: TextAlign.right,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                      ),
+                    ),
                       
                     ],
                   ),
-                ],
-              ),
+                Text(
+                    name,
+                    maxLines: 2,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                  ),
+                  
+
               Divider(
                 color: Colors.black,
                 thickness: 2,
