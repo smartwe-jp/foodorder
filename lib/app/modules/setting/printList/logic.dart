@@ -61,7 +61,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
   }
 
   void reprint(PrintOrderItem item) {
-    createPrintImageController.tpPrintnew(item.raw, machineInfo.receiptPrintType);
+    createPrintImageController.tpPrintNew(item.raw, machineInfo.receiptPrintType);
   }
 
   void rePrintSummary(PrintSummaryItem item) {

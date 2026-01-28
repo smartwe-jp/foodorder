@@ -977,7 +977,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
   setMachinePrintSize(double width) {
 
-    final _labelPrintSize = {"58":385, "80":530};
+    final _labelPrintSize = {"58":385, "80":580};
 
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),

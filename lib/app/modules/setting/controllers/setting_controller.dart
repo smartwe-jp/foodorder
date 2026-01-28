@@ -276,7 +276,7 @@ class SettingController extends GetxController with StateMixin {
       EasyLoading.dismiss();
       if (response['code'] == 200 && null != response['data']) {
         //createPrintImageController.tpPrintReceipt(response['data']);
-        createPrintImageController.tpPrintnew(response['data'], 1);
+        createPrintImageController.tpPrintNew(response['data'], 1);
       } else {
         //showToast('打印失败!');
         Get.dialog(
