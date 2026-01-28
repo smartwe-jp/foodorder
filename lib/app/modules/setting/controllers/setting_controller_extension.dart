@@ -559,8 +559,7 @@ extension SettingControllerExtension on SettingController {
     EasyLoading.dismiss();
     Get.dialog(
       Obx(() {
-        Widget content = Expanded(
-            child: Container(
+        Widget content = Container(
               padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
               child: Column(
                 spacing: 20,
@@ -569,6 +568,7 @@ extension SettingControllerExtension on SettingController {
               Text('入金は完了しましたか？ 補充を実行しますか？',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                        fontWeight: FontWeight.w600,
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(28)
                         )
@@ -615,7 +615,7 @@ extension SettingControllerExtension on SettingController {
               ),
                         ],
                       ),
-            ));
+            );
 
         return DialogUtils.cashActionAlert(
           content,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
@@ -350,8 +351,8 @@ extension ExchangeControllerExtension on SettingController {
       GetBuilder<SettingController>(
         // init: this,        // 关键：绑定到当前这个实例
         // global: false,
-        builder: (_) {
-          List exchangeList = getExchange();
+        builder: (ctl) {
+          List exchangeList = ctl.getExchange();
           if (exchangeList.isEmpty) {
             return DialogUtils.alertOneButton(
               '両替情報がありません。お金を入れてください。',
@@ -364,21 +365,85 @@ extension ExchangeControllerExtension on SettingController {
           final type = exchangeList[0].toString();
           final count = exchangeList[1];
           final discount = exchangeList[2];
-          final message =
-              '入金は完了しましたか？今両替を実行しますか？\n\n両替種類: ${getCashName(type)}\n両替枚数: $count\nお釣り: $discount';
+          final message = '両替種類: ${getCashName(type)}　両替枚数: $count　お釣り: $discount';
+
+          Widget content = Container(
+              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
+              child: Column(
+                spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+              Text('入金は完了しましたか？今両替を実行しますか？',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(28)
+                        )
+                      ),
+              Container(
+                padding: EdgeInsets.only(left: 50),
+                alignment: Alignment.centerLeft,
+                child: Text('入金情報:',
+                      style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(24)
+                          )
+                        ),
+              ),
+              ...ctl.uploadMoneyInfo.entries.map((entry) {
+                return Container(
+                  padding: EdgeInsets.only(left: 100, right: 100, top: 10, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${getDepositHexVal(entry.key)}',
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(24)
+                            )
+                      ),
+                      Text(
+                        '枚数: ${entry.value}',
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(24)
+                            )
+                      ),
+
+                    ],
+                  ),
+                );
+              }).toList(),
+              
+              Divider(
+                color: Colors.grey,
+                thickness: 1.0,
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 50, top: 10),
+                alignment: Alignment.centerLeft,
+                child: Text(message,
+                      style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(26)
+                          )
+                        ),
+              ),
+              ],
+              ),
+            );
+
           return DialogUtils.cashActionAlert(
-            Text(message,
-                style: TextStyle(
-                  fontFamily: 'NotoSansJP',
-                  fontSize: ScreenAdapter.fontSize(26),
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                )),
+            content,
             title: "tag_title".tr,
             confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
-              exchangeFlow(type, count, discount);
+              ctl.exchangeFlow(type, count, discount);
             },
             cancle: () {
               taskTouch = false;
@@ -518,8 +583,8 @@ extension ExchangeControllerExtension on SettingController {
     } else if (getExchange().isNotEmpty &&
         getExchange().length == 3 &&
         getExchange()[2] > 0) {
-      //请继续投钱
-      return '在庫が不足しているため、両替できません。キャンセルして再度お試しください。';
+      //未找到兑换组合，请继续投钱，或者取消。
+      return '両替できる組み合わせが見つかりません。引き続き入金するか、キャンセルしてください。';
     } else if (getPutMoney.value > 0 && (getExchangeList().isEmpty)) {
       //请继续投钱
       return 'お金を入れ続けてください';
