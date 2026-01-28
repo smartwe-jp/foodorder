@@ -200,7 +200,7 @@ class PrintTextStyles {
     fontFamily: 'NotoSansJP',
     color: Colors.black,
     fontSize: 24,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w300,
   );
 
   static const TextStyle menBold = TextStyle(
