@@ -372,7 +372,7 @@ class SettingController extends GetxController with StateMixin {
     Get.dialog(
         barrierDismissible: false,
         Container(
-            padding: EdgeInsets.only(top: 720),
+            //padding: EdgeInsets.only(top: 720),
             child: ReplanishView(controller: this)));
   }
 

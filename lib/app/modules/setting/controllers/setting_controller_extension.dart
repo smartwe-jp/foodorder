@@ -613,9 +613,9 @@ extension SettingControllerExtension on SettingController {
               SizedBox(
                 height: 30,
               ),
-                        ],
-                      ),
-            );
+              ],
+            ),
+          );
 
         return DialogUtils.cashActionAlert(
           content,

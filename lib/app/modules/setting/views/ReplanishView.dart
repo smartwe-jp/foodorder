@@ -259,7 +259,7 @@ class ReplanishView extends StatelessWidget {
                     //开始补钱按钮controller.startDeposit();
 
                     if (!controller.isStartPutMoney.value)
-                      Container(
+                      ...[Container(
                         width: ScreenAdapter.width(680),
                         height: ScreenAdapter.height(80),
                         child: ElevatedButton(
@@ -283,6 +283,19 @@ class ReplanishView extends StatelessWidget {
                           ),
                         ),
                       ),
+                      //只有点击‘開始補充’，才可开始補充。
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "『開始補充』を押してから、補充を開始できます。",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(20),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red,
+                        ),
+                      )],
 
                     if (controller.isStartPutMoney.value)
                       Row(
