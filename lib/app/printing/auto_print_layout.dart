@@ -148,6 +148,8 @@ class itemOption {
   final int qty;
   final int price;
 
+  int get totalPrice => price * qty;
+
   itemOption({
     required this.name,
     required this.qty,
@@ -327,36 +329,36 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                         children: [
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(optionGroup.name,
-                                  style: PrintTextStyles.menuSmall),
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    ...optionGroup.items.map((optionItem) {
-                                      return Text(
-                                        optionItem.name +
-                                            (optionItem.qty > 1
-                                                ? ' ×${optionItem.qty}'
-                                                : ''),
-                                        style: PrintTextStyles.menuSmall,
-                                        textAlign: TextAlign.right,
-                                      );
-                                    }).toList()
-                                  ]),
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    ...optionGroup.items.map((optionItem) {
-                                      return Text('￥${formatMoney(optionItem.price)}',
-                                        style: PrintTextStyles.menuSmall,
-                                        textAlign: TextAlign.right,
-                                      );
-                                    }).toList()
-                                  ]),
+                              Text(optionGroup.name + ':', style: PrintTextStyles.menuSmall),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: optionGroup.items.map((o) {
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            o.name + (o.qty > 1 ? ' ×${o.qty}' : ''),
+                                            style: PrintTextStyles.menuSmall,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '￥${formatMoney(o.totalPrice)}',
+                                          style: PrintTextStyles.menuSmall,
+                                          textAlign: TextAlign.right,
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
                             ],
-                          ),
+                          )
                         ],
                       ),
                     );
