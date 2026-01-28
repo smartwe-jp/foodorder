@@ -272,7 +272,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
   void printSummaryAndroid(printData, double printLength) async{
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: printData),
-      size: Size(machineInfo.machinePrintWidth, printLength + 150),
+      size: Size(machineInfo.machinePrintWidth - 4, printLength + 150),
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);

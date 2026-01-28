@@ -454,7 +454,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: data, isNotCashInfo: widget.isNotCash,),
-      size: Size(printWidth, length + 150),
+      size: Size(printWidth-4, length + 150),
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
