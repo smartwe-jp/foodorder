@@ -579,7 +579,7 @@ extension SettingControllerExtension on SettingController {
                 child: Text('補充情報:',
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(24)
                           )
                         ),
