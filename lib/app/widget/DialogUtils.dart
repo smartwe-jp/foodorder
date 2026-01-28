@@ -136,6 +136,113 @@ class DialogUtils {
           ]),
     );
   }
+
+    static cashActionAlert(
+      Widget content, {
+        String title = "提示",
+        String canceltitle = "取消",
+        String confirmtitle = "确定",
+        required GestureTapCallback confirm,
+        required GestureTapCallback cancle,
+      }) {
+    return Container(
+      width: ScreenAdapter.width(950),
+      child: SimpleDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: Align(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    //color: Colors.red,
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(40),),
+                    child: Icon(
+                      Icons.notifications_outlined,
+                      //color: ColorsUtil.hexToColor("#2aa515"),
+                      size: 50,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(10)),
+                    child: Text(
+                        "${title}          ",
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(34),
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ],
+              )),
+          children: <Widget>[
+            Center(
+              child: content,
+            ),
+
+            Divider(
+              thickness: 3.0,
+              color: Colors.black12,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  child: Container(
+                    //padding: EdgeInsets.only(left: 70.0),
+                    width: ScreenAdapter.width(400),
+                    height: ScreenAdapter.height(75),
+                    alignment: Alignment.center,
+                    child: Text(canceltitle,
+                      style: TextStyle(
+                        //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(34.0)
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    //sleep(Duration(milliseconds: 3000));
+                    cancle();
+
+                  },
+                ),
+                //垂直分割线
+                SizedBox(
+                  width: 3,
+                  height: ScreenAdapter.height(95),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black12),
+                  ),
+                ),
+                InkWell(
+                  child: Container(
+                    //padding: EdgeInsets.only(right: 70.0),
+                    width: ScreenAdapter.width(400),
+                    height: ScreenAdapter.height(75),
+                    alignment: Alignment.center,
+                    child: Text(confirmtitle,
+                      style: TextStyle(
+                        //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
+                          fontSize: ScreenAdapter.fontSize(34.0),
+                          fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    confirm();
+
+                  },
+                )
+              ],
+            ),
+          ]),
+    );
+  }
+
   /// 显示普通消息
   static alertOneButton(
       String content, {

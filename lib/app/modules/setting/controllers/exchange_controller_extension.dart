@@ -8,6 +8,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
@@ -16,11 +17,14 @@ extension ExchangeControllerExtension on SettingController {
   //get cashinfo
 
   startPutExchangeMoney() async {
+    
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
     hasExchangeCash = false;
-
+    getPutMoney.value = 0;
+    getPutMoneyCurrency.value = "";
+    logger.info('-- startPutExchangeMoney -- getPutMoney: ${getPutMoney.value} getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
     update();
     await beginDepositOutside();
   }
@@ -345,7 +349,7 @@ extension ExchangeControllerExtension on SettingController {
     Get.dialog(
       GetBuilder<SettingController>(
         // init: this,        // 关键：绑定到当前这个实例
-        // global: false, 
+        // global: false,
         builder: (_) {
           List exchangeList = getExchange();
           if (exchangeList.isEmpty) {
@@ -361,9 +365,15 @@ extension ExchangeControllerExtension on SettingController {
           final count = exchangeList[1];
           final discount = exchangeList[2];
           final message =
-              '入金は終わりましたか？今両替を実行しますか？\n\n両替種類: ${getCashName(type)}\n両替枚数: $count\nお釣り: $discount';
-          return DialogUtils.alert(
-            message,
+              '入金は完了しましたか？今両替を実行しますか？\n\n両替種類: ${getCashName(type)}\n両替枚数: $count\nお釣り: $discount';
+          return DialogUtils.cashActionAlert(
+            Text(message,
+                style: TextStyle(
+                  fontFamily: 'NotoSansJP',
+                  fontSize: ScreenAdapter.fontSize(26),
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                )),
             title: "tag_title".tr,
             confirmtitle: "tag_button_yes".tr,
             confirm: () {

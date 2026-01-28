@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
@@ -105,9 +106,30 @@ class RejishimePrintViewState extends State<PrintView> {
           children: [
             _normalTitle("お釣り金補充情報"),
             SizedBox(height: 30),
-            _supplyTable(cashInfo)
+            _supplyTable(cashInfo),
+            SizedBox(height: 30),
+            //time
+            Container(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                _getDateFormatString(),
+                style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: ScreenAdapter.fontSize(24),
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                ),
+              ),
+            )
           ],
         ));
+  }
+
+  String _getDateFormatString() {
+
+    DateTime now = DateTime.now();
+    String formattedDate = intl.DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    return formattedDate;
   }
 
   Widget _supplyShowView(cashInfo) {
@@ -118,7 +140,21 @@ class RejishimePrintViewState extends State<PrintView> {
           children: [
             _normalTitle("お預かり金補充情報"),
             SizedBox(height: 30),
-            _supplyTable(cashInfo)
+            _supplyTable(cashInfo),
+            SizedBox(height: 30),
+            //time
+            Container(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                _getDateFormatString(),
+                style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: ScreenAdapter.fontSize(24),
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                ),
+              ),
+            )
           ],
         ));
   }

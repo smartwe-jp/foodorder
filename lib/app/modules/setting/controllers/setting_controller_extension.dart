@@ -5,11 +5,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
+import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
@@ -25,6 +27,8 @@ extension SettingControllerExtension on SettingController {
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
+    getPutMoney.value = 0;
+    getPutMoneyCurrency.value = "";
 
     await _startSupply();
   }
@@ -555,10 +559,66 @@ extension SettingControllerExtension on SettingController {
     EasyLoading.dismiss();
     Get.dialog(
       Obx(() {
-        final message =
-            '入金は終わりましたか？ 補充を実行しますか？ \n補充情報:\n${_replanishCashInfo()}';
-        return DialogUtils.alert(
-          message,
+        Widget content = Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
+              child: Column(
+                spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+              Text('入金は完了しましたか？ 補充を実行しますか？',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(28)
+                        )
+                      ),
+              Container(
+                padding: EdgeInsets.only(left: 50),
+                alignment: Alignment.centerLeft,
+                child: Text('補充情報:',
+                      style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(24)
+                          )
+                        ),
+              ),
+              ...uploadMoneyInfo.entries.map((entry) {
+                return Container(
+                  padding: EdgeInsets.only(left: 100, right: 100, top: 10, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${getDepositHexVal(entry.key)}',
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(24)
+                            )
+                      ),
+                      Text(
+                        '枚数: ${entry.value}',
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(24)
+                            )
+                      ),
+
+                    ],
+                  ),
+                );
+              }).toList(),
+              
+              SizedBox(
+                height: 30,
+              ),
+                        ],
+                      ),
+            ));
+
+        return DialogUtils.cashActionAlert(
+          content,
           title: "tag_title".tr,
           confirmtitle: "tag_button_yes".tr,
           confirm: () {
@@ -579,7 +639,7 @@ extension SettingControllerExtension on SettingController {
   String _replanishCashInfo() {
     String info = '';
     uploadMoneyInfo.forEach((key, value) {
-      info += '種類: ${getDepositHexVal(key)}, 枚数: $value\n';
+      info += '${getDepositHexVal(key)},枚数: $value\n';
     });
     return info;
   }

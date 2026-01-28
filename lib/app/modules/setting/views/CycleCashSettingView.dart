@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
@@ -239,12 +240,13 @@ extension CycleCashSettingView on SettingView {
                   controller.showExchangeAlert();
                 },
               ),
-              // RecycleButton(
-              //   title: "出金",
-              //   onPressed: () async {
-              //     controller.showExportCashAlert();
-              //   },
-              // )
+              if (kDebugMode)
+              RecycleButton(
+                title: "出金",
+                onPressed: () async {
+                  controller.showExportCashAlert();
+                },
+              )
             ])
           ])
     ]));
