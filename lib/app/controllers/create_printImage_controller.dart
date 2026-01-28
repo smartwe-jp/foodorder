@@ -58,7 +58,7 @@ class CreatePrintImageController extends GetxController {
 
     _sendToUsePrinter(kitchenTicketWidget);
     if (printType == "1") {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(Duration(milliseconds: 800));
 
       Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
       _sendToUsePrinter(receiptWidget);
