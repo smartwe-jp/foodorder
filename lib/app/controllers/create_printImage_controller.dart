@@ -117,7 +117,7 @@ Future<ByteData> _widgetToImageExact({
 class CreatePrintImageController extends GetxController {
   MachineInfoController machineInfo = Get.find();
   AppConfig appConfig = Get.find();
-  double printWidth = 385;
+  double get printWidth => machineInfo.machinePrintWidth;
   String get print_paper_txt_size => machineInfo.print_paper_txt_size;
   String get printLogoImage => machineInfo.printLogoImageUrl;
   bool get printReceiptOptions => machineInfo.printReceiptOptions;
@@ -164,8 +164,8 @@ class CreatePrintImageController extends GetxController {
   }
 
   @override
-  Future<void> onInit() async {
-    printWidth = await HomeServices.getMachinePrintWidth();
+  void onInit() {
+    //printWidth = await HomeServices.getMachinePrintWidth();
     super.onInit();
   }
 
@@ -201,7 +201,9 @@ class CreatePrintImageController extends GetxController {
   }
 
   printReceipt(printData) async {
-
+    printData['brandImage'] = printLogoImage;
+    printData['containTax'] = machineInfo.taxSystem;
+    await ensureImageLoaded(printLogoImage);
     Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
 
     //ByteData byteData = await WidgetToImage.widgetToImage(receiptWidget,
