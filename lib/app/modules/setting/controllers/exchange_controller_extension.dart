@@ -400,6 +400,8 @@ extension ExchangeControllerExtension on SettingController {
 
     logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
 
+    await CashChanger.fixDeposit;
+
     String? localCashInfo = await getMachineCashInfo();
     if (localCashInfo == null) return;
     Map<String, int> coinCounts = parseCoinCounts(
