@@ -196,6 +196,13 @@ class PrintTextStyles {
     fontWeight: FontWeight.w300,
   );
 
+  static const TextStyle menuSmall = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black,
+    fontSize: 24,
+    fontWeight: FontWeight.w400,
+  );
+
   static const TextStyle menBold = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
@@ -308,8 +315,8 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                   left: '${item.name}$takeoutTag',
                   middle: '${item.qty}',
                   right: '￥${formatMoney(printOptions ? item.initialPrice : item.price)}',
-                  leftStyle: printOptions ? PrintTextStyles.menBold : PrintTextStyles.menu,
-                  rightStyle: printOptions ? PrintTextStyles.menBold : PrintTextStyles.menu,
+                  leftStyle: PrintTextStyles.menu,
+                  rightStyle: PrintTextStyles.menu,
                 ),
                 if (item.options.isNotEmpty && printOptions)
                   ...item.options.map((optionGroup) {
@@ -323,7 +330,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(optionGroup.name,
-                                  style: PrintTextStyles.menu),
+                                  style: PrintTextStyles.menuSmall),
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
@@ -333,7 +340,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                                             (optionItem.qty > 1
                                                 ? ' ×${optionItem.qty}'
                                                 : ''),
-                                        style: PrintTextStyles.menu,
+                                        style: PrintTextStyles.menuSmall,
                                         textAlign: TextAlign.right,
                                       );
                                     }).toList()
@@ -342,11 +349,8 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     ...optionGroup.items.map((optionItem) {
-                                      return Text(
-                                        optionItem.price > 0
-                                            ? '￥${formatMoney(optionItem.price)}'
-                                            : ' ',
-                                        style: PrintTextStyles.menu,
+                                      return Text('￥${formatMoney(optionItem.price)}',
+                                        style: PrintTextStyles.menuSmall,
                                         textAlign: TextAlign.right,
                                       );
                                     }).toList()

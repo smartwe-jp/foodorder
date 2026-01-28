@@ -2019,6 +2019,23 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
                                       ]
                                   ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "レシートオプション",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowPrintOptions(),//usb打印机
+
+                                      ]
+                                  ),
                                   if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
@@ -2236,26 +2253,6 @@ class SystemSettingPageView extends GetView {
 
                                           ]
                                       ),
-
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "レシートオプション",
-                                                style: TextStyle(
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setIsAllowPrintOptions(),//usb打印机
-
-                                          ]
-                                      ),
-
-
                                       ...controller.machineInfo.printerList.map((printer) => printerSettingWidget(printer)).toList(),
                                       if (controller.machineInfo.printerList.length < 9)
                                         TableRow(
