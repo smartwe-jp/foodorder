@@ -2,6 +2,7 @@ import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
@@ -117,11 +118,9 @@ class CheckoutPageView extends GetView {
 
   _diningSelectArea() {
     return Row(
+      spacing: 50.w,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          width: ScreenAdapter.width(50),
-        ),
 
         if (controller.machineInfo.isSellOn)
           BookingTypeButton(
@@ -160,8 +159,7 @@ class CheckoutPageView extends GetView {
           ),
 
         if (controller.machineInfo.isCheckOn && controller.machineInfo.actuarial)
-        ...[
-          SizedBox(width: ScreenAdapter.width(50)),
+        
           BookingTypeButton(
             width: _getItemWidth(),
             bgColor: controller.themeColor,
@@ -178,10 +176,9 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
-        ],
+        
 
         if (controller.machineInfo.isTakeoutOn)
-        ...[SizedBox(width: ScreenAdapter.width(50)),
           BookingTypeButton(
             width: _getItemWidth(),
             bgColor: controller.themeColor,
@@ -199,22 +196,7 @@ class CheckoutPageView extends GetView {
             },
           ),
         ],
-
-        // if (controller.machineInfo.isScanbuyOn)
-        // Expanded(
-        //   child: BookingTypeButton(
-        //     icon: Icon(
-        //       Icons.qr_code,
-        //       color: Colors.blueGrey[100],
-        //       size: 120,
-        //     ),
-        //     title: 'settlement_button'.localized(),
-        //     selected: false,
-        //     onTap: ()=>controller.goSelfCheckout(),
-        //   ),
-        // ),
-        SizedBox(width: ScreenAdapter.width(50)),
-      ],
+      
     );
   }
 
