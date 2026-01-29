@@ -18,14 +18,14 @@ extension ExchangeControllerExtension on SettingController {
   //get cashinfo
 
   startPutExchangeMoney() async {
-    
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
     hasExchangeCash = false;
     getPutMoney.value = 0;
     getPutMoneyCurrency.value = "";
-    logger.info('-- startPutExchangeMoney -- getPutMoney: ${getPutMoney.value} getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+    logger.info(
+        '-- startPutExchangeMoney -- getPutMoney: ${getPutMoney.value} getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
     update();
     await beginDepositOutside();
   }
@@ -365,77 +365,65 @@ extension ExchangeControllerExtension on SettingController {
           final type = exchangeList[0].toString();
           final count = exchangeList[1];
           final discount = exchangeList[2];
-          final message = '両替種類: ${getCashName(type)}　両替枚数: $count　お釣り: $discount';
+          final message =
+              '両替種類: ${getCashName(type)}　両替枚数: $count　お釣り: $discount';
 
           Widget content = Container(
-              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
-              child: Column(
-                spacing: 20,
+            padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
+            child: Column(
+              spacing: 20,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-              Text('入金は完了しましたか？今両替を実行しますか？',
+                Text('入金は完了しましたか？今両替を実行しますか？',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontFamily: GFont.getFontFamily(),
-                        fontSize: ScreenAdapter.fontSize(28)
-                        )
-                      ),
-              Container(
-                padding: EdgeInsets.only(left: 50),
-                alignment: Alignment.centerLeft,
-                child: Text('入金情報:',
+                        fontSize: ScreenAdapter.fontSize(28))),
+                Container(
+                  padding: EdgeInsets.only(left: 50),
+                  alignment: Alignment.centerLeft,
+                  child: Text('入金情報:',
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w400,
-                          fontSize: ScreenAdapter.fontSize(24)
-                          )
-                        ),
-              ),
-              ...ctl.uploadMoneyInfo.entries.map((entry) {
-                return Container(
-                  padding: EdgeInsets.only(left: 100, right: 100, top: 10, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${getDepositHexVal(entry.key)}',
-                        style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(24)
-                            )
-                      ),
-                      Text(
-                        '枚数: ${entry.value}',
-                        style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(24)
-                            )
-                      ),
-
-                    ],
-                  ),
-                );
-              }).toList(),
-              
-              Divider(
-                color: Colors.grey,
-                thickness: 1.0,
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 50, top: 10),
-                alignment: Alignment.centerLeft,
-                child: Text(message,
+                          fontSize: ScreenAdapter.fontSize(24))),
+                ),
+                ...ctl.uploadMoneyInfo.entries.map((entry) {
+                  return Container(
+                    padding: EdgeInsets.only(
+                        left: 100, right: 100, top: 10, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${getDepositHexVal(entry.key)}',
+                            style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(24))),
+                        Text('枚数: ${entry.value}',
+                            style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(24))),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                Divider(
+                  color: Colors.grey,
+                  thickness: 1.0,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 50, top: 10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(message,
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w600,
-                          fontSize: ScreenAdapter.fontSize(26)
-                          )
-                        ),
-              ),
+                          fontSize: ScreenAdapter.fontSize(26))),
+                ),
               ],
-              ),
-            );
+            ),
+          );
 
           return DialogUtils.cashActionAlert(
             content,
@@ -459,11 +447,12 @@ extension ExchangeControllerExtension on SettingController {
 
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
-    showEasyLoading();
     logI('exChangeFlow: $type, $count, $disconut');
-    //showEasyLoading();
 
     logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+    await CashChanger.removeEventsListener();
+
+    showEasyLoading();
 
     await CashChanger.fixDeposit;
 
@@ -518,16 +507,15 @@ extension ExchangeControllerExtension on SettingController {
 
     logI('pops: $pops');
 
-    //final depositAmount =
-    await CashChanger.fixDeposit;
-    // if (depositAmount != 0) {
-    //   return;
-    // }
-
     var outMoneySuccess = false;
     if (!hasExchangeCash) outMoneySuccess = await gloryOutputMoney(outInfo);
 
-    if (!outMoneySuccess) EasyLoading.dismiss();
+    if (!outMoneySuccess) {
+      EasyLoading.dismiss();
+    } else {
+      getPutMoneyCurrency.value = '';
+      getPutMoney.value = 0;
+    }
 
     if (outMoneySuccess || hasExchangeCash) {
       hasExchangeCash = true;
@@ -564,8 +552,9 @@ extension ExchangeControllerExtension on SettingController {
     int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
     EasyLoading.dismiss();
     if (resultCode == null || resultCode != 0) {
-      errorHandleDialog('出金に失敗しました。再度お試しください。',
-          confirm: () => exportCashFlow(type, count));
+      errorHandleDialogTwo(
+          '出金に失敗しました。再度お試しください。', () => exportCashFlow(type, count),
+          cancel: () => Get.back());
       return false;
     }
 
@@ -578,8 +567,15 @@ extension ExchangeControllerExtension on SettingController {
 
   //日文提示
   tipsTitle() {
+    int exChangeType = int.parse(getCatVal(exchangeFromInfo.keys.first));
+    int count = exchangeFromInfo.values.first;
+    int totalExchange = exChangeType * count;
     if (getPutMoney.value == 0) {
       return 'お金を入れてください';
+    }  else if (getExchange().isNotEmpty &&
+        (getExchange().length > 1) && (totalExchange < getPutMoney.value)) {
+      //超出兑换金额，请取消再重试。
+      return '両替金額を超えています。キャンセルして再試行してください。';
     } else if (getExchange().isNotEmpty &&
         getExchange().length == 3 &&
         getExchange()[2] > 0) {
@@ -717,9 +713,9 @@ extension ExchangeControllerExtension on SettingController {
 
   List<List<int>> getExchangeList() {
     final exchangeList = <List<int>>[];
-    int cash1000 = cashInfo.value['1000'];
-    int cash5000 = cashInfo.value['5000'];
-    int cash10000 = cashInfo.value['10000'];
+    int cash1000 = cashInfo['1000'];
+    int cash5000 = cashInfo['5000'];
+    int cash10000 = cashInfo['10000'];
 
     if (cash1000 > 0 && getPutMoney.value >= 1000) {
       //预计要换多少个1000
