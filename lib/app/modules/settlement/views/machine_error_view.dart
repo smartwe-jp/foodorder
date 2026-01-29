@@ -35,7 +35,7 @@ class MachineErrorView extends StatefulWidget {
     this.settingsPassword,
     this.onGoToSettings,
     this.enableAlarm = true,
-    this.alarmAsset = 'audios/14428.wav',
+    this.alarmAsset = 'audios/digital-alarm-2.mp3',
   });
 
   @override
