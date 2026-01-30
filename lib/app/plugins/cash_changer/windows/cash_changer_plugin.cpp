@@ -56,41 +56,67 @@ CashChangerPlugin::CashChangerPlugin() {
 
 void CashChangerPlugin::InitCashChangerEvents () {
     cerr << "InitCashChangerEvents" << endl;
-    
-    HRESULT hr = pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
+    if (!pCashChanger) {
+        return;
+    }
 
-    if (SUCCEEDED(hr)) {
-        
+    HRESULT hr = S_OK;
+    if (!pCPC) {
+        hr = pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
+        if (FAILED(hr)) {
+            return;
+        }
+    }
+
+    if (!pCP) {
         hr = pCPC->FindConnectionPoint(DIID__IOPOSCashChangerEvents, &pCP);
         cerr << "FindConnectionPoint" << hr << endl;
-
-        if (SUCCEEDED(hr)) {
-            pHandler = new CashChangerEvents(); // 事件处理对象
-            pHandler->setDelegate(this);
-            
-            assert(pHandler != nullptr);
-            
-            hr = pHandler->QueryInterface(DIID__IOPOSCashChangerEvents, (void**)&pEvents);
-            if (SUCCEEDED(hr)) {
-                // pHandler 实现了 _IOPOSCashChangerEvents 接口
-                cerr << "pHandler 实现了 _IOPOSCashChangerEvents 接口" << hr << endl;
-            } else {
-                // pHandler 没有实现 _IOPOSCashChangerEvents 接口
-                cerr << "pHandler 没有实现 _IOPOSCashChangerEvents 接口 failed" << hr << endl;
-            }
-            DWORD dwAdvise = 0;
-            hr = pCP->Advise(pHandler, &dwAdvise);
-            if (SUCCEEDED(hr)) {
-                cerr << "Advise success: " << hr <<endl;
-            } else {
-                cerr << "Advise failed: " << hr << endl;
-            }
+        if (FAILED(hr)) {
+            return;
         }
+    }
+
+    if (!pHandler) {
+        pHandler = new CashChangerEvents();
+    }
+    pHandler->setDelegate(this);
+    assert(pHandler != nullptr);
+
+    if (!pEvents) {
+        hr = pHandler->QueryInterface(DIID__IOPOSCashChangerEvents, (void**)&pEvents);
+        if (SUCCEEDED(hr)) {
+            cerr << "pHandler 实现了 _IOPOSCashChangerEvents 接口" << hr << endl;
+        } else {
+            cerr << "pHandler 没有实现 _IOPOSCashChangerEvents 接口 failed" << hr << endl;
+        }
+    }
+
+    if (!m_eventsAdvised) {
+        hr = pCP->Advise(pHandler, &m_eventCookie);
+        if (SUCCEEDED(hr)) {
+            m_eventsAdvised = true;
+            cerr << "Advise success: " << hr << endl;
+        } else {
+            cerr << "Advise failed: " << hr << endl;
+        }
+    }
+}
+
+void CashChangerPlugin::UninitCashChangerEvents() {
+    if (pCP && m_eventsAdvised) {
+        pCP->Unadvise(m_eventCookie);
+        m_eventsAdvised = false;
+        m_eventCookie = 0;
+    }
+    if (pHandler) {
+        pHandler->setDelegate(nullptr);
     }
 }
 
 CashChangerPlugin::~CashChangerPlugin() {
     cerr << "CashChangerPlugin destruct" << endl;
+
+    UninitCashChangerEvents();
 
     // 释放 COM 对象
     if (pCashChanger) {
@@ -204,6 +230,18 @@ void CashChangerPlugin::HandleMethodCall(
     unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
     cerr << "CashChangerPlugin::HandleMethodCall" << endl;
     cerr << "method_call.method_name() = " << method_call.method_name() << endl;
+
+    if (method_call.method_name().compare("setEventsListener") == 0) {
+        InitCashChangerEvents();
+        result->Success();
+        return;
+    }
+
+    if (method_call.method_name().compare("removeEventsListener") == 0) {
+        UninitCashChangerEvents();
+        result->Success();
+        return;
+    }
  // 打开设备
  if (method_call.method_name().compare("openCashChanger") == 0) {
     cerr << "openCashChange called 。。" << endl;

@@ -33,6 +33,7 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
     void InitCashChangerEvents();
+    void UninitCashChangerEvents();
 
     // ICashChangerEventsDelegate
     void DataEvent(long Status) override;
@@ -53,6 +54,8 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
     IConnectionPointContainer* pEvents = nullptr;
     CashChangerEvents* pHandler = NULL;
     bool isDepositAmount = false;
+    unsigned long m_eventCookie = 0;
+    bool m_eventsAdvised = false;
     
     // 存储入金金额
     //long amount;

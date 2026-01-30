@@ -75,6 +75,7 @@ class SettingController extends GetxController with StateMixin {
   var hasExchangeCash = false;
   var hasOutMoney = false;
   var taskTouch = false;
+  //var isExchange = false;
   var exchangeFromInfo = {};
   // Map printInfo = {};
   // double printLength = 2048;

@@ -199,7 +199,7 @@ extension ExchangeControllerExtension on SettingController {
         showCashTimer?.cancel();
         if (taskTouch) {
           taskTouch = false;
-          if(!isExchange)
+          //if(!isExchange)
           EasyLoading.dismiss();
         }
         getInputMoneyInfo();
@@ -448,7 +448,8 @@ extension ExchangeControllerExtension on SettingController {
 
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
-    isExchange = true;
+    await CashChanger.removeEventsListener();
+    //isExchange = true;
     logI('exChangeFlow: $type, $count, $disconut');
 
     logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
@@ -511,7 +512,7 @@ extension ExchangeControllerExtension on SettingController {
     if (!hasExchangeCash) outMoneySuccess = await gloryOutputMoney(outInfo);
 
     if (!outMoneySuccess) {
-      isExchange = false;
+      //isExchange = false;
       EasyLoading.dismiss();
     } else {
       getPutMoneyCurrency.value = '';
@@ -519,7 +520,7 @@ extension ExchangeControllerExtension on SettingController {
     }
 
     if (outMoneySuccess || hasExchangeCash) {
-      isExchange = false;
+      //isExchange = false;
       hasExchangeCash = true;
       final result =
           await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。

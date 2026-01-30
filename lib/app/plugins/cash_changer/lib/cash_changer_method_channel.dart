@@ -13,7 +13,12 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   @override
   Future<void> setEvenstListener(
       Future<void> Function(MethodCall) events) async {
-        debugPrint('---setEvenstListener---');
+    debugPrint('---setEvenstListener---');
+    try {
+      await methodChannel.invokeMethod('setEventsListener');
+    } catch (e) {
+      debugPrint('启动监听失败: $e');
+    }
     methodChannel.setMethodCallHandler(events);
   }
 
@@ -21,6 +26,7 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   Future<void> removeEvenstListener() async {
     debugPrint('---removeEvenstListener---');
     try {
+      await methodChannel.invokeMethod('removeEventsListener');
       methodChannel.setMethodCallHandler(null);
     } catch (e) {
       debugPrint('停止监听失败: $e');
