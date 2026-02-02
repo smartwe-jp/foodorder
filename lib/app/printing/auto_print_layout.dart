@@ -72,7 +72,9 @@ class PrintReceiptData {
   final String serialNumber;
   final bool takeOut;
   final List<PrintReceiptItem> items;
-  final int finalPrice;
+  final int price;
+  final int payPrice;
+  final int originalPrice;
   final int discount;
   final int voucherAmount;
   final int baseTax8;
@@ -96,7 +98,9 @@ class PrintReceiptData {
     required this.serialNumber,
     required this.takeOut,
     required this.items,
-    required this.finalPrice,
+    required this.price,
+    required this.payPrice,
+    required this.originalPrice,
     required this.paymentMethod,
     this.brandImage,
     this.telNo,
@@ -262,7 +266,7 @@ Widget buildKitchenTicketWidget(
 Widget buildReceiptWidget(Map<String, dynamic> data,
     {double width = 580, bool printOptions = false}) {
   final parsed = _receiptFromMap(data);
-  final originalPrice = parsed.finalPrice + parsed.discount;
+  final originalPrice = parsed.originalPrice;
   final takeoutTag = parsed.takeOut ? '*' : '';
 
   return Container(
@@ -386,7 +390,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
             ),
           PrintTwoColumnRow(
             left: '合計',
-            right: '￥${formatMoney(parsed.finalPrice)}',
+            right: '￥${formatMoney(parsed.price)}',
             leftStyle: PrintTextStyles.menuBold,
             rightStyle: PrintTextStyles.menu,
           ),
@@ -429,8 +433,8 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
           if (parsed.paymentMethod != '現金支払')
             PrintTwoColumnRow(
               left: parsed.paymentMethod,
-              right: parsed.finalPrice > 0
-                  ? '￥${formatMoney(parsed.finalPrice)}'
+              right: parsed.payPrice > 0
+                  ? '￥${formatMoney(parsed.payPrice)}'
                   : '',
               leftStyle: PrintTextStyles.menu,
               rightStyle: PrintTextStyles.menu,
@@ -485,7 +489,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                     children: [
                       PrintTwoRow(
                         left: 'お預り',
-                        right: '￥${formatMoney(parsed.finalPrice)}',
+                        right: '￥${formatMoney(parsed.payPrice)}',
                         leftStyle: PrintTextStyles.menu,
                         rightStyle: PrintTextStyles.menu,
                       ),
@@ -558,7 +562,9 @@ PrintReceiptData _receiptFromMap(Map<String, dynamic> map) {
     serialNumber: _toStr(map['serialNumber']),
     takeOut: _toBool(map['takeOut']),
     items: _receiptItemsFrom(map['printInfo']['orderLines']),
-    finalPrice: _toInt(map['payPrice']),
+    price: _toInt(map['price']),
+    payPrice: _toInt(map['payPrice']),
+    originalPrice: _toInt(map['originalPrice']),
     discount: _toInt(map['discount']),
     voucherAmount: _toInt(map['voucherAmount']),
     baseTax8: _toInt(map['baseTax2']),
