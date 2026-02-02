@@ -373,16 +373,16 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
           if (parsed.discount != 0 || parsed.voucherAmount > 0)
             PrintTwoColumnRow(
               left: '定価',
-              right: formatMoney(originalPrice),
-              leftStyle: PrintTextStyles.small,
-              rightStyle: PrintTextStyles.small,
+              right: '￥${formatMoney(originalPrice)}',
+              leftStyle: PrintTextStyles.menu,
+              rightStyle: PrintTextStyles.menu,
             ),
           if (parsed.discount != 0)
             PrintTwoColumnRow(
               left: '割引',
-              right: '-${formatMoney(parsed.discount)}',
-              leftStyle: PrintTextStyles.small,
-              rightStyle: PrintTextStyles.small,
+              right: '-￥${formatMoney(parsed.discount)}',
+              leftStyle: PrintTextStyles.menu,
+              rightStyle: PrintTextStyles.menu,
             ),
           PrintTwoColumnRow(
             left: '合計',
@@ -558,7 +558,7 @@ PrintReceiptData _receiptFromMap(Map<String, dynamic> map) {
     serialNumber: _toStr(map['serialNumber']),
     takeOut: _toBool(map['takeOut']),
     items: _receiptItemsFrom(map['printInfo']['orderLines']),
-    finalPrice: _toInt(map['price']),
+    finalPrice: _toInt(map['payPrice']),
     discount: _toInt(map['discount']),
     voucherAmount: _toInt(map['voucherAmount']),
     baseTax8: _toInt(map['baseTax2']),
