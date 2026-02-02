@@ -192,7 +192,7 @@ class CreatePrintImageController extends GetxController {
       await Future.delayed(Duration(milliseconds: 500));
       await FlutterPluginMsprinter.sendPrintCut("1");
       await Future.delayed(Duration(milliseconds: 300));
-      await printReceipt(printData);
+      await tpPrintReceipt(printData);
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");
       await Future.delayed(Duration(milliseconds: 800));
@@ -200,7 +200,7 @@ class CreatePrintImageController extends GetxController {
     }
   }
 
-  printReceipt(printData) async {
+  tpPrintReceipt(printData) async {
     printData['brandImage'] = printLogoImage;
     printData['containTax'] = machineInfo.taxSystem;
     await ensureImageLoaded(printLogoImage);
@@ -253,7 +253,7 @@ class CreatePrintImageController extends GetxController {
     }
 
     if (categoryVos.length == 0) {
-      tpPrintReceipt(printData);
+      tpPrintReceipts(printData);
       return;
     }
     var print_menu_txt_size = 28.0;
@@ -575,7 +575,7 @@ class CreatePrintImageController extends GetxController {
       await Future.delayed(Duration(milliseconds: 500));
       await FlutterPluginMsprinter.sendPrintCut("1");
       await Future.delayed(Duration(milliseconds: 300));
-      tpPrintReceipt(printData);
+      tpPrintReceipts(printData);
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");
       await Future.delayed(Duration(milliseconds: 800));
@@ -585,7 +585,7 @@ class CreatePrintImageController extends GetxController {
     //});
   }
 
-  tpPrintReceipt(printData) async {
+  tpPrintReceipts(printData) async {
     List<Widget> categoryMenus = [];
 
     debugPrint('printData:$printData');
