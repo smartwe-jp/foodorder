@@ -702,9 +702,9 @@ class SettingController extends GetxController with StateMixin {
           },
           showError: (String error) {
             EasyLoading.dismiss();
-            logI("recycleCash error: $error.tr");
+            logI("recycleCash error: ${error.tr}");
             //showToast('回收失败');
-            commonHandleDialog("回收失败：$error.tr");
+            commonHandleDialog("回收失败：${error.tr}");
           });
     } else {
       var formData = {
