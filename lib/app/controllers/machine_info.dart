@@ -195,11 +195,10 @@ class MachineInfoController extends GetxController {
   Future loadMachineSettingInfo() async {
     logI('loadMachineSettingInfo');
     //mealType = false;
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode = machineCodeString;
-      shopCode = await HomeServices.getShopCode();
-    }
+
+    machineCode = await HomeServices.getMachineInfo() ?? "";
+    shopCode = await HomeServices.getShopCode() ?? "";
+
     logI('loadMachineSettingInfo 0');
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
