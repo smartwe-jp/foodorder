@@ -11,9 +11,10 @@ class MachineInfoController extends GetxController {
   Map systemSettingInfo;
   MachineInfoController(this.systemSettingInfo);
 
-  MachineType get  machineType {
+  MachineType get machineType {
     return panelTypes[panelType] ?? MachineType.new_panel;
   }
+
   Map<String, MachineType> panelTypes = {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
@@ -133,7 +134,8 @@ class MachineInfoController extends GetxController {
   }
 
   bool get isTakeoutMode {
-    return currentMode == MachineMode.takeout || currentMode == MachineMode.scan;
+    return currentMode == MachineMode.takeout ||
+        currentMode == MachineMode.scan;
   }
 
   String get printType {
@@ -197,11 +199,10 @@ class MachineInfoController extends GetxController {
   Future loadMachineSettingInfo() async {
     logI('loadMachineSettingInfo');
     //mealType = false;
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode = machineCodeString;
-      shopCode = await HomeServices.getShopCode();
-    }
+
+    machineCode = await HomeServices.getMachineInfo() ?? "";
+    shopCode = await HomeServices.getShopCode() ?? "";
+    
     logI('loadMachineSettingInfo 0');
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
