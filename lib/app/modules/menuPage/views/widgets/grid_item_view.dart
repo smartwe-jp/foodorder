@@ -313,9 +313,8 @@ class GridMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-      // Center(
-      // child:
+    return Center(
+      child:
       GridView.builder(
         padding: EdgeInsets.only(
             left:ScreenAdapter.width(15),
@@ -335,7 +334,7 @@ class GridMenuView extends StatelessWidget {
           return children[index];
         },
         itemCount: children.length,
-      //),
+      ),
     );
   }
 }

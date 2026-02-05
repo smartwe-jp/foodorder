@@ -121,7 +121,7 @@ class HomeView extends GetView<HomeController> {
         return;
       }
       logI('--- printData ip: $printIp ---');
-      await printerController.enqueue(printIp, printData, timeout: Duration(seconds: 12));
+      await printerController.enqueue(printIp, printData);
       // final conn = printerPlus.NetConn(printIp);
       // try {
       //   conn.writeMultiBytes(printData);
