@@ -2,10 +2,12 @@
 import 'package:android_usb_printer/android_usb_printer.dart';
 class PrinterInfo {
   final String? ip;
+  final int printerType;
   final UsbDeviceInfo? usbDevice;
 
   PrinterInfo({
     this.ip,
+    this.printerType = 11,
     this.usbDevice,
   });
 
@@ -13,7 +15,7 @@ class PrinterInfo {
     if (ip != null) {
       return 'Net Printer: $ip';
     } else {
-      return 'USB Priter：${usbDevice!.productName}-${usbDevice!.vId}-${usbDevice!.pId}-${usbDevice!.sId}';
+      return 'USB Printer: ${usbDevice!.productName}-${usbDevice!.vId}-${usbDevice!.pId}-${usbDevice!.sId}';
     }
   }
 

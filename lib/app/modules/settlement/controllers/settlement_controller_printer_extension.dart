@@ -323,7 +323,7 @@ class PrintService extends GetxService {
           PicGenerateTask<PrinterInfo>(
             tempWidget: widget as ATempWidget,
             printTypeEnum: PrintTypeEnum.label,
-            params: PrinterInfo(ip: printerIp), // 不做 IP 检查
+            params: PrinterInfo(ip: printerIp, printerType: 11), // 不做 IP 检查
           ),
         );
         await Future.delayed(const Duration(seconds: 1)); // 每张间隔 1 秒
@@ -357,7 +357,7 @@ class PrintService extends GetxService {
   }
 
   _sendToDisplayPanel(data) async {
-    logI("_sendToDisplayPanel data: $data");
+    logI("_sendToDisplayPanel");
 
     if (_machineInfo.wlan_panel_print_ip.isEmpty ||
         _machineInfo.wlan_panel_print_port.isEmpty) {
@@ -443,7 +443,7 @@ class PrintService extends GetxService {
   }
 
   void printData(Map data, {bool fromSSE = true, String orderId = "", shopName = ""}) async {
-    logI("---printData---");
+    logI("---printData---: ${data}");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
@@ -497,6 +497,7 @@ class PrintService extends GetxService {
       final rotate = printer["direction"] == 1; // Rotate if direction is 1
       bool printCategory =
           printer['printCategory'] ?? false; // Print category name
+      int printerType = printer['type'] ?? 11;
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
@@ -580,14 +581,6 @@ class PrintService extends GetxService {
         }
 
         processLabelPrintQueue(printerIp, labelPrintQueue);
-        // If center printing is enabled, print the same data to the center printer
-        // if (isCenterPrintOn || smartWeCenterOn) {
-        //   final printIp = centerPrinter["printIp"];
-        //   final rotate = centerPrinter["direction"] == 1;
-        //
-        //   printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-        //       printIp, true, rotate, items, remark, isCenterPrint: true);
-        // }
         continue;
       }
 
@@ -595,20 +588,12 @@ class PrintService extends GetxService {
         // If continuous printing is enabled, print all items in one go
         printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
             printerIp, isContinuous, rotate, items, remark,
-            printCategory: printCategory);
+            printCategory: printCategory, printerType: printerType);
       } else {
         // If label printing is enabled, print each item separately
         printSingleData(fromPlate, isTakeOut, orderSnCode, orderTime, printerIp,
-            isContinuous, rotate, items, printCategory, remark);
+            isContinuous, rotate, items, printCategory, remark, printerType: printerType);
       }
-      // If center printing is enabled, print the same data to the center printer
-      // if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
-      //   final printIp = centerPrinter["printIp"];
-      //   final rotate = centerPrinter["direction"] == 1;
-      //
-      //   printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-      //       printIp, true, rotate, items, remark, isCenterPrint: true);
-      // }
     }
 
     if ((isCenterPrintOn && isTakeOut) ||
@@ -632,15 +617,6 @@ class PrintService extends GetxService {
     //假设每行高度为 50
     return (height / (225 * 0.25)).floor();
   }
-  // shopCode=UGE4RRQR,
-  // number=MAT009,
-  // name=オレンジスライス,
-  // saveMethod=冷蔵庫内＋蓋付き,
-  // expiredNumber=0,
-  // efficientType=CURRENT_DATE,
-  // expiredTimeStr=2025-11-21  店じまい廃棄,
-  // printTimeStr=2025-11-21 16:30:31,
-  // operatorName=倪圣
 
   //_printEfficientLabel
   _printEfficientLabel(Map data) async {
@@ -660,51 +636,15 @@ class PrintService extends GetxService {
     final printSize = printer['labelSize'] ?? '300x225';
     final printWidth = double.parse(printSize.split('x')[0]); // 获取标签宽度
     final printHeight = double.parse(printSize.split('x')[1]); // 获取标签高度
-    debugPrint(
-        "Print size: $printSize, Width: $printWidth, Height: $printHeight");
 
-    //final number = data["number"] ?? "";
     final name = data["name"] ?? "";
     final saveMethod = data["saveMethod"] ?? "";
-    //final expexpiredNumber = data["expiredNumber"] ?? "";
-    //final efficientType = data["efficientType"] ?? "";
     final expiredTimeStr = data["expiredTimeStr"] ?? "";
     final printTimeStr = data["printTimeStr"] ?? "";
     final operatorName = data["operatorName"] ?? "";
-    //String expiredTime = "当日廃棄";
-    // if (efficientType.isEmpty) {
-    //   logI("efficientType is empty");
-    //   return;
-    // }
-    // if (efficientType == "HOURS") {
-    //   expiredTime = "+ $expexpiredNumber 時間";
-    // } else if (efficientType == "DAYS") {
-    //   expiredTime = "+ $expexpiredNumber 日";
-    // }
 
     final imageWidget = await _efficientLabel(name, saveMethod, expiredTimeStr,
         printTimeStr, operatorName, printWidth, printHeight, rotate);
-
-    //show print preview
-    // Get.dialog(
-    //   AlertDialog(
-    //     title: Text('Print Preview'),
-    //     content: Container(
-    //       width: printWidth,
-    //       height: printHeight,
-    //       child: imageWidget,
-    //     ),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Get.back();
-
-    //         },
-    //         child: Text('Close'),
-    //       ),
-    //     ],
-    //   ),
-    // );
 
     //生成打印图层任务，指定任务类型为标签
     PictureGeneratorProvider.instance.addPicGeneratorTask(
@@ -1389,6 +1329,7 @@ class PrintService extends GetxService {
     bool printOption = true,
     String? printQrCode,
     bool printCategory = false,
+    int printerType = 11,
   }) async {
     final rotate = isRotate ? pi : 0.0;
 
@@ -1468,7 +1409,7 @@ class PrintService extends GetxService {
       PicGenerateTask<PrinterInfo>(
         tempWidget: receiptWidget as ATempWidget,
         printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(ip: printerIp),
+        params: PrinterInfo(ip: printerIp, printerType: printerType),
       ),
     );
   }
@@ -1485,7 +1426,9 @@ class PrintService extends GetxService {
       bool isRotate,
       List items,
       bool printCategory,
-      String remark) async {
+      String remark,
+      {int printerType = 11}
+      ) async {
     final rotate = isRotate ? pi : 0.0;
     for (var item in items) {
       final qty = item["qty"] ?? 1;
@@ -1525,7 +1468,7 @@ class PrintService extends GetxService {
         PicGenerateTask<PrinterInfo>(
           tempWidget: receiptWidget as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
-          params: PrinterInfo(ip: printerIp),
+          params: PrinterInfo(ip: printerIp, printerType: printerType),
         ),
       );
     }

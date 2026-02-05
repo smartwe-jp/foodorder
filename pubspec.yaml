@@ -1,5 +1,5 @@
 name: foodorder
-version: 1.2.15+24
+version: 1.2.16+25
 appName: smartwe_ticket_machine
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
@@ -46,7 +46,7 @@ dependencies:
   flutter_printer_plus:
     git:
       url: git@github.com:Aaron51FX/flutter_printer_plus.git
-      ref: 8b44411476b434a22c8cf8624baa82ae653f8e6b
+      ref: 12c4cb409caafbb2c3da1a4304bcb37139c964ad
   badges: ^3.1.1
   audioplayers: ^5.2.1
   #win_toast: ^0.3.0
