@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:assets_audio_player/assets_audio_player.dart';
-//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -30,7 +27,6 @@ import '../../../services/HttpService.dart';
 import '../../../services/PosCheckService.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../services/logUtil.dart';
-import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
@@ -55,15 +51,6 @@ class SettlementController extends GetxController with StateMixin {
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
 
-  // RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
-  // RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
-  // RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
-
-  //RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
-  //RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
-  //RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
-  //RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
-
   RxString orderId = "".obs;
   //RxString scanQrCode = "".obs;
   RxString totalPrice = "0".obs;
@@ -79,25 +66,6 @@ class SettlementController extends GetxController with StateMixin {
   RxBool getputMoneyString = true.obs; //是否允许获取入金金额字符串
   RxInt putMonyNum = 0.obs;
 
-  //RxBool showOpenPayment = false.obs;
-
-  // Timer? timer;
-  // Timer? allowtimer;
-  // Timer? stoptimer;
-  // Timer? outmoneytimer;
-  // Timer? getoutmoneytimer;
-  // Timer? endtimer;
-  // Timer? OutMoneytimer;
-  // Timer? putMoneyCurrencytimer;
-  // Timer? sendingTimer;
-  // Timer? outTimer;
-
-  //Timer? ScanCodeConfirmTimer;
-
-  // RxString allowStatus = "".obs;
-  // RxString stopStatus = "".obs;
-  // RxString outStatus = "".obs;
-  // RxString endStatus = "".obs;
   RxInt giveChangeMoney = 0.obs;
   RxString outStringMoney = "0".obs; //找零金额
   RxString currencyString = "".obs; // 出金币种
@@ -108,19 +76,6 @@ class SettlementController extends GetxController with StateMixin {
   RxBool showPrintButton = false.obs; //如果投币金额不足，则不显示打印按钮
 
   RxString eventReportString = "".obs;
- //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
-  RxMap posResultReportData = {}.obs;
-  //RxInt showPrintType = 0.obs; //0 receipt   1Lable
-  // RxString wlan_print_ip = "".obs;
-  // RxString wlan_print_port = "".obs;
-  // RxString is_allow_wlanPrint_continuous =
-  //     "0".obs; //0 单票  1 连票  Print Continuous
-  // RxString wlan_print_ip_two = "".obs;
-  // RxString wlan_print_port_two = "".obs;
-  // RxString is_allow_wlanPrint_Two_continuous =
-  //     "0".obs; //0 单票  1 连票  Print Continuous
-
-  //用于控制返回是否多关闭页面
 
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer? showCashTimer;
@@ -144,6 +99,8 @@ class SettlementController extends GetxController with StateMixin {
   bool isRepayCash = false; //是否退金
   bool canReportFromListen = false; //是否无找零
   bool isScanCheckOut = false; //扫码支付是否精算模式
+
+  RxMap posResultReportData = {}.obs;
 
   //String shopCode = '';
 
@@ -176,19 +133,7 @@ class SettlementController extends GetxController with StateMixin {
     }
     posCheckService.updateUseStatus(false);
     paymentTimer?.cancel();
-    // allowtimer?.cancel();
-    // timer?.cancel();
-    // stoptimer?.cancel();
-    //outtimer?.cancel();
-    // outmoneytimer?.cancel();
-    // getoutmoneytimer?.cancel();
-    // endtimer?.cancel();
-    // OutMoneytimer?.cancel();
-    // putMoneyCurrencytimer?.cancel();
-    //ScanCodeConfirmTimer?.cancel();
     showCashTimer?.cancel();
-    // sendingTimer?.cancel();
-    // outTimer?.cancel();
     super.onClose();
   }
 
@@ -256,79 +201,10 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-    // is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
-    // is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
-    //print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
-    //is_back_home.value = systemSettingInfo['isAllowBackHome'];
-    //新版精算模式也可点外带
-    //machineMode.value = systemSettingInfo['machineMode'];
-    //showPrintType.value =
-    //    int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
-    //is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
-
-    // if (systemSettingInfo['isAllowWlanPrint'] == "1") {
-    //   is_allow_wlanPrint_continuous.value =
-    //       systemSettingInfo['isAllowWlanPrintContinuous'];
-    //   Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    //   if (wlanPrintSettingInfo['wlanPrintIp'] != null &&
-    //       wlanPrintSettingInfo['wlanPrintIp'] != "" &&
-    //       wlanPrintSettingInfo['wlanPrintPort'] != null &&
-    //       wlanPrintSettingInfo['wlanPrintPort'] != "") {
-    //     wlan_print_ip.value = wlanPrintSettingInfo['wlanPrintIp'];
-    //     wlan_print_port.value = wlanPrintSettingInfo['wlanPrintPort'];
-    //   }
-    // }
-
-    // if (systemSettingInfo['isAllowWlanPrintTwo'] == "1") {
-    //   is_allow_wlanPrint_Two_continuous.value =
-    //       systemSettingInfo['isAllowWlanPrintTwoContinuous'];
-    //   Map wlanPrintSettingTwoInfo =
-    //       await HomeServices.getWlanPrintSettingTwoInfo();
-    //   if (wlanPrintSettingTwoInfo['wlanPrintIp'] != null &&
-    //       wlanPrintSettingTwoInfo['wlanPrintIp'] != "" &&
-    //       wlanPrintSettingTwoInfo['wlanPrintPort'] != null &&
-    //       wlanPrintSettingTwoInfo['wlanPrintPort'] != "") {
-    //     wlan_print_ip_two.value = wlanPrintSettingTwoInfo['wlanPrintIp'];
-    //     wlan_print_port_two.value = wlanPrintSettingTwoInfo['wlanPrintPort'];
-    //   }
-    // }
 
     change(null, status: RxStatus.success());
   }
 
-  /////////////////////////////////*********************************//////////////////////////////////////
-  //倒计时
-  // _countDownTimer(stepState) {
-  //   showCashTimer?.cancel();
-  //   showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //     seconds.value--;
-
-  //     if (this.seconds == 0) {
-  //       logI("---- Time out quit -----");
-  //       //如果60秒未接收返回正确通知，则进行下一步操作
-  //       //eventBus.fire(new setShowCashEvent('支付成功...'));
-  //       showCashTimer?.cancel(); //清除定时器
-  //       if (stepState == "1") {
-  //         gotonewMenuPage();
-  //       } else {
-  //         goToNewMyHome();
-  //       }
-  //     }
-  //   });
-  // }
-
-  // _outMoneyDownTimer() {
-  //   outTimer?.cancel();
-  //   outTimer = Timer.periodic(Duration(seconds: 20), (timer) {
-  //     if (outStatus.value == "OutSuccess") {
-  //       outTimer?.cancel();
-  //     } else {
-  //       startOutPutMoney(giveChangeMoney.value);
-  //     }
-  //   });
-  // }
 
   gotonewMenuPage() {
 
@@ -354,19 +230,6 @@ class SettlementController extends GetxController with StateMixin {
     Get.back();
   }
 
-  // showSuccessAlert(Function task) async {
-  //   debugPrint("showSuccessAlert");
-  //   EasyLoading.dismiss();
-
-  //   Get.dialog(
-  //     barrierDismissible: false,
-  //     PayResultView(
-  //     dismiss: () {
-  //       Get.back();
-  //       task();
-  //     },
-  //   ));
-  // }
 
   checkOutModeBack() async {
     logger.info('checkOutModeBack');
@@ -1099,22 +962,6 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     //判断是否允许打印小票
-    // var printStatus = "0";
-    // if (Platform.isWindows) {
-    //   printStatus = "8";
-    // } else {
-    //   //printStatus = await FlutterPluginMsprinter.getPrintStatus();
-    // }
-
-    // if (retry &&
-    //     (machineInfo.paymentMethod == "0" ||
-    //         machineInfo.paymentMethod == "1")) {
-    //   printGoNext(orderId.value);
-    //   if (Platform.isAndroid)
-    //     await Future.delayed(Duration(milliseconds: 2000));
-    // }
-    //await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
-    //if (printStatus == "0" || printStatus == "8") {
       final formData = {
         "orderId": orderId.value,
         "payAmount": getPutMoney.value,
@@ -1174,35 +1021,6 @@ class SettlementController extends GetxController with StateMixin {
         }
         
       });
-    // } else {
-    //   EasyLoading.dismiss();
-    //   var showDialogContent = "";
-    //   if (printStatus == "7") {
-    //     showDialogContent = "tag_print_content_paper_shortage".tr;
-    //   } else {
-    //     showDialogContent = "tag_print_content_paper_error".tr;
-    //   }
-    //   //小票状态
-    //   Get.dialog(
-    //       DialogUtils.alert(showDialogContent,
-    //           title: "tag_title".tr,
-    //           canceltitle: "tag_print_button_no".tr,
-    //           confirmtitle: "tag_print_button_yes".tr,
-    //           confirm: () {
-    //             Get.back();
-    //             doPrintOrderMenu(printType);
-    //           },
-    //           cancle: () {
-    //             Get.back();
-    //             //goToNewMyHome();
-    //             if (machineInfo.paymentMethod == "1") {
-    //               nextOper();
-    //             } else {
-    //               goToNewMyHome();
-    //             }
-    //           })
-    //   );
-    // }
   }
 
   _handleOrderResultAlert(printType,{int times= 0}) {
@@ -1285,44 +1103,18 @@ class SettlementController extends GetxController with StateMixin {
   printGoNext() async {
     debugPrint("printGoNext");
     Future.delayed(Duration(milliseconds: 300),() async {
-      if (machineInfo.currentMode == MachineMode.checkout) {
-        //eventBus.fire(new clearCartEvent('支付成功...'));
+      // if (machineInfo.currentMode == MachineMode.checkout) {
+      // } else
+      //   if (machineInfo.currentMode == MachineMode.scan){
 
-        //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
-        //Get.find<MenuPageController>().getBookingBootMenu();
-      } else
-        if (machineInfo.currentMode == MachineMode.scan){
-        // if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-        //   Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
-
-        // if (Get.isRegistered<MenuPageController>()) {
-        //   MenuPageController controller = Get.find<MenuPageController>();
-        //   //if (controller.machineInfo.mealType) {
-        //     controller.clearCartList();
-        //   //}
-        // }
-
-      } else if (machineInfo.currentMode == MachineMode.takeout || machineInfo.currentMode == MachineMode.sell) {
-        // if (Get.isRegistered<OrderHomeController>())
-        //   Get.find<OrderHomeController>().clearCartList();
-
-          // if (Get.isRegistered<MenuPageController>()) {
-          //   MenuPageController controller = Get.find<MenuPageController>();
-          //   controller.clearCartList();
-          //   //if (controller.machineInfo.mealType) {
-          //     //controller.clearCartList();
-          //   //}
-          // }
-      }
+      // } else if (machineInfo.currentMode == MachineMode.takeout || machineInfo.currentMode == MachineMode.sell) {
+      // }
 
       //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
       if (machineInfo.paymentMethod == "1") {
         nextOper();
       } else {
-        //showSuccessAlert(() {
-          //goToNewMyHome();
-          gotonewBack();
-        //});
+        gotonewBack();
       }
     });
   }
@@ -1405,38 +1197,6 @@ class SettlementController extends GetxController with StateMixin {
       update();
     }
   }
-
-  //获取投入金额
-//   _getPutInMoney() async {
-//     await payCube.setReceiveEvent;
-//     timer?.cancel();
-//     timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
-//       var result = await payCube.getPayCubeMoney;
-//       if (int.parse(result) > 0) {
-//         hasStartPayflow = true;
-// // <<<<<<< HEAD
-// //         paymentTimer?.cancel();
-// // =======
-//         getPutMoney.value = result;
-//         scanQrCodeFocusNode.unfocus();
-//         int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
-//         //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
-//         if (int.parse(result) >= totalPriceResult) {
-//           if (isCancel.value == false) {
-//             showPrintButton.value = true;
-//           } else {
-//             showPrintButton.value = false;
-//           }
-
-//           var outMoney = int.parse(result) - int.parse(totalPrice.value); //找零金额
-//           showOutMoney.value = outMoney.toString(); //找零金额
-//         } else {
-//           showOutMoney.value = "0"; //找零金额
-//         }
-//         update();
-//       }
-//     });
-//   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
   endToubi() async {
@@ -1553,16 +1313,8 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getPayCubeOutMoney(String currencyStringResult, bool isCancel) async {
-    //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
-    //OutMoneytimer?.cancel();
-    //await Paycube.setReceiveEvent;
-    //_countDownTimer("7");
 
     int queryTimes = 0;
-    // 循环一定要记得设置取消条件，手动取消
-    //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-
-    //OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
 
       if(queryTimes>150){
         //如果打开了现金机，则去掉倒计时监听
@@ -1654,12 +1406,7 @@ class SettlementController extends GetxController with StateMixin {
 
   _getPayCubePutMoneyCurrency(String putCurrencyString, bool canReport) async {
     debugPrint("putCurrencyString==$putCurrencyString canReport==$canReport");
-    //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
-    // putMoneyCurrencytimer?.cancel();
-    // await Paycube.setReceiveEvent;
-    // _countDownTimer("8");
     var putQueryNum = 0;
-    //putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 350),(Timer putMoneyCurrencyTime) async {
 
       if(putQueryNum >100){
         //showCashTimer?.cancel();
@@ -1694,7 +1441,7 @@ class SettlementController extends GetxController with StateMixin {
       }
       putQueryNum++;
       putMonyNum.value++;
-    //});
+    
   }
 
   //汇报入金币种,请求后台
@@ -1730,13 +1477,6 @@ class SettlementController extends GetxController with StateMixin {
         .then((value) {
           logger.info("----上报订单成功----");
           isReportCash.value = false;
-      //var response = json.decode(value.toString());
-      // if (response['code'] == 200) {
-      ///if (isReportOutMoney.value == true) {
-      //已经结束入金，处理取引终了
-      //reportOutMoneyCurrency();
-      //}
-      //}
     }).catchError((e) {
       //后期优化，上报失败存储本地，下次再上报。
       logger.info('reportPutMoneyCurrency error:${e.toString()}');
