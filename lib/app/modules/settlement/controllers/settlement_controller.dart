@@ -962,21 +962,22 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     //判断是否允许打印小票
-      final formData = {
-        "orderId": orderId.value,
-        "payAmount": getPutMoney.value,
-        "machineCode": machineInfo.machineCode,
-        "printType": machineInfo.printType,
-      };
+    final formData = {
+      "orderId": orderId.value,
+      "payAmount": getPutMoney.value,
+      "machineCode": machineInfo.machineCode,
+      "printType": machineInfo.printType,
+    };
 
-      final queryUrl = "webBootToPrintV9";
+    final queryUrl = "webBootToPrintV9";
 
-      request(queryUrl, method: 'POST', parameters: formData).then((val) async {
-        var response = json.decode(val.toString());
-        //debugPrint("doPrintOrderMenu== $response");
-        LogUtil.d(response);
-        if (response['code'] == 200) {
-          if (response['data']["printInfo"] != null) {
+    try {
+      final result = await request(queryUrl, method: 'POST', parameters: formData).timeout(Duration(seconds: 15));
+      final response = json.decode(result.toString());
+      //debugPrint("doPrintOrderMenu== $response");
+      LogUtil.d(response);
+      if (response['code'] == 200) {
+        if (response['data']["printInfo"] != null) {
             printService.printData(response['data']["printInfo"], 
             orderId: response['data']['order'] ?? "", fromSSE: false, shopName: response['data']['shopName'] ?? "");
             saveService.addPrintJob(response['data']);
@@ -995,32 +996,24 @@ class SettlementController extends GetxController with StateMixin {
           printGoNext();
           //_sendToDisplayPanel(json.encode(response['data']["printInfo"]));
 
-        } else {
-          //错误后重新调用一次
-          if (times < 3) {
-            doPrintOrderMenu(printType, times: times + 1);
-          } else {
-            //_checkOutErrorHandle("tag_print_content_paper_error".tr);
-            _handleOrderResultAlert(printType, times: times);
-          }
-        }
-      }).catchError((e) {
+      } else {
         //错误后重新调用一次
         if (times < 3) {
           doPrintOrderMenu(printType, times: times + 1);
         } else {
+          //_checkOutErrorHandle("tag_print_content_paper_error".tr);
           _handleOrderResultAlert(printType, times: times);
         }
-        
-      }).timeout(Duration(seconds: 15), onTimeout: () {
-        //错误后重新调用一次
-        if (times < 2) {
-          doPrintOrderMenu(printType, times: times + 1);
-        } else {
-          _handleOrderResultAlert(printType, times: times);
-        }
-        
-      });
+      }
+      
+    } catch (e) {
+      logger.info('-- doPrintOrderMenu -- error: $e');
+      if (times < 3) {
+        doPrintOrderMenu(printType, times: times + 1);
+      } else {
+        _handleOrderResultAlert(printType, times: times);
+      }
+    }
   }
 
   _handleOrderResultAlert(printType,{int times= 0}) {
