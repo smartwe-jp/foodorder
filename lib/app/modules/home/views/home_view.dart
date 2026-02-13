@@ -1,13 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' show PrinterJobController;
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/printer_info.dart';
-import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -16,7 +11,7 @@ import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   HomeView({Key? key}) : super(key: key);
-  final printerController = PrinterJobController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,64 +82,11 @@ class HomeView extends GetView<HomeController> {
               //return WindewsTestView();
 
             },
-            onPictureGenerated: _onPictureGenerated,
+            onPictureGenerated: controller.onPictureGenerated,
           );
         
          
       }
     ));
   }
-
-  //打印图层生成成功
-  Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
-    //final imageBytes = imgdata.data;
-      final printTask = imgData.taskItem;
-
-    //指定的打印机
-      final printerInfo = printTask.params as PrinterInfo;
-      //print('printerInfo: $printerInfo');
-      //打印票据类型（标签、小票）
-      final printTypeEnum = printTask.printTypeEnum;
-
-      final imageBytes =
-          await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
-      //也可以使用 ImageByteFormat.png
-      final argbWidth = imgData.imageWidth;
-      final argbHeight = imgData.imageHeight;
-      if (imageBytes == null) {
-        return;
-      }
-
-      final printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-        imgData: imageBytes,
-        printType: printTypeEnum,
-        argbWidthPx: argbWidth,
-        argbHeightPx: argbHeight,
-      );
-
-      if (printerInfo.isUsbPrinter) {
-        // usb 打印
-        logI('usb 打印');
-        final conn = printerPlus.UsbConn(printerInfo.usbDevice!);
-        conn.writeMultiBytes(printData, 1024 * 8);
-      } else if (printerInfo.isNetPrinter) {
-        // 网络 打印
-        logI('网络 打印 ${printerInfo.ip!}');
-        // final conn = printerPlus.NetConn(printerInfo.ip!);
-        // conn.writeMultiBytes(printData);
-
-        try {
-          await printerController.enqueue(printerInfo.ip!, printData);
-          // final conn = printerPlus.NetConn(printerInfo.ip!);
-          // conn.writeMultiBytes(printData);
-        } catch (e) {
-          // handle/report failure for diagnostics
-          logE('打印失败: ${e.toString()} printerInfo.ip = ${printerInfo.ip!}');
-        }
-      }
-
-      // // 网络 打印
-      // final conn = printerPlus.NetConn(printerInfo.ip!);
-      // conn.writeMultiBytes(printData);
-    }
 }

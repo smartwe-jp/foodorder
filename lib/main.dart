@@ -11,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -19,6 +20,8 @@ import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
 import 'app/routes/app_pages.dart';
+import 'app/print_task/print_task_models.dart';
+import 'app/print_failed/print_failed_models.dart';
 
 class _NavBounceTrack {
   static String? lastRoute;
@@ -29,6 +32,19 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     await GetStorage.init();
+    await Hive.initFlutter();
+    // if (!Hive.isAdapterRegistered(61)) {
+    //   Hive.registerAdapter(PrintJobAdapter());
+    // }
+    // if (!Hive.isAdapterRegistered(62)) {
+    //   Hive.registerAdapter(PrintTaskAdapter());
+    // }
+    if (!Hive.isAdapterRegistered(63)) {
+      Hive.registerAdapter(PrintRecordAdapter());
+    }
+    // await Hive.openBox<PrintJob>('print_jobs');
+    // await Hive.openBox<PrintTask>('print_tasks');
+    await Hive.openBox<PrintRecord>('print_records');
     // if (Platform.isAndroid) {
     //   //Firebase is not full supported on windows
     //   await Firebase.initializeApp(

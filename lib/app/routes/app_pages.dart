@@ -42,6 +42,8 @@ import '../modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../modules/OrderHome/views/opos_apg.dart';
 import '../modules/WATextPage/views/windows_test_view.dart';
 import '../modules/edit_page/view.dart' deferred as edit_page;
+import '../modules/printerFailedList/controllers/printer_failed_list_controller.dart';
+import '../modules/printerFailedList/views/printer_failed_list_page.dart';
 
 part 'app_routes.dart';
 
@@ -182,6 +184,14 @@ class AppPages {
     GetPage(
       name: _Paths.RESULT_PAGE,
       page: () => ResultPage(),
+    ),
+
+    GetPage(
+      name: _Paths.PRINTER_FAILED_LIST,
+      page: () => const PrinterFailedListPage(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => PrinterFailedListController());
+      }),
     ),
 
   ];

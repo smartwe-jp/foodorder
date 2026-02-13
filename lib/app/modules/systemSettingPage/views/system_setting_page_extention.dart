@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/print_failed_service.dart';
 
 import 'package:get/get.dart';
 
@@ -213,20 +215,43 @@ extension SystemSettingPageExtension on SystemSettingPageView {
   TableRow printerSettingWidget(Map printerItem) {
 
     bool isDefaultPrinter = printerItem['isDefault'] ?? true; // 是否默认打印机
+    final type = printerItem['type'] ?? 0; // 打印机类型
+    final failedService = Get.find<PrintFailedService>();
+    final isOff = printerItem['isOff'] ?? false;
 
     return TableRow(
       children: [
         Container(
           height: ScreenAdapter.height(80),
           alignment: Alignment.center,
-          child: Text(
-            printerItem['name'],
-            style: TextStyle(
-              fontFamily: 'NotoSansJP',
-              fontSize: ScreenAdapter.fontSize(22),
-              fontWeight: FontWeight.w500
-            ),
-          ),
+          child: Obx(() {
+            final hasFailed = failedService.records.any(
+              (r) => r.printerType == type && r.status == 'failed',
+            );
+
+            return GestureDetector(
+              onTap: () {
+                if (hasFailed) {
+                  Get.toNamed(
+                    Routes.PRINTER_FAILED_LIST,
+                    arguments: {
+                      'printerType': type,
+                      'printerName': printerItem['name'],
+                    },
+                  );
+                }
+              },
+              child: Text(
+                printerItem['name'],
+                style: TextStyle(
+                  fontFamily: 'NotoSansJP',
+                  fontSize: ScreenAdapter.fontSize(22),
+                  fontWeight: FontWeight.w500,
+                  color: (!isOff && hasFailed) ? Colors.red : Colors.black,
+                ),
+              ),
+            );
+          }),
         ),
         isDefaultPrinter ? _printerSettingWidget(printerItem):
         Dismissible(

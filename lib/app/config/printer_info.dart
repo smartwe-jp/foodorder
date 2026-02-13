@@ -3,11 +3,13 @@ import 'package:android_usb_printer/android_usb_printer.dart';
 class PrinterInfo {
   final String? ip;
   final int printerType;
+  final Map printInfo;
   final UsbDeviceInfo? usbDevice;
 
   PrinterInfo({
     this.ip,
     this.printerType = 11,
+    this.printInfo = const {},
     this.usbDevice,
   });
 
