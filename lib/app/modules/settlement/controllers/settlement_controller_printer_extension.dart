@@ -39,6 +39,110 @@ class PrintService extends GetxService {
   //Label打印先存在在一个队列中
   //final Queue<Widget> labelPrintQueue = Queue<Widget>();
 
+  final printTestData =
+  {
+    "uuid": null,
+    "bizId": 464362784279691264,
+    "orderTime": "02-18 17:30",
+    "remark": "",
+    "from_plate": "Shop",
+    "order_sn_code": "0222",
+    "payment_code": "",
+    "order_type": "Shop_In",
+    "pay_type": "Paid",
+    "orderLinesMap": {
+      "10": [
+        {
+          "categoryName": "ヨーグルト",
+          "name": "マンゴーとパッションフルーツのヨーグルト芒果百香酸奶",
+          "initialPrice": 750,
+          "price": 1020,
+          "qty": 1,
+          "bizId": 464362784279691265,
+          "options": {
+            "甘（糖度）": [
+              {
+                "name": "甘さなし",
+                "price": 0,
+                "qty": 1,
+                "totalPrice": 0
+              }
+            ],
+            "氷(冰量)": [
+              {
+                "name": "普通",
+                "price": 0,
+                "qty": 1,
+                "totalPrice": 0
+              }
+            ],
+            "トッピング": [
+              {
+                "name": "绿茶ゼリー绿茶冻",
+                "price": 120,
+                "qty": 1,
+                "totalPrice": 120
+              },
+              {
+                "name": "芋団子",
+                "price": 150,
+                "qty": 1,
+                "totalPrice": 150
+              }
+            ]
+          },
+          "extend1qr": "P0028|520cc,S005,T001",
+          "extend2qr": null
+        }
+      ]
+    },
+    "orderLines": [
+      {
+        "categoryName": "ヨーグルト",
+        "name": "マンゴーとパッションフルーツのヨーグルト芒果百香酸奶",
+        "initialPrice": 750,
+        "price": 1020,
+        "qty": 1,
+        "bizId": 464362784279691265,
+        "options": {
+          "甘（糖度）": [
+            {
+              "name": "甘さなし",
+              "price": 0,
+              "qty": 1,
+              "totalPrice": 0
+            }
+          ],
+          "氷(冰量)": [
+            {
+              "name": "普通",
+              "price": 0,
+              "qty": 1,
+              "totalPrice": 0
+            }
+          ],
+          "トッピング": [
+            {
+              "name": "绿茶ゼリー绿茶冻",
+              "price": 120,
+              "qty": 1,
+              "totalPrice": 120
+            },
+            {
+              "name": "芋団子",
+              "price": 150,
+              "qty": 1,
+              "totalPrice": 150
+            }
+          ]
+        },
+        "extend1qr": "P0028|520cc,S005,T001",
+        "extend2qr": null
+      }
+    ]
+  };
+
+
   final testData = [
     {
       "uuid": "YK-0HObr4iVk_NaDfVw9WoEH",
@@ -507,7 +611,7 @@ class PrintService extends GetxService {
         final printHead = printer['printHead'] ?? true;
         final printOptionCode = printer['printOptionCode'] ?? true;
         // Add the head receipt widget to the print queue
-        debugPrint("Label Print Width: $printWidth, Height: $printHeight");
+        debugPrint("Label Print Width: $printWidth, Height: $printHeight, printHead: $printHead, printOptionCode: $printOptionCode");
         final time = await DateTime.now().toString().substring(5, 16);
         final orderIdTime = orderId + "#" + time;
         var totalQty = 0;
@@ -528,7 +632,8 @@ class PrintService extends GetxService {
             itemCount += 1;
             Widget receiptWidget;
           
-            if (printOptionCode && printHeight >= 450 && printWidth >= 450) {
+            if (printOptionCode && printWidth >= 375 && printHeight >= 450) {
+              debugPrint("Using large label for item: $name with options: $options");
               receiptWidget = largeLabelItem(
                 name,
                 orderSnCode,
@@ -545,6 +650,7 @@ class PrintService extends GetxService {
                 shopName
                 );
             } else {
+              debugPrint("Using standard label for item: $name with options: $options");
               receiptWidget = labelItem(
                 name,
                 orderSnCode,
@@ -1111,7 +1217,7 @@ class PrintService extends GetxService {
                     maxLines: 2,
                     textAlign: TextAlign.left,
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 30,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),

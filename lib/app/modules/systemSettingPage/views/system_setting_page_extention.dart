@@ -916,7 +916,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
     final _labelPrintSize = { "60x30":"450x225", "50x30":"375x225", "40x30":"300x225",
                               "60x40":"450x300", "50x40":"375x300", "40x40":"300x300",
-                              "60x50":"450x375", "60x60":"450x450", "50x50":"375x375", "40x50":"300x375"
+                              "60x50":"450x375", "60x60":"450x450", "50x60":"375x450", "50x50":"375x375", "40x50":"300x375"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
