@@ -1058,7 +1058,7 @@ class PrintService extends GetxService {
                         maxLines: 2,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 32,
+                          fontSize: 28,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),

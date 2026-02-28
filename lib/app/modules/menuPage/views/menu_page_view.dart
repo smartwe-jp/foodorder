@@ -9,19 +9,16 @@ import 'package:foodorder/app/modules/menuPage/views/LoadingFailPage.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/check_out_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_page_sideBar.dart';
-import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
 
 import 'package:get/get.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/menu_page_controller.dart';
 
-class MenuPageView extends GetView {
-  final MenuPageController controller = Get.put(MenuPageController());
+class MenuPageView extends GetView<MenuPageController> {
 
   MenuPageView({Key? key}) : super(key: key);
 

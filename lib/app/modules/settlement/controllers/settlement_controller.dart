@@ -387,7 +387,8 @@ class SettlementController extends GetxController with StateMixin {
     if (_isNavigating) return;
     _isNavigating = true;
     try {
-      await ordersqlcontroller.removeAllFromCart(); // 等待清空
+      await Get.find<MenuPageController>().clearCartList();
+      //await ordersqlcontroller.removeAllFromCart(); // 等待清空
     } catch (e) {
       logger.warning('removeAllFromCart error: $e');
     }
@@ -415,7 +416,7 @@ class SettlementController extends GetxController with StateMixin {
         if (machineInfo.isBackHome) {
           await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         } else {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+          Get.until((route) => route.settings.name == Routes.MENU_PAGE);
         }
         break;
       case MachineMode.scan:

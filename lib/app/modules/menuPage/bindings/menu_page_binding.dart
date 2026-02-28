@@ -6,10 +6,10 @@ import '../controllers/menu_page_controller.dart';
 class MenuPageBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(OrderSqlController()); //Fix crash when tap takeout
-    Get.put(MenuPageController());
-    /*Get.lazyPut<MenuPageController>(
+    // Get.put(OrderSqlController()); //Fix crash when tap takeout
+    // Get.put(MenuPageController());
+    Get.lazyPut<MenuPageController>(
       () => MenuPageController(),
-    );*/
+    );
   }
 }
