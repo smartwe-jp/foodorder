@@ -286,6 +286,9 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
           if ((parsed.telNo ?? '').isNotEmpty)
             PrintOneColumnText('電話番号:${parsed.telNo}',
                 style: PrintTextStyles.menu),
+          if (parsed.orderDate.isNotEmpty)
+            PrintOneColumnText(parsed.orderDate,
+                style: PrintTextStyles.menu),
           if ((parsed.ntaNo ?? '').isNotEmpty)
             PrintOneColumnText('登録番号:${parsed.ntaNo}',
                 style: PrintTextStyles.menu),
