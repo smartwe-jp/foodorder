@@ -2,6 +2,7 @@ import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/modules/home/controllers/home_controller.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/machine_info.dart';
 import '../../../print_failed/print_failed_models.dart';
 import '../../../services/print_failed_service.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -16,6 +17,15 @@ class PrinterFailedListController extends GetxController {
 
   final RxList<PrintRecord> failedRecords = <PrintRecord>[].obs;
   final Rxn<PrintRecord> selected = Rxn<PrintRecord>();
+
+  final MachineInfoController _machineInfo = Get.find<MachineInfoController>();
+
+  get printerList => _machineInfo.printerList;
+
+  get curPrinter => printerList.firstWhere(
+        (p) => p["type"] == 10 && p["isOff"] == false,
+    orElse: () => null,
+  );
 
   @override
   void onInit() {
@@ -85,8 +95,14 @@ class PrinterFailedListController extends GetxController {
   }
 
   void retrySelectedRecord(PrintRecord record) async {
+    //根据打印机类型 获取当前实际的IP地址
+    if (curPrinter == null) {
+      Get.snackbar('Error', 'No available printer found for retrying');
+      return;
+    }
+
     final printerInfo = PrinterInfo(
-      ip: record.printerIp,
+      ip: curPrinter['printIp'] ?? record.printerIp,
       printerType: record.printerType,
       printInfo: record.printInfo,
     );
