@@ -9,14 +9,14 @@ import '../print_failed/print_failed_models.dart';
 
 class PrintFailedService extends GetxService {
   static const String boxName = 'print_records';
-  static const int keepHours = 24;
+  //static const int keepHours = 24;
+  static const int keepMinutes = 30;
 
   late Box<PrintRecord> _box;
   StreamSubscription<BoxEvent>? _boxWatchSub;
   final RxList<PrintRecord> records = <PrintRecord>[].obs;
   final Map<int, RxBool> _failedByTypeCache = <int, RxBool>{};
   Worker? _recordsWorker;
-
 
   @override
   void onInit() {
@@ -54,7 +54,8 @@ class PrintFailedService extends GetxService {
 
   Future<void> _markPendingAsFailedOnInit() async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final pendingList = _box.values.where((r) => r.status == 'pending').toList();
+    final pendingList =
+        _box.values.where((r) => r.status == 'pending').toList();
     for (final record in pendingList) {
       record.status = 'failed';
       record.updatedAt = now;
@@ -84,7 +85,8 @@ class PrintFailedService extends GetxService {
   }
 
   bool _hasFailedByPrinterType(int printerType) {
-    return records.any((r) => r.printerType == printerType && r.status == 'failed');
+    return records
+        .any((r) => r.printerType == printerType && r.status == 'failed');
   }
 
   void _syncFailedByTypeCache() {
@@ -135,7 +137,8 @@ class PrintFailedService extends GetxService {
   Future<void> markFailed(String uuid, {String? error}) async {
     final record = _box.get(uuid);
     if (record == null) return;
-    logI('Marking print record $uuid as failed. retryCount=${record.retryCount + 1}');
+    logI(
+        'Marking print record $uuid as failed. retryCount=${record.retryCount + 1}');
     record.updatedAt = DateTime.now().millisecondsSinceEpoch;
     record.retryCount = record.retryCount + 1;
     record.status = 'failed';
@@ -183,8 +186,9 @@ class PrintFailedService extends GetxService {
   }
 
   Future<void> pruneExpired() async {
-    final expireBefore =
-        DateTime.now().subtract(const Duration(hours: keepHours)).millisecondsSinceEpoch;
+    final expireBefore = DateTime.now()
+        .subtract(const Duration(minutes: keepMinutes))
+        .millisecondsSinceEpoch;
     final keysToRemove = _box.values
         .where((r) => r.createdAt < expireBefore)
         .map((r) => r.uuid)
@@ -207,9 +211,9 @@ class PrintFailedService extends GetxService {
   }
 
   bool _isExpired(PrintRecord record) {
-    final expireBefore =
-        DateTime.now().subtract(const Duration(hours: keepHours)).millisecondsSinceEpoch;
+    final expireBefore = DateTime.now()
+        .subtract(const Duration(minutes: keepMinutes))
+        .millisecondsSinceEpoch;
     return record.createdAt < expireBefore;
   }
-
 }
