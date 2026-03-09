@@ -553,7 +553,7 @@ class PrintService extends GetxService {
             itemCount += 1;
             Widget receiptWidget;
 
-            if (printOptionCode && printHeight >= 450 && printWidth >= 450) {
+            if (printOptionCode && printHeight >= 450 && printWidth >= 375) {
               receiptWidget = largeLabelItem(
                   name,
                   orderSnCode,
