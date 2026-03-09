@@ -1036,21 +1036,24 @@ class SettlementController extends GetxController with StateMixin {
     }
     // var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
     // if (printStatus == "0" || printStatus == "8") {
-      final formData = {
-        "orderId": orderId.value,
-        "payAmount": getPutMoney.value,
-        "machineCode": machineInfo.machineCode,
-        "printType": machineInfo.printType
-      };
 
-      final queryUrl = "webBootToPrintV9";
+    //判断是否允许打印小票
+    final formData = {
+      "orderId": orderId.value,
+      "payAmount": getPutMoney.value,
+      "machineCode": machineInfo.machineCode,
+      "printType": machineInfo.printType,
+    };
 
-      request(queryUrl, method: 'POST', parameters: formData).then((val) async {
-        var response = json.decode(val.toString());
-        //debugPrint("doPrintOrderMenu== $response");
-        LogUtil.d(response);
-        if (response['code'] == 200) {
-          if (response['data']["printInfo"] != null) {
+    final queryUrl = "webBootToPrintV9";
+
+    try {
+      final result = await request(queryUrl, method: 'POST', parameters: formData).timeout(Duration(seconds: 15));
+      final response = json.decode(result.toString());
+      //debugPrint("doPrintOrderMenu== $response");
+      LogUtil.d(response);
+      if (response['code'] == 200) {
+        if (response['data']["printInfo"] != null) {
             printService.printData(response['data']["printInfo"], 
             orderId: response['data']['order'] ?? "", fromSSE: false, shopName: response['data']['shopName'] ?? "");
             saveService.addPrintJob(response['data']);
@@ -1069,53 +1072,24 @@ class SettlementController extends GetxController with StateMixin {
           printGoNext();
           //_sendToDisplayPanel(json.encode(response['data']["printInfo"]));
 
+      } else {
+        //错误后重新调用一次
+        if (times < 3) {
+          doPrintOrderMenu(printType, times: times + 1);
         } else {
-          //错误后重新调用一次
-          if (times < 3) {
-            doPrintOrderMenu(printType, times: times + 1);
-          } else {
-            _checkOutErrorHandle("tag_print_content_paper_error".tr);
-          }
+          //_checkOutErrorHandle("tag_print_content_paper_error".tr);
+          _handleOrderResultAlert(printType, times: times);
         }
-      })
-      .catchError((e) {
-        //错误后重新调用一次
+      }
+      
+    } catch (e) {
+      logger.info('-- doPrintOrderMenu -- error: $e');
+      if (times < 3) {
+        doPrintOrderMenu(printType, times: times + 1);
+      } else {
         _handleOrderResultAlert(printType, times: times);
-
-      })
-      .timeout(Duration(seconds: 15), onTimeout: () {
-        //错误后重新调用一次
-        _handleOrderResultAlert(printType, times: times);
-      });
-    // } else {
-    //
-    //   EasyLoading.dismiss();
-    //   var showDialogContent = "";
-    //   if (printStatus == "7") {
-    //     showDialogContent = "tag_print_content_paper_shortage".tr;
-    //   } else {
-    //     showDialogContent = "tag_print_content_paper_error".tr;
-    //   }
-    //   //小票状态
-    //   Get.dialog(
-    //       DialogUtils.alert(showDialogContent,
-    //           title: "tag_title".tr,
-    //           canceltitle: "tag_print_button_no".tr,
-    //           confirmtitle: "tag_print_button_yes".tr,
-    //           confirm: () {
-    //             Get.back();
-    //             doPrintOrderMenu(printType);
-    //           },
-    //           cancle: () {
-    //             Get.back();
-    //             if (machineInfo.paymentMethod == "1") {
-    //               nextOper();
-    //             } else {
-    //               goToNewMyHome();
-    //             }
-    //           })
-    //   );
-    // }
+      }
+    }
   }
 
   _handleOrderResultAlert(printType,{int times= 0}) {
