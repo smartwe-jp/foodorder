@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
+import 'package:foodorder/app/services/ResetToHomeTimer.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:get/get.dart';
@@ -21,6 +25,8 @@ import 'app/config/color.dart';
 import 'app/controllers/app_config.dart';
 import 'app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'app/routes/app_pages.dart';
+import 'app/print_task/print_task_models.dart';
+import 'app/print_failed/print_failed_models.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'app/services/CustomLogerHandler.dart';
@@ -39,6 +45,26 @@ void main() {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await GetStorage.init();
+    await Hive.initFlutter();
+    // if (!Hive.isAdapterRegistered(61)) {
+    //   Hive.registerAdapter(PrintJobAdapter());
+    // }
+    // if (!Hive.isAdapterRegistered(62)) {
+    //   Hive.registerAdapter(PrintTaskAdapter());
+    // }
+    if (!Hive.isAdapterRegistered(63)) {
+      Hive.registerAdapter(PrintRecordAdapter());
+    }
+    // await Hive.openBox<PrintJob>('print_jobs');
+    // await Hive.openBox<PrintTask>('print_tasks');
+    await Hive.openBox<PrintRecord>('print_records');
+    // if (Platform.isAndroid) {
+    //   //Firebase is not full supported on windows
+    //   await Firebase.initializeApp(
+    //     options: DefaultFirebaseOptions.currentPlatform,
+    //   );
+    //   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    // }
 
     Get.putAsync<AppConfig>(() async {
       final config = AppConfig();

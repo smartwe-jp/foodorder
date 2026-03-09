@@ -1,14 +1,9 @@
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' show PrinterJobController;
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/printer_info.dart';
-import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -17,7 +12,7 @@ import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   HomeView({Key? key}) : super(key: key);
-  final printerController = PrinterJobController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,53 +83,11 @@ class HomeView extends GetView<HomeController> {
               //return WindewsTestView();
 
             },
-            onPictureGenerated: _onPictureGenerated,
+            onPictureGenerated: controller.onPictureGenerated,
           );
         
          
       }
     ));
-  }
-
-//打印图层生成成功
-  Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
-    final printTask = imgData.taskItem;
-    final printerInfo = printTask.params as PrinterInfo;
-    final printTypeEnum = printTask.printTypeEnum;
-    Uint8List? imageBytes;
-    List<List<int>>? printData;
-    try {
-      imageBytes = await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
-      if (imageBytes == null) return;
-      final argbWidth = imgData.imageWidth;
-      final argbHeight = imgData.imageHeight;
-
-      printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-        imgData: imageBytes,
-        printType: printTypeEnum,
-        argbWidthPx: argbWidth,
-        argbHeightPx: argbHeight,
-      );
-      final printIp = printerInfo.ip ?? '';
-      if (printIp.isEmpty) {
-        logE('--- Printer IP is empty ---');
-        return;
-      }
-      logI('--- printData ip: $printIp ---');
-      await printerController.enqueue(printIp, printData);
-      // final conn = printerPlus.NetConn(printIp);
-      // try {
-      //   conn.writeMultiBytes(printData);
-      // } finally {
-      //   //printData.clear();
-      //   //printData = null;
-      // }
-    } catch(e) {
-      logE('--- Error during printing: $e ip: ${printerInfo.ip} ---');
-    }
-    // finally {
-    //   //imageBytes = null;
-    //   logI('--- imageBytes cleared ---');
-    // }
   }
 }

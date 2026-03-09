@@ -25,6 +25,7 @@ abstract class Routes {
   static const SELECT_PAYMENT_PAGE = _Paths.SELECT_PAYMENT_PAGE;
   static const SETTING_EDIT_PAGE  = _Paths.SETTING_EDIT_PAGE;
   static const RESULT_PAGE  = _Paths.RESULT_PAGE;
+  static const PRINTER_FAILED_LIST = _Paths.PRINTER_FAILED_LIST;
 }
 
 abstract class _Paths {
@@ -51,4 +52,5 @@ abstract class _Paths {
   static const SETTING_EDIT_PAGE = '/setting_edit_page';
   static const SYSTEM_SETTING_PAGE_NEW = '/system-setting-page-new';
   static const RESULT_PAGE = '/result_page';
+  static const PRINTER_FAILED_LIST = '/printer_failed_list';
 }

@@ -134,6 +134,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
       state.currentItemsRaw = recent.reversed.toList();
       debugPrint('Loaded ${state.currentItemsRaw} items for category "$category".');
 
+
       // // 维护分类->渲染类型映射（更灵活）。预设两个常用分类：
       // state.categoryRenderer.putIfAbsent('default', () => 'order');
       // state.categoryRenderer.putIfAbsent('rejishime', () => 'summary');
