@@ -253,7 +253,7 @@ class MenuPageController extends GetxController with StateMixin {
       }
     })
     .catchError((e){
-
+      logI('getBookingBootIndexCategory error: $e');
       if (retryCount < 3) {
         retryCount++;
         debugPrint('Retrying getBookingBootIndexCategory, attempt: $retryCount');
