@@ -358,10 +358,10 @@ class PrintService extends GetxService {
         return;
       }
 
-      final widget = labelPrintQueue.removeFirst();
+      final task = labelPrintQueue.removeFirst();
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: widget as ATempWidget,
+          tempWidget: task.widget as ATempWidget,
           printTypeEnum: PrintTypeEnum.label,
           params: PrinterInfo(ip: printerIp),
         ),
@@ -921,7 +921,7 @@ class PrintService extends GetxService {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Text(
+                      child: AutoSizeText(
                         //
                         name,
                         maxLines: 2,
