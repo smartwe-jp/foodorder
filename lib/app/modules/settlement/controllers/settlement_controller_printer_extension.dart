@@ -1150,26 +1150,22 @@ class PrintService extends GetxService {
                 child: Column(
                   children: [
                     Expanded(
-                      flex: 4,
                       child: Container(
                         margin: EdgeInsets.only(top: 5, left: 10),
                         width: double.infinity,
                         child: optionList(options, maxLines),
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        margin: EdgeInsets.only(top: 5),
-                        child: Text(
-                          time,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: EdgeInsets.only(top: 5),
+                      child: Text(
+                        time,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
