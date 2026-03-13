@@ -1081,68 +1081,66 @@ class PrintService extends GetxService {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 80.h,
-                //flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        //
-                        name,
-                        maxLines: 2,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 28,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AutoSizeText(
-                              ' # ' + number,
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: AutoSizeText(
-                              index,
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              Container(
+              constraints: const BoxConstraints(
+                minHeight: 60,
+                // maxHeight: 100, // 先去掉，避免总被顶到上限
               ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end, 
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: AutoSizeText(
+                      name,
+                      maxLines: 3,
+                      minFontSize: 22,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    fit: FlexFit.loose,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min, // 关键：按内容高度
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        AutoSizeText(
+                          ' # $number',
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        AutoSizeText(
+                          index,
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+              
               Divider(
                 color: Colors.black,
                 thickness: 2,
