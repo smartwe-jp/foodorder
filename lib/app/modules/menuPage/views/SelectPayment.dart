@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -778,6 +779,24 @@ class SelectPaymentPage extends StatelessWidget {
                                             alignment: WrapAlignment.center,
                                             //mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
+                                              //Touch pay 通用卡图标
+                                              Container(
+                                                margin: EdgeInsets.only(top: ScreenAdapter.height(4), right: ScreenAdapter.width(10)),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                ),
+                                                width: ScreenAdapter.width(110),
+                                                height: ScreenAdapter.height(80),
+                                                alignment: Alignment.center,
+                                                child: Image.asset(
+                                                  GImage.getImageString(
+                                                      "imgpublic",
+                                                      "card_touchpay"),
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+
+
                                               if (machineInfo.showVisa == true)
                                                 Container(
                                                   width: ScreenAdapter.width(

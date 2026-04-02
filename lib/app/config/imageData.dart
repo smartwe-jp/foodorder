@@ -109,6 +109,7 @@ class GImage{
         "card_unionp":"assets/images/public/card_unionp.png",
         "card_master":"assets/images/public/card_master.png",
         "card_discover":"assets/images/public/card_discover.png",
+        "card_touchpay":"assets/images/public/card_touchpay.jpg",
 
         "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
         "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",
@@ -164,6 +165,6 @@ class GImage{
       };
     }
 
-    return imagePack[stringTag];
+    return imagePack[stringTag] ?? "";
   }
 }
