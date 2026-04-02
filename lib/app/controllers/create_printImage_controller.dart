@@ -18,6 +18,7 @@ class CreatePrintImageController extends GetxController {
   Map get usbDevice => machineInfo.usbDevice;
   String get printLogoImage => machineInfo.printLogoImageUrl;
   bool get printReceiptOptions => machineInfo.printReceiptOptions;
+  int get printPaperTxtSize => machineInfo.print_paper_txt_size;
 
   @override
   void onInit() async {
@@ -60,7 +61,7 @@ class CreatePrintImageController extends GetxController {
     if (printType == "1") {
       await Future.delayed(Duration(milliseconds: 800));
 
-      Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
+      Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions, fontSize: printPaperTxtSize);
       _sendToUsePrinter(receiptWidget);
     }
   }
@@ -69,7 +70,7 @@ class CreatePrintImageController extends GetxController {
     printData['brandImage'] = printLogoImage;
     printData['containTax'] = machineInfo.taxSystem;
 
-    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
+    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions, fontSize: printPaperTxtSize);
     _sendToUsePrinter(receiptWidget);
   }
 }

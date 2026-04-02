@@ -163,18 +163,49 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkPrintPaperTxtSize("1");
+              controller.checkPrintPaperTxtSize(1);
             },
             child: Container(
               //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              width: ScreenAdapter.width(120),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machineInfo.print_paper_txt_size == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == 1) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("小",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.machineInfo.print_paper_txt_size == 1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkPrintPaperTxtSize(2);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(120),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.machineInfo.print_paper_txt_size == 2) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -185,7 +216,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machineInfo.print_paper_txt_size == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == 2) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -194,18 +225,18 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkPrintPaperTxtSize("2");
+              controller.checkPrintPaperTxtSize(3);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              width: ScreenAdapter.width(120),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machineInfo.print_paper_txt_size == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == 3) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -216,7 +247,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machineInfo.print_paper_txt_size == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == 3) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -225,34 +256,33 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkPrintPaperTxtSize("3");
+              controller.checkPrintPaperTxtSize(4);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              width: ScreenAdapter.width(120),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machineInfo.print_paper_txt_size == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == 4) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
                 //border: new Border.all(width: 1, color: Colors.red),
               ),
-              child: Text("特　大",
+              child: Text("特 大",
                   style: TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machineInfo.print_paper_txt_size == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == 4) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -1931,36 +1961,36 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowReceipt(),//设置是否允强制必须打印领収书
                                       ]
                                   ),
-                                  // TableRow(
-                                  //     children: <Widget>[
-                                  //       Container(
-                                  //         //height: ScreenAdapter.height(65),
-                                  //         alignment: Alignment.center,
-                                  //         child: Column(
-                                  //           children: [
-                                  //             Text(
-                                  //               "レシート字体",
-                                  //               style: TextStyle(
-                                  //                   fontFamily: 'NotoSansJP',
-                                  //                   fontSize: ScreenAdapter.fontSize(22),
-                                  //                   fontWeight: FontWeight.w500
-                                  //               ),
-                                  //             ),
-                                  //             Text(
-                                  //               "（セルフレジから）",
-                                  //               style: TextStyle(
-                                  //                 fontFamily: 'NotoSansJP',
-                                  //                   fontSize: ScreenAdapter.fontSize(18),
-                                  //                   fontWeight: FontWeight.w500,
-                                  //                 color: ColorsUtil.hexToColor("#d90000"),
-                                  //               ),
-                                  //             ),
-                                  //           ],
-                                  //         ),
-                                  //       ),
-                                  //       setPrintPaperTxtSize(),//打印菜单文字大小
-                                  //     ]
-                                  // ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "レシート字体",
+                                                style: TextStyle(
+                                                    fontFamily: 'NotoSansJP',
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                              // Text(
+                                              //   "（セルフレジから）",
+                                              //   style: TextStyle(
+                                              //     fontFamily: 'NotoSansJP',
+                                              //       fontSize: ScreenAdapter.fontSize(18),
+                                              //       fontWeight: FontWeight.w500,
+                                              //     color: ColorsUtil.hexToColor("#d90000"),
+                                              //   ),
+                                              // ),
+                                            ],
+                                          ),
+                                        ),
+                                        setPrintPaperTxtSize(),//打印菜单文字大小
+                                      ]
+                                  ),
                                   TableRow(
                                       children: <Widget>[
                                         Container(
