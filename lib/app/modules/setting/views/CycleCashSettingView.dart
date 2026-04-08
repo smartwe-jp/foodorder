@@ -240,7 +240,7 @@ extension CycleCashSettingView on SettingView {
                   controller.showExchangeAlert();
                 },
               ),
-              if (kDebugMode)
+              if (controller.machineInfo.showWithdraw)
               RecycleButton(
                 title: "出金",
                 onPressed: () async {

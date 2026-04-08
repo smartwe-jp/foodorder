@@ -239,13 +239,14 @@ class MainTitle extends StatelessWidget {
     return
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(top: 20, left: ScreenAdapter.width(10)),
+            margin: EdgeInsets.only(top: 2, left: ScreenAdapter.width(10)),
             alignment: Alignment.topLeft,
             child: AutoSizeText(
               title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.left,
+              minFontSize: 18,
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(28),
                 fontWeight: FontWeight.w600,

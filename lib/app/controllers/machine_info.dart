@@ -50,6 +50,7 @@ class MachineInfoController extends GetxController {
   late Map machineModeInfo;
   late String isAllowRejishime;
   late bool actuarial;
+  late bool showWithdraw;
 
   //settings
   double machinePrintWidth = 385.0;
@@ -202,7 +203,7 @@ class MachineInfoController extends GetxController {
 
     machineCode = await HomeServices.getMachineInfo() ?? "";
     shopCode = await HomeServices.getShopCode() ?? "";
-    
+
     logI('loadMachineSettingInfo 0');
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
@@ -295,6 +296,7 @@ class MachineInfoController extends GetxController {
     showAmericanExpress = machineActivateData['show_americanExpress'] ?? false;
     showDinersClub = machineActivateData['show_dinersClub'] ?? false;
     showDiscover = machineActivateData['show_discover'] ?? false;
+    showWithdraw = machineActivateData['cashMachineWithdraw'] ?? false;
     logI('loadMachineSettingInfo 5');
 
     printerList = await HomeServices.getPrinterListInfo();
