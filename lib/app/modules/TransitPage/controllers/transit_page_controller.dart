@@ -174,6 +174,7 @@ class TransitPageController extends GetxController {
             "show_dinersClub":_dinersClub,
             "show_discover":_discover,
             "taxSystem": taxSystem,
+            "cashMachineWithdraw": shopData["cashMachineWithdraw"] ?? false,
           };
           //是否允许退款 1展示退款按钮 0 不展示
           var reimburse = (shopData["reimburse"]==true) ? "1":"0";

@@ -42,6 +42,8 @@ class PrintTask {
   });
 }
 
+enum OrderType { shopin, takeout, pickup, delivery }
+
 class PrintService extends GetxService {
   final MachineInfoController _machineInfo;
   final PrintFailedService _service = Get.find<PrintFailedService>();
@@ -559,6 +561,22 @@ class PrintService extends GetxService {
     }
   }
 
+  _orderTypeFromString(String orderTypeStr) {
+    switch (orderTypeStr.toLowerCase()) {
+      case 'Shop_In':
+        return OrderType.shopin;
+      case 'Takeout':
+      case 'takeout':
+        return OrderType.takeout;
+      case 'pickup':
+        return OrderType.pickup;
+      case 'delivery':
+        return OrderType.delivery;
+      default:
+        return OrderType.shopin; // 默认值
+    }
+  }
+
   void printData(Map data,
       {bool fromSSE = true, String orderId = "", shopName = ""}) async {
     logI("---printData---: ${data}");
@@ -580,8 +598,11 @@ class PrintService extends GetxService {
     String remark = data["remark"] ?? "";
     var payment_code = data["payment_code"] ?? "";
     bool isInShop = data["from_plate"] == "Shop";
-    bool isTakeOut = orderType != 'Shop_In';// || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
+    bool isTakeOut = orderType !=
+        'Shop_In'; // || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout' || orderType == 'delivery';
+    OrderType parsedOrderType = _orderTypeFromString(orderType);
 
+    logI("---printData--- order_sn_code $orderSnCode fromPlate $fromPlate");
     final centerPrinter = printerList.firstWhere(
       (p) => p["type"] == 11,
       orElse: () => null,
@@ -704,7 +725,7 @@ class PrintService extends GetxService {
             fromPlate,
             orderSnCode,
             orderTime,
-            //orderType,
+            parsedOrderType,
             itemCount,
             remark,
             printWidth.toDouble(),
@@ -737,12 +758,12 @@ class PrintService extends GetxService {
       if (isContinuous) {
         // If continuous printing is enabled, print all items in one go
         printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-            printerIp, isContinuous, rotate, items, remark,
+            printerIp, isContinuous, rotate, items, parsedOrderType, remark,
             printCategory: printCategory, printerType: printerType, payload: data);
       } else {
         // If label printing is enabled, print each item separately
         printSingleData(fromPlate, isTakeOut, orderSnCode, orderTime, printerIp,
-            isContinuous, rotate, items, printCategory, remark,
+            isContinuous, rotate, items, printCategory, remark, parsedOrderType,
             printerType: printerType, payload: data);
       }
       // If center printing is enabled, print the same data to the center printer
@@ -765,7 +786,7 @@ class PrintService extends GetxService {
         payment_code = payment_code.split("=").last;
       }
       printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime, printIp,
-          true, rotate, orderLineItems, remark,
+          true, rotate, orderLineItems, parsedOrderType, remark,
           isCenterPrint: true, printOption: option, printQrCode: payment_code, payload: data);
     }
 
@@ -1069,6 +1090,7 @@ class PrintService extends GetxService {
     bool rotate,
     String index,
     String time,
+    {OrderType orderType = OrderType.shopin}
   ) {
 
     return LabelConstrainedBox(
@@ -1204,6 +1226,7 @@ class PrintService extends GetxService {
     String time,
     String orderId,
     String shopName,
+    {OrderType orderType = OrderType.shopin}
   ) {
     return LabelConstrainedBox(
       Transform(
@@ -1321,11 +1344,26 @@ class PrintService extends GetxService {
     );
   }
 
+  _getOrderTypeIcon(OrderType orderType) {
+    switch (orderType) {
+      case OrderType.shopin:
+        return Icons.home_outlined;
+      case OrderType.takeout:
+        return Icons.shopping_bag_outlined;
+      case OrderType.pickup:
+        return Icons.shopping_bag_outlined;
+      case OrderType.delivery:
+        return Icons.delivery_dining_sharp;
+      default:
+        return Icons.restaurant;
+    }
+  }
+
   Widget headReceiptWidget(
       String fromPlate,
       String orderSnCode,
       String orderTime,
-      //String orderType,
+      OrderType orderType,
       int itemCount,
       String remark,
       double printWidth,
@@ -1349,17 +1387,27 @@ class PrintService extends GetxService {
                         children: [
                           Expanded(
                             flex: 3,
-                            child: AutoSizeText(
-                              fromPlate,
-                              textAlign: TextAlign.left,
-                              maxLines: 2,
-                              style: TextStyle(
-                                fontSize: 50,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                            ),
+                            child: 
+                              Row(
+                                children: [
+                                  Icon(
+                                    _getOrderTypeIcon(orderType),
+                                    size: 56,
+                                    color: Colors.black,
+                                  ),
+                                  AutoSizeText(
+                                    fromPlate,
+                                    textAlign: TextAlign.left,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 50,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                                  ),
+                                ],
+                              )
                           ),
                           Expanded(
                             flex: 2,
@@ -1410,6 +1458,7 @@ class PrintService extends GetxService {
                       //flex: 2,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AutoSizeText(
                             remark,
@@ -1514,16 +1563,17 @@ class PrintService extends GetxService {
   //使用 printData 的同样参数实现这个需求
 
   printContinuousData(
-      String fromPlate,
-      bool isTakeOut,
-      String orderSnCode,
-      String orderTime,
-      String printerIp,
-      bool isContinuous,
-      bool isRotate,
-      List items,
-      String remark,
-  {bool isCenterPrint = false,
+    String fromPlate,
+    bool isTakeOut,
+    String orderSnCode,
+    String orderTime,
+    String printerIp,
+    bool isContinuous,
+    bool isRotate,
+    List items,
+    OrderType orderType,
+    String remark, {
+    bool isCenterPrint = false,
     bool printOption = true,
     String? printQrCode,
     bool printCategory = false,
@@ -1541,7 +1591,9 @@ class PrintService extends GetxService {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             receiptTitle(orderSnCode, orderTime, fromPlate,
-                isTakeOut: isTakeOut, continuous: true, isCenterPrint: isCenterPrint),
+                isTakeOut: isTakeOut, orderType: orderType,
+                continuous: true,
+                isCenterPrint: isCenterPrint),
             ...items.map((item) {
               final qty = item["qty"] ?? 1;
               final name = item["name"] ?? "";
@@ -1639,7 +1691,9 @@ class PrintService extends GetxService {
       List items,
       bool printCategory,
       String remark,
-      {int printerType = 11, Map payload = const {}}) async {
+      OrderType orderType,
+      {
+        int printerType = 11, Map payload = const {}}) async {
     final rotate = isRotate ? pi : 0.0;
     int index = 1;
     for (var item in items) {
@@ -1657,7 +1711,7 @@ class PrintService extends GetxService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               receiptTitle(orderSnCode, orderTime, fromPlate,
-                  isTakeOut: isTakeOut,
+                  isTakeOut: isTakeOut, orderType: orderType,
                   categoryName: printCategory ? categoryName : ""),
               menuItem(name, qty, options,
                   categoryName: printCategory ? categoryName : ""),
@@ -1711,6 +1765,7 @@ class PrintService extends GetxService {
   //标题
   Widget receiptTitle(String title, String orderTime, String fromPlate,
       {bool isTakeOut = false,
+      OrderType orderType = OrderType.shopin,
       bool continuous = false,
       bool isCenterPrint = false,
       String categoryName = ""}) {
@@ -1727,11 +1782,11 @@ class PrintService extends GetxService {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (isTakeOut && !isCenterPrint)
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 50,
-                    color: Colors.black,
-                  ),
+                    Icon(
+                      _getOrderTypeIcon(orderType),
+                      size: 50,
+                      color: Colors.black,
+                    ),
                   if (isTakeOut && isCenterPrint)
                   Text(
                     fromPlate + ' # ',
