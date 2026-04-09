@@ -317,7 +317,7 @@ class PrintService extends GetxService {
   final Queue<PrintTask> _labelQueue = Queue<PrintTask>();
   bool _labelDraining = false;
 
-  void processLabelPrintQueueNew(
+  void _processLabelPrintQueueNew(
       String printerIp, Queue<PrintTask> labelPrintQueue) {
     if (labelPrintQueue.isEmpty) return;
     _labelQueue.addAll(labelPrintQueue); // 合并到全局队列
@@ -353,7 +353,7 @@ class PrintService extends GetxService {
   }
 
   //创建一个方法来处理打印队列
-  void processLabelPrintQueue(String printerIp, Queue<PrintTask> labelPrintQueue) {
+  void _processLabelPrintQueue(String printerIp, Queue<PrintTask> labelPrintQueue) {
     Timer.periodic(Duration(milliseconds: 1000), (timer) {
       if (labelPrintQueue.isEmpty) {
         timer.cancel(); // 停止定时器
@@ -365,7 +365,7 @@ class PrintService extends GetxService {
         PicGenerateTask<PrinterInfo>(
           tempWidget: task.widget as ATempWidget,
           printTypeEnum: PrintTypeEnum.label,
-          params: PrinterInfo(ip: printerIp),
+          params: PrinterInfo(ip: printerIp, printerType: 11, printInfo: task.printInfo),
         ),
       );
     });
@@ -638,7 +638,7 @@ class PrintService extends GetxService {
           labelPrintQueue.addFirst(PrintTask(widget: headReceipt, printerIp: printerIp, printerType: printerType, printInfo: printInfo));
         }
 
-        processLabelPrintQueue(printerIp, labelPrintQueue);
+        _processLabelPrintQueueNew(printerIp, labelPrintQueue);
         continue;
       }
 
