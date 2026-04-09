@@ -1083,7 +1083,7 @@ class SettlementController extends GetxController with StateMixin {
       }
       
     } catch (e) {
-      logger.info('-- doPrintOrderMenu -- error: $e');
+      logI('-- doPrintOrderMenu -- error: $e');
       if (times < 3) {
         doPrintOrderMenu(printType, times: times + 1);
       } else {
@@ -1632,7 +1632,7 @@ class SettlementController extends GetxController with StateMixin {
       //}
     }).catchError((e) {
         //后期优化，上报失败存储本地，下次再上报。
-        logI("----上报订单失败----");
+        logI("----上报订单失败----，error: $e");
         if (!retry) {
           FirebaseAnalytics.instance.logEvent(
               name: "cash_report_error", parameters: {
