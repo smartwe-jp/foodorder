@@ -53,7 +53,7 @@ class MachineInfoController extends GetxController {
 
   //settings
   double machinePrintWidth = 385.0;
-  late String print_paper_txt_size;
+  late int print_paper_txt_size;
   late String isReservation;
   late String panelType;
   bool isAllow10000 = true;
@@ -216,7 +216,7 @@ class MachineInfoController extends GetxController {
     is_dark_theme = systemSettingInfo['isDarkTheme'] ?? true;
     themeColor = systemSettingInfo['themeColor'] ?? 0xFF1B5E20;
 
-    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? '1';
+    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? 2;
     isReservation = systemSettingInfo['isReservation'] ?? '0';
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';

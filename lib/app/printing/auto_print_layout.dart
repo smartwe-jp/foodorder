@@ -188,47 +188,80 @@ class PrintMemberInfo {
 // =====================
 
 class PrintTextStyles {
-  static const TextStyle title = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 50,
-    fontWeight: FontWeight.w500,
-  );
+  // 辅助方法：根据参数返回 fontSize
+  static double _getFontSize(double small, double normal, double large, double superlarge, int size) {
+    switch (size) {
+      case 1: // small
+        return small;
+      case 3: // large
+        return large;
+      case 4: // extra large
+        return superlarge;
+      case 2: // normal
+      default:
+        return normal;
+    }
+  }
 
-  static const TextStyle menu = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 28,
-    fontWeight: FontWeight.w300,
-  );
+  // title 样式
+  static TextStyle title(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(44, 50, 60, 72, size),  // small: 40, normal: 50, large: 60, extra large: 72
+      fontWeight: FontWeight.w500,
+    );
+  }
 
-  static const TextStyle menuSmall = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 24,
-    fontWeight: FontWeight.w300,
-  );
+  // menu 样式
+  static TextStyle menu(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(24, 28, 34, 40, size),  // small: 22, normal: 28, large: 34, extra large: 40
+      fontWeight: FontWeight.w400,
+    );
+  }
 
-  static const TextStyle menBold = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-  );
+  // menuSmall 样式（原 menuSmall）
+  static TextStyle menuSmall(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(22, 24, 29, 34, size),  // small: 19, normal: 24, large: 29, extra large: 34
+      fontWeight: FontWeight.w400,
+    );
+  }
 
-  static const TextStyle menuBold = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-  );
+  // menBold 样式（假设是 menuBold 的变体）
+  static TextStyle menBold(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(24, 28, 34, 40, size),  // small: 22, normal: 28, large: 34, extra large: 40
+      fontWeight: FontWeight.bold,
+    );
+  }
 
-  static const TextStyle small = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 24,
-    fontWeight: FontWeight.w300,
-  );
+  // menuBold 样式
+  static TextStyle menuBold(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(28, 32, 38, 46, size),  // small: 26, normal: 32, large: 38, extra large: 46
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  // small 样式
+  static TextStyle small(int size) {
+    return TextStyle(
+      fontFamily: 'NotoSansJP',
+      color: Colors.black,
+      fontSize: _getFontSize(19, 24, 29, 34, size),  // small: 19, normal: 24, large: 29, extra large: 34
+      fontWeight: FontWeight.w300,
+    );
+  }
 }
 
 // =====================
@@ -238,6 +271,7 @@ class PrintTextStyles {
 Widget buildKitchenTicketWidget(
   Map<String, dynamic> data, {
   double width = 580,
+  int fontSize = 2, // 1: small, 2: normal, 3: large
 }) {
   final parsed = _kitchenTicketFromMap(data);
   final takeoutTag = parsed.takeOut ? '【T】' : '';
@@ -251,12 +285,12 @@ Widget buildKitchenTicketWidget(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PrintCenterOneColumnText('$takeoutTag${parsed.numberTip}\n${parsed.serialNumber}', 
-          style: PrintTextStyles.menuBold),
+          style: PrintTextStyles.menuBold(fontSize)),
           const SizedBox(height: 8),
-          ...parsed.items.map((item) => PrintKitchenItemBlock(item: item)),
+          ...parsed.items.map((item) => PrintKitchenItemBlock(item: item, fontSize: fontSize)),
           const SizedBox(height: 6),
           PrintOneColumnText(parsed.orderDate,
-              style: PrintTextStyles.small, align: TextAlign.right),
+              style: PrintTextStyles.small(fontSize), align: TextAlign.right),
         ],
       ),
     ),
@@ -264,7 +298,7 @@ Widget buildKitchenTicketWidget(
 }
 
 Widget buildReceiptWidget(Map<String, dynamic> data,
-    {double width = 580, bool printOptions = false}) {
+    {double width = 580, bool printOptions = false, int fontSize = 2}) {
   final parsed = _receiptFromMap(data);
   final originalPrice = parsed.originalPrice;
   final takeoutTag = parsed.takeOut ? '*' : '';
@@ -281,26 +315,26 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
           if (parsed.brandImage != null && parsed.brandImage!.isNotEmpty)
             _brandImageWidget(parsed.brandImage!),
           PrintOneColumnText(parsed.address.replaceAll('%%', '\n'),
-              style: PrintTextStyles.menu),
+              style: PrintTextStyles.menu(fontSize)),
           const SizedBox(height: 6),
           if ((parsed.telNo ?? '').isNotEmpty)
             PrintOneColumnText('電話番号:${parsed.telNo}',
-                style: PrintTextStyles.menu),
+                style: PrintTextStyles.menu(fontSize)),
           if (parsed.orderDate.isNotEmpty)
             PrintOneColumnText(parsed.orderDate,
-                style: PrintTextStyles.menu),
+                style: PrintTextStyles.menu(fontSize)),
           if ((parsed.ntaNo ?? '').isNotEmpty)
             PrintOneColumnText('登録番号:${parsed.ntaNo}',
-                style: PrintTextStyles.menu),
+                style: PrintTextStyles.menu(fontSize)),
           const SizedBox(height: 6),
           //PrintOneColumnText(parsed.orderDate, style: PrintTextStyles.menu),
           PrintOneColumnText('注文番号:${parsed.orderNo}',
-              style: PrintTextStyles.menu),
+              style: PrintTextStyles.menu(fontSize)),
           if (parsed.numberTip.isNotEmpty || parsed.serialNumber.isNotEmpty)
             PrintOneColumnText('${parsed.numberTip}${parsed.serialNumber}',
-                style: PrintTextStyles.menuBold),
+                style: PrintTextStyles.menuBold(fontSize)),
           const SizedBox(height: 6),
-          PrintReceiptTitle(title: '領 収 書'),
+          PrintReceiptTitle(title: '領 収 書', fontSize: fontSize),
           const SizedBox(height: 8),
           // ...parsed.items.map((item) => PrintTwoColumnRow(
           //       left: '${item.name}$takeoutTag x${item.qty}',
@@ -324,8 +358,8 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                   left: '${item.name}$takeoutTag',
                   middle: '${item.qty}',
                   right: '￥${formatMoney(printOptions ? item.initialPrice : item.price)}',
-                  leftStyle: PrintTextStyles.menu,
-                  rightStyle: PrintTextStyles.menu,
+                  leftStyle: PrintTextStyles.menu(fontSize),
+                  rightStyle: PrintTextStyles.menu(fontSize),
                 ),
                 if (item.options.isNotEmpty && printOptions)
                   ...item.options.map((optionGroup) {
@@ -337,7 +371,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(optionGroup.name + ':', style: PrintTextStyles.menuSmall),
+                              Text(optionGroup.name + ':', style: PrintTextStyles.menuSmall(fontSize)),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -350,13 +384,13 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                                         Expanded(
                                           child: Text(
                                             o.name + (o.qty > 1 ? ' ×${o.qty}' : ''),
-                                            style: PrintTextStyles.menuSmall,
+                                            style: PrintTextStyles.menuSmall(fontSize),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
                                           '￥${formatMoney(o.totalPrice)}',
-                                          style: PrintTextStyles.menuSmall,
+                                          style: PrintTextStyles.menuSmall(fontSize),
                                           textAlign: TextAlign.right,
                                         ),
                                       ],
@@ -381,47 +415,47 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
             PrintTwoColumnRow(
               left: '定価',
               right: '￥${formatMoney(originalPrice)}',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
           if (parsed.discount != 0)
             PrintTwoColumnRow(
               left: '割引',
               right: '-￥${formatMoney(parsed.discount)}',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
           PrintTwoColumnRow(
             left: '合計',
             right: '￥${formatMoney(parsed.price)}',
-            leftStyle: PrintTextStyles.menuBold,
-            rightStyle: PrintTextStyles.menu,
+            leftStyle: PrintTextStyles.menuBold(fontSize),
+            rightStyle: PrintTextStyles.menu(fontSize),
           ),
           const PrintSectionDivider(),
           if (!parsed.hideTax) ...[
             PrintTwoColumnRow(
               left: '8%対象',
               right: '￥${formatMoney(parsed.baseTax8)}',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             PrintTwoColumnRow(
               left: parsed.taxLabel,
               right: '￥${formatMoney(parsed.tax8)})',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             PrintTwoColumnRow(
               left: '10%対象',
               right: '￥${formatMoney(parsed.baseTax10)}',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             PrintTwoColumnRow(
               left: parsed.taxLabel,
               right: '￥${formatMoney(parsed.tax10)})',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             const PrintSectionDivider(),
           ],
@@ -429,8 +463,8 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
             PrintTwoColumnRow(
               left: '代金券・売掛',
               right: '￥${formatMoney(parsed.voucherAmount)}',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
 
           if (parsed.paymentMethod != '現金支払')
@@ -439,21 +473,21 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
               right: parsed.payPrice > 0
                   ? '￥${formatMoney(parsed.payPrice)}'
                   : '',
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
           if (parsed.memberNo.isNotEmpty) ...[
             PrintTwoColumnRow(
               left: 'カード番号',
               right: parsed.memberNo,
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             PrintTwoColumnRow(
               left: '日期',
               right: parsed.payDate,
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             const PrintSectionDivider(),
           ],
@@ -462,14 +496,14 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
             PrintTwoColumnRow(
               left: 'カード取引通番',
               right: parsed.serialNo,
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             PrintTwoColumnRow(
               left: '取引日時',
               right: parsed.payDate,
-              leftStyle: PrintTextStyles.menu,
-              rightStyle: PrintTextStyles.menu,
+              leftStyle: PrintTextStyles.menu(fontSize),
+              rightStyle: PrintTextStyles.menu(fontSize),
             ),
             const PrintSectionDivider(),
           ],
@@ -483,7 +517,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                 Expanded(
                   child: PrintOneColumnText(
                     "*軽減税率対象",
-                    style: PrintTextStyles.menu,
+                    style: PrintTextStyles.menu(fontSize),
                   ),
                 ),
                 if (parsed.paymentMethod == "現金支払")
@@ -493,14 +527,14 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                       PrintTwoRow(
                         left: 'お預り',
                         right: '￥${formatMoney(parsed.payPrice)}',
-                        leftStyle: PrintTextStyles.menu,
-                        rightStyle: PrintTextStyles.menu,
+                        leftStyle: PrintTextStyles.menu(fontSize),
+                        rightStyle: PrintTextStyles.menu(fontSize),
                       ),
                       PrintTwoRow(
                         left: 'お釣',
                         right: '￥${formatMoney(parsed.change)}',
-                        leftStyle: PrintTextStyles.menu,
-                        rightStyle: PrintTextStyles.menu,
+                        leftStyle: PrintTextStyles.menu(fontSize),
+                        rightStyle: PrintTextStyles.menu(fontSize),
                       ),
                     ],
                   )),
@@ -508,7 +542,7 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
             ),
           ),
           //お明細は上記のとおりです。
-          PrintOneColumnText('お明細は上記のとおりです。', style: PrintTextStyles.menu),
+          PrintOneColumnText('お明細は上記のとおりです。', style: PrintTextStyles.menu(fontSize)),
         ],
       ),
     ),
@@ -856,8 +890,9 @@ class PrintSectionDivider extends StatelessWidget {
 
 class PrintReceiptTitle extends StatelessWidget {
   final String title;
+  final int fontSize;
 
-  const PrintReceiptTitle({Key? key, required this.title}) : super(key: key);
+  const PrintReceiptTitle({Key? key, required this.title, required this.fontSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -869,7 +904,7 @@ class PrintReceiptTitle extends StatelessWidget {
           border: Border.all(color: Colors.black, width: 2),
         ),
         child: Text(title,
-            style: PrintTextStyles.title, textAlign: TextAlign.center),
+            style: PrintTextStyles.title(fontSize), textAlign: TextAlign.center),
       ),
     );
   }
@@ -877,8 +912,9 @@ class PrintReceiptTitle extends StatelessWidget {
 
 class PrintKitchenItemBlock extends StatelessWidget {
   final PrintKitchenItem item;
+  final int fontSize;
 
-  const PrintKitchenItemBlock({Key? key, required this.item}) : super(key: key);
+  const PrintKitchenItemBlock({Key? key, required this.item, required this.fontSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -890,11 +926,11 @@ class PrintKitchenItemBlock extends StatelessWidget {
           PrintTwoColumnRow(
             left: item.name,
             right: 'x${item.qty}',
-            leftStyle: PrintTextStyles.menBold,
-            rightStyle: PrintTextStyles.menBold,
+            leftStyle: PrintTextStyles.menBold(fontSize),
+            rightStyle: PrintTextStyles.menBold(fontSize),
           ),
           if (item.options.isNotEmpty)
-            ...item.options.map((g) => PrintOptionGroupBlock(group: g)),
+            ...item.options.map((g) => PrintOptionGroupBlock(group: g, fontSize: fontSize)),
           const PrintSectionDivider(),
         ],
       ),
@@ -904,8 +940,9 @@ class PrintKitchenItemBlock extends StatelessWidget {
 
 class PrintOptionGroupBlock extends StatelessWidget {
   final itemOptions group;
+  final int fontSize;
 
-  const PrintOptionGroupBlock({Key? key, required this.group})
+  const PrintOptionGroupBlock({Key? key, required this.group, required this.fontSize})
       : super(key: key);
 
   @override
@@ -916,7 +953,7 @@ class PrintOptionGroupBlock extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
 
-          Text(group.name, style: PrintTextStyles.menu),
+          Text(group.name, style: PrintTextStyles.menu(fontSize)),
           Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children:[
@@ -926,7 +963,7 @@ class PrintOptionGroupBlock extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Text(
                     o.name + (o.qty > 1 ? ' ×${o.qty}' : ''),
-                    style: PrintTextStyles.menu,
+                    style: PrintTextStyles.menu(fontSize),
                     textAlign: TextAlign.right,
                   ),
                 ),
