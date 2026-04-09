@@ -118,7 +118,7 @@ class CreatePrintImageController extends GetxController {
   MachineInfoController machineInfo = Get.find();
   AppConfig appConfig = Get.find();
   double get printWidth => machineInfo.machinePrintWidth;
-  String get print_paper_txt_size => machineInfo.print_paper_txt_size;
+  int get print_paper_txt_size => machineInfo.print_paper_txt_size;
   String get printLogoImage => machineInfo.printLogoImageUrl;
   bool get printReceiptOptions => machineInfo.printReceiptOptions;
   int get printPaperTxtSize => machineInfo.print_paper_txt_size;
