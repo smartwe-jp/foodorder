@@ -134,7 +134,7 @@ class CreatePrintImageController extends GetxController {
     printData['containTax'] = machineInfo.taxSystem;
 
     Widget kitchenTicketWidget =
-    buildKitchenTicketWidget(printData, width: printWidth);
+    buildKitchenTicketWidget(printData, width: printWidth, fontSize: printPaperTxtSize);
 
     ByteData byteData = await _widgetToImageExact(
         context: Get.context!,
@@ -163,7 +163,7 @@ class CreatePrintImageController extends GetxController {
     printData['brandImage'] = printLogoImage;
     printData['containTax'] = machineInfo.taxSystem;
     await ensureImageLoaded(printLogoImage);
-    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions, fontSize: printPaperTxtSize);
+    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
 
     //ByteData byteData = await WidgetToImage.widgetToImage(receiptWidget,
     //    size: Size(printWidth, 600));

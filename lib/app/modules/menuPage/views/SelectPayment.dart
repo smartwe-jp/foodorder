@@ -724,9 +724,9 @@ class SelectPaymentPage extends StatelessWidget {
                                       width: ScreenAdapter.width(870),
                                       //height: ScreenAdapter.height(335),
                                       padding: EdgeInsets.only(
-                                          left: ScreenAdapter.width(15),
+                                          left: ScreenAdapter.width(5),
                                           top: ScreenAdapter.height(20),
-                                          right: ScreenAdapter.width(15),
+                                          right: ScreenAdapter.width(5),
                                           bottom: ScreenAdapter.height(20)),
                                       decoration: BoxDecoration(
                                         //设置边框
