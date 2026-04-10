@@ -950,25 +950,35 @@ class PrintOptionGroupBlock extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 18, top: 2, bottom: 2),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          Text(group.name, style: PrintTextStyles.menu(fontSize)),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children:[
-          ...group.items.map((o) => Padding(
-                padding: const EdgeInsets.only(left: 12, top: 2),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    o.name + (o.qty > 1 ? ' ×${o.qty}' : ''),
-                    style: PrintTextStyles.menu(fontSize),
-                    textAlign: TextAlign.right,
+          // Make group name flexible so it wraps if long
+          Expanded(
+            flex: 2,
+            child: Text(group.name, style: PrintTextStyles.menu(fontSize)),
+          ),
+          Text(': ', style: PrintTextStyles.menu(fontSize)),
+          // Options column takes remaining space and each option wraps and aligns right
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: group.items.map((o) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      o.name + (o.qty > 1 ? ' ×${o.qty}' : ''),
+                      style: PrintTextStyles.menu(fontSize),
+                      textAlign: TextAlign.right,
+                      softWrap: true,
+                    ),
                   ),
-                ),
-              )),
-              ])
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
