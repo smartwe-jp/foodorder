@@ -371,7 +371,10 @@ Widget buildReceiptWidget(Map<String, dynamic> data,
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(optionGroup.name + ':', style: PrintTextStyles.menuSmall(fontSize)),
+                              Container(
+                                constraints: BoxConstraints(maxWidth: 180), // Adjust maxWidth as needed
+                                child:Text(optionGroup.name + ':', style: PrintTextStyles.menuSmall(fontSize)),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -953,14 +956,12 @@ class PrintOptionGroupBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Make group name flexible so it wraps if long
-          Expanded(
-            flex: 2,
-            child: Text(group.name, style: PrintTextStyles.menu(fontSize)),
+          Container(
+            constraints: BoxConstraints(maxWidth: 180), // Adjust maxWidth as needed
+            child:Text(group.name , style: PrintTextStyles.menu(fontSize)),
           ),
-          Text(': ', style: PrintTextStyles.menu(fontSize)),
           // Options column takes remaining space and each option wraps and aligns right
           Expanded(
-            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: group.items.map((o) {
@@ -979,6 +980,7 @@ class PrintOptionGroupBlock extends StatelessWidget {
               }).toList(),
             ),
           ),
+          SizedBox(height: 5)
         ],
       ),
     );

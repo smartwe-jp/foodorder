@@ -55,13 +55,13 @@ class CreatePrintImageController extends GetxController {
     printData['containTax'] = machineInfo.taxSystem;
 
     Widget kitchenTicketWidget =
-        buildKitchenTicketWidget(printData, width: printWidth);
+        buildKitchenTicketWidget(printData, width: printWidth, fontSize: printPaperTxtSize);
 
     _sendToUsePrinter(kitchenTicketWidget);
     if (printType == "1") {
       await Future.delayed(Duration(milliseconds: 800));
 
-      Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions, fontSize: printPaperTxtSize);
+      Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
       _sendToUsePrinter(receiptWidget);
     }
   }
@@ -70,7 +70,7 @@ class CreatePrintImageController extends GetxController {
     printData['brandImage'] = printLogoImage;
     printData['containTax'] = machineInfo.taxSystem;
 
-    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions, fontSize: printPaperTxtSize);
+    Widget receiptWidget = buildReceiptWidget(printData, width: printWidth, printOptions: printReceiptOptions);
     _sendToUsePrinter(receiptWidget);
   }
 }
