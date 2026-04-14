@@ -16,8 +16,8 @@ import 'package:widget_to_image/widget_to_image.dart';
 
 import '../../../config/imageData.dart';
 import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
-import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../controllers/app_config.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -132,7 +132,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
-      //LogUtil.d(response);
+      logI("查询订单信息：${response}");
       if (response['code'] == 200 &&
           response['data'] != null &&
           response['data'].length > 0) {
@@ -144,10 +144,15 @@ class ReimburseOrderController extends GetxController with StateMixin {
       }
 
       update();
+    }).onError((error, stackTrace) {
+      logI("查询订单信息失败：${error}");
+       noOrderAlsert();
     });
   }
 
   noOrderAlsert() {
+    if (EasyLoading.isShow)
+      EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("返金に異常が発生しました，店舗にお問い合わせください。",
             title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -183,11 +188,14 @@ class ReimburseOrderController extends GetxController with StateMixin {
       refundFailedAlert();
     } else if (refundInfo.value["payChannel"] == "Cash") {
       showPosEasyLoading();
-      String strartPayCube = await payCube.strartRefundPayCube;
-      debugPrint("退款开始出金:${strartPayCube}");
-      //调用插件的监听
-      payCube.getPayCubeListener();
-      _setPayCubeListener();
+      if (Platform.isAndroid) {
+        String strartPayCube = await payCube.strartRefundPayCube;
+        logI("调用插件的监听结果:${strartPayCube}");
+        //调用插件的监听
+        payCube.getPayCubeListener();
+        _setPayCubeListener();
+      }
+
       startOutPutMoney(refundInfo["amount"]);
     } else if (refundInfo["payChannel"] == "CreditCard") {
       showPosEasyLoading();
@@ -213,6 +221,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
       } else {
         refundFailedAlert();
       }
+    }).onError((error, stackTrace) {
+      logI("信用卡退款请求失败：${error}");
+      refundFailedAlert();
     });
   }
 
@@ -223,6 +234,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
+      EasyLoading.dismiss();
       var response = json.decode(value.toString());
       if (response['code'] == 200 &&
           response['data']["executeMark"] == true &&
@@ -253,11 +265,16 @@ class ReimburseOrderController extends GetxController with StateMixin {
       } else {
         refundFailedAlert();
       }
+    }).onError((error, stackTrace) {
+      logI("扫码支付退款请求失败：${error}");
+      refundFailedAlert();
     });
   }
 
   //refund failed alert
   refundFailedAlert() {
+    if (EasyLoading.isShow)
+      EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
             title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -269,6 +286,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   hadRefundAlert() {
+    if (EasyLoading.isShow)
+      EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("指定した取引は既に取消されています。",
             title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -336,7 +355,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       int.parse(pos_port.value),
       //timeout: Duration(seconds: 5),
     ).then((Socket socket) {
-      print("连接成功了么");
+      logI("连接成功了么");
       this._socket = socket;
 
       //扫码过来的，请求数据不为空时候发送POS请求
@@ -426,11 +445,11 @@ class ReimburseOrderController extends GetxController with StateMixin {
         },
         onDone: () {
           socketState.value = false;
-          print("pos机done了");
+          logI("pos机done了");
         },
         onError: (e) {
           socketState.value = false;
-          print("pos机错误了");
+          logI("pos机错误了");
           //_close();
         },
       );
@@ -439,8 +458,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
     }).catchError((e) {
       socketState.value = false;
 
-      print("Unable to connect: $e");
-      print("POS机连接${socketNumberTimes.value}");
+      logI("Unable to connect: $e");
+      logI("POS机连接${socketNumberTimes.value}");
       Future.delayed(Duration(milliseconds: 400), () async {
         payconnectSocker(questData: questData);
       });
@@ -494,14 +513,12 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
     var outStringMoney = outMoney.toString();
     //await Paycube.setReceiveEvent;
-
-    bool outResult =
-        await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
-      debugPrint("出金成功");
+    bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
+      logI("出金成功");
     }, catchError: (error) {
-      debugPrint("出金失败");
+      logI("出金失败");
     });
-    debugPrint("出金结果 ${outResult}");
+    logI("出金结果 ${outResult}");
     //_countDownTimer("6");
 
     // outmoneytimer?.cancel();
