@@ -18,6 +18,7 @@ import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -131,7 +132,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     request('webBootReimburseQuery', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
-LogUtil.d(response);
+      logI("查询订单信息：${response}");
       if (response['code'] == 200 && response['data'] !=null && response['data'].length > 0) {
 
         orderList.value = response['data'];
@@ -142,12 +143,17 @@ LogUtil.d(response);
       }
 
       update();
+    }).onError((error, stackTrace) {
+      logI("查询订单信息失败：${error}");
+       noOrderAlsert();
     });
 
 
   }
 
   noOrderAlsert() {
+    if (EasyLoading.isShow)
+      EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("指定した取引は存在しません。",
             title: "お知らせ",
@@ -190,7 +196,7 @@ LogUtil.d(response);
     } else if (refundInfo["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await payCube.strartRefundPayCube;
-      debugPrint("退款开始出金:${strartPayCube}");
+      logI("退款开始出金:${strartPayCube}");
       //调用插件的监听
       payCube.getPayCubeListener();
       _setPayCubeListener();
@@ -218,6 +224,9 @@ LogUtil.d(response);
       } else {
         refundFailedAlert();
       }
+    }).onError((error, stackTrace) {
+      logI("信用卡退款请求失败：${error}");
+      refundFailedAlert();
     });
   }
 
@@ -228,9 +237,9 @@ LogUtil.d(response);
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
+      EasyLoading.dismiss();
       var response = json.decode(value.toString());
       if(response['code'] == 200 &&  response['data']["executeMark"] == true && response['data']["requestMessage"] ==""){
-        EasyLoading.dismiss();
         _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功",
@@ -256,11 +265,16 @@ LogUtil.d(response);
       }else{
         refundFailedAlert();
       }
+    }).onError((error, stackTrace) {
+      logI("扫码支付退款请求失败：${error}");
+      refundFailedAlert();
     });
   }
 
   //refund failed alert
   refundFailedAlert(){
+    if (EasyLoading.isShow)
+    EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
             title: "お知らせ",
@@ -275,6 +289,8 @@ LogUtil.d(response);
   }
 
   hadRefundAlert(){
+    if (EasyLoading.isShow)
+      EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton("指定した取引は既に取消されています。",
             title: "お知らせ",
@@ -347,7 +363,7 @@ LogUtil.d(response);
       int.parse(pos_port.value),
       //timeout: Duration(seconds: 5),
     ).then((Socket socket) {
-      print("连接成功了么");
+      logI("连接成功了么");
       this._socket = socket;
 
       //扫码过来的，请求数据不为空时候发送POS请求
@@ -426,11 +442,11 @@ LogUtil.d(response);
       },
         onDone: () {
           socketState.value = false;
-          print("pos机done了");
+          logI("pos机done了");
         },
         onError: (e) {
           socketState.value = false;
-          print("pos机错误了");
+          logI("pos机错误了");
           //_close();
         },
       );
@@ -441,8 +457,8 @@ LogUtil.d(response);
 
       socketState.value = false;
 
-      print("Unable to connect: $e");
-      print("POS机连接${socketNumberTimes.value}");
+      logI("Unable to connect: $e");
+      logI("POS机连接${socketNumberTimes.value}");
       Future.delayed(Duration(milliseconds: 400), () async {
         payconnectSocker(questData:questData);
       });
@@ -495,11 +511,11 @@ LogUtil.d(response);
     //await Paycube.setReceiveEvent;
 
     bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
-      debugPrint("出金成功");
+      logI("出金成功");
     }, catchError: (error) {
-      debugPrint("出金失败");
+      logI("出金失败");
     });
-    debugPrint("出金结果 ${outResult}");
+    logI("出金结果 ${outResult}");
     //_countDownTimer("6");
 
     // outmoneytimer?.cancel();
