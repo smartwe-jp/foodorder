@@ -219,7 +219,14 @@ class MachineInfoController extends GetxController {
     is_dark_theme = systemSettingInfo['isDarkTheme'] ?? true;
     themeColor = systemSettingInfo['themeColor'] ?? 0xFF1B5E20;
 
-    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? 2;
+    final printPaperTxtSizeValue = systemSettingInfo['printPaperTxtSize'];
+    if (printPaperTxtSizeValue is int) {
+      print_paper_txt_size = printPaperTxtSizeValue;
+    } else if (printPaperTxtSizeValue is String) {
+      print_paper_txt_size = int.tryParse(printPaperTxtSizeValue) ?? 2;
+    } else {
+      print_paper_txt_size = 2; // default value
+    }
     isReservation = systemSettingInfo['isReservation'] ?? '0';
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
