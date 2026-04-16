@@ -15,6 +15,7 @@ class PrintKitchenTicketData {
   final String serialNumber;
   final String orderDate;
   final List<PrintKitchenItem> items;
+  final String receiptRemark;
 
   PrintKitchenTicketData({
     required this.takeOut,
@@ -22,6 +23,7 @@ class PrintKitchenTicketData {
     required this.serialNumber,
     required this.orderDate,
     required this.items,
+    this.receiptRemark = '',
   });
 }
 
@@ -89,6 +91,7 @@ class PrintReceiptData {
   final int change;
   final String payDate;
   final String serialNo;
+  final String receiptRemark;
 
   PrintReceiptData({
     required this.address,
@@ -117,6 +120,7 @@ class PrintReceiptData {
     this.payDate = '',
     this.serialNo = '',
     this.change = 0,
+    this.receiptRemark = '',
     //this.payments = const [],
   });
 }
@@ -291,6 +295,10 @@ Widget buildKitchenTicketWidget(
           const SizedBox(height: 6),
           PrintOneColumnText(parsed.orderDate,
               style: PrintTextStyles.small(fontSize), align: TextAlign.right),
+          const SizedBox(height: 16),   
+          if (parsed.receiptRemark.isNotEmpty)
+            PrintOneColumnText(parsed.receiptRemark,
+                style: PrintTextStyles.menuBold(fontSize), align: TextAlign.right),
         ],
       ),
     ),
@@ -576,6 +584,7 @@ PrintKitchenTicketData _kitchenTicketFromMap(Map<String, dynamic> map) {
     serialNumber: _toStr(map['serialNumber']),
     orderDate: _toStr(map['orderDate']),
     items: _kitchenItemsFrom(map['printInfo']['orderLines']),
+    receiptRemark: _toStr(map['receiptRemark']),
   );
 }
 
@@ -620,6 +629,7 @@ PrintReceiptData _receiptFromMap(Map<String, dynamic> map) {
     payDate: _toStr(map['payDate']),
     serialNo: _toStr(map['serialNo']),
     change: map['change'] != null ? _toInt(map['change']) : 0,
+    receiptRemark: _toStr(map['receiptRemark']),
   );
 }
 
