@@ -1410,13 +1410,13 @@ print("加1了");
     //update();
   }
 
-  clearCartList() {
-    ordersqlcontroller.removeAllFromCart();
-    ordersqlcontroller.getCardList();
-    classTag.value = topMenu.value[0]["categoryCode"];
-    menuLackMap.value = {};
-    getCartPriceTotal();
-  }
+  // clearCartList() {
+  //   ordersqlcontroller.removeAllFromCart();
+  //   ordersqlcontroller.getCardList();
+  //   classTag.value = topMenu.value[0]["categoryCode"];
+  //   menuLackMap.value = {};
+  //   getCartPriceTotal();
+  // }
 
   gotoLanguageHome(){
     //clearCartList();

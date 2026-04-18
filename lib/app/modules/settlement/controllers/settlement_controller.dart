@@ -387,8 +387,8 @@ class SettlementController extends GetxController with StateMixin {
     if (_isNavigating) return;
     _isNavigating = true;
     try {
-      await Get.find<MenuPageController>().clearCartList();
-      //await ordersqlcontroller.removeAllFromCart(); // 等待清空
+      //await Get.find<MenuPageController>().clearCartList();
+      await ordersqlcontroller.removeAllFromCart(); // 等待清空
     } catch (e) {
       logger.warning('removeAllFromCart error: $e');
     }
