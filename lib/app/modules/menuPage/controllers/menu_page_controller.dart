@@ -116,7 +116,7 @@ class MenuPageController extends GetxController with StateMixin {
   Future<void> onClose() async {
     debugPrint('MenuPageController onClose');
     await customCacheManager.emptyCache();
-    await Get.delete<MenuPageController>();
+    //await Get.delete<MenuPageController>();
     super.onClose();
   }
 
@@ -1381,12 +1381,13 @@ print("加1了");
 
   }
 
-  _resetToFirstCategory() {
-    final firstCategory = topMenu.first['categoryCode'];
+  _resetToFirstCategory() async {
+    logI("_resetToFirstCategory");
+    final firstCategory = topMenu.first['categoryCode'] ?? null;
     if (firstCategory != null) {
-      changeCategory(firstCategory);
+      await changeCategory(firstCategory);
     } else {
-      changeCategory(classTag.value);
+      await changeCategory(classTag.value);
     }
   }
 
@@ -1410,13 +1411,27 @@ print("加1了");
     //update();
   }
 
-  // clearCartList() {
-  //   ordersqlcontroller.removeAllFromCart();
-  //   ordersqlcontroller.getCardList();
-  //   classTag.value = topMenu.value[0]["categoryCode"];
-  //   menuLackMap.value = {};
-  //   getCartPriceTotal();
-  // }
+  clearCartList() async {
+    logI("clearCartList");
+    await ordersqlcontroller.removeAllFromCart();
+    await ordersqlcontroller.getCardList();
+    //classTag.value = topMenu[0]["categoryCode"];
+    menuLackMap.value = {};
+    await getCartPriceTotal();
+
+    if (topMenu.isNotEmpty) {
+      selectIndex = 0;
+      classTag.value = topMenu[0]["categoryCode"];
+      bgColor.value = topMenu[0]["background"] ?? "#F9F9F9";
+
+      if (pageController.hasClients) {
+        pageController.jumpToPage(0);
+      }
+
+      update(['side_bar']);
+      update(['background']);
+    }
+  }
 
   gotoLanguageHome(){
     //clearCartList();

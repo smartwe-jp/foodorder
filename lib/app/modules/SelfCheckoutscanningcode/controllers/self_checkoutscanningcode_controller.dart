@@ -55,8 +55,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     super.onClose();
   }
 
-  readyQueryData(){
+  readyQueryData() async {
     checkLanguage.value = Get.arguments['checkLanguage'];
+    await ordersqlcontroller.removeAllFromCart();
     getCartPriceTotal();
 
   }

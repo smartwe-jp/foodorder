@@ -335,27 +335,31 @@ class TransitPageController extends GetxController {
 
   Future<void> ensureImageLoaded(String imageUrl) async {
     if (imageUrl.isEmpty) return;
+    try {
+      final provider = CachedNetworkImageProvider(imageUrl);
+      final config = ImageConfiguration.empty;
+      final Completer<void> completer = Completer<void>();
 
-    final provider = CachedNetworkImageProvider(imageUrl);
-    final config = ImageConfiguration.empty;
-    final Completer<void> completer = Completer<void>();
+      provider.resolve(config).addListener(
+        ImageStreamListener(
+              (ImageInfo image, bool synchronousCall) {
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
+          },
+          onError: (Object error, StackTrace? stackTrace) {
+            if (!completer.isCompleted) {
+              completer.completeError(error);
+            }
+          },
+        ),
+      );
 
-    provider.resolve(config).addListener(
-      ImageStreamListener(
-            (ImageInfo image, bool synchronousCall) {
-          if (!completer.isCompleted) {
-            completer.complete();
-          }
-        },
-        onError: (Object error, StackTrace? stackTrace) {
-          if (!completer.isCompleted) {
-            completer.completeError(error);
-          }
-        },
-      ),
-    );
+      await completer.future;
+    } catch (e) {
+      logI('ensureImageLoaded error: $e');
+    }
 
-    await completer.future;
   }
 
   Future<bool> _checkShouldActive() async {
@@ -380,65 +384,33 @@ class TransitPageController extends GetxController {
   _getSmartweSystemSettingInfo({bool isLaunch = false}) async {
     debugPrint("getSmartweSystemSettingInfo");
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    try {
+      if (!Get.isRegistered<MachineInfoController>()) {
+        final controller = MachineInfoController(systemSettingInfo);
+        await Get.putAsync<MachineInfoController>(() async {
+          await controller.loadMachineSettingInfo(); // 确保初始化完成
+          return controller;
+        }, permanent: true);
+        debugPrint('put MachineInfoController done');
+      } else {
+        await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingInfo);
+        debugPrint('update MachineInfoController done');
+      }
+      // await Get.delete<MachineInfoController>();
+      // Get.put(MachineInfoController(systemSettingData));
 
-    // var checkmachineMode = "1";
-    // if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
-    //   if(_actuarial.value==true){
-    //     checkmachineMode = (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
-    //   }else{
-    //     checkmachineMode = "1";
-    //   }
-    // }
-    // var systemSettingData = {
-    //   "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1", //1堂食 2外带
-    //   "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
-    //   //"printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
-    //   "printPaperTxtSize":(SystemSettingInfo["printPaperTxtSize"] !="" && SystemSettingInfo["printPaperTxtSize"]!=null) ? SystemSettingInfo["printPaperTxtSize"] :"1",//1 普通　2大　3特大
-    //   "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
-    //   "isAllowReceiptMenu":(SystemSettingInfo["isAllowReceiptMenu"] !="" && SystemSettingInfo["isAllowReceiptMenu"]!=null) ? SystemSettingInfo["isAllowReceiptMenu"] :"1",//1必须打印小票顶部菜单 2不打印
-    //   //"machineMode":checkmachineMode,
-    //   "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
-    //   "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
-    //   "isAllowOneYen":(SystemSettingInfo["isAllowOneYen"] !="" && SystemSettingInfo["isAllowOneYen"]!=null) ? SystemSettingInfo["isAllowOneYen"] :"0",//0禁用1元 1不禁用
-    //   "isAllow5000": SystemSettingInfo["isAllow5000"] ?? "1",
-    //   "isAllow10000": SystemSettingInfo["isAllow10000"] ?? "1",
-    //   "isAllowBackHome":(SystemSettingInfo["isAllowBackHome"] !="" && SystemSettingInfo["isAllowBackHome"]!=null) ? SystemSettingInfo["isAllowBackHome"] :"0",//0回到首页，1回到菜单页
-    //   "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
-    //   "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
-    //   "isAllowWlanPrintContinuous":(SystemSettingInfo["isAllowWlanPrintContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintContinuous"] :"1",//0 单票 1连票
-    //   "showPrintType":(SystemSettingInfo["showPrintType"] !="" && SystemSettingInfo["showPrintType"]!=null) ? SystemSettingInfo["showPrintType"] :"0",//0 receipt 1label
-    //   "isAllowWlanPrintTwo":(SystemSettingInfo["isAllowWlanPrintTwo"] !="" && SystemSettingInfo["isAllowWlanPrintTwo"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwo"] :"0",//0 不开打印机 1开打印机
-    //   "isAllowWlanPrintTwoContinuous":(SystemSettingInfo["isAllowWlanPrintTwoContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintTwoContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwoContinuous"] :"1",//0 单票 1连票
-    //   "isAllowRejishime":(SystemSettingInfo["isAllowRejishime"] !="" && SystemSettingInfo["isAllowRejishime"]!=null) ? SystemSettingInfo["isAllowRejishime"] :"0",
-    //   "panelType": SystemSettingInfo['panelType'] ?? 'Mini',
-    //   "isAllowWlanPanelPrint": SystemSettingInfo["isAllowWlanPanelPrint"] ?? '0'
-    // };
-    // Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
-    // GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-    //}
-
-    if (!Get.isRegistered<MachineInfoController>()) {
-      final controller = MachineInfoController(systemSettingInfo);
-      await Get.putAsync<MachineInfoController>(() async {
-        await controller.loadMachineSettingInfo(); // 确保初始化完成
-        return controller;
-      }, permanent: true);
-      debugPrint('put MachineInfoController done');
-    } else {
-      await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingInfo);
       debugPrint('update MachineInfoController done');
-    }
-    // await Get.delete<MachineInfoController>();
-    // Get.put(MachineInfoController(systemSettingData));
+      var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
+      if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
+        Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
+        GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
+      }
 
-    debugPrint('update MachineInfoController done');
-    var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
-    if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
-      Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
-      GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
+      Get.lazyPut(() => PrintService(Get.find<MachineInfoController>()));
+    } catch (e) {
+      logI('init MachineInfoController error: $e');
     }
 
-    Get.lazyPut(() => PrintService(Get.find<MachineInfoController>()));
 
     //这里判断是否禁用1元
     if(systemSettingInfo["isAllowOneYen"] == "0"){
