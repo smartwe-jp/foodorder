@@ -9,6 +9,7 @@ import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../modules/menuPage/controllers/menu_page_controller.dart';
+import 'CustomLogerHandler.dart';
 import 'HomeServices.dart';
 
 class ResetToHomeTimer {
@@ -18,7 +19,7 @@ class ResetToHomeTimer {
 
   void startTimer() {
     cancelTimer();
-    debugPrint("--startTimer--");
+    logI("--startTimer--");
     _timeoutSeconds = timeSeconds;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
@@ -76,7 +77,7 @@ class ResetToHomeTimer {
             Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
           }
         } else {
-          debugPrint('--offNamedUntil--');
+          logI('--offNamedUntil--');
           //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
           Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         }
@@ -87,18 +88,18 @@ class ResetToHomeTimer {
   void resetTimer() {
 
     if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
-      debugPrint("event startTimer");
+      logI("event startTimer");
       startTimer();
     } else {
       if (_timer != null) {
-        debugPrint("event resetTimer");
+        logI("event resetTimer");
         _timeoutSeconds = timeSeconds;
       }
     }
   }
 
   getPing() async {
-    print("--getPing--");
+    logI("--getPing--");
     try {
       final response = await http.get(Uri.parse('https://www.google.com'));
       if (response.statusCode == 200) {
@@ -112,7 +113,7 @@ class ResetToHomeTimer {
   }
 
   void cancelTimer() {
-    debugPrint("--cancelTimer--");
+    logI("--cancelTimer--");
     _timer?.cancel();
     _timer = null;
   }
