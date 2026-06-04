@@ -4,6 +4,7 @@ import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/widgets/PriceLabel.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
 
 import '../../../../config/color.dart';
@@ -349,8 +350,7 @@ class _OptionViewState extends State<OptionView> {
 
 
   Widget _buttonArea() {
-    return InkWell(
-      enableFeedback: false,
+    return KioskTap(
       onTap: () {
         _addToCart();
       },
@@ -377,7 +377,7 @@ class _OptionViewState extends State<OptionView> {
   }
 
   _returnButton() {
-    return InkWell(
+    return KioskTap(
       onTap: (){
         // controller.paymentIsShow = false;
          Get.back();

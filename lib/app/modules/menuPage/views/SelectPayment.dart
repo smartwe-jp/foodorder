@@ -1,3 +1,4 @@
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -1847,7 +1848,7 @@ class SelectPaymentPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            InkWell(
+                            KioskTap(
                               onTap: () {
                                 try {
                                   Navigator.pop(context);

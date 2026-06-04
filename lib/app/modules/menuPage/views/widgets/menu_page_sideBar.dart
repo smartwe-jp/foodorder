@@ -3,6 +3,7 @@ import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../controllers/menu_page_controller.dart';
@@ -30,7 +31,7 @@ extension MenuPageSideBar on MenuPageView {
 
                     return Stack(
                       children: [
-                        GestureDetector(
+                        KioskTap(
                           onTap: () {
                             //controller.changeCategory(item['categoryCode']);
 
@@ -106,7 +107,7 @@ extension MenuPageSideBar on MenuPageView {
 
             //Spacer(),
 
-            InkWell(
+            KioskTap(
               onTap: () {
                 controller.gotoLanguageHome();
               },
