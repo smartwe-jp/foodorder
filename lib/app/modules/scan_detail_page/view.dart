@@ -3,6 +3,7 @@ import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/formatMoney.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
 
 import '../../config/color.dart';
@@ -112,7 +113,7 @@ class ScanDetailPagePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      InkWell(
+                      KioskTap(
                         onTap: () {
                           checkoutLogic.backCheckHome();
                         },
@@ -135,7 +136,7 @@ class ScanDetailPagePage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      InkWell(
+                      KioskTap(
                         onTap: () {
                           //try {
                           checkoutLogic.showSelectMealTypeAndPaymentMethodDialog();

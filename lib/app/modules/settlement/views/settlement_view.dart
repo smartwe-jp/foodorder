@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:foodorder/app/widget/PressScaleButton.dart';
 
 import 'package:get/get.dart';
@@ -1196,7 +1197,7 @@ class SettlementView extends GetView {
                             width: ScreenAdapter.width(360),
                             alignment: Alignment.bottomLeft,
                             padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
-                            child: InkWell(
+                            child: KioskTap(
                               onTap: () {
                                 //try {
                                 if(controller.isPrintClick.value == false){
@@ -1292,7 +1293,7 @@ class SettlementView extends GetView {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        InkWell(
+                        KioskTap(
                           onTap: () {
                             try {
                               //showCancelConfirm();

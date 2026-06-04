@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
@@ -512,7 +513,7 @@ class SelfCheckoutscanningcodeView
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      InkWell(
+                      KioskTap(
                         onTap: (){
                           controller.gotoLanguageHome();
                         },
@@ -591,8 +592,8 @@ class SelfCheckoutscanningcodeView
                                     ]),
                               ),
                             ),*/
-                            InkWell(
-                              enableFeedback: false,
+                            KioskTap(
+                              //enableFeedback: false,
                               onTap: () {
                                 if (int.parse(controller.shopCartTotalPrice.value) ==0) {
                                   return;
