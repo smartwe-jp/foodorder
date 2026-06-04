@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -137,7 +138,7 @@ class ScanCodeView extends GetView {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      InkWell(
+                      KioskTap(
                         onTap: () {
                           try {
                             //showCancelConfirm();
