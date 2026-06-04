@@ -44,7 +44,6 @@ class _BookingTypeButtonState extends State<BookingTypeButton> {
 
   void _handleTapUp() {
     _setPressed(false);
-    widget.onTap?.call();
   }
 
   @override
