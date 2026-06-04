@@ -172,47 +172,46 @@ class SettingController extends GetxController with StateMixin {
     showEasyLoading();
 
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
-    if (Platform.isWindows) {
-      logfile = await CustomLogHandler.exportLogs();
-      //saveLogToD();
 
-      //return;
-// =======
-//     _showEasyLoading();
-//     String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
-//     if (appConfig.isAndroid11)  {
-//       logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
-// >>>>>>> 2.7.0-dev
-    }
+    try {
 
-    FormData formData = FormData.fromMap({
-      "machineCode": machineCode,
-      "file": await MultipartFile.fromFile(logfile),
-    });
+      if (Platform.isWindows) {
+        logfile = await CustomLogHandler.exportLogs();
+      }
 
-    request('webBootLogUpload', method: 'POST', parameters: formData)
-        .then((val) {
-      var response = json.decode(val.toString());
+      FormData formData = FormData.fromMap({
+        "machineCode": machineCode,
+        "file": await MultipartFile.fromFile(logfile),
+      });
+
+      final resp = await request("webBootLogUpload", method: "POST", parameters: formData);
+      final response = json.decode(resp.toString());
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
-          Get.back();
-        });
+          Get.dialog(DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
+            Get.back();
+          }));
       } else {
-        DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
+        Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
             confirmtitle: "再試行",
-            confirm: () {uploadErrorLog();},
+            confirm: () {
+              Get.back();
+              uploadErrorLog();
+            },
             cancle: () {Get.back();}
-        );
+        ));
       }
     } catch (e) {
       EasyLoading.dismiss();
-      DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
+      Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
           confirmtitle: "再試行",
-          confirm: () {uploadErrorLog();},
+          confirm: () {
+            Get.back();
+            uploadErrorLog();
+          },
           cancle: () {Get.back();}
-      );
-    });
+      ));
+    }
   }
   //20241128PT3_OperationLog.log.zip
   //20241129PT3_OperationLog.log
