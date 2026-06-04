@@ -139,6 +139,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
         //print(orderId.value);
         //goToSettlement();
       } else {
+        logI("查询订单为空");
         noOrderAlsert();
       }
 
