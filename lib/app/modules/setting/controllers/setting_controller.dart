@@ -132,39 +132,6 @@ class SettingController extends GetxController with StateMixin {
       // 1) Resolve exported app log path
       logfilePath = await CustomLogHandler.exportLogs(); // returns a file path
 
-      // // 2) Zip existing logs
-      // final tempDir = await getTemporaryDirectory();
-      // zipPath = "${tempDir.path}/${_getDate()}_combined_logs.zip";
-      //
-      // final encoder = ZipFileEncoder();
-      // encoder.create(zipPath);
-      //
-      // int added = 0;
-      // final appLog = File(logfilePath);
-      // if (await appLog.exists()) {
-      //   encoder.addFile(appLog);
-      //   added++;
-      // }
-      // final cashLog = File(cashLogfile);
-      // if (await cashLog.exists()) {
-      //   encoder.addFile(cashLog);
-      //   added++;
-      // }
-      // encoder.close();
-      //
-      // if (added == 0) {
-      //   EasyLoading.dismiss();
-      //   showToast("No log files found to upload.");
-      //   // Cleanup empty zip
-      //   try { await File(zipPath).delete(); } catch (_) {}
-      //   return;
-      // }
-      //
-      // final file = await MultipartFile.fromFile(
-      //   zipPath,
-      //   filename: "logs_${_getDate()}.zip",
-      // );
-
       // 3) Build multipart and upload the zip
       final formData = FormData.fromMap({
         "machineCode": machineCode,
@@ -176,30 +143,30 @@ class SettingController extends GetxController with StateMixin {
 
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
+        Get.dialog(DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
           Get.back();
-        });
+        }));
       } else {
-        DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
+        Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
             confirmtitle: "再試行",
-            confirm: () {uploadErrorLog();},
+            confirm: () {
+              Get.back();
+              uploadErrorLog();
+            },
             cancle: () {Get.back();}
-        );
+        ));
       }
     } catch (e) {
       EasyLoading.dismiss();
-      DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
+      Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
           confirmtitle: "再試行",
-          confirm: () {uploadErrorLog();},
+          confirm: () {
+            Get.back();
+            uploadErrorLog();
+          },
           cancle: () {Get.back();}
-      );
+      ));
     }
-    // finally {
-    //   // 4) Cleanup temp zip
-    //   if (zipPath != null) {
-    //     try { await File(zipPath).delete(); } catch (_) {}
-    //   }
-    // }
   }
   //20241128PT3_OperationLog.log.zip
   //20241129PT3_OperationLog.log
