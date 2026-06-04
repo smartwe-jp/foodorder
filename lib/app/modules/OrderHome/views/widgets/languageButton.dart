@@ -33,6 +33,8 @@ class _LanguageButtonState extends State<LanguageButton> {
   void _setPressed(bool v) {
     if (_pressed == v) return;
     setState(() => _pressed = v);
+    if (!v)
+      widget.onTap?.call();
   }
 
   void _handleTapUp() {
