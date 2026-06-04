@@ -39,12 +39,11 @@ class _BookingTypeButtonState extends State<BookingTypeButton> {
     if (_pressed == v) return;
     setState(() => _pressed = v);
     if (!v)
-    widget.onTap?.call();
+      widget.onTap?.call();
   }
 
   void _handleTapUp() {
     _setPressed(false);
-    widget.onTap?.call();
   }
 
   @override

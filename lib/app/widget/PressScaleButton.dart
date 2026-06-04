@@ -44,7 +44,6 @@ class _PressScaleButtonState extends State<PressScaleButton> {
 
   void _handleTapUp() {
     _setPressed(false);
-    widget.onTap?.call();
   }
 
   @override

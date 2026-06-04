@@ -39,7 +39,6 @@ class _LanguageButtonState extends State<LanguageButton> {
 
   void _handleTapUp() {
     _setPressed(false);
-    widget.onTap?.call();
   }
 
   @override
