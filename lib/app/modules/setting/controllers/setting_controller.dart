@@ -195,10 +195,23 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        showToast('上传成功~~');
+        DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
+          Get.back();
+        });
       } else {
-        showToast('上传失败!');
+        DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
+            confirmtitle: "再試行",
+            confirm: () {uploadErrorLog();},
+            cancle: () {Get.back();}
+        );
       }
+    } catch (e) {
+      EasyLoading.dismiss();
+      DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
+          confirmtitle: "再試行",
+          confirm: () {uploadErrorLog();},
+          cancle: () {Get.back();}
+      );
     });
   }
   //20241128PT3_OperationLog.log.zip
