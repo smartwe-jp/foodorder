@@ -176,16 +176,23 @@ class SettingController extends GetxController with StateMixin {
 
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        showToast("上传成功~~");
-        debugPrint("Logs uploaded successfully.");
+        DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
+          Get.back();
+        });
       } else {
-        showToast("上传失败!");
-        debugPrint("Failed to upload logs: ${response['message']}" );
+        DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
+            confirmtitle: "再試行",
+            confirm: () {uploadErrorLog();},
+            cancle: () {Get.back();}
+        );
       }
     } catch (e) {
       EasyLoading.dismiss();
-      showToast("上传失败! ${e.toString()}");
-      debugPrint("Error uploading logs: $e");
+      DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
+          confirmtitle: "再試行",
+          confirm: () {uploadErrorLog();},
+          cancle: () {Get.back();}
+      );
     }
     // finally {
     //   // 4) Cleanup temp zip
@@ -196,6 +203,9 @@ class SettingController extends GetxController with StateMixin {
   }
   //20241128PT3_OperationLog.log.zip
   //20241129PT3_OperationLog.log
+
+
+
 
   Future<String?> compressFiles() async {
     // 获取临时目录路径
