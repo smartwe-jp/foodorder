@@ -2,6 +2,7 @@ import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -60,9 +61,9 @@ class publicShowCartView extends GetView {
                     fit: BoxFit.fill),
               ),*/
             Expanded(
-                child: InkWell(
-                  highlightColor: Colors.transparent, // 透明色
-                  splashColor: Colors.transparent, // 透明色
+                child: KioskTap(
+                  // highlightColor: Colors.transparent, // 透明色
+                  // splashColor: Colors.transparent, // 透明色
                   onTap: (){
                     showDialogTag(d.id);
                   },
@@ -127,7 +128,7 @@ class publicShowCartView extends GetView {
                 children: <Widget>[
                   //减号
                   //CoustomIconButton(icon: Icons.remove,isAdd: false),
-                  InkWell(
+                  KioskTap(
                     onTap: (){
                       var cartItem = {
                         "cartId": d.id,
@@ -191,7 +192,7 @@ class publicShowCartView extends GetView {
                   ),
                   //加号
                   //CoustomIconButton(icon: Icons.add,isAdd: true),
-                  InkWell(
+                  KioskTap(
                     onTap: (){
 
                       var cartItem = {
@@ -257,8 +258,8 @@ class publicShowCartView extends GetView {
   }
 
   Widget priceTitle() {
-    return InkWell(
-        onLongPress: (){
+    return KioskTap(
+        onTap: (){
           if(int.parse(controller.shopCartTotalPrice.value) >0){
             Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
           }
@@ -345,7 +346,7 @@ class publicShowCartView extends GetView {
                 children: [
                   Expanded(
                     flex: 9,
-                    child: InkWell(
+                    child: KioskTap(
                         onTap: () {
                           print("controller.showCartTotalGoodsNum.value = ${controller.showCartTotalGoodsNum.value}");
                           if (controller.showCartTotalGoodsNum.value <= 0) {

@@ -10,6 +10,7 @@ import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/check_out_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_page_sideBar.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 import 'package:get/get.dart';
 import '../../../config/color.dart';
@@ -26,7 +27,7 @@ class MenuPageView extends GetView<MenuPageController> {
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
     for (var item in controller.topMenu) {
-      categoryMenus.add(InkWell(
+      categoryMenus.add(KioskTap(
         //enableFeedback: false,
         onTap: () {
           //controller.changeCategory(item['categoryCode']);
@@ -124,8 +125,7 @@ class MenuPageView extends GetView<MenuPageController> {
         ),
         Container(
           //alignment: Alignment.centerRight,
-          child: InkWell(
-            enableFeedback: false,
+          child: KioskTap(
             onTap: () {
               //controller.ordersqlcontroller.removeAllFromCart();
               controller.gotoLanguageHome();

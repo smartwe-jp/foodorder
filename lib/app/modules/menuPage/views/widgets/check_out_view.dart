@@ -6,6 +6,7 @@ import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/formatMoney.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
 
 import '../../../../widget/DialogUtils.dart';
@@ -36,7 +37,7 @@ extension CheckoutButton on MenuPageView {
 
                 Expanded(
                   flex: 9,
-                  child: InkWell(
+                  child: KioskTap(
                       onTap: () {
                         print("controller.showCartTotalGoodsNum.value = ${controller.showCartTotalGoodsNum.value}");
                         if (controller.showCartTotalGoodsNum.value <= 0) {
@@ -171,7 +172,7 @@ extension CheckoutButton on MenuPageView {
                 Expanded(
                   flex: 4,
                   child:
-                  InkWell(
+                  KioskTap(
                     onTap: () {
                       if (controller.showCartTotalGoodsNum.value <= 0) {
                         _showEmptyTips();
