@@ -140,21 +140,22 @@ class ReimburseOrderController extends GetxController with StateMixin {
         //print(orderId.value);
         //goToSettlement();
       } else {
-        noOrderAlsert();
+        logI("查询订单为空");
+        noOrderAlsert("注文が見つかりませんでした。注文番号を確認してください。");
       }
 
       update();
     }).onError((error, stackTrace) {
       logI("查询订单信息失败：${error}");
-       noOrderAlsert();
+       noOrderAlsert("注文が見つかりませんでした。注文番号を確認してください。error:${error}");
     });
   }
 
-  noOrderAlsert() {
+  noOrderAlsert(String message) {
     if (EasyLoading.isShow)
       EasyLoading.dismiss();
     Get.dialog(
-        DialogUtils.alertOneButton("返金に異常が発生しました，店舗にお問い合わせください。",
+        DialogUtils.alertOneButton(message,
             title: "お知らせ", confirmtitle: "はい", confirm: () {
           orderIdController.text = "";
           orderList.value = [];
