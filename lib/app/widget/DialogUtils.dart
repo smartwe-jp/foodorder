@@ -9,9 +9,9 @@ class DialogUtils {
   /// 基础弹框
   static alert(
       String content, {
-        String title = "提示",
-        String canceltitle = "取消",
-        String confirmtitle = "确定",
+        String title = "お知らせ",
+        String canceltitle = "キャンセル",
+        String confirmtitle = "確認",
         required GestureTapCallback confirm,
         required GestureTapCallback cancle,
       }) {
@@ -139,9 +139,9 @@ class DialogUtils {
 
     static cashActionAlert(
       Widget content, {
-        String title = "提示",
-        String canceltitle = "取消",
-        String confirmtitle = "确定",
+        String title = "お知らせ",
+        String canceltitle = "キャンセル",
+        String confirmtitle = "確認",
         required GestureTapCallback confirm,
         required GestureTapCallback cancle,
       }) {
@@ -246,8 +246,8 @@ class DialogUtils {
   /// 显示普通消息
   static alertOneButton(
       String content, {
-        String title = "提示",
-        String confirmtitle = "确定",
+        String title = "お知らせ",
+        String confirmtitle = "確認",
         required GestureTapCallback confirm,
         String contentTagImg = "",
       }) {
