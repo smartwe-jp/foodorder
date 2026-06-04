@@ -810,7 +810,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 //刷卡机nfc支付汇报
   posPayReport(String eventString, {int retryCount = 0}) {
-    debugPrint('posPayReport retryCount = $retryCount');
+    logger.info('posPayReport retryCount = $retryCount');
     posResultReportData["result"] = true;
     posResultReportData["paymentInfo"] =
         eventString; //LogUtil.d("huibaohhhhhh===${_posResultReportData}");
@@ -827,6 +827,7 @@ class SettlementController extends GetxController with StateMixin {
         showPosCancelEasyLoading("900");
       }
     }).catchError((error) {
+      logger.info("posPayReport error $error");
       //TODO 默认重试3次
       if (retryCount < 3) {
         Future.delayed(Duration(milliseconds: 500), () {
@@ -836,15 +837,18 @@ class SettlementController extends GetxController with StateMixin {
         // FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
         //   "machineCode": machineInfo.machineCode,
         // });
+        logger.info("posPayReport final error $error");
         _checkOutErrorHandle('pos_report_error_tips'.tr);
       }
     }).timeout(Duration(seconds: 30), onTimeout: () {
+      logger.info("posPayReport 超时 30s");
       //TODO 默认重试3次
       if (retryCount < 3) {
         Future.delayed(Duration(milliseconds: 500), () {
           posPayReport(eventString, retryCount: retryCount + 1);
         });
       } else {
+        logger.info("posPayReport final 超时 30s");
         // FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
         //   "machineCode": machineInfo.machineCode,
         // });
