@@ -31,7 +31,7 @@ extension MenuPageSideBar on MenuPageView {
 
                     return Stack(
                       children: [
-                        KioskTap(
+                        InkWell(
                           onTap: () {
                             //controller.changeCategory(item['categoryCode']);
 
