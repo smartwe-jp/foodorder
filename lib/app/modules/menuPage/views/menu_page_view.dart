@@ -30,8 +30,8 @@ class MenuPageView extends GetView {
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
     for (var item in controller.topMenu) {
-      categoryMenus.add(KioskTap(
-        //enableFeedback: false,
+      categoryMenus.add(InkWell(
+        enableFeedback: false,
         onTap: () {
           //controller.changeCategory(item['categoryCode']);
           controller.pageController.animateToPage(
