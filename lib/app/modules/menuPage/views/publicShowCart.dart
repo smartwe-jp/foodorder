@@ -468,8 +468,8 @@ class publicShowCartView extends GetView {
                     width: ScreenAdapter.width(340),
                     //height: ScreenAdapter.height(310),
                     child:
-                        InkWell(
-                          enableFeedback: false,
+                        KioskTap(
+                          
                           onTap: () {
                             if (int.parse(controller.shopCartTotalPrice.value) < 0) {
                               return;
