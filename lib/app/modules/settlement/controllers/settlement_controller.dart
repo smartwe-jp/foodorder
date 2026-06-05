@@ -1181,6 +1181,8 @@ class SettlementController extends GetxController with StateMixin {
     logI("---endToubi---");
     await Future.delayed(Duration(milliseconds: 500));
     //await Paycube.setReceiveEvent;
+    timeOffset = DateTime.now().millisecondsSinceEpoch;
+    logI("endTouBi 入金禁止开始执行 ${DateTime.now().millisecondsSinceEpoch - timeOffset}毫秒");
     bool endStatus = await payCube.endPayCube(onSuccess: () {
       logI("endPayCube onSuccess");
     }, catchError: (error) {
