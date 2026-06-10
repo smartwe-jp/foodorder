@@ -19,6 +19,7 @@ import 'package:logging/logging.dart';
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
+import 'app/controllers/app_config.dart';
 import 'app/routes/app_pages.dart';
 import 'app/print_task/print_task_models.dart';
 import 'app/print_failed/print_failed_models.dart';
