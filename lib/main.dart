@@ -1,9 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
-
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -21,7 +17,6 @@ import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
 import 'app/controllers/app_config.dart';
 import 'app/routes/app_pages.dart';
-import 'app/print_task/print_task_models.dart';
 import 'app/print_failed/print_failed_models.dart';
 
 class _NavBounceTrack {
@@ -72,33 +67,18 @@ void main() {
 
     await GetStorage.init();
     await Hive.initFlutter();
-    // if (!Hive.isAdapterRegistered(61)) {
-    //   Hive.registerAdapter(PrintJobAdapter());
-    // }
-    // if (!Hive.isAdapterRegistered(62)) {
-    //   Hive.registerAdapter(PrintTaskAdapter());
-    // }
+
     if (!Hive.isAdapterRegistered(63)) {
       Hive.registerAdapter(PrintRecordAdapter());
     }
-    // await Hive.openBox<PrintJob>('print_jobs');
-    // await Hive.openBox<PrintTask>('print_tasks');
+
     await Hive.openBox<PrintRecord>('print_records');
-    // if (Platform.isAndroid) {
-    //   //Firebase is not full supported on windows
-    //   await Firebase.initializeApp(
-    //     options: DefaultFirebaseOptions.currentPlatform,
-    //   );
-    //   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    // }
 
     Get.putAsync<AppConfig>(() async {
       final config = AppConfig();
-      await config.onInit(); // Assume init() is an async method
+      config.onInit(); // Assume init() is an async method
       return config;
     });
-
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -157,16 +137,6 @@ void main() {
                     },
                   ));
         },
-        // child: Scaffold(
-        //   body: PrintImageGenerateWidget(
-        //     contentBuilder: (context) {
-        //       return HomeView();
-        //       //return WindewsTestView();
-
-        //     },
-        //     onPictureGenerated: _onPictureGenerated,
-        //   ),
-        // ),
       ));
       //HttpOverrides.global = MyHttpOverrides();flutter
     });
