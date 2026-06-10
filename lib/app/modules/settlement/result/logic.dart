@@ -5,6 +5,7 @@ import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/CustomLogerHandler.dart';
+import '../../menuPage/controllers/menu_page_controller.dart';
 import 'state.dart';
 
 class ResultLogic extends GetxController {
@@ -83,10 +84,10 @@ class ResultLogic extends GetxController {
       case MachineMode.sell:
       case MachineMode.takeout:
         if (machineInfo.isBackHome) {
-          Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         } else {
           Get.until((route) => route.settings.name == Routes.MENU_PAGE);
-          //Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+          //await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
         }
         break;
       case MachineMode.scan:
