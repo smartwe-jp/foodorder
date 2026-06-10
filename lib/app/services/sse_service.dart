@@ -68,12 +68,14 @@ class SseService extends GetxService {
         } else if (res.data is String) {
           try {
             data = jsonDecode(res.data);
-          } catch (_) {}
+          } catch (_) {
+            logW('SSE Service: Failed to parse data event: $event, raw data: ${res.data}');
+          }
         }
         if (event == 'heartbeat') {
-          if (kDebugMode) {
-            print('SSE Service: Received event: $event');
-          }
+          //if (kDebugMode) {
+            logI('SSE Service: Received event: $event');
+          //}
         } else if (event == 'message'
           || event == 'print'
           || event == 'payment_Completed'
@@ -81,9 +83,9 @@ class SseService extends GetxService {
           || event == 'item_cancel'
           || event == 'expiryPrint'
           ) {
-          if (kDebugMode) {
-            print('SSE Service: Received $event event');
-          }
+          //if (kDebugMode) {
+            logI('SSE Service: Received $event event, data: $data');
+          //}
           if (data != null) {
             _printService.callbackBeforePrint(event, data);
           }
