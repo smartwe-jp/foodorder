@@ -1,6 +1,7 @@
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/popup_cart_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
 import 'package:get/get.dart';
