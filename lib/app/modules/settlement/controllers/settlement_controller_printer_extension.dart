@@ -47,11 +47,19 @@ enum OrderType { shopin, takeout, pickup, delivery }
 class PrintService extends GetxService {
   final MachineInfoController _machineInfo;
   final PrintFailedService _service = Get.find<PrintFailedService>();
+  final LinkedHashSet<String> _processingUuids = LinkedHashSet<String>();
 
   PrintService(this._machineInfo);
 
   get printerList => _machineInfo.printerList;
   get sseList => _machineInfo.sseSettingList;
+
+  void _addProcessingUuid(String uuid) {
+    _processingUuids.add(uuid);
+    if (_processingUuids.length > 100) {
+      _processingUuids.remove(_processingUuids.first);
+    }
+  }
 
   //Label打印先存在在一个队列中
   //final Queue<Widget> labelPrintQueue = Queue<Widget>();
@@ -501,6 +509,12 @@ class PrintService extends GetxService {
     // }
     String uuid = data['uuid'] ?? '';
     if (uuid.isEmpty) return;
+
+    if (_processingUuids.contains(uuid)) {
+      logI("callbackBeforePrint: UUID $uuid is already being processed or recently processed, skipping.");
+      return;
+    }
+    _addProcessingUuid(uuid);
 
     try {
       logI("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
