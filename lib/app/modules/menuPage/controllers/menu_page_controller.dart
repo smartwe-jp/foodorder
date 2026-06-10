@@ -1529,12 +1529,26 @@ print("加1了");
     //update();
   }
 
-  clearCartList() {
-    ordersqlcontroller.removeAllFromCart();
-    ordersqlcontroller.getCardList();
-    classTag.value = topMenu.value[0]["categoryCode"];
+  clearCartList() async {
+    logI("clearCartList");
+    await ordersqlcontroller.removeAllFromCart();
+    await ordersqlcontroller.getCardList();
+    //classTag.value = topMenu[0]["categoryCode"];
     menuLackMap.value = {};
-    getCartPriceTotal();
+    await getCartPriceTotal();
+
+    if (topMenu.isNotEmpty) {
+      selectIndex = 0;
+      classTag.value = topMenu[0]["categoryCode"];
+      bgColor.value = topMenu[0]["background"] ?? "#F9F9F9";
+
+      if (pageController.hasClients) {
+        pageController.jumpToPage(0);
+      }
+
+      update(['side_bar']);
+      update(['background']);
+    }
   }
 
   gotoLanguageHome() {

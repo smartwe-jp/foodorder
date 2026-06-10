@@ -250,7 +250,11 @@ class SettlementController extends GetxController with StateMixin {
     if (_isNavigating) return;
       _isNavigating = true;
     try {
-      await ordersqlcontroller.removeAllFromCart(); // 等待清空
+      if (Get.isRegistered<MenuPageController>()) {
+        await Get.find<MenuPageController>().clearCartList();
+      } else {
+        await ordersqlcontroller.removeAllFromCart(); // 等待清空
+      }
     } catch (e) {
       logger.warning('removeAllFromCart error: $e');
     }
@@ -269,16 +273,6 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       resetToHome();
     }
-
-
-    //resetToHome();
-    // try {
-    //   await resetToHome();
-    // } catch (e) {
-    //   logger.warning('resetToHome error: $e');
-    // } finally {
-    //   _isNavigating = false;
-    // }
   }
 
   resetToHome() async {
@@ -288,7 +282,8 @@ class SettlementController extends GetxController with StateMixin {
         if (machineInfo.isBackHome) {
           await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         } else {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+          Get.until((route) => route.settings.name == Routes.MENU_PAGE);
+          //await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
         }
         break;
       case MachineMode.scan:
