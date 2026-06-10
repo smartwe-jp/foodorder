@@ -47,8 +47,16 @@ enum OrderType { shopin, takeout, pickup, delivery }
 class PrintService extends GetxService {
   final MachineInfoController _machineInfo;
   final PrintFailedService _service = Get.find<PrintFailedService>();
+  final LinkedHashSet<String> _processingUuids = LinkedHashSet<String>(); // 最近处理的 UUID，最多保留 100 条
 
   PrintService(this._machineInfo);
+
+  void _addProcessingUuid(String uuid) {
+    _processingUuids.add(uuid);
+    if (_processingUuids.length > 100) {
+      _processingUuids.remove(_processingUuids.first);
+    }
+  }
 
   get printerList => _machineInfo.printerList;
   get sseList => _machineInfo.sseSettingList;
@@ -397,6 +405,12 @@ class PrintService extends GetxService {
     // }
     String uuid = data['uuid'] ?? '';
     if (uuid.isEmpty) return;
+
+    if (_processingUuids.contains(uuid)) {
+      logI("callbackBeforePrint: UUID $uuid is already being processed or recently processed, skipping.");
+      return;
+    }
+    _addProcessingUuid(uuid);
 
     try {
       logI("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
