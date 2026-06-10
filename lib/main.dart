@@ -27,6 +27,44 @@ class _NavBounceTrack {
   static String? lastRoute;
 }
 
+class RouteDebugObserver extends NavigatorObserver {
+  String _routeName(Route<dynamic>? route) {
+    if (route == null) return 'null';
+    return route.settings.name ?? route.runtimeType.toString();
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    logI(
+        '[NAV_OBSERVER] didPush route=${_routeName(route)} previous=${_routeName(previousRoute)} current=${Get.currentRoute}');
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+    logI(
+        '[NAV_OBSERVER] didPop route=${_routeName(route)} previous=${_routeName(previousRoute)} current=${Get.currentRoute}');
+    if (_routeName(route) == Routes.RESULT_PAGE) {
+      logW('[NAV_OBSERVER] result_page popped stack=${StackTrace.current}');
+    }
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didRemove(route, previousRoute);
+    logI(
+        '[NAV_OBSERVER] didRemove route=${_routeName(route)} previous=${_routeName(previousRoute)} current=${Get.currentRoute}');
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    logI(
+        '[NAV_OBSERVER] didReplace old=${_routeName(oldRoute)} new=${_routeName(newRoute)} current=${Get.currentRoute}');
+  }
+}
+
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +90,14 @@ void main() {
     //   );
     //   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     // }
+
+    Get.putAsync<AppConfig>(() async {
+      final config = AppConfig();
+      await config.onInit(); // Assume init() is an async method
+      return config;
+    });
+
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -94,6 +140,9 @@ void main() {
                     defaultTransition: Transition.fadeIn,
                     getPages: AppPages.routes,
                     initialBinding: AppBindings(),
+                    navigatorObservers: [
+                      RouteDebugObserver(),
+                    ],
                     routingCallback: (value) {
                       routerCallback(value, resetTimer);
                     },
@@ -106,7 +155,6 @@ void main() {
                       );
                     },
                   ));
-
         },
         // child: Scaffold(
         //   body: PrintImageGenerateWidget(
@@ -144,17 +192,18 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
-  logI('-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
+  logI(
+      '-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
   if (value?.current == Routes.MENU_PAGE ||
       value?.current == Routes.SCANCODE_PAGE ||
       value?.current == Routes.SELECT_PAYMENT_PAGE ||
       value?.current == Routes.SELF_CHECKOUTSCANNINGCODE ||
-      (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
-  ) {
+      (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)) {
     resetTimer.startTimer();
   } else if (value?.current == Routes.ORDER_HOME ||
       value?.current == Routes.SETTLEMENT ||
-      value?.current == Routes.SETTING || value?.current == '/SettingView') {
+      value?.current == Routes.SETTING ||
+      value?.current == '/SettingView') {
     resetTimer.cancelTimer();
   }
 

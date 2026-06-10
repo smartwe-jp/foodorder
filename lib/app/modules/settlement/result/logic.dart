@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/CustomLogerHandler.dart';
+import '../../menuPage/controllers/menu_page_controller.dart';
 import 'state.dart';
 
 class ResultLogic extends GetxController {
@@ -26,23 +25,14 @@ class ResultLogic extends GetxController {
     //_playSound();
   }
 
-  void _playSound() async {
+  void _playSound() {
     // Implement sound playing logic here
     logI('Playing sound...');
-
-    if (Platform.isWindows) {
-        final player = AudioPlayer();
-        await player.setVolume(1.2);
-        await player.setSource(AssetSource('audios/thankyou_voice.m4a'));
-        await player.resume();
-    } else {
-        AssetsAudioPlayer.newPlayer().open(
-              Audio("assets/audios/thankyou_voice.m4a"),
-              autoStart: true,
-              volume: 1.0,
-        );
-    }
-
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/thankyou_voice.m4a"),
+      autoStart: true,
+      volume: 1.0,
+    );
   }
 
   void _checkToCloseLoading() async {
@@ -72,7 +62,7 @@ class ResultLogic extends GetxController {
         }
       } else {
         state.secondsLeft.value = v;
-        if (state.secondsLeft.value == 3){
+        if (state.secondsLeft.value == 4){
           _playSound();
         }
       }
@@ -96,10 +86,12 @@ class ResultLogic extends GetxController {
         if (machineInfo.isBackHome) {
           await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         } else {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+          Get.until((route) => route.settings.name == Routes.MENU_PAGE);
+          //await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
         }
         break;
       case MachineMode.scan:
+        //await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
       case MachineMode.checkout:

@@ -20,302 +20,6 @@ class publicShowCartView extends GetView {
   final MenuPageController controller = Get.find();
   publicShowCartView({Key? key}) : super(key: key);
 
-  showCartListMenu(BuildContext context){
-    if (controller.showCartItems.length == 0) {
-      return Center(
-        child: Text("cart_tag".tr,
-          style: TextStyle(
-            fontFamily: GFont.getFontFamily(),
-            fontSize: ScreenAdapter.fontSize(18),
-            color: ColorsUtil.hexToColor("#000000"),
-          ),
-        ),
-      );
-    }
-    return ListView(
-      shrinkWrap: true,
-      children: controller.showCartItems.map((d) => generateCartList(context, d)).toList(),
-    );
-  }
-  Widget generateCartList(BuildContext context, ShopItemModel d) {
-    var tipColor = (controller.menuLackMap.value.containsKey(d.menuCode) == true) ? "#ff0000":Gcolor.mainTitleColor;
-
-    return Padding(
-      padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white12,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey, width: 1.0),
-              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-            )),
-        //height: ScreenAdapter.height(80),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            /*Container(
-                width: ScreenAdapter.width(30),
-                child: Image.asset(GImage.getImageString("imgpublic", "delOne"),
-                    width: ScreenAdapter.width(20),
-                    //height: ScreenAdapter.height(44),
-                    fit: BoxFit.fill),
-              ),*/
-            Expanded(
-                child: KioskTap(
-                  // highlightColor: Colors.transparent, // 透明色
-                  // splashColor: Colors.transparent, // 透明色
-                  onTap: (){
-                    showDialogTag(d.id);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: ScreenAdapter.width(5),
-                        top: ScreenAdapter.height(5),
-                        bottom: ScreenAdapter.height(5)),
-                    //width: ScreenAdapter.width(495),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(d.mainTitle,
-                          style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                              fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(tipColor)
-                          ),
-                        ),
-
-                        (d.optionVoListMsg != "")? Text(
-                          "${d.optionVoListMsg}",
-                          style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(
-                                GFontSize.cartListTitleTag),
-                            color: ColorsUtil.hexToColor(
-                                Gcolor.mainTitleColor),
-                          ),
-                        )
-                            : Text(""),
-                      ],
-                    ),
-                  ),
-                )
-            ),
-            Container(
-              width: ScreenAdapter.width(105),
-              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
-              alignment: Alignment.centerRight,
-              child: Text(
-                formatMoney(d.currentPrice.toString()),
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(tipColor)),
-              ),
-            ),
-            Container(
-              width: ScreenAdapter.width(200),
-              height: ScreenAdapter.height(60.0),
-              margin: EdgeInsets.only(right: ScreenAdapter.width(5)),
-              alignment: Alignment.centerRight,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(width: 1.0,color: Colors.black)
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  //减号
-                  //CoustomIconButton(icon: Icons.remove,isAdd: false),
-                  KioskTap(
-                    onTap: (){
-                      var cartItem = {
-                        "cartId": d.id,
-                        "menuCode": d.menuCode,
-                        "unitPrice": d.unitPrice,
-                        "goodsNum": 1,
-                        "qtyBounds":d.qtyBounds
-                      };
-                      if(d.goodsNum <=1){
-                        showDialogTag(d.id);
-                      }else{
-                        controller.publicChangeCartMenuCount(cartItem,"reduce").then((val) {
-
-                          //更改显示购物车价格
-                          controller.getCartPriceTotal();
-                        });
-                      }
-
-                    },
-                    child: Container(
-
-                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
-                      height: ScreenAdapter.height(50.0),
-                      alignment: Alignment.center,//上下左右都居中
-                      decoration: BoxDecoration(
-                        //color: Colors.white,
-                          border: Border(//外层已经有边框了所以这里只设置右边的边框
-                              right:BorderSide(width: 1.0,color: Colors.black12)
-                          )
-                      ),
-                      child: Text(
-                        "－",
-                        style: TextStyle(
-                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  //输入框
-                  Container(
-                    width: ScreenAdapter.width(85.0),
-                    height: ScreenAdapter.height(45.0),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        border: Border(
-                          left: BorderSide(width: 1,color: Colors.black12),
-                          right: BorderSide(width: 1,color: Colors.black12),
-                        )
-                    ),
-                    child: Text(
-                      "${d.goodsNum}",
-                      style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
-                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
-                          fontWeight: FontWeight.w500,
-                          color: ColorsUtil.hexToColor(tipColor)
-                      ),
-                    ),
-                  ),
-                  //加号
-                  //CoustomIconButton(icon: Icons.add,isAdd: true),
-                  KioskTap(
-                    onTap: (){
-
-                      var cartItem = {
-                        "cartId": d.id,
-                        "menuCode": d.menuCode,
-                        "unitPrice": d.unitPrice,
-                        "goodsNum": 1,
-                        "qtyBounds":d.qtyBounds
-                      };
-                      controller.publicChangeCartMenuCount(cartItem,"add").then((val) {
-
-                        //更改显示购物车价格
-                        controller.getCartPriceTotal();
-                      });
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
-                      height: ScreenAdapter.height(50.0),
-                      alignment: Alignment.center,//上下左右都居中
-
-                      child: Text(
-                        "＋",
-                        style: TextStyle(
-                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
-                          fontWeight: FontWeight.w600,
-                          color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  //清空购物车弹出提示、
-  showDialogTag(menuId) {
-    Get.dialog(
-        DialogUtils.alert("show_del_cart_item_tag".tr,
-            title: "tag_title".tr,
-            canceltitle: "show_del_cart_item_no".tr,
-            confirmtitle: "show_del_cart_item_yes".tr,
-            confirm: () {
-              //widget.confirmCallback('确定');
-              controller.ordersqlcontroller.removeFromCart(menuId ?? 0);
-              //print("Item removed from cart successfully");
-              //删除商品声音
-              controller.deleteItemSound();
-              controller.ordersqlcontroller.getCardList();
-              //更改显示购物车价格
-              controller.getCartPriceTotal();
-
-              Get.back();
-            },
-            cancle: () {
-              Get.back();
-            })
-    );
-  }
-
-  Widget priceTitle() {
-    return KioskTap(
-        onTap: (){
-          if(int.parse(controller.shopCartTotalPrice.value) >0){
-            Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
-          }
-
-        },
-        child:Container(
-          decoration: BoxDecoration(
-              color: Colors.white12,
-              border: Border(
-                bottom: BorderSide(color: Colors.black, width: 1.5),
-                //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-              )),
-          child: RichText(
-            text: TextSpan(
-                text: "¥",
-                //GString.getToString(controller.checkLanguage.value, "show_price_front"),
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: ScreenAdapter.fontSize(GFontSize
-                      .menusettlementBottomPriceLeft),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(
-                      Gcolor.mainTitleColor),
-                ),
-                children: [
-                  TextSpan(
-                    text: formatMoney(controller.shopCartTotalPrice.value),
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(
-                          GFontSize
-                              .menusettlementBottomPrice),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(
-                          Gcolor.priceColor),
-                    ),
-                  ),
-                  TextSpan(
-                    text:
-                    "(${"show_price_front".tr})", //" 円",
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(
-                          GFontSize
-                              .menusettlementBottomPriceRight),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(
-                          Gcolor.mainTitleColor),
-                    ),
-                  ),
-                ]),
-          ),
-        )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -324,22 +28,12 @@ class publicShowCartView extends GetView {
         builder: (controller){
         return Obx(() => RepaintBoundary(
           child: Container(
-            //height: ScreenAdapter.height(330),
             child: Container(
-
-              //width: ScreenAdapter.width(1080),
-              //height: ScreenAdapter.height(330),
               padding: EdgeInsets.only(
                   left: ScreenAdapter.width(5),
                   top: ScreenAdapter.height(2),
                   right: ScreenAdapter.width(5),
                   bottom: ScreenAdapter.height(2)),
-              // decoration: BoxDecoration(
-              //   //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-              //   border: Border(
-              //     top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
-              //   ),
-              // ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -353,10 +47,7 @@ class publicShowCartView extends GetView {
                             //_showEmptyTips();
                             return;
                           }
-                          // controller.showShopCart = !controller.showShopCart;
-                          // controller.update(['shopping_cart']);
                           controller.showCarPopView();
-                          //controller.update();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -466,7 +157,6 @@ class publicShowCartView extends GetView {
 
                   Container(
                     width: ScreenAdapter.width(340),
-                    //height: ScreenAdapter.height(310),
                     child:
                         KioskTap(
                           
@@ -474,20 +164,11 @@ class publicShowCartView extends GetView {
                             if (int.parse(controller.shopCartTotalPrice.value) < 0) {
                               return;
                             }
-
-                            //点餐方式只有一种并且未开pos
-                            /*if(_isAllowPos == "0"){
-                                  _doSubmitOrder();
-                                }else{*/
-                            //
                             if (controller.recommendFoods.isNotEmpty) {
                               controller.showRecommendView();
                             } else {
                               controller.submitOrderFlow();
                             }
-                            //_showSelectMealTypeAndPaymentMethodDialog();
-                            //}
-
                           },
                           child: Container(
                             width: ScreenAdapter.width(300),
