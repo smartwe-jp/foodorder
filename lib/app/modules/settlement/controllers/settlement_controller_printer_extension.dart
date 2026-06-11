@@ -520,7 +520,9 @@ class PrintService extends GetxService {
       logI("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
       final val = await request('sseCallback',
           method: 'POST',
-          parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
+          parameters: {'uuid': uuid},
+          timeout: Duration(seconds: 15)
+      );
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
@@ -538,16 +540,6 @@ class PrintService extends GetxService {
         if (event == 'expiryPrint') {
           _printEfficientLabel(data);
         }
-      }
-    } on TimeoutException catch (e) {
-      logI('TimeoutException:${e.toString()}');
-      if (retryCount < 3) {
-        // 如果超时，重试最多3次
-        logI("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
-        await Future.delayed(Duration(seconds: 2));
-        callbackBeforePrint(event, data, retryCount: retryCount + 1);
-      } else {
-        logI("callbackBeforePrint uuid: $uuid failed after retries");
       }
     } catch (e) {
       logI('error Exception:${e.toString()}');

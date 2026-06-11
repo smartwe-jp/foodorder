@@ -273,8 +273,12 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode,
     };
-    request('webBootChangeState', method: 'POST', parameters: formData)
-        .then((val) {
+    request('webBootChangeState',
+        method: 'POST',
+        parameters:
+        formData,
+        timeout: const Duration(seconds: 15)
+    ).then((val) {
       var response = json.decode(val.toString());
 
       if (response != null &&
@@ -300,7 +304,7 @@ class SettingController extends GetxController with StateMixin {
         Get.back();
       }
 
-    }).timeout(const Duration(seconds: 15), onTimeout: () {
+    }).catchError((error) {
       debugPrint("Timeout getting change state");
       //showToast('获取现金机状态超时');
       if (retryCount < 3) {

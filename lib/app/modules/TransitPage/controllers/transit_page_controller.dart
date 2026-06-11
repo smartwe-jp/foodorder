@@ -112,8 +112,12 @@ class TransitPageController extends GetxController {
     };
     logI("getMachineActivate formData: $formData");
     try {
-      final val = await request('webBootActivatev3', method: 'POST', parameters: formData)
-          .timeout(const Duration(seconds: 10));
+      final val = await request(
+          'webBootActivatev3',
+          method: 'POST',
+          parameters: formData,
+          timeout: Duration(seconds: 10)
+      );
       final response = json.decode(val.toString());
 
       logI("getMachineActivate response: $response");
@@ -226,20 +230,6 @@ class TransitPageController extends GetxController {
           _showErrorDialog(error: e);
         }
     }
-    // .timeout(Duration(seconds: 10), onTimeout: () {
-    //   FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
-    //   //print('timeout');
-    //
-    //   if (retryCount < 3) {
-    //     // 如果超时，重试
-    //     Future.delayed(Duration(seconds: 2), () {
-    //       _getMachineActivate(retryCount: retryCount + 1);
-    //     });
-    //   } else {
-    //     // 如果重试次数超过3次，显示错误对话框
-    //     _showErrorDialog();
-    //   }
-    // });
   }
 
   _showErrorDialog({error}) =>

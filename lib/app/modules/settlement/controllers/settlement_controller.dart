@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -319,7 +320,11 @@ class SettlementController extends GetxController with StateMixin {
         "orderId": orderId.value,
         "payType":"",
       };//print(formData);
-      request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
+      request('webBootToPayv2',
+          method: 'POST',
+          parameters: formData,
+          timeout: const Duration(seconds: 180)
+      ).then((val) {
         var response = json.decode(val.toString());
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
@@ -353,6 +358,11 @@ class SettlementController extends GetxController with StateMixin {
         logI("doToPay timeout after 180s", tag: "ScanPay");
         _showScanCodeTimeOutDialog();
       }).catchError((e) {
+        if (e is TimeoutException) {
+            logI("doToPay DioException timeout: $e", tag: "ScanPay");
+            _showScanCodeTimeOutDialog();
+            return;
+        }
         logI("doToPay error: $e", tag: "ScanPay");
         _showScanCodeNoOpenDialog(3,"");
       });
@@ -435,7 +445,8 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
     };
     await request('webBootCalculateConfirm',
-        method: 'POST', parameters: formData)
+        method: 'POST', parameters: formData,
+        timeout: const Duration(seconds: 15))
         .then((val) {
       var response = json.decode(val.toString());
       debugPrint("webBootCalculateConfirm:$response");
@@ -454,8 +465,6 @@ class SettlementController extends GetxController with StateMixin {
       }
     }).catchError((e) {
       debugPrint("webBootCalculateConfirm:$e");
-      goNext = true;
-    }).timeout(Duration(seconds: 15), onTimeout: () {
       goNext = true;
     });
     return goNext;
@@ -767,7 +776,11 @@ class SettlementController extends GetxController with StateMixin {
     logI('posPayReport retryCount = $retryCount', tag: 'POS');
     posResultReportData["result"] = true;
     posResultReportData["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
-    request('webBootPosPayReport', method: 'POST', parameters: posResultReportData).then((val) {
+    request('webBootPosPayReport',
+        method: 'POST',
+        parameters: posResultReportData,
+        timeout: Duration(seconds: 30)
+    ).then((val) {
       var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
@@ -778,18 +791,6 @@ class SettlementController extends GetxController with StateMixin {
         showPosCancelEasyLoading("900");
       }
     }).catchError((error){
-      //TODO 默认重试3次
-      if (retryCount < 3) {
-        Future.delayed(Duration(milliseconds: 500), (){
-          posPayReport(eventString, retryCount: retryCount + 1);
-        });
-      } else {
-        FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
-          "machineCode": machineInfo.machineCode,
-        });
-        _checkOutErrorHandle('pos_report_error_tips'.tr);
-      }
-    }).timeout(Duration(seconds: 30), onTimeout: () {
       //TODO 默认重试3次
       if (retryCount < 3) {
         Future.delayed(Duration(milliseconds: 500), (){
@@ -919,7 +920,12 @@ class SettlementController extends GetxController with StateMixin {
     final queryUrl = "webBootToPrintV9";
 
     try {
-      final result = await request(queryUrl, method: 'POST', parameters: formData).timeout(Duration(seconds: 15));
+      final result = await request(
+        queryUrl,
+        method: 'POST',
+        parameters: formData,
+        timeout: Duration(seconds: 15),
+      );
       final response = json.decode(result.toString());
       //debugPrint("doPrintOrderMenu== $response");
       LogUtil.d(response);
@@ -954,7 +960,11 @@ class SettlementController extends GetxController with StateMixin {
       }
       
     } catch (e) {
-      logI('-- doPrintOrderMenu -- error: $e');
+      if (e is TimeoutException) {
+        logI('-- doPrintOrderMenu -- timeout: $e');
+      } else {
+        logI('-- doPrintOrderMenu -- error: $e');
+      }
       if (times < 3) {
         doPrintOrderMenu(printType, times: times + 1);
       } else {

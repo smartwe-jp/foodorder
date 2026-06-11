@@ -31,11 +31,9 @@ class MenuPageView extends GetView<MenuPageController> {
         enableFeedback: false,
         onTap: () {
           //controller.changeCategory(item['categoryCode']);
-          controller.pageController.animateToPage(
-            item['index'],
-            duration: const Duration(milliseconds: 30),
-            curve: Curves.easeInOut,
-          );
+          controller.restoreNavigationStatus(
+              item['categoryCode'], item['index']);
+          controller.pageController.jumpToPage(item['index']);
           //controller.classTag.value = item['categoryCode'];
         },
         child: Stack(
