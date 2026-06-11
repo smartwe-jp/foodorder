@@ -585,7 +585,7 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint('start connect pos');
 
     final canUsePos = await posCheckService.canUsePos().timeout(
-      Duration(seconds: 30),
+      const Duration(seconds: 30),
       onTimeout: () {
         debugPrint('POS机连接超时');
         return false;
@@ -779,7 +779,7 @@ class SettlementController extends GetxController with StateMixin {
     request('webBootPosPayReport',
         method: 'POST',
         parameters: posResultReportData,
-        timeout: Duration(seconds: 30)
+        timeout: const Duration(seconds: 30)
     ).then((val) {
       var response = json.decode(val.toString());//print(response);
 

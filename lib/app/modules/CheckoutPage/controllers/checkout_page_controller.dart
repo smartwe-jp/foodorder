@@ -335,7 +335,11 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     logI('formData: $formData');
 
-    request('webBootCalculateV2', method: 'POST', parameters: formData)
+    request('webBootCalculateV2',
+        method: 'POST',
+        parameters: formData,
+        timeout: const Duration(seconds: 15)
+    )
         .then((val) {
       logI('webBootCalculateV2:$val');
       var response = json.decode(val.toString());
@@ -384,10 +388,6 @@ class CheckoutPageController extends GetxController with StateMixin {
       EasyLoading.dismiss();
       _resetScanState(false);
       _showDialogError("tag_scan_network_error".tr);
-    }).timeout(const Duration(seconds: 15), onTimeout: () {
-      EasyLoading.dismiss();
-      _resetScanState(false);
-      _showDialogError("tag_scan_network_timeout".tr);
     });
   }
 
