@@ -181,12 +181,19 @@ class _MenuLoadFailedView extends StatelessWidget {
             color: Colors.grey.shade500,
           ),
           const SizedBox(height: 24),
-          Text(
-            'load_menu_failure_title'.tr,
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              'load_menu_failure_title'.tr,
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
           ),
           const SizedBox(height: 28),
