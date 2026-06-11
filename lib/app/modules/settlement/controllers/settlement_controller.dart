@@ -1056,51 +1056,6 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       gotonewBack();
     }
-
-    // Future.delayed(Duration(milliseconds: 300),() async {
-    //   if (machineInfo.currentMode == MachineMode.checkout) {
-    //     //eventBus.fire(new clearCartEvent('支付成功...'));
-    //
-    //     //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
-    //     //Get.find<MenuPageController>().getBookingBootMenu();
-    //   } else
-    //     if (machineInfo.currentMode == MachineMode.scan){
-    //     // if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-    //     //   Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
-    //
-    //     // if (Get.isRegistered<MenuPageController>()) {
-    //     //   MenuPageController controller = Get.find<MenuPageController>();
-    //     //   //if (controller.machineInfo.mealType) {
-    //     //     controller.clearCartList();
-    //     //   //}
-    //     // }
-    //
-    //   } else if (machineInfo.currentMode == MachineMode.takeout || machineInfo.currentMode == MachineMode.sell) {
-    //       // if (Get.isRegistered<OrderHomeController>())
-    //       //   Get.find<OrderHomeController>().clearCartList();
-    //
-    //       // if (Get.isRegistered<MenuPageController>()) {
-    //       //   MenuPageController controller = Get.find<MenuPageController>();
-    //       //   controller.clearCartList();
-    //       //   //if (controller.machineInfo.mealType) {
-    //       //     //controller.clearCartList();
-    //       //   //}
-    //       // }
-    //   }
-    //
-    //   //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-    //   if (machineInfo.paymentMethod == "1") {
-    //     nextOper();
-    //   } else {
-    //
-    //     //goToNewMyHome();
-    //     //showSuccessAlert(() {
-    //       //goToNewMyHome();
-    //       gotonewBack();
-    //     //});
-    //   }
-    //
-    // });
   }
 
 
