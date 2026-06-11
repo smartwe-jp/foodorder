@@ -220,7 +220,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         } else {
           //print("普通支付请求了new order id");
-          Get.find<MenuPageController>().getBookingBootIndexCategory();
+          //Get.find<MenuPageController>().getBookingBootIndexCategory();
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
