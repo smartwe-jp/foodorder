@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/rendering.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
@@ -25,17 +26,17 @@ Future request(
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        print("Request: ${options.method} ${options.uri}");
-        print("Headers: ${options.headers}");
-        print("Data: ${options.data}");
+        logI("Request: ${options.method} ${options.uri}");
+        logI("Headers: ${options.headers}");
+        logI("Data: ${options.data}");
         handler.next(options);
       },
       onResponse: (response, handler) {
-        //print("Response: ${response.statusCode} ${response.data}");
+        debugPrint("Response: ${response.statusCode} ${response.data}");
         handler.next(response);
       },
       onError: (DioException e, handler) {
-        //print("Error: ${e.message}");
+        logE("Error: ${e.message}");
         handler.next(e);
       },
     ));

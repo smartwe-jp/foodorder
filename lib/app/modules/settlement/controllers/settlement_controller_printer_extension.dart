@@ -417,7 +417,7 @@ class PrintService extends GetxService {
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid},
-          timeout: Duration(seconds: 15)
+          timeout: const Duration(seconds: 15)
       );
       var response = json.decode(val.toString());
       if (response != null &&
@@ -456,7 +456,7 @@ class PrintService extends GetxService {
       //间隔2秒打印
       index += 1;
       printData(data);
-      await Future.delayed(Duration(seconds: 15));
+      await Future.delayed(const Duration(seconds: 15));
       if (index > 1) {
         break;
       }

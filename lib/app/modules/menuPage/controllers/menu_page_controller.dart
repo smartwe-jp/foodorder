@@ -1302,16 +1302,11 @@ print("加1了");
         "takeout": machineInfo.isTakeoutMode,
       };
       debugPrint("formData: $formData");
-<<<<<<< HEAD
-      request('webBootOrder', method: 'POST', parameters: formData).then((val) {
-=======
       request('webBootOrder',
           method: 'POST',
           parameters: formData,
           timeout: const Duration(seconds: 15)
       ).then((val) {
-
->>>>>>> f2feae65 (modify http tool and retry flow)
         EasyLoading.dismiss();
         var response = json.decode(val.toString());
         debugPrint("webBootOrder response: $response");

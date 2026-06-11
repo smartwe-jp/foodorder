@@ -1,13 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-<<<<<<< HEAD
-=======
-import 'dart:math';
-import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
->>>>>>> f2feae65 (modify http tool and retry flow)
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -521,10 +514,10 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 30), onTimeout: () {
+      }).timeout(const Duration(seconds: 30), onTimeout: () {
         logger.info("扫码支付超时 30s");
         if (retryCount < 60) {
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             _doScanCodeTimeOut(retryCount: retryCount + 1);
           });
         } else {
@@ -964,7 +957,7 @@ class SettlementController extends GetxController with StateMixin {
         queryUrl,
         method: 'POST',
         parameters: formData,
-        timeout: Duration(seconds: 15),
+        timeout: const Duration(seconds: 15),
       );
       final response = json.decode(result.toString());
       //debugPrint("doPrintOrderMenu== $response");

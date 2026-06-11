@@ -414,7 +414,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
       request('webBootOrder',
           method: 'POST',
           parameters: formData,
-          timeout: Duration(seconds: 30)
+          timeout: const Duration(seconds: 30)
       ).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
