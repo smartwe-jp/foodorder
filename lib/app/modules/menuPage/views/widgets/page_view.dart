@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
+import 'package:get/get.dart';
 import '../../controllers/menu_page_extension.dart';
 
 class MenuView extends StatelessWidget {
@@ -93,23 +94,115 @@ class MenuView extends StatelessWidget {
             }
             return false;
           },
-          child: FutureBuilder<Widget?>(
+          child: _CategoryMenuPage(
             key: ValueKey(categoryCode),
-            future: state.getCategoryMenu(categoryCode: categoryCode),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data == null) {
-                return const Center(child: Text('No data available'));
-              } else {
-                return snapshot.data!;
-              }
-            },
+            state: state,
+            categoryCode: categoryCode,
           ),
         );
       },
+    );
+  }
+}
+
+class _CategoryMenuPage extends StatefulWidget {
+  final MenuPageController state;
+  final String categoryCode;
+
+  const _CategoryMenuPage({
+    Key? key,
+    required this.state,
+    required this.categoryCode,
+  }) : super(key: key);
+
+  @override
+  State<_CategoryMenuPage> createState() => _CategoryMenuPageState();
+}
+
+class _CategoryMenuPageState extends State<_CategoryMenuPage> {
+  late Future<Widget?> _menuFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _menuFuture = _loadMenu();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CategoryMenuPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.categoryCode != widget.categoryCode) {
+      _menuFuture = _loadMenu();
+    }
+  }
+
+  Future<Widget?> _loadMenu() {
+    return widget.state.getCategoryMenu(categoryCode: widget.categoryCode);
+  }
+
+  void _retry() {
+    setState(() {
+      _menuFuture = _loadMenu();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget?>(
+      future: _menuFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+          return _MenuLoadFailedView(onRetry: _retry);
+        }
+        return snapshot.data!;
+      },
+    );
+  }
+}
+
+class _MenuLoadFailedView extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _MenuLoadFailedView({Key? key, required this.onRetry})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.cloud_off_outlined,
+            size: 96,
+            color: Colors.grey.shade500,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'load_menu_failure_title'.tr,
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 28),
+          ElevatedButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh),
+            label: Text(
+              'retry_button'.tr,
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+            ),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
