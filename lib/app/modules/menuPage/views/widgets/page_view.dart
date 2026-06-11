@@ -77,7 +77,7 @@ class MenuView extends StatelessWidget {
       },
       itemBuilder: (context, pageIndex) {
         debugPrint('MenuSidebarItemInfo itemBuilder = $pageIndex');
-        state.classTag.value = state.topMenu[pageIndex]['categoryCode'];
+        final categoryCode = state.topMenu[pageIndex]['categoryCode'];
         //Map pageInfo = state.topMenu[pageIndex];
 
         return NotificationListener<ScrollNotification>(
@@ -94,7 +94,8 @@ class MenuView extends StatelessWidget {
             return false;
           },
           child: FutureBuilder<Widget?>(
-            future: state.getCategoryMenu(),
+            key: ValueKey(categoryCode),
+            future: state.getCategoryMenu(categoryCode: categoryCode),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
