@@ -116,7 +116,6 @@ class TransitPageController extends GetxController {
 
   _getMachineActivate({isFirst = false, int retryCount = 0}) async {
     try {
-
       bool shouldActive = await _checkShouldActive();
       if (_loadActiveInfo.value == false && !shouldActive) {
         logger.info('-- getMachineActivate with loadActive no need --');
@@ -130,8 +129,12 @@ class TransitPageController extends GetxController {
         "version": local_version.value
       };
       logI('-- getMachineActivate with loadActive -- machineCode: ${_machineCode.value}, version: ${local_version.value} --');
-      final val = await request('webBootActivatev3', method: 'POST', parameters: formData)
-        .timeout(const Duration(seconds: 10));
+      final val = await request(
+          'webBootActivatev3',
+          method: 'POST',
+          parameters: formData,
+          timeout: Duration(seconds: 10)
+      );
       final response = json.decode(val.toString());
 
       logI("getMachineActivate response: $response");

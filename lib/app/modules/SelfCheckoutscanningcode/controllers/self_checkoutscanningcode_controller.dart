@@ -411,7 +411,11 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": true,//machineInfo.mealType,
       };
-      request('webBootOrder', method: 'POST', parameters: formData).then((val) {
+      request('webBootOrder',
+          method: 'POST',
+          parameters: formData,
+          timeout: Duration(seconds: 30)
+      ).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
 
@@ -434,8 +438,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
                   })
           );
         }
-      }).timeout(Duration(seconds: 30), onTimeout: () {
-        _handleOrderResultAlert(times: times);
       }).catchError((e) {
         _handleOrderResultAlert(times: times);
       });

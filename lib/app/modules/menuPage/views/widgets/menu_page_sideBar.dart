@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
@@ -38,11 +39,9 @@ extension MenuPageSideBar on MenuPageView {
                             // controller.classTag.value = item['categoryCode'];
                             // controller.selectIndex = index;
                             // controller.update(['side_bar']);
-                            controller.pageController.animateToPage(
-                              index,
-                              duration: const Duration(milliseconds: 30),
-                              curve: Curves.easeInOut,
-                            );
+                            controller.restoreNavigationStatus(
+                                item['categoryCode'], index);
+                            controller.pageController.jumpToPage(index);
 
                           },
                           child: Container(

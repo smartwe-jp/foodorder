@@ -162,39 +162,23 @@ class MenuPageController extends GetxController with StateMixin {
       change(null, status: RxStatus.loading());
     } else {
       topMenu.value = [];
+      showItem.clear();
     }
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
     }
-
-    //queryTakeout 0外卖 1都可 2店内
-    // switch (machineInfo.diningType) {
-    //   case "1":
-    //     queryTakeout = "2";
-    //     break;
-    //   case "2":
-    //     queryTakeout = "0";
-    //     break;
-    //   case "3":
-    //     if (machineInfo.mealType == true) {
-    //       queryTakeout = "0";
-    //     } else {
-    //       queryTakeout = "2";
-    //     }
-    //     break;
-    //   default:
-    //     queryTakeout = "2";
-    // }
-
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
     };
     debugPrint('formData:$formData');
-    request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
-        .then((val) {
+    request('webBootIndexCategoryv2',
+        method: 'POST',
+        parameters: formData,
+        timeout: const Duration(seconds: 15)
+    ).then((val) {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
@@ -245,13 +229,6 @@ class MenuPageController extends GetxController with StateMixin {
                 categoryVoList['background'] ?? "#F9F9F9";
           }
         }
-        // if (isReset) {
-        //   _resetToFirstCategory();
-        // } else {
-        //   //getBookingBootIndexMenu(classTag.value);
-        // }
-
-        // update();
         change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
@@ -263,8 +240,10 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
-    }).catchError((e) {
-      if (retryCount < 3) {
+    })
+    .catchError((e){
+      logI('getBookingBootIndexCategory error: $e');
+      if (retryCount < 2) {
         retryCount++;
         debugPrint(
             'Retrying getBookingBootIndexCategory, attempt: $retryCount');
@@ -275,19 +254,9 @@ class MenuPageController extends GetxController with StateMixin {
         //     parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
-    }).timeout(Duration(seconds: 8), onTimeout: () {
-      //FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data Timeout'));
-      // if (retryCount < 3) {
-      //   retryCount++;
-      //   debugPrint('Retrying getBookingBootIndexCategory on timeout, attempt: $retryCount');
-      //   getBookingBootIndexCategory(isReset: isReset, retryCount: retryCount);
-      // } else {
-      //   FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      //   change(null, status: RxStatus.error('Failed to load data Timeout'));
-      // }
     });
   }
+
 
   forceUpdateUI() {
     forceUpdate = true;
@@ -1333,7 +1302,16 @@ print("加1了");
         "takeout": machineInfo.isTakeoutMode,
       };
       debugPrint("formData: $formData");
+<<<<<<< HEAD
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
+=======
+      request('webBootOrder',
+          method: 'POST',
+          parameters: formData,
+          timeout: const Duration(seconds: 15)
+      ).then((val) {
+
+>>>>>>> f2feae65 (modify http tool and retry flow)
         EasyLoading.dismiss();
         var response = json.decode(val.toString());
         debugPrint("webBootOrder response: $response");
@@ -1367,8 +1345,6 @@ print("加1了");
             Get.back();
           }));
         }
-      }).timeout(Duration(seconds: 30), onTimeout: () {
-        _handleOrderResultAlert(times: times);
       }).catchError((e) {
         _handleOrderResultAlert(times: times);
       });

@@ -1,6 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+<<<<<<< HEAD
+=======
+import 'dart:math';
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+>>>>>>> f2feae65 (modify http tool and retry flow)
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -314,10 +321,13 @@ class SettlementController extends GetxController with StateMixin {
         "auth_code": scanQrCodeController.text,
         "machineCode": machineInfo.machineCode,
         "orderId": orderId.value,
-        "payType": "",
-      }; //print(formData);
-      request('webBootToPayv2', method: 'POST', parameters: formData)
-          .then((val) {
+        "payType":"",
+      };//print(formData);
+      request('webBootToPayv2',
+          method: 'POST',
+          parameters: formData,
+          timeout: const Duration(seconds: 180)
+      ).then((val) {
         var response = json.decode(val.toString());
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
@@ -345,20 +355,14 @@ class SettlementController extends GetxController with StateMixin {
           logger.info("扫码支付失败 2 ${response['code']}");
           _doScanCodeTimeOut();
         }
-      }).catchError((error) {
-        logger.info("扫码支付异常 $error");
-        _checkOutErrorHandle('settlement_order_error'.tr,
-            confirm: () {
-              scanQrCodeController.text = "";
-              scanQrCodeFocusNode.requestFocus();
-            });
-      }).timeout(Duration(seconds: 180), onTimeout: () {
-        logger.info("扫码支付超时 180s"); //留足够时间给用户输入密码
-        _checkOutErrorHandle('settlement_order_error'.tr,
-            confirm: () {
-              scanQrCodeController.text = "";
-              scanQrCodeFocusNode.requestFocus();
-            });
+      }).catchError((e) {
+        if (e is TimeoutException) {
+            logI("doToPay DioException timeout: $e", tag: "ScanPay");
+            _showScanCodeTimeOutDialog();
+            return;
+        }
+        logI("doToPay error: $e", tag: "ScanPay");
+        _showScanCodeNoOpenDialog(3,"");
       });
     }
   }
@@ -412,7 +416,8 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
     };
     await request('webBootCalculateConfirm',
-            method: 'POST', parameters: formData)
+        method: 'POST', parameters: formData,
+        timeout: const Duration(seconds: 15))
         .then((val) {
       var response = json.decode(val.toString());
       debugPrint("webBootCalculateConfirm:$response");
@@ -429,11 +434,8 @@ class SettlementController extends GetxController with StateMixin {
           goNext = false;
         }
       }
-    }).timeout(Duration(seconds: 15), onTimeout: () {
-      logger.info("requestLatestCheckoutInfo 超时 15s");
-      goNext = true;
-    }).catchError((error) {
-      logger.info("requestLatestCheckoutInfo 异常 $error");
+    }).catchError((e) {
+      debugPrint("webBootCalculateConfirm:$e");
       goNext = true;
     });
     return goNext;
@@ -807,12 +809,13 @@ class SettlementController extends GetxController with StateMixin {
   posPayReport(String eventString, {int retryCount = 0}) {
     logger.info('posPayReport retryCount = $retryCount');
     posResultReportData["result"] = true;
-    posResultReportData["paymentInfo"] =
-        eventString; //LogUtil.d("huibaohhhhhh===${_posResultReportData}");
+    posResultReportData["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport',
-            method: 'POST', parameters: posResultReportData)
-        .then((val) {
-      var response = json.decode(val.toString()); //print(response);
+        method: 'POST',
+        parameters: posResultReportData,
+        timeout: const Duration(seconds: 30)
+    ).then((val) {
+      var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
         doPrintOrderMenu(machineInfo.receiptPrintType);
@@ -833,20 +836,6 @@ class SettlementController extends GetxController with StateMixin {
         //   "machineCode": machineInfo.machineCode,
         // });
         logger.info("posPayReport final error $error");
-        _checkOutErrorHandle('pos_report_error_tips'.tr);
-      }
-    }).timeout(Duration(seconds: 30), onTimeout: () {
-      logger.info("posPayReport 超时 30s");
-      //TODO 默认重试3次
-      if (retryCount < 3) {
-        Future.delayed(Duration(milliseconds: 500), () {
-          posPayReport(eventString, retryCount: retryCount + 1);
-        });
-      } else {
-        logger.info("posPayReport final 超时 30s");
-        // FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
-        //   "machineCode": machineInfo.machineCode,
-        // });
         _checkOutErrorHandle('pos_report_error_tips'.tr);
       }
     });
@@ -971,7 +960,12 @@ class SettlementController extends GetxController with StateMixin {
     final queryUrl = "webBootToPrintV9";
 
     try {
-      final result = await request(queryUrl, method: 'POST', parameters: formData).timeout(Duration(seconds: 15));
+      final result = await request(
+        queryUrl,
+        method: 'POST',
+        parameters: formData,
+        timeout: Duration(seconds: 15),
+      );
       final response = json.decode(result.toString());
       //debugPrint("doPrintOrderMenu== $response");
       LogUtil.d(response);
@@ -1006,7 +1000,11 @@ class SettlementController extends GetxController with StateMixin {
       }
       
     } catch (e) {
-      logger.info('-- doPrintOrderMenu -- error: $e');
+      if (e is TimeoutException) {
+        logI('-- doPrintOrderMenu -- timeout: $e');
+      } else {
+        logI('-- doPrintOrderMenu -- error: $e');
+      }
       if (times < 3) {
         doPrintOrderMenu(printType, times: times + 1);
       } else {

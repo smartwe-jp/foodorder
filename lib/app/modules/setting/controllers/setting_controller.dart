@@ -522,8 +522,12 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode,
     };
-    request('webBootChangeState', method: 'POST', parameters: formData)
-        .then((val) async {
+    request('webBootChangeState',
+        method: 'POST',
+        parameters:
+        formData,
+        timeout: const Duration(seconds: 15)
+    ).then((val) {
       var response = json.decode(val.toString());
       debugPrint(
           "SettingController _getPaycubeChangeState response = ${response}");
@@ -552,18 +556,6 @@ class SettingController extends GetxController with StateMixin {
         //日文显示
         showToast('現金機の状態を取得できませんでした。');
         //change(null, status: RxStatus.error('获取现金机状态失败'));
-        Get.back();
-      }
-    }).timeout(const Duration(seconds: 15), onTimeout: () {
-      debugPrint("Timeout getting change state");
-      //showToast('获取现金机状态超时');
-      if (retryCount < 3) {
-        Future.delayed(Duration(seconds: 2), () {
-          _getPaycubeChangeState(retryCount: retryCount + 1);
-        });
-      } else {
-        showToast('現金機の状態を取得できませんでした。');
-        //change(null, status: RxStatus.error('获取现金机状态超时'));
         Get.back();
       }
     });

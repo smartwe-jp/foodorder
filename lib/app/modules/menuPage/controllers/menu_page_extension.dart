@@ -94,10 +94,15 @@ extension MenuPageControllerExtension on MenuPageController {
   }
 
   Future<Widget?> getCategoryMenu(
-      {firstLoad = false}) async {
+      {String? categoryCode, firstLoad = false}) async {
+    final queryCategoryCode = categoryCode ?? classTag.value;
 
-    debugPrint("getCategoryMenu:${classTag.value}");
+    debugPrint("getCategoryMenu:$queryCategoryCode");
     Widget? menuWidget = null;
+    if (showItem.containsKey(queryCategoryCode)) {
+      return showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
+    }
+
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
@@ -124,21 +129,23 @@ extension MenuPageControllerExtension on MenuPageController {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
-      "categoryCode": classTag.value
+      "categoryCode": queryCategoryCode
     };
     debugPrint("formData:${formData}");
 
     try {
       final val = await request('webBootIndexMenuv3',
-          method: 'POST', parameters: formData)
-          .timeout(const Duration(seconds: 15));
+          method: 'POST',
+          parameters: formData,
+          timeout: const Duration(seconds: 15));
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        showItem[classTag.value] = response['data'];
+        showItem[queryCategoryCode] = response['data'];
         _updateOptionsInfo(response['data']);
-        menuWidget = showMiddleMenuList(Get.context!);
+        menuWidget =
+            showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
       }
 
     } on TimeoutException catch (e) {
@@ -199,65 +206,66 @@ extension MenuPageControllerExtension on MenuPageController {
     );
   }
 
-  showMiddleMenuList(BuildContext context) {
+  showMiddleMenuList(BuildContext context, {String? categoryCode}) {
+    final currentCategoryCode = categoryCode ?? classTag.value;
     for (var item in topMenu) {
-      if (classTag.value == item['categoryCode']) {
+      if (currentCategoryCode == item['categoryCode']) {
         if (item['showType'] == "featured") {
-          return showCategoryOne(showItem[classTag.value], context);
+          return showCategoryOne(showItem[currentCategoryCode], context);
         } else if (item['showType'] == "table") {
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context);
+          return showCategoryTwo(showItem[currentCategoryCode], context);
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
         } else if (item['showType'] == "table_v1") {
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context,
+          return showCategoryTwo(showItem[currentCategoryCode], context,
               popupType: "v1");
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
         } else if (item['showType'] == "block") {
           //350.0, 350.0
-          return showCategoryThree(showItem[classTag.value]);
+          return showCategoryThree(showItem[currentCategoryCode]);
         } else if (item['showType'] == "grid") {
           //260.0, 400.0
-          return showCategoryFour(showItem[classTag.value], context);
+          return showCategoryFour(showItem[currentCategoryCode], context);
         } else if (item['showType'] == "grid_v1") {
           //260.0, 400.0
-          return showCategoryFour(showItem[classTag.value], context,
+          return showCategoryFour(showItem[currentCategoryCode], context,
               popupType: "v1");
         } else if (item['showType'] == "waterfall") {
           //400.0, 260.0
-          return showCategoryFive(showItem[classTag.value]);
+          return showCategoryFive(showItem[currentCategoryCode]);
         } else if (item['showType'] == "double_column") {
           //530.0, 530.0
-          return showCategorySix(showItem[classTag.value], context);
+          return showCategorySix(showItem[currentCategoryCode], context);
         } else if (item['showType'] == "double_column_v1") {
           //530.0, 530.0
-          return showCategorySix(showItem[classTag.value], context,
+          return showCategorySix(showItem[currentCategoryCode], context,
               popupType: "v1");
         } else if (item['showType'] == "three_column") {
           //350.0, 440.0
-          return showCategorySeven(showItem[classTag.value], context);
+          return showCategorySeven(showItem[currentCategoryCode], context);
         } else if (item['showType'] == "three_column_v1") {
           //350.0, 440.0
-          return showCategorySeven(showItem[classTag.value], context,
+          return showCategorySeven(showItem[currentCategoryCode], context,
               popupType: "v1");
         } else if (item['showType'] == "mixed_column") {
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
-          return showCategoryEight(showItem[classTag.value], context);
+          return showCategoryEight(showItem[currentCategoryCode], context);
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
         } else if (item['showType'] == "mixed_column_v1") {
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
-          return showCategoryEight(showItem[classTag.value], context,
+          return showCategoryEight(showItem[currentCategoryCode], context,
               popupType: "v1");
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
         } else if (item['showType'] == "mixed_two_column") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context);
+          return showCategoryNine(showItem[currentCategoryCode], context);
         } else if (item['showType'] == "mixed_two_column_v1") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context,
+          return showCategoryNine(showItem[currentCategoryCode], context,
               popupType: "v1");
         } else {
-          return showCategoryTwo(showItem[classTag.value], context);
+          return showCategoryTwo(showItem[currentCategoryCode], context);
         }
       }
     }
