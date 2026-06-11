@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
-import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
 
 import '../config/index.dart';
@@ -31,7 +31,7 @@ Future request(
         handler.next(options);
       },
       onResponse: (response, handler) {
-        logI("Response: ${response.statusCode} ${response.data}");
+        debugPrint("Response: ${response.statusCode} ${response.data}");
         handler.next(response);
       },
       onError: (DioException e, handler) {
