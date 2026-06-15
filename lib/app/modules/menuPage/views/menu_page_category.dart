@@ -463,7 +463,7 @@ extension MenuPageCategory on MenuPageController {
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
-          changeCategory(item['categoryCode']);
+          //changeCategory(item['categoryCode']);
           //classTag.value = item['categoryCode'];
         },
         child: Stack(

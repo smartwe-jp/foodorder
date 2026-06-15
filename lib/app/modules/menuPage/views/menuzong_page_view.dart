@@ -34,7 +34,7 @@ class MenuzongPageView extends GetView {
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
-          controller.changeCategory(item['categoryCode']);
+          //controller.changeCategory(item['categoryCode']);
         },
         child: Stack(
           children: [

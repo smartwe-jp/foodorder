@@ -107,24 +107,6 @@ extension MenuPageControllerExtension on MenuPageController {
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
     }
-    //queryTakeout 0外卖 1都可 2店内
-    // switch (machineInfo.diningType) {
-    //   case "1":
-    //     queryTakeout = "2";
-    //     break;
-    //   case "2":
-    //     queryTakeout = "0";
-    //     break;
-    //   case "3":
-    //     if (machineInfo.mealType == true) {
-    //       queryTakeout = "0";
-    //     } else {
-    //       queryTakeout = "2";
-    //     }
-    //     break;
-    //   default:
-    //     queryTakeout = "2";
-    // }
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
