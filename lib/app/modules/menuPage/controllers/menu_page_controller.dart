@@ -174,23 +174,13 @@ class MenuPageController extends GetxController with StateMixin {
     ).then((val) {
       var response = json.decode(val.toString());
 
-      if (response['code'] == 200) {
         //2、保存商品信息
-        List myList = response['data']['categoryVoList'];
+        List myList = response['data']['categoryVoList'] ?? [];
         recommendFoods = response['data']['recommendMenus'] ?? [];
         //如果菜单为空则返回言语选择页面并给出提示
-        if(myList.length == 0 || null == myList || "" == myList){
-          //showToast("少々お待ちください");
-          Get.dialog(
-              DialogUtils.alertOneButton("少々お待ちください",
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
-          sleep(Duration(milliseconds: 2000));
-          Get.back();
+        if (myList.isEmpty ) {
+          change(null, status: RxStatus.error('Failed to load data'));
+          return;
         }
 
         List MenuColor = ["#F05F32","#98b9b3","#ABC251","#89A0F0","#E78BC5","#F05F32"];
@@ -219,19 +209,6 @@ class MenuPageController extends GetxController with StateMixin {
           }
         }
         change(null, status: RxStatus.success());
-      } else {
-        //showToast(response['msg']);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['msg'],
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
-        sleep(Duration(milliseconds: 2000));
-        Get.back();
-      }
     })
     .catchError((e){
       logI('getBookingBootIndexCategory error: $e');
@@ -250,133 +227,6 @@ class MenuPageController extends GetxController with StateMixin {
     forceUpdate = true;
     update();
     forceUpdate = false;
-  }
-
-  getBookingBootIndexMenu(queryCategoryCode, {int retryCount = 0}) {
-    debugPrint('getBookingBootIndexMenu');
-    var queryTakeout = "2";
-    if (machineInfo.currentMode == MachineMode.takeout) {
-      queryTakeout = "0";
-    }
-    var formData = {
-      "machineCode": machineInfo.machineCode,
-      "language": checkLanguage.value,
-      "takeout":queryTakeout,
-      "categoryCode":queryCategoryCode
-    };
-    request('webBootIndexMenuv3', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
-      debugPrint('getBookingBootIndexMenu response:$response');
-      if (response['code'] == 200) {
-        //2、保存商品信息
-        List myList = response['data'];
-        //如果菜单为空则返回言语选择页面并给出提示
-        if(myList.length == 0 || null == myList || "" == myList){
-          //showToast("少々お待ちください");
-          Get.dialog(
-              DialogUtils.alertOneButton("少々お待ちください",
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
-          sleep(Duration(milliseconds: 2000));
-          Get.back();
-        }
-
-        showItem.value[queryCategoryCode] = myList;
-
-        //该分类下有option，先初始化页面数据
-        if (myList.length > 0) {
-          for (var menuVoList in myList) {
-            num _addOptionPrice = 0;
-            if (menuVoList['optionGroupVoList'] != null &&
-                menuVoList['optionGroupVoList']?.length > 0 &&
-                menuVoList['optionGroupVoList'] != "") {
-              //初始化菜品option选项
-              //属性循环相关
-              var attr = menuVoList['optionGroupVoList'];
-              var nochangeattr = menuVoList['optionGroupVoList'];
-              List tempArr = [];
-              List initalCode = [];
-              var checkNum = 0;
-
-
-              for (var m = 0; m < attr.length; m++) {
-                for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
-                  /*attr[m]['optionVoList'][n]["checked"] = false;
-                      if(n == 0){
-                        tempArr.add(attr[m]['optionVoList'][n]);
-                      }*/
-                  if (attr[m]['optionVoList'][n]["standard"] == 1) {
-                    attr[m]['optionVoList'][n]["checked"] = true;
-                    nochangeattr[m]['optionVoList'][n]["checked"] = true;
-                    attr[m]['optionVoList'][n]["groupTitle"]=attr[m]["groupName"];
-                    tempArr.add(attr[m]['optionVoList'][n]);
-                    initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
-
-                    _addOptionPrice += attr[m]['optionVoList'][n]["currentPrice"];
-                    checkNum++;
-                  } else {
-                    attr[m]['optionVoList'][n]["checked"] = false;
-                    nochangeattr[m]['optionVoList'][n]["checked"] = false;
-                  }
-                }
-              }
-              //需要创建的小组件
-              menuOption.value[menuVoList['menuCode']] = attr;
-              noChangeinitialmenuOption.value[menuVoList['menuCode']] = initalCode;
-              initialMenuOption.value[menuVoList['menuCode']] = tempArr;//tempArr;
-              selectedMenuOptionList.value[menuVoList['menuCode']] = tempArr;
-              selectedMenuOptionCheckedNum.value[menuVoList['menuCode']] = checkNum;
-              attr = [];
-              tempArr = [];
-              checkNum = 0;
-            }
-            selectedMenuOptionChangePrice.value[menuVoList['menuCode']] = menuVoList['currentPrice'];
-            addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] = _addOptionPrice;
-          }
-        }
-        classTag.value = queryCategoryCode;
-        change(null, status: RxStatus.success());
-      } else {
-        //showToast(response['msg']);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['msg'],
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
-        sleep(Duration(milliseconds: 2000));
-        Get.back();
-      }
-
-    })
-    .catchError((e){
-      if (retryCount < 3) {
-        retryCount++;
-        debugPrint('Retrying getBookingBootIndexMenu, attempt: $retryCount');
-        getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
-      } else {
-        FirebaseAnalytics.instance.logEvent(name: 'load_menu_failure', parameters: {'machineCode': machineInfo.machineCode});
-        change(null, status: RxStatus.error('Failed to load data'));
-      }
-    })
-    .timeout(Duration(seconds: 12), onTimeout: (){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data Timeout'));
-      // if (retryCount < 3) {
-      //   retryCount++;
-      //   debugPrint('Retrying getBookingBootIndexMenu on timeout, attempt: $retryCount');
-      //   getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
-      // } else {
-      //   FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      //   change(null, status: RxStatus.error('Failed to load data Timeout'));
-      // }
-    });
   }
 
   getCartPriceTotal() async {
@@ -1295,19 +1145,11 @@ print("加1了");
 
   }
 
-  // _getPosSettingInfo() async {
-  //   Map posSettingInfo = await HomeServices.getPosSettingInfo();
-  //   pos_ip.value = posSettingInfo['posIp'];
-  //   pos_port.value = posSettingInfo['posPort'];
-  //   //postNewOrderId();
-  //   gotoSettlement();
-  // }
 
   resetToFirstPage() async {
     await getBookingBootIndexCategory(isReset: true);
     debugPrint('getBookingBootIndexCategory done');
     await getCartPriceTotal();
-    //await _resetToFirstCategory();
   }
 
 
@@ -1334,16 +1176,6 @@ print("加1了");
 
   }
 
-  _resetToFirstCategory() async {
-    logI("_resetToFirstCategory");
-    final firstCategory = topMenu.first['categoryCode'] ?? null;
-    if (firstCategory != null) {
-      await changeCategory(firstCategory);
-    } else {
-      await changeCategory(classTag.value);
-    }
-  }
-
   clearOrderList() async {
     await ordersqlcontroller.removeAllFromCart();
     if (paymentIsShow) {
@@ -1355,13 +1187,6 @@ print("加1了");
       Get.back();
     }
     getCartPriceTotal();
-  }
-
-
-  //切换顶部菜单分类
-  changeCategory(categoryCode){
-    getBookingBootIndexMenu(categoryCode);
-    //update();
   }
 
   clearCartList() async {

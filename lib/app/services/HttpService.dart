@@ -96,6 +96,7 @@ Future request(
 
       return response;
     } else {
+      logE("HTTP request failed with status: ${response?.statusCode}");
       throw Exception('異常が生じてます。お近くのスタッフにお声かけください。...');
     }
   } catch (e) {
