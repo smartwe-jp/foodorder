@@ -2729,7 +2729,7 @@ extension MenuPageCategory on MenuPageController {
                                     Expanded(
                                       child: AspectRatio(
                                         aspectRatio: 0.76,
-                                        child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 1.0),
+                                        child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 1.1),
                                       ),
 
                                     ),
@@ -2737,7 +2737,7 @@ extension MenuPageCategory on MenuPageController {
                                     Expanded(
                                       child: AspectRatio(
                                         aspectRatio: 0.76,
-                                        child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 1.0),
+                                        child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 1.1),
                                       ),
                                     ),
                                   ],
@@ -2909,7 +2909,7 @@ extension MenuPageCategory on MenuPageController {
                                   Expanded(
                                     child: AspectRatio(
                                       aspectRatio: 0.76,
-                                      child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 1.0),
+                                      child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 1.1),
                                     ),
 
                                   ),
@@ -2917,7 +2917,7 @@ extension MenuPageCategory on MenuPageController {
                                   Expanded(
                                     child: AspectRatio(
                                       aspectRatio: 0.76,
-                                      child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 1.0),
+                                      child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 1.1),
                                     ),
                                   ),
                                 ],
