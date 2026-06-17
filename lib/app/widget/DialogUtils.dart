@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 import '../config/font.dart';
 import '../config/imageData.dart';
@@ -82,7 +83,7 @@ class DialogUtils {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                InkWell(
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
@@ -111,7 +112,7 @@ class DialogUtils {
                     decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
-                InkWell(
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
@@ -188,7 +189,7 @@ class DialogUtils {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                InkWell(
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
@@ -217,7 +218,7 @@ class DialogUtils {
                     decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
-                InkWell(
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
@@ -327,7 +328,10 @@ class DialogUtils {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                InkWell(
+                KioskTap(
+                  onTap: () {
+                    confirm();
+                  },
                   child: Container(
                     width: ScreenAdapter.width(600),
                     height: ScreenAdapter.height(75),
@@ -341,10 +345,6 @@ class DialogUtils {
                       ),
                     ),
                   ),
-                  onTap: () {
-                    confirm();
-
-                  },
                 )
               ],
             ),
