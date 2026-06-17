@@ -75,7 +75,7 @@ class SelectPaymentPage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            InkWell(
+            KioskTap(
               onTap: () {
                 // setState(() {
                 //   _receiptPrintType = "1";
@@ -118,7 +118,7 @@ class SelectPaymentPage extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
+            KioskTap(
               onTap: () {
                 // setState(() {
                 //   _receiptPrintType = "2";
@@ -227,7 +227,7 @@ class SelectPaymentPage extends StatelessWidget {
                               MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 if (machineInfo.showCash == true)
-                                  InkWell(
+                                  KioskTap(
                                     onTap: () {
                                       //payment_method_num = "1";
                                       machineInfo.paymentMethod = '1';
@@ -325,7 +325,7 @@ class SelectPaymentPage extends StatelessWidget {
                                 if(machineInfo.showAlipay || machineInfo.showWechat || machineInfo.showPayPay||
                                     machineInfo.showAuPay || machineInfo.showDPay || machineInfo.showRPay || machineInfo.showMPay)
 
-                                  InkWell(
+                                  KioskTap(
                                     onTap: () {
                                       machineInfo.paymentMethod = '2';
                                       //Navigator.pop(pcontext);
@@ -713,7 +713,7 @@ class SelectPaymentPage extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  InkWell(
+                                  KioskTap(
                                     onTap: () {
                                       machineInfo.isAllowPos = "1";
                                       machineInfo.paymentMethod = "3";
@@ -1116,7 +1116,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       alignment: WrapAlignment.center,
                                       children: <Widget>[
                                         if (machineInfo.showPosEdy == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "5";
@@ -1190,7 +1190,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                         if (machineInfo.showPosiD == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "6";
@@ -1264,7 +1264,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                         if (machineInfo.showPosnanaco == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "7";
@@ -1338,7 +1338,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                         if (machineInfo.showPosWAON == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "8";
@@ -1412,7 +1412,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                         if (machineInfo.showPosQUICPay == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "9";
@@ -1486,7 +1486,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                         if (machineInfo.showPosIC == true)
-                                          InkWell(
+                                          KioskTap(
                                             onTap: () {
                                               machineInfo.isAllowPos = "1";
                                               machineInfo.paymentMethod = "10";
