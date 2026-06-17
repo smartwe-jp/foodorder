@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 import '../config/font.dart';
 import '../config/imageData.dart';
@@ -82,7 +83,7 @@ class DialogUtils {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                InkWell(
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
@@ -111,7 +112,114 @@ class DialogUtils {
                     decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
-                InkWell(
+                KioskTap(
+                  child: Container(
+                    //padding: EdgeInsets.only(right: 70.0),
+                    width: ScreenAdapter.width(400),
+                    height: ScreenAdapter.height(75),
+                    alignment: Alignment.center,
+                    child: Text(confirmtitle,
+                      style: TextStyle(
+                        //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
+                          fontSize: ScreenAdapter.fontSize(34.0),
+                          fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    confirm();
+
+                  },
+                )
+              ],
+            ),
+          ]),
+    );
+  }
+
+
+    static cashActionAlert(
+      Widget content, {
+        String title = "お知らせ",
+        String canceltitle = "キャンセル",
+        String confirmtitle = "確認",
+        required GestureTapCallback confirm,
+        required GestureTapCallback cancle,
+      }) {
+    return Container(
+      width: ScreenAdapter.width(950),
+      child: SimpleDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: Align(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    //color: Colors.red,
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(40),),
+                    child: Icon(
+                      Icons.notifications_outlined,
+                      //color: ColorsUtil.hexToColor("#2aa515"),
+                      size: 50,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(10)),
+                    child: Text(
+                        "${title}          ",
+                        style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(34),
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ],
+              )),
+          children: <Widget>[
+            Center(
+              child: content,
+            ),
+
+            Divider(
+              thickness: 3.0,
+              color: Colors.black12,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                KioskTap(
+                  child: Container(
+                    //padding: EdgeInsets.only(left: 70.0),
+                    width: ScreenAdapter.width(400),
+                    height: ScreenAdapter.height(75),
+                    alignment: Alignment.center,
+                    child: Text(canceltitle,
+                      style: TextStyle(
+                        //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(34.0)
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    //sleep(Duration(milliseconds: 3000));
+                    cancle();
+
+                  },
+                ),
+                //垂直分割线
+                SizedBox(
+                  width: 3,
+                  height: ScreenAdapter.height(95),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black12),
+                  ),
+                ),
+                KioskTap(
                   child: Container(
                     //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
@@ -220,7 +328,10 @@ class DialogUtils {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                InkWell(
+                KioskTap(
+                  onTap: () {
+                    confirm();
+                  },
                   child: Container(
                     width: ScreenAdapter.width(600),
                     height: ScreenAdapter.height(75),
@@ -234,10 +345,6 @@ class DialogUtils {
                       ),
                     ),
                   ),
-                  onTap: () {
-                    confirm();
-
-                  },
                 )
               ],
             ),
