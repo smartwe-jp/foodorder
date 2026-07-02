@@ -188,7 +188,7 @@ class CheckoutPageView extends GetView {
               color: controller.themeTextColor,
               size: 120,
             ),
-            title: 'menu_dingtype_takeout'.tr,
+            title: buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_takeout'.tr,
             selected: buttonCount == 1,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.takeout;
