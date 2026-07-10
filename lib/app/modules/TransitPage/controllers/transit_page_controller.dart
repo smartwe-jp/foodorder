@@ -29,6 +29,8 @@ import '../../../widget/DialogUtils.dart';
 
 class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
+  static const String _activateCacheKey = 'smartwe_webBootActivatev3_cache';
+
   RxString _machineCode = "".obs;
   //var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
   //RxBool _isCashState = true.obs;
@@ -94,11 +96,6 @@ class TransitPageController extends GetxController {
   }
 
   _getMachineActivate({int retryCount = 0}) async{
-    // var shouldActive = await _checkShouldActive();
-    // if (!shouldActive) {
-    //   await _getSmartweSystemSettingInfo();
-    //   return;
-    // }
     bool shouldActive = await _checkShouldActive();
     if(_loadActiveInfo.value == false && !shouldActive){
       _actuarial.value = true;
@@ -119,106 +116,21 @@ class TransitPageController extends GetxController {
           timeout: Duration(seconds: 10)
       );
       final response = json.decode(val.toString());
-LogUtil.d("getMachineActivate response: $response");
+      LogUtil.d("getMachineActivate response: $response");
       logI("getMachineActivate response: $response");
 
       if (response != null && response['code'] == 200 && response['data'] != null) {
-          logI(response);
-          var shopData = response['data'];
-          var _shopCode = "";
-          if (shopData["shopCode"] != null) {
-            _shopCode = shopData["shopCode"];
-          }
-          var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
-          var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
-          var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
-          var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-          var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
-          var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
-          var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
-          var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
-          var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
-
-          var _posEdy = shopData["linePayChannelMap"]["Edy"] != null ? shopData["linePayChannelMap"]["Edy"] :false;
-          var _posiD = shopData["linePayChannelMap"]["iD"] != null ? shopData["linePayChannelMap"]["iD"] :false;
-          var _posIC = shopData["linePayChannelMap"]["IC"] != null ? shopData["linePayChannelMap"]["IC"] :false;
-          var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null ? shopData["linePayChannelMap"]["QUICPay"] :false;
-          var _posWAON = shopData["linePayChannelMap"]["WAON"] != null ? shopData["linePayChannelMap"]["WAON"] :false;
-          var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null ? shopData["linePayChannelMap"]["nanaco"] :false;
-
-          var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
-          var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
-          var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
-          var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
-          var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
-          var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
-          var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
-          bool taxSystem = shopData['taxSystem'] ?? false;
-          var machineActivateData = {
-            "showCash": _showCash,
-            "showWechat":_showWechat,
-            "showAlipay":_showAlipay,
-            "showPayPay":_showPayPay,
-            "showCreditCard":_showCreditCard,
-            "au_Pay":_auPay,
-            "d_Pay":_dPay,
-            "R_Pay":_rPay,
-            "m_Pay":_mPay,
-            "pos_Edy":_posEdy,
-            "pos_iD":_posiD,
-            "pos_IC":_posIC,
-            "pos_QUICPay":_posQUICPay,
-            "pos_WAON":_posWAON,
-            "pos_nanaco":_posnanaco,
-            "show_visa":_visa,
-            "show_master":_master,
-            "show_jcb":_jcb,
-            "show_unionPay":_unionPay,
-            "show_americanExpress":_americanExpress,
-            "show_dinersClub":_dinersClub,
-            "show_discover":_discover,
-            "taxSystem": taxSystem,
-            "cashMachineWithdraw": shopData["cashMachineWithdraw"] ?? false,
-          };
-          //是否允许退款 1展示退款按钮 0 不展示
-          var reimburse = (shopData["reimburse"]==true) ? "1":"0";
-          var spicyHotPot = (shopData["spicyHotPot"]==true) ? "1":"0";
-          Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
-          Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
-
-          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-          Storage.setString('smartwe_reimburse', reimburse);
-          Storage.setString('smartwe_shopCode', _shopCode);
-          Storage.setString('smartwe_spicyHotPot', spicyHotPot);
-
-          GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
-          GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
-          GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
-          GetxStorage.setData('smartwe_reimburse', reimburse);
-          GetxStorage.setData('smartwe_shopCode', _shopCode);
-          GetxStorage.setData('smartwe_spicyHotPot', spicyHotPot);
-
-          var machineSettingBool = {
-            'machineLineup':shopData["lineup"],
-            'machineActuarial':shopData["actuarial"],
-          };
-
-          Storage.setString('machineSettingData', json.encode(machineSettingBool));
-          GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
-
-          _actuarial.value = shopData["actuarial"];
-
-          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-          await ensureImageLoaded(shopData["logoImage"]);
-          await _getSmartweSystemSettingInfo(isLaunch: true);
-        } else {
-          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
-          _showErrorDialog();
-        }
+        logI(response);
+        final shopData = Map<String, dynamic>.from(response['data'] as Map);
+        await _saveActivateCache(shopData);
+        await _applyShopDataAndContinue(shopData, isFromCache: false);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
+        await _tryContinueWithCachedActivate(
+          reason: 'activate_response_invalid',
+          responseCode: response?['code']?.toString(),
+        );
+      }
 
     } catch(e) {
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
@@ -230,10 +142,156 @@ LogUtil.d("getMachineActivate response: $response");
             _getMachineActivate(retryCount: retryCount + 1);
           });
         } else {
-          // 如果重试次数超过3次，显示错误对话框
-          _showErrorDialog(error: e);
+          await _tryContinueWithCachedActivate(reason: 'activate_request_failed', error: e);
         }
     }
+  }
+
+  /// 激活成功后将完整 data 写入本地，供下次网络异常时降级使用
+  Future<void> _saveActivateCache(Map<String, dynamic> shopData) async {
+    final cachePayload = {
+      'machineCode': _machineCode.value,
+      'version': local_version.value,
+      'savedAt': DateTime.now().toIso8601String(),
+      'data': shopData,
+    };
+    final encoded = json.encode(cachePayload);
+    await Storage.setString(_activateCacheKey, encoded);
+    await GetxStorage.setData(_activateCacheKey, encoded);
+    logI('webBootActivatev3 cache saved for machine: ${_machineCode.value}');
+  }
+
+  /// 读取上次激活成功的缓存，仅当机器码一致时可用
+  Future<Map<String, dynamic>?> _loadActivateCache() async {
+    try {
+      final raw = await Storage.getString(_activateCacheKey);
+      if (raw == null || raw.isEmpty) {
+        return null;
+      }
+      final cache = Map<String, dynamic>.from(json.decode(raw) as Map);
+      final cachedMachineCode = cache['machineCode']?.toString() ?? '';
+      if (cachedMachineCode.isEmpty || cachedMachineCode != _machineCode.value) {
+        logI('webBootActivatev3 cache ignored: machineCode mismatch');
+        return null;
+      }
+      final shopData = cache['data'];
+      if (shopData is! Map) {
+        return null;
+      }
+      return Map<String, dynamic>.from(shopData);
+    } catch (e) {
+      logI('webBootActivatev3 cache load error: $e');
+      return null;
+    }
+  }
+
+  bool _readPayChannel(Map<String, dynamic> shopData, String key) {
+    final channelMap = shopData['linePayChannelMap'];
+    if (channelMap is! Map) {
+      return false;
+    }
+    return channelMap[key] == true;
+  }
+
+  /// 将激活 data 写入各业务字段并进入后续流程
+  Future<void> _applyShopDataAndContinue(
+    Map<String, dynamic> shopData, {
+    required bool isFromCache,
+  }) async {
+    var shopCode = shopData['shopCode']?.toString() ?? '';
+    final machineActivateData = {
+      'showCash': _readPayChannel(shopData, 'Cash'),
+      'showWechat': _readPayChannel(shopData, 'Wechat'),
+      'showAlipay': _readPayChannel(shopData, 'Alipay'),
+      'showPayPay': _readPayChannel(shopData, 'PayPay'),
+      'showCreditCard': _readPayChannel(shopData, 'POS'),
+      'au_Pay': _readPayChannel(shopData, 'au_Pay'),
+      'd_Pay': _readPayChannel(shopData, 'd_Pay'),
+      'R_Pay': _readPayChannel(shopData, 'R_Pay'),
+      'm_Pay': _readPayChannel(shopData, 'm_Pay'),
+      'pos_Edy': _readPayChannel(shopData, 'Edy'),
+      'pos_iD': _readPayChannel(shopData, 'iD'),
+      'pos_IC': _readPayChannel(shopData, 'IC'),
+      'pos_QUICPay': _readPayChannel(shopData, 'QUICPay'),
+      'pos_WAON': _readPayChannel(shopData, 'WAON'),
+      'pos_nanaco': _readPayChannel(shopData, 'nanaco'),
+      'show_visa': _readPayChannel(shopData, 'VISA'),
+      'show_master': _readPayChannel(shopData, 'MASTER'),
+      'show_jcb': _readPayChannel(shopData, 'JCB'),
+      'show_unionPay': _readPayChannel(shopData, 'UnionPay'),
+      'show_americanExpress': _readPayChannel(shopData, 'AMERICAN_EXPRESS'),
+      'show_dinersClub': _readPayChannel(shopData, 'Diners_Club'),
+      'show_discover': _readPayChannel(shopData, 'Discover'),
+      'taxSystem': shopData['taxSystem'] == true,
+      'cashMachineWithdraw': shopData['cashMachineWithdraw'] == true,
+    };
+    // 是否允许退款 1展示退款按钮 0 不展示
+    final reimburse = shopData['reimburse'] == true ? '1' : '0';
+    final spicyHotPot = shopData['spicyHotPot'] == true ? '1' : '0';
+    final logoImage = shopData['logoImage']?.toString() ?? '';
+
+    Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+    Storage.setString('smartwe_machineLanguages', json.encode(shopData['languages']));
+    Storage.setString('smartwe_homeImages', json.encode(shopData['homeImages']));
+    Storage.setString('smartwe_headerImages', json.encode(shopData['headerImages']));
+    Storage.setString('smartwe_logoImage', logoImage);
+    Storage.setString('smartwe_reimburse', reimburse);
+    Storage.setString('smartwe_shopCode', shopCode);
+    Storage.setString('smartwe_spicyHotPot', spicyHotPot);
+
+    GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
+    GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData['languages']));
+    GetxStorage.setData('smartwe_homeImages', json.encode(shopData['homeImages']));
+    GetxStorage.setData('smartwe_headerImages', json.encode(shopData['headerImages']));
+    GetxStorage.setData('smartwe_logoImage', logoImage);
+    GetxStorage.setData('smartwe_reimburse', reimburse);
+    GetxStorage.setData('smartwe_shopCode', shopCode);
+    GetxStorage.setData('smartwe_spicyHotPot', spicyHotPot);
+
+    final machineSettingBool = {
+      'machineLineup': shopData['lineup'],
+      'machineActuarial': shopData['actuarial'],
+    };
+
+    Storage.setString('machineSettingData', json.encode(machineSettingBool));
+    GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
+
+    _actuarial.value = shopData['actuarial'] == true;
+
+    if (isFromCache) {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'machine_activate_cache_fallback',
+        parameters: {
+          'machine_activate': _machineCode.value,
+        },
+      );
+      logI('webBootActivatev3 using cached activate data');
+    } else {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'machine_activate_launch',
+        parameters: {'machine_activate': _machineCode.value},
+      );
+    }
+
+    await ensureImageLoaded(logoImage);
+    await _getSmartweSystemSettingInfo(isLaunch: !isFromCache);
+  }
+
+  /// 请求失败时尝试使用本地缓存继续进入；无缓存则弹窗
+  Future<void> _tryContinueWithCachedActivate({
+    String? reason,
+    String? responseCode,
+    Object? error,
+  }) async {
+    final cachedShopData = await _loadActivateCache();
+    if (cachedShopData != null) {
+      logI(
+        'webBootActivatev3 fallback to cache, reason: $reason, code: $responseCode, error: $error',
+      );
+      await _applyShopDataAndContinue(cachedShopData, isFromCache: true);
+      return;
+    }
+    _showErrorDialog(error: error);
   }
 
   _showErrorDialog({error}) =>
