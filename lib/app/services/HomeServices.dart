@@ -297,6 +297,19 @@ class HomeServices{
     return machineActivateInfo;
   }
 
+  //是否麻辣烫
+  static getSmartweSpicyHotPotData() async{
+    var smartweSpicyHotPotInfo;
+    try {
+      var SpicyHotPotData = await Storage.getString('smartwe_spicyHotPot');
+      //GetxStorage.setData('smartwe_logoImage', logoImageData);
+      smartweSpicyHotPotInfo = SpicyHotPotData;
+    } catch (e) {
+      smartweSpicyHotPotInfo = "0";
+    }
+    return smartweSpicyHotPotInfo;
+  }
+
   //打卡机器码
   static getAttendanceCode() async{
     String? attendanceCode;

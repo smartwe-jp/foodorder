@@ -169,4 +169,6 @@ const Map<String, String> en_US = {
 
   "tag_scan_network_error":"Order request failed, please try again later.",
   "tag_scan_network_timeout":"Order request timed out, please try again later.",
+
+  "menu_spicy_hot_pot":"麻辣烫",
 };

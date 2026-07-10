@@ -22,6 +22,15 @@ class SQLService {
           createTables();
         },
       );
+      // 兼容旧版本：尝试添加列（若已存在则忽略异常）
+      try {
+        await db?.execute(
+            "ALTER TABLE cart_list ADD COLUMN itemType TEXT DEFAULT ''");
+      } catch (_) {}
+      try {
+        await db?.execute(
+            "ALTER TABLE cart_list ADD COLUMN spicyGrams INTEGER DEFAULT 0");
+      } catch (_) {}
       return true;
     } catch (e) {
       print("ERROR IN OPEN DATABASE $e");
@@ -41,7 +50,9 @@ class SQLService {
           "qtyBounds INTEGER,"
           "optionGroupVoList TEXT,"
           "optionVoListMsg TEXT,"
-          "goodsNum INTEGER)";
+          "goodsNum INTEGER,"
+          "itemType TEXT DEFAULT '',"
+          "spicyGrams INTEGER DEFAULT 0)";
 
       await db?.execute(qry);
     } catch (e) {
@@ -101,8 +112,10 @@ class SQLService {
 
   Future addToCart(data) async {
     await this.db?.transaction((txn) async {
+      final itemType = data["itemType"] ?? '';
+      final spicyGrams = data["spicyGrams"] ?? 0;
       var qry =
-          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,unitPrice,qtyBounds,optionGroupVoList,optionVoListMsg,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},${data["unitPrice"]},${data["qtyBounds"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]})';
+          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,unitPrice,qtyBounds,optionGroupVoList,optionVoListMsg,goodsNum,itemType,spicyGrams) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},${data["unitPrice"]},${data["qtyBounds"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]},"${itemType}",${spicyGrams})';
       int id1 = await txn.rawInsert(qry);
       return id1;
     });

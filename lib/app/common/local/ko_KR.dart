@@ -170,4 +170,6 @@ const Map<String, String> ko_KR = {
   "tag_scan_network_error":"주문 요청에 실패했습니다. 나중에 다시 시도해 주세요.",
   "tag_scan_network_timeout":"주문 요청이 시간 초과되었습니다. 나중에 다시 시도해 주세요.",
 
+  "menu_spicy_hot_pot":"麻辣烫",
+
 };

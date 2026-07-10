@@ -24,8 +24,10 @@ extension Shoppingcar on MenuPageController {
             onIncrease: (value) {
               publicChangeCartItemCreate(d, true);
             },
-            price: "${d.unitPrice}",
-            quantity: d.goodsNum,))
+            // spicy 条目 currentPrice 已是算好的总价，quantity 固定 1 避免重复乘算
+            price: d.itemType == 'spicy' ? "${d.currentPrice}" : "${d.unitPrice}",
+            quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
+            showQtyControls: d.itemType != 'spicy',))
           .toList(),
     );
   }

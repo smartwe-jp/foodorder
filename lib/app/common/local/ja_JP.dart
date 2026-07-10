@@ -171,4 +171,6 @@ const Map<String, String> ja_JP = {
 
   "tag_scan_network_error": "注文リクエストに失敗しました。後でもう一度お試しください。",
   "tag_scan_network_timeout": "注文リクエストがタイムアウトしました。後でもう一度お試しください。",
+
+  "menu_spicy_hot_pot":"麻辣烫",
 };

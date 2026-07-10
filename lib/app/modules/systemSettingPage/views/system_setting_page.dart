@@ -219,6 +219,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     bool isTakeoutOn = modeInfo['takeout'] ?? false;
     bool isCheckoutOn = modeInfo['checkout'] ?? false;
     bool isScanbuyOn = modeInfo['scanbuy'] ?? false;
+    bool isSpicyHotPotOn = modeInfo['spicyHotPot'] ?? false;
 
     //实现一个Card模式的选择设置区域，上方标题 分割线 下方是四个按钮 使用Wrap容器。每个Item 选中显示边框。
     return Card(
@@ -260,6 +261,13 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       isScanbuyOn,
                           () =>
                           controller.updateMachineMode(scanbuy: !isScanbuyOn)),
+                  if(controller.isspicyHotPot.value == "1")
+                  _modeButton(
+                      "麻辣烫",
+                      Icons.restaurant_menu,
+                      isSpicyHotPotOn,
+                          () =>
+                          controller.updateMachineMode(spicyHotPot: !isSpicyHotPotOn)),
                 ],
               ),
             ),

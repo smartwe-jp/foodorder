@@ -17,6 +17,8 @@ class CarItemView extends StatelessWidget {
   final Function(int) onReduce;
   final Function(int) onIncrease;
   final int quantity;
+  /// false 时隐藏数量加减控件（如麻辣烫条目）
+  final bool showQtyControls;
 
   CarItemView({
     Key? key,
@@ -28,6 +30,7 @@ class CarItemView extends StatelessWidget {
     this.imageRadius = 10.0,
     required this.price,
     required this.quantity,
+    this.showQtyControls = true,
   });
 
   @override
@@ -124,64 +127,65 @@ class CarItemView extends StatelessWidget {
                       //   height: 10,
                       // ),
 
-                      Row(
-                        children: [
-                          Container(
-                              alignment: Alignment.bottomCenter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: ScreenAdapter.width(92),
-                                    height: ScreenAdapter.height(62),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(31),
-                                      border: Border.all(color: Colors.grey),
+                      if (showQtyControls)
+                        Row(
+                          children: [
+                            Container(
+                                alignment: Alignment.bottomCenter,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: ScreenAdapter.width(92),
+                                      height: ScreenAdapter.height(62),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(31),
+                                        border: Border.all(color: Colors.grey),
+                                      ),
+                                      child: IconButton(
+                                        iconSize: 50,
+                                        padding: EdgeInsets.all(0),
+                                        icon: Icon(Icons.remove, color: Colors.grey, weight: 800,),
+                                        onPressed: () {
+                                          onReduce(1);
+                                        },
+                                      ),
                                     ),
-                                    child: IconButton(
-                                      iconSize: 50,
-                                      padding: EdgeInsets.all(0),
-                                      icon: Icon(Icons.remove, color: Colors.grey, weight: 800,),
-                                      onPressed: () {
-                                        onReduce(1);
-                                      },
+                                    SizedBox(width: ScreenAdapter.width(20)),
+                                    Text(
+                                      "$quantity",
+                                      style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
+                                        fontSize: 36,
+                                        color: Color.fromARGB(255, 70, 69, 69),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: ScreenAdapter.width(20)),
-                                  Text(
-                                    "$quantity",
-                                    style: TextStyle(
-                                      fontFamily: GFont.getFontFamily(),
-                                      fontSize: 36,
-                                      color: Color.fromARGB(255, 70, 69, 69),
-                                    ),
-                                  ),
-                                  SizedBox(width: ScreenAdapter.width(20)),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: ScreenAdapter.width(92),
-                                    height: ScreenAdapter.height(62),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(31),
-                                      color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-                                    ),
-                                    child: IconButton(
-                                      iconSize: 50,
-                                      padding: EdgeInsets.all(0),
-                                      icon: Icon(Icons.add,
-                                          color: Colors.white, weight: 800,),
-                                      onPressed: () {
-                                        onIncrease(1);
-                                      },
-                                    ),
-                                  )
-                                ],
-                              )
-                          ),
-                          Spacer()
-                        ],
-                      ),
+                                    SizedBox(width: ScreenAdapter.width(20)),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: ScreenAdapter.width(92),
+                                      height: ScreenAdapter.height(62),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(31),
+                                        color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                                      ),
+                                      child: IconButton(
+                                        iconSize: 50,
+                                        padding: EdgeInsets.all(0),
+                                        icon: Icon(Icons.add,
+                                            color: Colors.white, weight: 800,),
+                                        onPressed: () {
+                                          onIncrease(1);
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                )
+                            ),
+                            Spacer()
+                          ],
+                        ),
 
                     ],
                   ),

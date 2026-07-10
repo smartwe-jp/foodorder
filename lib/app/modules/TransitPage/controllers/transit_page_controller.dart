@@ -119,7 +119,7 @@ class TransitPageController extends GetxController {
           timeout: Duration(seconds: 10)
       );
       final response = json.decode(val.toString());
-
+LogUtil.d("getMachineActivate response: $response");
       logI("getMachineActivate response: $response");
 
       if (response != null && response['code'] == 200 && response['data'] != null) {
@@ -182,6 +182,7 @@ class TransitPageController extends GetxController {
           };
           //是否允许退款 1展示退款按钮 0 不展示
           var reimburse = (shopData["reimburse"]==true) ? "1":"0";
+          var spicyHotPot = (shopData["spicyHotPot"]==true) ? "1":"0";
           Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
           Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
@@ -190,6 +191,7 @@ class TransitPageController extends GetxController {
           Storage.setString('smartwe_logoImage', shopData["logoImage"]);
           Storage.setString('smartwe_reimburse', reimburse);
           Storage.setString('smartwe_shopCode', _shopCode);
+          Storage.setString('smartwe_spicyHotPot', spicyHotPot);
 
           GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
           GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
@@ -197,6 +199,8 @@ class TransitPageController extends GetxController {
           GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
           GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
           GetxStorage.setData('smartwe_reimburse', reimburse);
+          GetxStorage.setData('smartwe_shopCode', _shopCode);
+          GetxStorage.setData('smartwe_spicyHotPot', spicyHotPot);
 
           var machineSettingBool = {
             'machineLineup':shopData["lineup"],

@@ -195,6 +195,24 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
+
+        if (controller.machineInfo.isSpicyHotPotOn)
+          BookingTypeButton(
+            width: _getItemWidth(),
+            bgColor: controller.themeColor,
+            textColor: controller.themeTextColor,
+            icon: Icon(
+              Icons.restaurant_menu,
+              color: controller.themeTextColor,
+              size: 120,
+            ),
+            title: 'menu_spicy_hot_pot'.tr,//麻辣烫
+            selected: buttonCount == 1,
+            onTap: () {
+              controller.machineInfo.currentMode = MachineMode.spicyHotPot;
+              controller.goMenu(controller.selectLanguage);
+            },
+          ),
         ],
       
     );

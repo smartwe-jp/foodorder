@@ -87,6 +87,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   RxBool actuarial = false.obs; //是否开启精算
   RxBool  lineup = false.obs; //是否开启排队
+  RxString isspicyHotPot = "0".obs; //是否开启麻辣烫
 
   RxDouble downloadProgress = 0.0.obs;
 
@@ -255,6 +256,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       lineup.value = smartweMachineSetting["machineLineup"];
     }
 
+    isspicyHotPot.value = await HomeServices.getSmartweSpicyHotPotData();
     // wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     // wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
@@ -733,7 +735,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //   }
   // }
 
-  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
+  // 更新麻辣烫注文方式：'scan' 扫码注文，'normal' 普通注文
+  updateSpicyHotPotOrderType(String type) {
+    machineInfo.machineModeInfo['spicyHotPotOrderType'] = type;
+    HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
+    update();
+  }
+
+  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy, bool? spicyHotPot}) {
     if (sell != null) {
       machineInfo.machineModeInfo['sell'] = sell;
       if (sell) machineInfo.machineModeInfo['scanbuy'] = false;
@@ -749,6 +758,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       if (scanbuy != null) {
         machineInfo.machineModeInfo['scanbuy'] = scanbuy;
         if (scanbuy) machineInfo.machineModeInfo['sell'] = false;
+      }
+
+      if (spicyHotPot != null) {
+        machineInfo.machineModeInfo['spicyHotPot'] = spicyHotPot;
       }
 
       HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);

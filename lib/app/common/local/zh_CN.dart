@@ -170,4 +170,6 @@ const Map<String, String> zh_CN = {
   "tag_scan_network_error":"订单请求失败，请稍后重试。",
   "tag_scan_network_timeout":"订单请求超时，请稍后重试。",
 
+  "menu_spicy_hot_pot":"麻辣烫",
+
 };

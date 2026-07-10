@@ -5,7 +5,7 @@ import '../services/CustomLogerHandler.dart';
 
 enum MachineType { new_panel, new_panel_max, old_panel }
 
-enum MachineMode { sell, takeout, checkout, scan }
+enum MachineMode { sell, takeout, checkout, scan, spicyHotPot }
 
 class MachineInfoController extends GetxController {
   Map systemSettingInfo;
@@ -51,6 +51,9 @@ class MachineInfoController extends GetxController {
   late String isAllowRejishime;
   late bool actuarial;
   late bool showWithdraw;
+
+  //spicyHotPot mode
+  late String isSpicyHotPotMode;
 
   //settings
   double machinePrintWidth = 385.0;
@@ -123,6 +126,10 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+  bool get isSpicyHotPotOn => machineModeInfo['spicyHotPot'] ?? false;
+  // 麻辣烫注文方式：'scan' 扫码注文（默认），'normal' 普通注文（触屏选择）
+  String get spicyHotPotOrderType => machineModeInfo['spicyHotPotOrderType'] ?? 'scan';
+
   //1 券卖机  2 精算机 3 自助收银
   String get machineMode {
     if (currentMode == MachineMode.checkout) {
@@ -308,6 +315,7 @@ class MachineInfoController extends GetxController {
 
     machineModeInfo = await HomeServices.getMachineModeInfo();
     logI('machineModeInfo: $machineModeInfo');
+
 
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
 

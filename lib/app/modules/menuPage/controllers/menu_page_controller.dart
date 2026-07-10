@@ -188,24 +188,26 @@ class MenuPageController extends GetxController with StateMixin {
         var colorIndex = 0;
         topMenu.value = [];
         for (var i = 0; i < myList.length; i++) {
-          if(colorIndex >=5) colorIndex = 0;
-          var categoryVoList = myList[i];
-          //配置顶部菜单
-          topMenu.add({
-            "categoryCode": categoryVoList['categoryCode'],
-            "categoryName": categoryVoList['categoryName'],
-            "showType": categoryVoList['showType'],
-            "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
-            "background": categoryVoList['background'],
-            "index": menuIndex
-          });
-          menuIndex++;
-          colorIndex++;
-          //配置顶部菜单默认项
-          if (i == 0) {
-            classTag.value = categoryVoList['categoryCode'];
-            bgColor .value =
-                categoryVoList['background'] ?? "#F9F9F9";
+          if(myList[i]["businessType"] != "SPICY_HOT_POT"){
+            if(colorIndex >=5) colorIndex = 0;
+            var categoryVoList = myList[i];print(categoryVoList);
+            //配置顶部菜单
+            topMenu.add({
+              "categoryCode": categoryVoList['categoryCode'],
+              "categoryName": categoryVoList['categoryName'],
+              "showType": categoryVoList['showType'],
+              "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
+              "background": categoryVoList['background'],
+              "index": menuIndex
+            });
+            menuIndex++;
+            colorIndex++;
+            //配置顶部菜单默认项
+            if (i == 0) {
+              classTag.value = categoryVoList['categoryCode'];
+              bgColor .value =
+                  categoryVoList['background'] ?? "#F9F9F9";
+            }
           }
         }
         change(null, status: RxStatus.success());
@@ -964,10 +966,13 @@ print("加1了");
 
       for(var oneItem in cartItems){
         var optionMap = {};
+        // 称重商品用 spicyGrams（克数）作为 qty；口味商品和普通商品用 goodsNum（=1）
+        final grams = oneItem["spicyGrams"] ?? 0;
+        final qty = grams > 0 ? grams : oneItem["goodsNum"];
         if(oneItem["optionGroupVoList"] == ""){
           optionMap = {
             "menuCode": oneItem["menuCode"],
-            "qty": oneItem["goodsNum"]
+            "qty": qty
           };
         }else{
           var optionGroupVoList = oneItem["optionGroupVoList"];
@@ -975,7 +980,7 @@ print("加1了");
           optionMap = {
             "menuCode": oneItem["menuCode"],
             "optionList": itemsOption,
-            "qty": oneItem["goodsNum"]
+            "qty": qty
           };
         }
         selectedItem.add(optionMap);
@@ -989,7 +994,7 @@ print("加1了");
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": machineInfo.isTakeoutMode,
       };
-      debugPrint("formData: $formData");
+      LogUtil.d("webBootOrderformData: $formData");
       request('webBootOrder',
           method: 'POST',
           parameters: formData,
@@ -1004,11 +1009,21 @@ print("加1了");
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
-          final total = response['data']["total"].toString();
+          int serverTotal = (response['data']["total"] as num?)?.toInt() ?? 0;
           int tax1 = response['data']["tax1"] ?? 0;
           int tax2 = response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog(total,
+          // 本地合计用 SUM(currentPrice) 已含称重商品实际价格，优先使用
+          int localTotal = int.tryParse(orderTotlaPrice.toString()) ?? serverTotal;
+          if (serverTotal > 0 && serverTotal != localTotal) {
+            // 按本地合计与服务器合计的比例修正税额
+            final ratio = localTotal / serverTotal;
+            tax1 = (tax1 * ratio).round();
+            tax2 = (tax2 * ratio).round();
+          }
+          final displayTotal = localTotal > 0 ? localTotal.toString() : serverTotal.toString();
+
+          showSelectMealTypeAndPaymentMethodDialog(displayTotal,
               tax1: tax1, tax2: tax2);
         } else {
           //getBookingBootMenu();

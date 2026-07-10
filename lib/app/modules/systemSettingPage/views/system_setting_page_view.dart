@@ -465,12 +465,94 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+  // 麻辣烫模式下的注文方式设置（扫码注文 vs 普通注文）
+  setSpicyHotPotOrderType() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              InkWell(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () {
+                  controller.updateSpicyHotPotOrderType('scan');
+                },
+                child: Container(
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(60),
+                  width: ScreenAdapter.width(220),
+                  decoration: BoxDecoration(
+                    color: (controller.machineInfo.spicyHotPotOrderType == 'scan')
+                        ? ColorsUtil.hexToColor("#409eff")
+                        : Colors.grey[200],
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
+                  child: Text("スキャン注文",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontWeight: FontWeight.w400,
+                        fontSize: ScreenAdapter.fontSize(22.0),
+                        color: (controller.machineInfo.spicyHotPotOrderType == 'scan')
+                            ? ColorsUtil.hexToColor("#FFFFFF")
+                            : ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+              ),
+              InkWell(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () {
+                  controller.updateSpicyHotPotOrderType('normal');
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(60),
+                  width: ScreenAdapter.width(220),
+                  decoration: BoxDecoration(
+                    color: (controller.machineInfo.spicyHotPotOrderType == 'normal')
+                        ? ColorsUtil.hexToColor("#409eff")
+                        : Colors.grey[200],
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
+                  child: Text("通常注文",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontWeight: FontWeight.w400,
+                        fontSize: ScreenAdapter.fontSize(22.0),
+                        color: (controller.machineInfo.spicyHotPotOrderType == 'normal')
+                            ? ColorsUtil.hexToColor("#FFFFFF")
+                            : ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+              ),
+            ],
+          ),
+          // 注：スキャン注文はバーコードスキャンで商品を選択、通常注文は画面タッチで商品を選択
+          Text("注：スキャン注文はバーコードスキャンで商品を選択します。通常注文は画面タッチで商品を選択します。",
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(17),
+                fontWeight: FontWeight.w400,
+                color: ColorsUtil.hexToColor("#d90000"),
+              )),
+        ],
+      ),
+    );
+  }
+
   //设置机器类型
   setMachineMode(Map machineInfos) {
     bool isSellOn = machineInfos['sell'] ?? false;
     bool isTakeoutOn = machineInfos['takeout'] ?? false;
     bool isCheckoutOn = machineInfos['checkout'] ?? false;
     bool isScanbuyOn = machineInfos['scanbuy'] ?? false;
+    bool isSpicyHotPotOn = machineInfos['spicyHotPot'] ?? false;
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3), right:ScreenAdapter.width(20)),
@@ -659,6 +741,31 @@ class SystemSettingPageView extends GetView {
                         ),
                       ),
                     ]),
+              ),
+            ),
+          ),
+          if(controller.isspicyHotPot.value == "1")
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.updateMachineMode(spicyHotPot: !isSpicyHotPotOn);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              decoration: new BoxDecoration(
+                color: isSpicyHotPotOn ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
+              child: Text("麻辣烫",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'NotoSansJP',
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: isSpicyHotPotOn ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
               ),
             ),
           ),
@@ -1916,6 +2023,23 @@ class SystemSettingPageView extends GetView {
                                           setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                         ]
                                     ), //设置机器类型
+                                  if(controller.machineInfo.machineModeInfo['spicyHotPot'] == true)
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "麻辣烫注文",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyHotPotOrderType(),
+                                        ]
+                                    ),
                                   if(controller.lineup.value == true)
                                     TableRow(
                                         children: <Widget>[

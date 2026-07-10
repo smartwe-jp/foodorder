@@ -11,6 +11,8 @@ class ShopItemModel {
   String? optionVoListMsg;
   int goodsNum;
   int? id;
+  /// 条目类型标识：'spicy' = 麻辣烫条目（购物车不显示数量加减），'' = 普通条目
+  String itemType;
 
   ShopItemModel(
       {this.menuCode,
@@ -22,7 +24,8 @@ class ShopItemModel {
         this.qtyBounds,
         this.optionGroupVoList,
         this.optionVoListMsg,
-        required this.goodsNum});
+        required this.goodsNum,
+        this.itemType = ''});
 
   factory ShopItemModel.fromJson(Map<String, dynamic> json) {
     return ShopItemModel(
@@ -35,7 +38,8 @@ class ShopItemModel {
       qtyBounds:json['qtyBounds'],
       optionGroupVoList: json['optionGroupVoList'],
       optionVoListMsg: json['optionVoListMsg'],
-      goodsNum: json['goodsNum']
+      goodsNum: json['goodsNum'],
+      itemType: json['itemType'] ?? '',
     );
   }
 }

@@ -560,6 +560,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       case MachineMode.checkout:
         jumpUrl = '/scancode-page';
         break;
+      case MachineMode.spicyHotPot:
+        jumpUrl = '/spicyHotPot-mode';
+        break;
     }
 
     // if (mealType) {
@@ -572,8 +575,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     //   }
     // }
 
-    Get.toNamed(jumpUrl,
-        arguments: {"checkLanguage": lan});
+    Get.toNamed(jumpUrl, arguments: {"checkLanguage": lan});
 
   }
 

@@ -298,6 +298,9 @@ class SettlementController extends GetxController with StateMixin {
       case MachineMode.checkout:
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
+      case MachineMode.spicyHotPot:
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
     }
   }
 
