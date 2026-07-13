@@ -44,7 +44,12 @@ extension MenuPageCategory on MenuPageController {
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               children: [
-                publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:880.0, imgHeight:850.0,subTitle:itemsFirst["subtitle"]),
+                publicShowMenuImage(
+                  imgPath: itemsFirst['homeImage']?.toString() ?? '',
+                  imgWidth: 880.0,
+                  imgHeight: 850.0,
+                  subTitle: itemsFirst["subtitle"],
+                ),
                 Container(
                   color: ColorsUtil.hexToColor(Gcolor.whiteColor),
                   width: ScreenAdapter.width(880),
@@ -2464,12 +2469,12 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategorySixItemList(items, context, {popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-
-    return GridMenuView(children: children, crossAxisCount: 2);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      crossAxisCount: 2,
+    );
   }
 
   showCategorySixItemOne(item, context, {popupType: "old"}) {
@@ -2570,30 +2575,16 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategorySevenItemList(items, context, {popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.63));
-    }
-    return GridMenuView(children: children, childAspectRatio: 0.5,);
-    // return Padding(
-    //   padding: EdgeInsets.only(
-    //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-    //   child: GridView.builder(
-    //     padding: EdgeInsets.zero,
-    //     shrinkWrap: true,
-    //     addAutomaticKeepAlives: true,
-    //     //addRepaintBoundaries:false,
-    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //         mainAxisSpacing: ScreenAdapter.height(10),
-    //         crossAxisCount: 3,
-    //         childAspectRatio: 0.63),
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return showCategorySevenItemOne(items[index], context,
-    //           popupType: popupType);
-    //     },
-    //     itemCount: items.length,
-    //   ),
-    // );
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 0.63,
+      ),
+      childAspectRatio: 0.5,
+    );
   }
 
   showCategorySevenItemOne(item, context, {popupType: "old"}) {
@@ -2767,11 +2758,18 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategoryEightItemList(items, context, {popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
-    }
-    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.71, canScroll: false,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 1.0,
+      ),
+      crossAxisCount: 3,
+      childAspectRatio: 0.71,
+      canScroll: false,
+    );
   }
 
   showCategoryEightItemOne(item, context, {popupType: "old"}) {
@@ -2947,11 +2945,18 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategoryNineItemList(items, context ,{popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
-    }
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.76, canScroll: false,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 1.0,
+      ),
+      crossAxisCount: 2,
+      childAspectRatio: 0.76,
+      canScroll: false,
+    );
   }
 
   showCategoryNineItemOne(item, context, {popupType: "old"}) {

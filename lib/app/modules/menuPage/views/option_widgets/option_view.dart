@@ -15,6 +15,19 @@ import '../../../../services/ScreenAdapter.dart';
 import '../../../../widget/DialogUtils.dart';
 import 'option_list.dart';
 
+/// 弹窗前预计算的 option 状态，避免在首帧做同步遍历
+class OptionPreparedState {
+  final List<OptionGroup> optionGroupList;
+  final List<String> selectOptionCodes;
+  final int currentPrice;
+
+  const OptionPreparedState({
+    required this.optionGroupList,
+    required this.selectOptionCodes,
+    required this.currentPrice,
+  });
+}
+
 class OptionView extends StatefulWidget {
   OptionView({
     Key? key,
@@ -26,6 +39,7 @@ class OptionView extends StatefulWidget {
     required this.mainTitle,
     required this.subtitle,
     required this.addToCartCallback,
+    this.preparedState,
   }) : super(key: key);
 
   final bool isLabel;
@@ -36,14 +50,58 @@ class OptionView extends StatefulWidget {
   final List subtitle;
   final List<dynamic> optionInfo;
   final Function(int, List, String) addToCartCallback;
+  final OptionPreparedState? preparedState;
 
+  /// 在 showDialog 之前调用，把 option 初始化移出弹窗首帧
+  static OptionPreparedState prepareState({
+    required int itemPrice,
+    required List<dynamic> optionInfo,
+  }) {
+    final optionGroupList = <OptionGroup>[];
+    final selectOptionCodes = <String>[];
+    var currentPrice = itemPrice;
 
+    for (final optionItem in optionInfo) {
+      final groupCode = optionItem['groupCode'] ?? '';
+      final selectedOptionCodes = <dynamic>[];
+      final selectedOptionNames = <String>[];
+      final maxNum = '${optionItem['multipleState'] ?? 0}';
+      final minNum = '${optionItem['smallest'] ?? 0}';
+      final optionVoList = optionItem['optionVoList'] ?? [];
+
+      for (final option in optionVoList) {
+        final optionCode = option['optionCode'];
+        final isSelected = option['checked'] ?? false;
+        if (isSelected && optionCode != null && '$optionCode'.isNotEmpty) {
+          final optionPrice = option['currentPrice'] ?? 0;
+          currentPrice += optionPrice is int
+              ? optionPrice
+              : int.tryParse('$optionPrice') ?? 0;
+          selectedOptionCodes.add(optionCode);
+          selectOptionCodes.add('$optionCode');
+          selectedOptionNames.add(option['mainTitle'] ?? '');
+        }
+      }
+
+      optionGroupList.add(OptionGroup(
+        groupCode: groupCode,
+        groupName: optionItem['groupName'] ?? '',
+        selectedOptionCodes: selectedOptionCodes,
+        selectedOptionNames: selectedOptionNames,
+        maxNum: maxNum,
+        minNum: minNum,
+      ));
+    }
+
+    return OptionPreparedState(
+      optionGroupList: optionGroupList,
+      selectOptionCodes: selectOptionCodes,
+      currentPrice: currentPrice,
+    );
+  }
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _OptionViewState();
-  }
+  State<StatefulWidget> createState() => _OptionViewState();
 }
 
 class OptionGroup {
@@ -99,13 +157,26 @@ class _OptionViewState extends State<OptionView> {
   late List _subtitle;
   List<OptionGroup> _optionGroupList = [];
   List<String> _selectOptionCodes = [];
+  bool _deferOptionImages = true;
   String get _optionTitle => _optionGroupList.map((e) => e.optionTitle).join("　");
 
   @override
   void initState() {
     super.initState();
     _initData();
-    _initOptionGroup();
+    final prepared = widget.preparedState;
+    if (prepared != null) {
+      _optionGroupList = prepared.optionGroupList;
+      _selectOptionCodes = List<String>.from(prepared.selectOptionCodes);
+      _currentPrice = prepared.currentPrice;
+    } else {
+      _initOptionGroup();
+    }
+    // 弹窗出现后再加载 option 图片，避免首帧解码阻塞
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _deferOptionImages = false);
+    });
   }
 
   _initOptionGroup() {
@@ -247,102 +318,86 @@ class _OptionViewState extends State<OptionView> {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: UnconstrainedBox(
-        child: Container(
-          width: ScreenAdapter.width(1060),
-          //height: ScreenAdapter.height(1000),
-          child: Dialog(
-            insetPadding: EdgeInsets.zero,
-            child: Container(
-              // width: ScreenAdapter.width(1060),
-              width: ScreenAdapter.width(1060),
+    final dialogWidth = ScreenAdapter.width(1060);
+    return Dialog(
+      insetPadding: EdgeInsets.zero,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: SizedBox(
+        width: dialogWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
               padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
-              child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //标题价格
-                      _titleArea(_currentPrice, widget.originalPrice, _mainTitle, _subtitle),
-                      Divider(
-                        height: 1,
-                        color: Color.fromRGBO(227, 227, 227, 1),
-                      ),
-
-                      if(widget.optionInfo.length > 0)
-                        Container(
-                          constraints: BoxConstraints(minHeight: ScreenAdapter.height(400),maxHeight: ScreenAdapter.height(1500),),
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(15),top: ScreenAdapter.height(10),right: ScreenAdapter.width(15),bottom: ScreenAdapter.height(10)),
-                          child: Scrollbar(
-                              child: SingleChildScrollView(
-                                physics: ClampingScrollPhysics(),
-                                child: _publicShowOneItemOptionGroup(widget.optionInfo),
-                              )
+              child: _titleArea(
+                  _currentPrice, widget.originalPrice, _mainTitle, _subtitle),
+            ),
+            const Divider(height: 1, color: Color.fromRGBO(227, 227, 227, 1)),
+            if (widget.optionInfo.isNotEmpty)
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: ScreenAdapter.height(1500),
+                ),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      left: ScreenAdapter.width(15),
+                      top: ScreenAdapter.height(10),
+                      right: ScreenAdapter.width(15),
+                      bottom: ScreenAdapter.height(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var i = 0; i < widget.optionInfo.length; i++)
+                          OptionListWidget(
+                            key: ValueKey(
+                                widget.optionInfo[i]['groupCode'] ?? i),
+                            isLabel: widget.isLabel,
+                            languageKey: widget.languageKey,
+                            deferImages: _deferOptionImages,
+                            optionSelectMaxNum:
+                                '${widget.optionInfo[i]['multipleState'] ?? '1'}',
+                            optionListInfo:
+                                widget.optionInfo[i]['optionVoList'] ?? [],
+                            title: widget.optionInfo[i]['groupName'] ?? '',
+                            subTitle: widget.optionInfo[i]['remark'] ?? '',
+                            onSelected: (group, option, title, price, isAdd,
+                                isSelected) {
+                              _updatePrice(group, option, title, price, isAdd,
+                                  isSelected);
+                            },
                           ),
-                        ),
-
-                      Divider(
-                        height: 1,
-                        color: Color.fromRGBO(227, 227, 227, 1),
-                      ),
-                      //标题价格
-                      Container(
-                        //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
-                        height: ScreenAdapter.height(200),
-                        color: ColorsUtil.hexToColor("#DCDCDC"),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                            _returnButton(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                //价格展示 item['currentPrice']
-                                _priceLabel(),
-                                //确认按钮
-                                _buttonArea(),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            const Divider(height: 1, color: Color.fromRGBO(227, 227, 227, 1)),
+            Container(
+              height: ScreenAdapter.height(200),
+              color: ColorsUtil.hexToColor("#DCDCDC"),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _returnButton(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _priceLabel(),
+                      _buttonArea(),
                     ],
                   ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
-      ),
-    );
-  }
-
-
-  _publicShowOneItemOptionGroup(optionGroupInfo) {
-    return Container(
-      padding: EdgeInsets.only(
-          left: ScreenAdapter.width(5),
-          right: ScreenAdapter.width(3),
-          top: ScreenAdapter.height(5),
-          bottom: ScreenAdapter.height(10)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ...optionGroupInfo.map((optionItem) => OptionListWidget(
-            isLabel: widget.isLabel,
-            languageKey: widget.languageKey,
-            optionSelectMaxNum: optionItem['multipleState'] ?? '1',
-            optionListInfo: optionItem['optionVoList'] ?? [],
-            title: optionItem['groupName'] ?? "",
-            subTitle: optionItem['remark'] ?? "",
-            onSelected: (group, option, title, price, isAdd, isSelected) {
-              //选中回调
-              _updatePrice(group, option, title, price, isAdd, isSelected);
-            },
-          ))
-        ]
       ),
     );
   }
@@ -351,9 +406,7 @@ class _OptionViewState extends State<OptionView> {
 
   Widget _buttonArea() {
     return KioskTap(
-      onTap: () {
-        _addToCart();
-      },
+      onTap: _addToCart,
       child: Container(
         margin:EdgeInsets.only(right: ScreenAdapter.width(20),),
         width: ScreenAdapter.width(260),

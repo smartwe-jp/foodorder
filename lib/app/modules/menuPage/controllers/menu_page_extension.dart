@@ -9,6 +9,8 @@ import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/machine_info.dart';
+import '../../../services/CustomLogerHandler.dart';
+import '../../../services/ScreenAdapter.dart';
 import '../views/widgets/grid_item_view.dart';
 
 extension MenuPageControllerExtension on MenuPageController {
@@ -98,56 +100,117 @@ extension MenuPageControllerExtension on MenuPageController {
     final queryCategoryCode = categoryCode ?? classTag.value;
 
     debugPrint("getCategoryMenu:$queryCategoryCode");
-    Widget? menuWidget = null;
-    if (showItem.containsKey(queryCategoryCode)) {
-      return showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
+    if (queryCategoryCode.isEmpty) {
+      return null;
     }
 
+    final context = Get.context;
+    if (context == null) {
+      return null;
+    }
+
+    if (showItem.containsKey(queryCategoryCode)) {
+      return showMiddleMenuList(context, categoryCode: queryCategoryCode);
+    }
+
+    final loaded = await prefetchCategoryMenu(queryCategoryCode);
+    if (loaded && showItem.containsKey(queryCategoryCode)) {
+      return showMiddleMenuList(context, categoryCode: queryCategoryCode);
+    }
+    return null;
+  }
+
+  /// 并行预取分类菜单：仅内存缓存，每次进入/刷新都走网络拿最新数据
+  Future<bool> prefetchCategoryMenu(
+    String categoryCode, {
+    int? loadGeneration,
+  }) {
+    if (categoryCode.isEmpty) {
+      return Future.value(false);
+    }
+
+    final generation = loadGeneration ?? menuLoadGeneration;
+    if (showItem.containsKey(categoryCode)) {
+      return Future.value(true);
+    }
+
+    final inflight = categoryMenuPrefetchTasks[categoryCode];
+    if (inflight != null) {
+      return inflight;
+    }
+
+    final task = _fetchCategoryMenuFromNetwork(
+      categoryCode,
+      loadGeneration: generation,
+    ).whenComplete(() {
+      categoryMenuPrefetchTasks.remove(categoryCode);
+    });
+    categoryMenuPrefetchTasks[categoryCode] = task;
+    return task;
+  }
+
+  Future<bool> _fetchCategoryMenuFromNetwork(
+    String categoryCode, {
+    required int loadGeneration,
+  }) async {
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
     }
-    var formData = {
+    final formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
-      "categoryCode": queryCategoryCode
+      "categoryCode": categoryCode,
     };
-    debugPrint("formData:${formData}");
+    debugPrint("fetchCategoryMenu formData:$formData");
 
     try {
-      final val = await request('webBootIndexMenuv3',
-          method: 'POST',
-          parameters: formData,
-          timeout: const Duration(seconds: 15));
-      var response = json.decode(val.toString());
+      final val = await request(
+        'webBootIndexMenuv3',
+        method: 'POST',
+        parameters: formData,
+        timeout: const Duration(seconds: 15),
+      );
+      if (loadGeneration != menuLoadGeneration) {
+        logI('ignore stale category menu response: $categoryCode');
+        return false;
+      }
+
+      final response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        showItem[queryCategoryCode] = response['data'];
+        showItem[categoryCode] = response['data'];
         _updateOptionsInfo(response['data']);
-        menuWidget =
-            showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
+        return true;
       }
-
     } on TimeoutException catch (e) {
       debugPrint('TimeoutException:${e.toString()}');
     } catch (e) {
       debugPrint('error Exception:${e.toString()}');
     }
-    return menuWidget;
+    return false;
   }
 
-  itemImage(String? url) {
+  ImageProvider itemImage(String? url, {double logicalWidth = 340}) {
     if (url == null || url.isEmpty) {
-      return AssetImage('assets/images/public/food.png');
+      return const AssetImage('assets/images/public/food.png');
     }
-    return CachedNetworkImageProvider(url, cacheManager: customCacheManager);
-
+    final context = Get.context;
+    final dpr = context != null ? MediaQuery.devicePixelRatioOf(context) : 2.0;
+    final cacheWidth = (ScreenAdapter.width(logicalWidth) * dpr).round();
+    final provider = CachedNetworkImageProvider(
+      url,
+      cacheManager: customCacheManager,
+    );
+    return ResizeImage.resizeIfNeeded(cacheWidth, null, provider);
   }
 
   menuItemView(item, context, {popupType: "old", aspectRatio: 1.0}) {
     //debugPrint("menuItemView: $item");
+    final menuCode = '${item['menuCode']}';
+    final isLimited = (item['qtyBounds'] ?? -1) > 0;
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
@@ -158,16 +221,22 @@ extension MenuPageControllerExtension on MenuPageController {
           ? "select_option".tr
           : "",
       aspectRatio: aspectRatio,
-      onTap: () async {
+      debounceDuration: isLimited
+          ? const Duration(milliseconds: 400)
+          : Duration.zero,
+      onTap: () {
         debugPrint("GridItemView onTap");
+
+        if (isMenuAddLocked(menuCode)) {
+          return;
+        }
 
         if (item['qtyBounds'] == 0) {
           return;
-        } else if (item['qtyBounds'] > 0) {
-          //debugPrint("GridItemView onTap qtyBounds $item");
-          //请求限定接口
-          if (canAddCart.value)
-            await checkQtyBoundsCount(item, "", popupType, context);
+        } else if (isLimited) {
+          if (canAddCart.value) {
+            checkQtyBoundsCount(item, "", popupType, context);
+          }
         } else {
           //如果option 存在，则弹出option
           debugPrint("GridItemView onTap option");
@@ -180,7 +249,9 @@ extension MenuPageControllerExtension on MenuPageController {
               publicShowOneItemWidget(item);
             }
           } else {
-            if (canAddCart.value) publicAddCart(context, item);
+            if (canAddCart.value) {
+              publicAddCart(context, item);
+            }
           }
         }
       },
@@ -254,19 +325,21 @@ extension MenuPageControllerExtension on MenuPageController {
   }
 
   showCategoryTwoItemList(items, context, {popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-    return GridMenuView(children: children, childAspectRatio: 0.71,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      childAspectRatio: 0.71,
+    );
   }
 
   showCategoryFourItemList(items, context, {popupType: "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.71,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      crossAxisCount: 2,
+      childAspectRatio: 0.71,
+    );
   }
 }

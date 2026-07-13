@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 
+import '../../../../models/ItemModel.dart';
 import '../../controllers/menu_page_controller.dart';
 import 'car_item_view.dart';
 
 extension Shoppingcar on MenuPageController {
 
   publicCartView() {
-    return ListView(
-      shrinkWrap: true,
-      children: showCartItems
-          .map((d) =>
-          CarItemView(
-            title: d.mainTitle,
-            subtitle: d.optionVoListMsg,
-            image: itemImage(d.image),
-            onReduce: (value) {
-              publicChangeCartItemCreate(d, false);
-            },
-            onIncrease: (value) {
-              publicChangeCartItemCreate(d, true);
-            },
-            // spicy 条目 currentPrice 已是算好的总价，quantity 固定 1 避免重复乘算
-            price: d.itemType == 'spicy' ? "${d.currentPrice}" : "${d.unitPrice}",
-            quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
-            showQtyControls: d.itemType != 'spicy',))
-          .toList(),
-    );
+    return Obx(() {
+      return ListView(
+        shrinkWrap: true,
+        children: [
+          for (final d in showCartItems)
+            CarItemView(
+              key: ValueKey((d as ShopItemModel).id),
+              title: d.mainTitle,
+              subtitle: d.optionVoListMsg,
+              image: itemImage(d.image),
+              onReduce: (value) {
+                publicChangeCartItemCreate(d, false);
+              },
+              onIncrease: (value) {
+                publicChangeCartItemCreate(d, true);
+              },
+              // spicy 条目 currentPrice 已是算好的总价，quantity 固定 1 避免重复乘算
+              price: d.itemType == 'spicy'
+                  ? "${d.currentPrice}"
+                  : "${d.unitPrice}",
+              quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
+              showQtyControls: d.itemType != 'spicy',
+            ),
+        ],
+      );
+    });
   }
 
   shoppingCar() {

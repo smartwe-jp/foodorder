@@ -9,6 +9,7 @@ import '../../../../config/color.dart';
 import '../../../../config/colorsUtil.dart';
 import '../../../../config/font.dart';
 import '../../../../services/ScreenAdapter.dart';
+import '../../../../services/showImage.dart';
 import '../../../../widget/DialogUtils.dart';
 
 class OptionWidget extends StatefulWidget {
@@ -18,6 +19,7 @@ class OptionWidget extends StatefulWidget {
   final ValueChanged<bool> onSelected;
   final bool isSelected;
   final bool canSelect;
+  final bool deferImages;
   final String languageKey;
   final int maxNum;
 
@@ -30,6 +32,7 @@ class OptionWidget extends StatefulWidget {
     required this.isSelected,
     required this.languageKey,
     this.canSelect = true,
+    this.deferImages = false,
     this.maxNum = 1,
   }) : super(key: key);
 
@@ -142,6 +145,49 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
         : _imageOptionWidget();
   }
 
+  Widget _buildOptionImage(
+    String url, {
+    required double width,
+    required double height,
+    required BoxFit fit,
+    Color? color,
+  }) {
+    if (widget.deferImages) {
+      return SizedBox(
+        width: width,
+        height: height,
+        child: ColoredBox(
+          color: const Color(0xFFF3F3F3),
+          child: Icon(
+            Icons.image_outlined,
+            size: height * 0.35,
+            color: const Color(0xFFBDBDBD),
+          ),
+        ),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      cacheManager: menuImageCacheManager,
+      width: width,
+      height: height,
+      fit: fit,
+      color: color,
+      memCacheWidth: _optionImageCacheWidth(context, width),
+      memCacheHeight: _optionImageCacheHeight(context, height),
+      placeholder: (_, __) => SizedBox(
+        width: width,
+        height: height,
+        child: const ColoredBox(color: Color(0xFFF3F3F3)),
+      ),
+      errorWidget: (_, __, ___) => SizedBox(
+        width: width,
+        height: height,
+        child: const ColoredBox(color: Color(0xFFF3F3F3)),
+      ),
+    );
+  }
+
 
   _imageOptionWidget(){
     return Container(
@@ -192,10 +238,12 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         if (imageUrl != null && imageUrl != "")
-                          CachedNetworkImage(imageUrl:widget.optionInfo['homeImage'],
-                              width: ScreenAdapter.width(160),
-                              height: ScreenAdapter.height(110),
-                              fit: BoxFit.fitHeight),
+                          _buildOptionImage(
+                            imageUrl!,
+                            width: ScreenAdapter.width(160),
+                            height: ScreenAdapter.height(110),
+                            fit: BoxFit.fitHeight,
+                          ),
 
                         Container(
                             width: ScreenAdapter.width(185),
@@ -382,11 +430,15 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if (imageUrl != null && imageUrl != "")
-                        CachedNetworkImage(imageUrl:imageUrl!,
-                            width: ScreenAdapter.width(18),
-                            height: ScreenAdapter.height(30),
-                            color: _isChecked ? ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                            fit: BoxFit.fitHeight),
+                        _buildOptionImage(
+                          imageUrl!,
+                          width: ScreenAdapter.width(18),
+                          height: ScreenAdapter.height(30),
+                          fit: BoxFit.fitHeight,
+                          color: _isChecked
+                              ? ColorsUtil.hexToColor(Gcolor.optionBtnColor)
+                              : ColorsUtil.hexToColor("#914F14"),
+                        ),
                         SizedBox(
                           width: ScreenAdapter.width(4),
                         ),
@@ -477,4 +529,14 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
       ),
     );
   }
+}
+
+int _optionImageCacheWidth(BuildContext context, double logicalWidth) {
+  final dpr = MediaQuery.devicePixelRatioOf(context);
+  return (logicalWidth * dpr).round().clamp(1, 400);
+}
+
+int _optionImageCacheHeight(BuildContext context, double logicalHeight) {
+  final dpr = MediaQuery.devicePixelRatioOf(context);
+  return (logicalHeight * dpr).round().clamp(1, 400);
 }

@@ -14,6 +14,7 @@ class OptionListWidget extends StatefulWidget {
   final String title;
   final String subTitle;
   final String outOfRangeMessage;
+  final bool deferImages;
   final Function(String, String, String, int, bool, bool) onSelected;
 
   const OptionListWidget({
@@ -24,7 +25,9 @@ class OptionListWidget extends StatefulWidget {
     required this.title,
     this.subTitle = '',
     required this.optionSelectMaxNum,
-    required this.onSelected, required this.languageKey,
+    required this.onSelected,
+    required this.languageKey,
+    this.deferImages = false,
   }) : super(key: key);
 
   @override
@@ -146,6 +149,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
               OptionWidget(
                   isLabelOption: widget.isLabel,
                   canSelect: _canSelect,
+                  deferImages: widget.deferImages,
                   optionInfo: _optionListInfo[i],
                   maxNum: _optionSelectMaxNum - _addedOptions.length,
                   isSelected: isOptionSelected(_optionListInfo[i]['optionCode']),

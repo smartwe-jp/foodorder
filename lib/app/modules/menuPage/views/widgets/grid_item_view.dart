@@ -6,6 +6,7 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:foodorder/app/widget/KioskTap.dart';
 
 class GridItemView extends StatelessWidget {
   final String title;
@@ -18,6 +19,7 @@ class GridItemView extends StatelessWidget {
   final Function onTap;
   final Widget cover;
   final double aspectRatio;
+  final Duration debounceDuration;
 
   GridItemView(
       {Key? key,
@@ -30,71 +32,85 @@ class GridItemView extends StatelessWidget {
         this.option = "",
         this.imageRadius = 10.0,
         this.aspectRatio = 1.0,
-        this.cover = const SizedBox()});
+        this.cover = const SizedBox(),
+        this.debounceDuration = Duration.zero});
 
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: InkWell(
-          onTap: () => onTap(),
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFFF0F5F5),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-
-                    Container(
-                      child: Stack(
-                        alignment: Alignment.bottomLeft,
-                        children: [
-                          RectangleImageView(
-                              image: image, radius: imageRadius, onlyTopRadius: true, onTap: onTap, aspectRatio: aspectRatio),
-                          //subtitle 底部叠在图片上，限制两行
-                          if (subtitle.isNotEmpty)
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10),
-                                  top: ScreenAdapter.width(5),
-                                  bottom: ScreenAdapter.width(5)),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(169, 255, 255, 255),
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                              ),
-                              child: Text(
-                                subtitle,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: GFont.getFontFamily(),
-                                  color: ColorsUtil.hexToColor(Gcolor.itemSubTitleColor),
-                                ),
+      child: KioskTap(
+        onTap: () => onTap(),
+        debounceDuration: debounceDuration,
+        builder: (context, pressed, child) {
+          return AnimatedScale(
+            scale: pressed ? 0.96 : 1.0,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeOutCubic,
+            child: child,
+          );
+        },
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Color(0xFFF0F5F5),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    child: Stack(
+                      alignment: Alignment.bottomLeft,
+                      children: [
+                        RectangleImageView(
+                          image: image,
+                          radius: imageRadius,
+                          onlyTopRadius: true,
+                          aspectRatio: aspectRatio,
+                        ),
+                        if (subtitle.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10),
+                              top: ScreenAdapter.width(5),
+                              bottom: ScreenAdapter.width(5),
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(169, 255, 255, 255),
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                            child: Text(
+                              subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(24),
+                                fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
+                                color: ColorsUtil.hexToColor(Gcolor.itemSubTitleColor),
                               ),
                             ),
-
-
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
-                    Expanded(child: ItemInfoArea(
-                        title: title,
-                        subtitle: price,
-                        originalPrice: originalPrice,
-                        option: option,
-                        onTap: onTap),)
-
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: ItemInfoArea(
+                      title: title,
+                      subtitle: price,
+                      originalPrice: originalPrice,
+                      option: option,
+                      onTap: onTap,
+                    ),
+                  ),
+                ],
               ),
-              cover
-            ],
-          )),
+            ),
+            cover,
+          ],
+        ),
+      ),
     );
   }
 }
@@ -293,7 +309,8 @@ class OptionButton extends StatelessWidget {
 }
 
 class GridMenuView extends StatelessWidget {
-  final List<Widget> children;
+  final int itemCount;
+  final IndexedWidgetBuilder itemBuilder;
   final double? mainAxisSpacing;
   final double? crossAxisSpacing;
   final int? crossAxisCount;
@@ -303,7 +320,8 @@ class GridMenuView extends StatelessWidget {
 
   GridMenuView({
     Key? key,
-    required this.children,
+    required this.itemCount,
+    required this.itemBuilder,
     this.mainAxisSpacing,
     this.crossAxisSpacing,
     this.crossAxisCount,
@@ -315,26 +333,27 @@ class GridMenuView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child:
-      GridView.builder(
-        padding: EdgeInsets.only(
-            left:ScreenAdapter.width(15),
-            right: ScreenAdapter.width(15),
-            bottom: ScreenAdapter.height(30)
-        ),
-        physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : NeverScrollableScrollPhysics(),
+      child: GridView.builder(
+        padding: padding == EdgeInsets.zero
+            ? EdgeInsets.only(
+                left: ScreenAdapter.width(15),
+                right: ScreenAdapter.width(15),
+                bottom: ScreenAdapter.height(30),
+              )
+            : padding,
+        physics: canScroll
+            ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics())
+            : const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: true,
-        //addRepaintBoundaries:false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: mainAxisSpacing ?? ScreenAdapter.height(40),
-            crossAxisSpacing: crossAxisSpacing ?? ScreenAdapter.width(20),
-            crossAxisCount: crossAxisCount ?? 3,
-            childAspectRatio: childAspectRatio ?? 0.76),
-        itemBuilder: (BuildContext context, int index) {
-          return children[index];
-        },
-        itemCount: children.length,
+          mainAxisSpacing: mainAxisSpacing ?? ScreenAdapter.height(40),
+          crossAxisSpacing: crossAxisSpacing ?? ScreenAdapter.width(20),
+          crossAxisCount: crossAxisCount ?? 3,
+          childAspectRatio: childAspectRatio ?? 0.76,
+        ),
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
       ),
     );
   }

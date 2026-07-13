@@ -313,11 +313,8 @@ class MenuPageView extends GetView<MenuPageController> {
 
                   //controller.shoppingCar(),
 
-                  GetBuilder<MenuPageController>(
-                      id: 'shopping_cart',
-                      builder: (logic) {
-                        return AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
+                  Obx(() => AnimatedPositioned(
+                          duration: const Duration(milliseconds: 200),
                           height: controller.showCartTotalGoodsNum.value > 0
                               ? ScreenAdapter.height(200)
                               : 0,
@@ -326,9 +323,10 @@ class MenuPageView extends GetView<MenuPageController> {
                           bottom: controller.showCartTotalGoodsNum.value > 0
                               ? ScreenAdapter.height(0)
                               : -ScreenAdapter.height(200),
-                          child: controller.machineInfo.menu_direction != '1' ? checkOutButton() : publicShowCartView(),
-                        );
-                      }),
+                          child: controller.machineInfo.menu_direction != '1'
+                              ? checkOutButton()
+                              : publicShowCartView(),
+                        )),
                 ],
               ),
             ),

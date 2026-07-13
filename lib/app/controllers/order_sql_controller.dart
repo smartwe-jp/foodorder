@@ -146,11 +146,12 @@ class OrderSqlController extends GetxService {
     return result;
   }
 
-  removeFromCart(int Id) async {
-    itemServices.removeFromCart(Id);
-    int index = cartItems.indexWhere((element) => element.id == Id);
-    cartItems.removeAt(index);
-    //update();
+  Future<void> removeFromCart(int Id) async {
+    await itemServices.removeFromCart(Id);
+    final index = cartItems.indexWhere((element) => element.id == Id);
+    if (index >= 0) {
+      cartItems.removeAt(index);
+    }
   }
 
   removeAllFromCart() async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -37,19 +38,14 @@ import '../views/SelectPayment.dart';
 import '../views/option_widgets/option_view.dart';
 import '../views/showOneItemOptionWidget.dart';
 import '../views/showOneItemOptionWidgetV1.dart';
+import 'menu_page_extension.dart';
 
 class MenuPageController extends GetxController with StateMixin {
   //TODO: Implement MenuPageController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
   MachineInfoController machineInfo = Get.find();
    FToast? fToast;
-  final customCacheManager = CacheManager(
-    Config(
-      'menu_page', // 限制缓存对象数量
-      stalePeriod: Duration(minutes: 1), // 缓存过期时间
-      maxNrOfCacheObjects: 100, // 缓存对象数量
-    ),
-  );
+  final customCacheManager = menuImageCacheManager;
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
@@ -99,6 +95,44 @@ class MenuPageController extends GetxController with StateMixin {
 
   RxString bgColor = "#F9F9F9".obs;
 
+  /// 分类菜单网络请求去重（仅内存，不落盘）
+  final Map<String, Future<bool>> categoryMenuPrefetchTasks = {};
+
+  /// 每次重新拉分类时递增，忽略过期的菜单响应
+  int menuLoadGeneration = 0;
+
+  /// 正在写库的 menuCode，防止限购商品连点超卖
+  final Set<String> _cartAddInFlight = {};
+
+  /// 当前已打开的规格弹窗对应商品，防止重复弹窗
+  String? _openOptionMenuCode;
+
+  bool isMenuAddLocked(String menuCode) => _cartAddInFlight.contains(menuCode);
+
+  bool _tryLockCartAdd(String menuCode) {
+    if (_cartAddInFlight.contains(menuCode)) {
+      return false;
+    }
+    _cartAddInFlight.add(menuCode);
+    return true;
+  }
+
+  void _unlockCartAdd(String menuCode) {
+    _cartAddInFlight.remove(menuCode);
+  }
+
+  void _showStorageLimitDialog() {
+    final showString = "show_storage_num_error".tr;
+    Get.dialog(
+      DialogUtils.alertOneButton(
+        showString,
+        title: "tag_title".tr,
+        confirmtitle: "tag_button_yes".tr,
+        confirm: () => Get.back(),
+      ),
+    );
+  }
+
   @override
   void onInit() {
 
@@ -110,15 +144,22 @@ class MenuPageController extends GetxController with StateMixin {
   void onReady() {
     super.onReady();
     _checkToCloseLoading();
+    _ensureCartToastReady();
   }
 
   @override
-  Future<void> onClose() async {
+  void onClose() {
     debugPrint('MenuPageController onClose');
-    await customCacheManager.emptyCache();
-    //await Get.delete<MenuPageController>();
+    _cartSoundPlayer?.dispose();
+    _cartSoundPlayer = null;
+    _deleteSoundPlayer?.dispose();
+    _deleteSoundPlayer = null;
     super.onClose();
   }
+
+  AssetsAudioPlayer? _cartSoundPlayer;
+  AssetsAudioPlayer? _deleteSoundPlayer;
+  bool _cartToastInited = false;
 
   _checkToCloseLoading() async {
     if (EasyLoading.isShow) {
@@ -150,8 +191,12 @@ class MenuPageController extends GetxController with StateMixin {
   //获取页面分类
   getBookingBootIndexCategory({isReset = false, int retryCount = 0}){
     logI('getBookingBootIndexCategory');
+    final currentGeneration = ++menuLoadGeneration;
+    categoryMenuPrefetchTasks.clear();
     if (isReset) {
       change(null, status: RxStatus.loading());
+      topMenu.value = [];
+      showItem.clear();
     } else {
       topMenu.value = [];
       showItem.clear();
@@ -202,13 +247,16 @@ class MenuPageController extends GetxController with StateMixin {
             });
             menuIndex++;
             colorIndex++;
-            //配置顶部菜单默认项
-            if (i == 0) {
-              classTag.value = categoryVoList['categoryCode'];
-              bgColor .value =
-                  categoryVoList['background'] ?? "#F9F9F9";
-            }
           }
+        }
+        if (topMenu.isNotEmpty) {
+          classTag.value = topMenu.first['categoryCode'];
+          bgColor.value = topMenu.first['background'] ?? "#F9F9F9";
+          // 分类接口返回后立即并行预取首分类菜单，缩短首屏等待
+          prefetchCategoryMenu(
+            topMenu.first['categoryCode'],
+            loadGeneration: currentGeneration,
+          );
         }
         change(null, status: RxStatus.success());
     })
@@ -232,22 +280,44 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   getCartPriceTotal() async {
-    debugPrint('getCartPriceTotal');
-    ordersqlcontroller.getCardList();
-    var total = await ordersqlcontroller.getCartAllPrice();
-    if(total != null){
-      shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+    await ordersqlcontroller.getCardList();
+    _syncCartSummaryToUi();
+  }
+
+  /// 点击加购时先乐观更新购物车数字，避免等 SQLite 才有反馈
+  void _bumpCartOptimistically(dynamic item) {
+    showCartTotalGoodsNum.value = showCartTotalGoodsNum.value + 1;
+    final current = int.tryParse(shopCartTotalPrice.value) ?? 0;
+    shopCartTotalPrice.value = '${current + _readItemPrice(item)}';
+  }
+
+  int _readItemPrice(dynamic item) {
+    if (item is Map) {
+      return int.tryParse('${item['currentPrice']}') ?? 0;
     }
+    if (item is ShopItemModel) {
+      return item.unitPrice ?? item.currentPrice ?? 0;
+    }
+    return 0;
+  }
 
-    var totalNum = await ordersqlcontroller.getCartTotalNum();
+  void _syncCartSummaryToUi() {
+    final items = ordersqlcontroller.cartItems;
+    var totalNum = 0;
+    var totalPrice = 0;
+    for (final raw in items) {
+      final item = raw as ShopItemModel;
+      totalNum += item.goodsNum;
+      totalPrice += item.currentPrice ?? 0;
+    }
+    shopCartTotalPrice.value = '$totalPrice';
     showCartTotalGoodsNum.value = totalNum;
-
-    if (showCartTotalGoodsNum.value == 0) {
+    showCartItems.value = List<ShopItemModel>.from(items.cast<ShopItemModel>());
+    if (totalNum == 0) {
       showShopCart = false;
     }
-
-    showCartItems.value = ordersqlcontroller.cartItems;
-    update(['shopping_cart','shoppingCar']);
+    // 购物车弹层、推荐页等仍依赖 GetBuilder 刷新
+    update(['shopping_cart']);
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
@@ -262,16 +332,10 @@ class MenuPageController extends GetxController with StateMixin {
       Get.dialog(DialogUtils.alert("show_del_cart_item_tag".tr,
           title: "tag_title".tr,
           canceltitle:"show_del_cart_item_no".tr,
-          confirmtitle: "show_del_cart_item_yes".tr, confirm: () {
-        //widget.confirmCallback('确定');
-        ordersqlcontroller.removeFromCart(d.id ?? 0);
-        //print("Item removed from cart successfully");
-        //删除商品声音
+          confirmtitle: "show_del_cart_item_yes".tr, confirm: () async {
+        await ordersqlcontroller.removeFromCart(d.id ?? 0);
         deleteItemSound();
-        ordersqlcontroller.getCardList();
-        //更改显示购物车价格
-        getCartPriceTotal();
-
+        await getCartPriceTotal();
         Get.back();
       }, cancle: () {
         Get.back();
@@ -283,10 +347,8 @@ class MenuPageController extends GetxController with StateMixin {
       } else {
         deleteItemSound();
       }
-      publicChangeCartMenuCount(cartItem, action).then((val) {
-        //更改显示购物车价格
-        getCartPriceTotal();
-      });
+      await publicChangeCartMenuCount(cartItem, action);
+      await getCartPriceTotal();
     }
   }
 
@@ -525,6 +587,7 @@ class MenuPageController extends GetxController with StateMixin {
                   Get.back();
                 })
         );
+        await getCartPriceTotal();
         return false;
       }
     }
@@ -532,22 +595,25 @@ class MenuPageController extends GetxController with StateMixin {
     var result = false;
     try {
       await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
-      ordersqlcontroller.getCardList();
+      await ordersqlcontroller.getCardList();
+      _syncCartSummaryToUi();
       result = true;
-
-
-      //更改显示购物车价格
-      getCartPriceTotal();
     } catch (e) {
       print(e);
       result = false;
+      await getCartPriceTotal();
     }
     //update();
     return result;
   }
 
-  publicAddCart(BuildContext context,item) async {
-    var cartItem = {
+  Future<void> publicAddCart(BuildContext context, item) async {
+    final menuCode = '${item['menuCode']}';
+    if (!_tryLockCartAdd(menuCode)) {
+      return;
+    }
+
+    final cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
       "image": item['homeImage'],
@@ -558,15 +624,23 @@ class MenuPageController extends GetxController with StateMixin {
       "goodsNum": 1,
       "qtyBounds": item['qtyBounds']
     };
-    publicAddCartMenu(cartItem, true).then((val) {
-      //更改显示购物车价格
-      //getCartPriceTotal();
-      if(val != false){
+    final isLimited = (item['qtyBounds'] ?? -1) > 0;
+
+    try {
+      // 限购商品等写库成功后再反馈；无限购仍保留乐观更新
+      if (!isLimited) {
+        _bumpCartOptimistically(item);
         publicShowAddCartNew(context);
       }
-
-
-    });
+      final ok = await publicAddCartMenu(cartItem, true);
+      if (isLimited && ok) {
+        publicShowAddCartNew(context);
+      } else if (!isLimited && !ok) {
+        await getCartPriceTotal();
+      }
+    } finally {
+      _unlockCartAdd(menuCode);
+    }
   }
 
   //公共购物车加减
@@ -600,9 +674,7 @@ class MenuPageController extends GetxController with StateMixin {
         result = await ordersqlcontroller.reduceToCart(cartItem);
       }
 
-      ordersqlcontroller.getCardList();
-
-
+      await ordersqlcontroller.getCardList();
     } catch (e) {
       print(e);
       result = 0;
@@ -611,37 +683,50 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //公共展示加入购物车动画
-  publicShowAddCartNew(BuildContext context){
-    fToast = FToast();
-    fToast?.init(context);
+  publicShowAddCartNew(BuildContext context) {
+    _ensureCartToastReady(context);
 
-    Widget toast = Container(
+    final toast = Container(
       color: Colors.transparent,
-      child: Image.asset(GImage.getImageString("imgpublic", "checked_green"),
-          width: ScreenAdapter.width(150),
-          height: ScreenAdapter.height(150)),
+      child: Image.asset(
+        GImage.getImageString("imgpublic", "checked_green"),
+        width: ScreenAdapter.width(150),
+        height: ScreenAdapter.height(150),
+      ),
     );
 
     fToast?.showToast(
       child: toast,
       gravity: ToastGravity.CENTER,
-      toastDuration: Duration(milliseconds: 500),
+      toastDuration: const Duration(milliseconds: 500),
     );
     playQRScannerSound();
-
-
   }
 
-  playQRScannerSound() async {
-    AssetsAudioPlayer.newPlayer().open(
+  void _ensureCartToastReady([BuildContext? context]) {
+    final toastContext = context ?? Get.context;
+    if (toastContext == null) {
+      return;
+    }
+    fToast ??= FToast();
+    if (!_cartToastInited) {
+      fToast!.init(toastContext);
+      _cartToastInited = true;
+    }
+  }
+
+  playQRScannerSound() {
+    _cartSoundPlayer ??= AssetsAudioPlayer.newPlayer();
+    _cartSoundPlayer!.open(
       Audio("assets/audios/14428.wav"),
       autoStart: true,
       volume: 0.3,
     );
   }
 
-  deleteItemSound() async {
-    AssetsAudioPlayer.newPlayer().open(
+  deleteItemSound() {
+    _deleteSoundPlayer ??= AssetsAudioPlayer.newPlayer();
+    _deleteSoundPlayer!.open(
       Audio("assets/audios/697.wav"),
       autoStart: true,
       volume: 0.8,
@@ -745,94 +830,97 @@ print("加1了");
   }
 
 //限量商品请求接口
-  checkQtyBoundsCount(item, optionCode,popupType,context) async {
-
-    var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
-
-    if(result>=item['qtyBounds']){
-      var showString = "show_storage_num_error".tr;
-      //showToast("${showString}");
-      Get.dialog(
-          DialogUtils.alertOneButton(showString,
-              title: "tag_title".tr,
-              confirmtitle: "tag_button_yes".tr,
-              confirm: () {
-                Get.back();
-              })
-      );
+  checkQtyBoundsCount(item, optionCode, popupType, context) async {
+    if (!canAddCart.value) {
       return;
-    }else{
-      //如果option 存在，则弹出option
-      if(item['optionGroupVoList']?.length > 0){
-        //publicShowOneItemWidget(item);
-        if(popupType == "v1"){
-          publicShowOneItemWidgetv1(item);
-        }else{
-          publicShowOneItemWidget(item);
-        }
-      }else{
-        publicAddCart(context,item);
+    }
+
+    final menuCode = '${item['menuCode']}';
+    if (item['qtyBounds'] == 0) {
+      return;
+    }
+    if (_cartAddInFlight.contains(menuCode)) {
+      return;
+    }
+
+    final hasOptions = item['optionGroupVoList']?.length > 0;
+    final isLimited = item['qtyBounds'] > 0;
+
+    // 限购：先同步校验库存，再弹规格或写库
+    if (isLimited) {
+      final count = await ordersqlcontroller.getCartItemNum(menuCode);
+      if (count >= item['qtyBounds']) {
+        _showStorageLimitDialog();
+        return;
       }
     }
 
+    if (hasOptions) {
+      _showOptionDialog(item, popupType: popupType);
+      return;
+    }
+
+    await publicAddCart(context, item);
+  }
+
+  void _showOptionDialog(item, {required String popupType}) {
+    final menuCode = '${item['menuCode']}';
+    if (_openOptionMenuCode != null) {
+      return;
+    }
+    _openOptionMenuCode = menuCode;
+
+    final optionInfo =
+        List<dynamic>.from(item['optionGroupVoList'] ?? const []);
+    final prepared = OptionView.prepareState(
+      itemPrice: item['currentPrice'] ?? 0,
+      optionInfo: optionInfo,
+    );
+
+    Get.generalDialog(
+      pageBuilder: (_, __, ___) => OptionView(
+        isLabel: popupType != "v1",
+        languageKey: checkLanguage.value,
+        itemPrice: item['currentPrice'],
+        originalPrice: item['price'],
+        optionInfo: optionInfo,
+        mainTitle: item['mainTitle'],
+        subtitle: item['subtitle'] ?? [],
+        preparedState: prepared,
+        addToCartCallback: (price, options, optionTitle) {
+          _addToCartCallback(item, price, options, optionTitle);
+        },
+      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      transitionDuration: Duration.zero,
+      transitionBuilder: (_, __, ___, child) => child,
+    ).whenComplete(() {
+      if (_openOptionMenuCode == menuCode) {
+        _openOptionMenuCode = null;
+      }
+    });
   }
 
   //展示某带option商品
-  publicShowOneItemWidget(item){
-    //changeInitialAllOption(item['menuCode']);
-    //Future.delayed(Duration(milliseconds: 50),() async {
-      // Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
-      Get.dialog(
-          barrierDismissible:false,
-          //showOneItemOptionWidgetView(item)
-          OptionView(
-            isLabel: true,
-            languageKey: checkLanguage.value,
-            itemPrice: item['currentPrice'],
-            originalPrice: item['price'],
-            optionInfo: item['optionGroupVoList'] ?? [],
-            mainTitle: item['mainTitle'],
-            subtitle: item['subtitle'] ?? [],
-            addToCartCallback: (price, options, optionTitle) {
-              _addToCartCallback(item, price, options, optionTitle);
-            },
-          )
-      );
-    //});
+  publicShowOneItemWidget(item) {
+    _showOptionDialog(item, popupType: "old");
   }
 
-  publicShowOneItemWidgetv1(item){
-    //changeInitialAllOption(item['menuCode']);
-    //Future.delayed(Duration(milliseconds: 50),() async {
-      // Get.dialog(
-      //     barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
-      Get.dialog(
-          barrierDismissible:false,
-          //showOneItemOptionWidgetVOneView(item)
-          OptionView(
-            isLabel: false,
-            languageKey: checkLanguage.value,
-            itemPrice: item['currentPrice'],
-            originalPrice: item['price'],
-            optionInfo: item['optionGroupVoList'] ?? [],
-            mainTitle: item['mainTitle'],
-            subtitle: item['subtitle'] ?? [],
-            addToCartCallback: (price, options, optionTitle) {
-              _addToCartCallback(item, price, options, optionTitle);
-            },
-          )
-      );
-    //});
+  publicShowOneItemWidgetv1(item) {
+    _showOptionDialog(item, popupType: "v1");
   }
 
-  _addToCartCallback(item, price, options, optionTitle) async {
-    debugPrint("price:$price");
-    debugPrint("options:$options");
-    debugPrint("optionTitle:$optionTitle");
+  Future<void> _addToCartCallback(item, price, options, optionTitle) async {
     //options 是一个字符串数组，把它转换成字符串逗号分隔
-    String optionsString = options.map((e) => e.toString()).toList().join(',');
+    final optionsString = options.map((e) => e.toString()).toList().join(',');
+    final menuCode = '${item['menuCode']}';
 
-    var cartItem = {
+    if (!_tryLockCartAdd(menuCode)) {
+      return;
+    }
+
+    final cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
       "image": item['homeImage'],
@@ -844,13 +932,16 @@ print("加1了");
       "qtyBounds": item['qtyBounds']
     };
 
-    await publicAddCartMenu(cartItem, false).then((val) {
+    Get.back();
+    try {
+      final ok = await publicAddCartMenu(cartItem, false);
       final context = Get.context;
-      if(val != false && context != null){
+      if (ok && context != null) {
         publicShowAddCartNew(context);
       }
-    });
-    Get.back();
+    } finally {
+      _unlockCartAdd(menuCode);
+    }
   }
 
   //初始化默认option选项

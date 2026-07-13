@@ -24,10 +24,7 @@ class publicShowCartView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<MenuPageController>(
-          id: 'shopping_cart',
-          builder: (controller){
-        return Obx(() => RepaintBoundary(
+      body: Obx(() => RepaintBoundary(
           child: Container(
             child: Container(
               padding: EdgeInsets.only(
@@ -201,8 +198,7 @@ class publicShowCartView extends GetView {
               ),
             ),
           ),
-        ));
-      }),
+        )),
     );
   }
 }
