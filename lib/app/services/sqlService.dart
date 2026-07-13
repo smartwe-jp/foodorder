@@ -86,13 +86,15 @@ class SQLService {
   }
 
   Future getCartItemNum(String menuCode) async {
-    var query = "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list where menuCode = ${menuCode}";
-    return await this.db?.rawQuery(query);
+    // 限购按 menuCode 汇总所有规格行的 goodsNum
+    var query =
+        "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list WHERE menuCode = ?";
+    return await db?.rawQuery(query, [menuCode]);
   }
 
    Future getCartItemNewId(String menuCode) async {
-     var query = "SELECT id FROM cart_list where menuCode = ${menuCode}";
-     return await this.db?.rawQuery(query);
+     var query = "SELECT id FROM cart_list WHERE menuCode = ? LIMIT 1";
+     return await db?.rawQuery(query, [menuCode]);
    }
 
   Future getCartTotalNum() async {
@@ -106,8 +108,16 @@ class SQLService {
   }
 
   Future checkItemAsCartList(String menuCode) async {
-    var query = "SELECT * FROM cart_list where menuCode = ${menuCode}";
-    return await this.db?.rawQuery(query);
+    var query = "SELECT * FROM cart_list WHERE menuCode = ?";
+    return await db?.rawQuery(query, [menuCode]);
+  }
+
+  /// 查找可合并的无规格行：同一 menuCode 且 option 为空
+  /// 有 option 的菜品每次确认加购都是独立一行，不走此合并
+  Future findPlainCartRowByMenuCode(String menuCode) async {
+    var query =
+        "SELECT * FROM cart_list WHERE menuCode = ? AND (optionGroupVoList = '' OR optionGroupVoList IS NULL) LIMIT 1";
+    return await db?.rawQuery(query, [menuCode]);
   }
 
   Future addToCart(data) async {
@@ -122,24 +132,37 @@ class SQLService {
   }
 
   Future updateToCartNum(data) async {
-    await this.db?.transaction((txn) async {
-      var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
-      int id2 = await txn.rawUpdate(query);
+    await db?.transaction((txn) async {
+      // 按 cartId 更新单行，避免同 menuCode 多规格行被批量 +1
+      var query =
+          "UPDATE cart_list SET goodsNum=goodsNum+?, currentPrice=currentPrice+? WHERE id = ?";
+      int id2 = await txn.rawUpdate(query, [
+        data["goodsNum"],
+        data["unitPrice"],
+        data["cartId"],
+      ]);
       return id2;
     });
-    //var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
-
-    //return await this.db?.rawUpdate(query);
   }
 
   Future addToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where id = '${data["cartId"]}'";
-    return await this.db?.rawUpdate(query);
+    var query =
+        "UPDATE cart_list SET goodsNum=goodsNum+?, currentPrice=currentPrice+? WHERE id = ?";
+    return await db?.rawUpdate(query, [
+      data["goodsNum"],
+      data["unitPrice"],
+      data["cartId"],
+    ]);
   }
 
   Future reduceToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum-${data["goodsNum"]},currentPrice=currentPrice-${data["unitPrice"]} where id = '${data["cartId"]}'";
-    return await this.db?.rawUpdate(query);
+    var query =
+        "UPDATE cart_list SET goodsNum=goodsNum-?, currentPrice=currentPrice-? WHERE id = ?";
+    return await db?.rawUpdate(query, [
+      data["goodsNum"],
+      data["unitPrice"],
+      data["cartId"],
+    ]);
   }
 
   Future removeFromCart(int Id) async {

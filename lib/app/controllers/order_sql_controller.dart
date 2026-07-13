@@ -102,21 +102,22 @@ class OrderSqlController extends GetxService {
 
   Future addToCart(item, {bool checkItem = false}) async {
     isLoading = true;
-    //update();
     var result;
-    if(checkItem == true){
-      var checkResult= await itemServices.checkToCartItem(item['menuCode']);
-      if(checkResult.length>0){
+    if (checkItem == true) {
+      // 仅合并无规格行；有 option 的菜品每次确认都是独立一行
+      final checkResult =
+          await itemServices.findPlainCartRowByMenuCode(item['menuCode']);
+      if (checkResult.isNotEmpty) {
+        item['cartId'] = checkResult[0]['id'];
         result = await itemServices.updateToCartNum(item);
-      }else{
+      } else {
         result = await itemServices.addToCart(item);
       }
-    }else{
+    } else {
       result = await itemServices.addToCart(item);
     }
 
     isLoading = false;
-    //update();
     return result;
   }
 

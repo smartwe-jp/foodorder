@@ -101,7 +101,7 @@ class MenuPageController extends GetxController with StateMixin {
   /// 每次重新拉分类时递增，忽略过期的菜单响应
   int menuLoadGeneration = 0;
 
-  /// 正在写库的 menuCode，防止限购商品连点超卖
+  /// 正在写库的 key（menuCode 或 cart:行 id），防止限购连点超卖
   final Set<String> _cartAddInFlight = {};
 
   /// 当前已打开的规格弹窗对应商品，防止重复弹窗
@@ -109,17 +109,24 @@ class MenuPageController extends GetxController with StateMixin {
 
   bool isMenuAddLocked(String menuCode) => _cartAddInFlight.contains(menuCode);
 
-  bool _tryLockCartAdd(String menuCode) {
-    if (_cartAddInFlight.contains(menuCode)) {
+  bool isCartRowLocked(int? cartId) =>
+      cartId != null && _cartAddInFlight.contains('cart:$cartId');
+
+  bool _tryLockCartWrite(String lockKey) {
+    if (_cartAddInFlight.contains(lockKey)) {
       return false;
     }
-    _cartAddInFlight.add(menuCode);
+    _cartAddInFlight.add(lockKey);
     return true;
   }
 
-  void _unlockCartAdd(String menuCode) {
-    _cartAddInFlight.remove(menuCode);
+  void _unlockCartWrite(String lockKey) {
+    _cartAddInFlight.remove(lockKey);
   }
+
+  bool _tryLockCartAdd(String menuCode) => _tryLockCartWrite(menuCode);
+
+  void _unlockCartAdd(String menuCode) => _unlockCartWrite(menuCode);
 
   void _showStorageLimitDialog() {
     final showString = "show_storage_num_error".tr;
@@ -321,6 +328,11 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
+    final rowLockKey = 'cart:${d.id}';
+    if (isCartRowLocked(d.id)) {
+      return;
+    }
+
     var cartItem = {
       "cartId": d.id,
       "menuCode": d.menuCode,
@@ -341,14 +353,21 @@ class MenuPageController extends GetxController with StateMixin {
         Get.back();
       }));
     } else {
-      final action = isAdd ? "add" : "reduce";
-      if (isAdd) {
-        playQRScannerSound();
-      } else {
-        deleteItemSound();
+      if (!_tryLockCartWrite(rowLockKey)) {
+        return;
       }
-      await publicChangeCartMenuCount(cartItem, action);
-      await getCartPriceTotal();
+      final action = isAdd ? "add" : "reduce";
+      try {
+        if (isAdd) {
+          playQRScannerSound();
+        } else {
+          deleteItemSound();
+        }
+        await publicChangeCartMenuCount(cartItem, action);
+        await getCartPriceTotal();
+      } finally {
+        _unlockCartWrite(rowLockKey);
+      }
     }
   }
 
@@ -573,6 +592,8 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //公共加入购物车
+  /// [checkItem] true=无规格商品合并到同 menuCode 的无 option 行；
+  /// false=每次插入新行（有 option 时每次确认各一行）
   publicAddCartMenu(cartItem, checkItem) async {
     if(cartItem['qtyBounds'] >0){
       var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
@@ -643,34 +664,23 @@ class MenuPageController extends GetxController with StateMixin {
     }
   }
 
-  //公共购物车加减
+  //公共购物车加减（按 cartId 操作单行；限购按 menuCode 汇总校验）
   publicChangeCartMenuCount(cartItem, changeType) async {
-
     var result;
     try {
-      if(changeType == 'add'){
-        if(cartItem['qtyBounds'] >0){
-          var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
-          if(checkresult>=cartItem['qtyBounds']){
-            var showString = "show_storage_num_error".tr;
-            //showToast("${showString}");
-            Get.dialog(
-                DialogUtils.alertOneButton(showString,
-                    title: "tag_title".tr,
-                    confirmtitle: "tag_button_yes".tr,
-                    confirm: () {
-                      Get.back();
-                    })
-            );
+      if (changeType == 'add') {
+        if (cartItem['qtyBounds'] > 0) {
+          var checkresult =
+              await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
+          if (checkresult >= cartItem['qtyBounds']) {
+            _showStorageLimitDialog();
             return;
-          }else{
-            result = await ordersqlcontroller.addToCartNum(cartItem);
           }
-        }else if(cartItem['qtyBounds'] <0){
+          result = await ordersqlcontroller.addToCartNum(cartItem);
+        } else if (cartItem['qtyBounds'] < 0) {
           result = await ordersqlcontroller.addToCartNum(cartItem);
         }
-
-      }else{
+      } else {
         result = await ordersqlcontroller.reduceToCart(cartItem);
       }
 

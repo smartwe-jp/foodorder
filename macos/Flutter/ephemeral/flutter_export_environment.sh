@@ -1,12 +1,12 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/aaronhou/fvm/versions/3.35.1"
-export "FLUTTER_APPLICATION_PATH=/Users/aaronhou/MWFoodorder/Foodorder_WP"
+export "FLUTTER_ROOT=/Users/lky/work/flutter_macos/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/lky/www_flutter/FoodorderGitNew"
+export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=/Users/lky/www_flutter/FoodorderGitNew/macos/Flutter/ephemeral/Packages/.packages/FlutterFramework"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=2.8.13"
-export "FLUTTER_BUILD_NUMBER=172"
-export "FLUTTER_CLI_BUILD_MODE=debug"
+export "FLUTTER_BUILD_NAME=2.9.5"
+export "FLUTTER_BUILD_NUMBER=181"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

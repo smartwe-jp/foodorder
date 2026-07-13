@@ -29,6 +29,11 @@ class ItemServices {
     return await sqlService.checkItemAsCartList(data);
   }
 
+  /// 查找同 menuCode 的无规格购物车行（用于合并加购）
+  Future findPlainCartRowByMenuCode(String menuCode) async {
+    return await sqlService.findPlainCartRowByMenuCode(menuCode);
+  }
+
   Future updateToCartNum(data) async {
     return await sqlService.updateToCartNum(data);
   }

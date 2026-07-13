@@ -23,7 +23,7 @@ let package = Package(
         .package(name: "package_info_plus", path: "../.packages/package_info_plus-8.3.0"),
         .package(name: "path_provider_foundation", path: "../.packages/path_provider_foundation-2.4.2"),
         .package(name: "shared_preferences_foundation", path: "../.packages/shared_preferences_foundation-2.5.4"),
-        .package(name: "sqflite_darwin", path: "../.packages/sqflite_darwin-2.4.2"),
+        .package(name: "sqflite_darwin", path: "../.packages/sqflite_darwin-2.4.3+1"),
         .package(name: "FlutterFramework", path: "../.packages/FlutterFramework")
     ],
     targets: [
