@@ -178,18 +178,11 @@ extension MenuPageCategory on MenuPageController {
                                     "qtyBounds": itemsFirst['qtyBounds'],
                                     "unitPrice":currentPrice
                                   };
-                                  publicAddCartMenu(cartItem, false).then((val) {
-                                    //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                    //更改显示购物车价格
-                                    //getCartPriceTotal();
-                                    if(val != false){
-                                      publicShowAddCartNew(context);
-                                    }
-          
-          
-                                    changeInitialAllOption(itemsFirst['menuCode']);
-          
-                                  });
+                                  publicAddCartWithOptions(
+                                    cartItem,
+                                    context,
+                                    resetOptionMenuCode: itemsFirst['menuCode'],
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(
@@ -778,18 +771,11 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": itemsFirst['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-
-                                changeInitialAllOption(
-                                    itemsFirst['menuCode']);
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode: itemsFirst['menuCode'],
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -1351,15 +1337,11 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-                                changeInitialAllOption(item['menuCode']);
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode: item['menuCode'],
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -2154,18 +2136,14 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-
-                                if (item['optionGroupVoList']?.length > 0) {
-                                  changeInitialAllOption(item['menuCode']);
-                                }
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode:
+                                    item['optionGroupVoList']?.length > 0
+                                        ? item['menuCode']
+                                        : null,
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(

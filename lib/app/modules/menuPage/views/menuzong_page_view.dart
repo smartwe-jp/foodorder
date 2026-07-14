@@ -350,16 +350,11 @@ class MenuzongPageView extends GetView {
                                   "qtyBounds": itemsFirst['qtyBounds'],
                                   "unitPrice":currentPrice
                                 };
-                                controller.publicAddCartMenu(cartItem, false).then((val) {
-                                  //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                  if(val != false){
-                                    controller.publicShowAddCartNew(context);
-                                  }
-
-                                  controller.changeInitialAllOption(itemsFirst['menuCode']);
-                                  //更改显示购物车价格
-                                  //getCartPriceTotal();
-                                });
+                                controller.publicAddCartWithOptions(
+                                  cartItem,
+                                  context,
+                                  resetOptionMenuCode: itemsFirst['menuCode'],
+                                );
                               },
                               child: Container(
                                 margin: EdgeInsets.only(
@@ -1001,15 +996,11 @@ class MenuzongPageView extends GetView {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice":currentPrice
                               };
-                              controller.publicAddCartMenu(cartItem, false).then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if(val != false){
-                                  controller.publicShowAddCartNew(context);
-                                }
-                                controller.changeInitialAllOption(item['menuCode']);
-
-                              });
+                              controller.publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode: item['menuCode'],
+                              );
                             },
                             child: Container(
                               margin:
@@ -1656,19 +1647,14 @@ class MenuzongPageView extends GetView {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice":currentPrice
                               };
-                              controller.publicAddCartMenu(cartItem, false).then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if(val != false){
-                                  controller.publicShowAddCartNew(context);
-                                }
-
-                                if (item['optionGroupVoList']?.length > 0) {
-                                  controller.changeInitialAllOption(item['menuCode']);
-                                }
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                              });
+                              controller.publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode:
+                                    item['optionGroupVoList']?.length > 0
+                                        ? item['menuCode']
+                                        : null,
+                              );
                             },
                             child: Container(
                               margin:

@@ -107,6 +107,9 @@ class MenuPageController extends GetxController with StateMixin {
   /// 当前已打开的规格弹窗对应商品，防止重复弹窗
   String? _openOptionMenuCode;
 
+  /// 下单请求进行中，防止重复提交
+  bool _submitInFlight = false;
+
   bool isMenuAddLocked(String menuCode) => _cartAddInFlight.contains(menuCode);
 
   bool isCartRowLocked(int? cartId) =>
@@ -921,14 +924,43 @@ print("加1了");
     _showOptionDialog(item, popupType: "v1");
   }
 
+  /// 带规格加购（featured/内联/弹窗）：每次插入新行，写库锁 + 限购预检
+  Future<bool> publicAddCartWithOptions(
+    Map cartItem,
+    BuildContext context, {
+    String? resetOptionMenuCode,
+  }) async {
+    final menuCode = '${cartItem['menuCode']}';
+    if (!_tryLockCartAdd(menuCode)) {
+      return false;
+    }
+
+    try {
+      final qtyBounds = cartItem['qtyBounds'] ?? -1;
+      if (qtyBounds > 0) {
+        final count = await ordersqlcontroller.getCartItemNum(menuCode);
+        if (count >= qtyBounds) {
+          _showStorageLimitDialog();
+          return false;
+        }
+      }
+
+      final ok = await publicAddCartMenu(cartItem, false);
+      if (ok) {
+        publicShowAddCartNew(context);
+        if (resetOptionMenuCode != null) {
+          changeInitialAllOption(resetOptionMenuCode);
+        }
+      }
+      return ok;
+    } finally {
+      _unlockCartAdd(menuCode);
+    }
+  }
+
   Future<void> _addToCartCallback(item, price, options, optionTitle) async {
     //options 是一个字符串数组，把它转换成字符串逗号分隔
     final optionsString = options.map((e) => e.toString()).toList().join(',');
-    final menuCode = '${item['menuCode']}';
-
-    if (!_tryLockCartAdd(menuCode)) {
-      return;
-    }
 
     final cartItem = {
       "menuCode": item['menuCode'],
@@ -943,14 +975,9 @@ print("加1了");
     };
 
     Get.back();
-    try {
-      final ok = await publicAddCartMenu(cartItem, false);
-      final context = Get.context;
-      if (ok && context != null) {
-        publicShowAddCartNew(context);
-      }
-    } finally {
-      _unlockCartAdd(menuCode);
+    final context = Get.context;
+    if (context != null) {
+      await publicAddCartWithOptions(cartItem, context);
     }
   }
 
@@ -1054,34 +1081,55 @@ print("加1了");
   }
 
   //提交订单
-  doSubmitOrder({int times= 0}){
-    if(machineInfo.machineCode !=""){
-      _showOrderEasyLoading();
+  Future<void> doSubmitOrder({int times = 0}) async {
+    if (machineInfo.machineCode == "") {
+      FirebaseAnalytics.instance.logEvent(
+        name: "submit_order_error",
+        parameters: {"machineCode": machineInfo.machineCode},
+      );
+      return;
+    }
+    if (_submitInFlight) {
+      return;
+    }
+    if (showCartTotalGoodsNum.value <= 0) {
+      return;
+    }
 
-      //自定义声音
+    _submitInFlight = true;
+    canAddCart.value = false;
+
+    try {
+      _showOrderEasyLoading();
       playQRScannerSound();
 
-      var cartItems = ordersqlcontroller.getcartItems;
-      List selectedItem = [];
+      // 提交前刷新 DB，保证 orderLineList 与 total 一致
+      await ordersqlcontroller.getCardList();
 
+      final rawCartItems = ordersqlcontroller.getcartItems;
+      if (rawCartItems.isEmpty) {
+        await EasyLoading.dismiss();
+        return;
+      }
 
-      for(var oneItem in cartItems){
-        var optionMap = {};
+      final selectedItem = <Map<String, dynamic>>[];
+      for (var oneItem in rawCartItems) {
+        final Map<String, dynamic> optionMap;
         // 称重商品用 spicyGrams（克数）作为 qty；口味商品和普通商品用 goodsNum（=1）
         final grams = oneItem["spicyGrams"] ?? 0;
         final qty = grams > 0 ? grams : oneItem["goodsNum"];
-        if(oneItem["optionGroupVoList"] == ""){
+        if (oneItem["optionGroupVoList"] == "") {
           optionMap = {
             "menuCode": oneItem["menuCode"],
-            "qty": qty
+            "qty": qty,
           };
-        }else{
+        } else {
           var optionGroupVoList = oneItem["optionGroupVoList"];
           var itemsOption = optionGroupVoList.split(',');
           optionMap = {
             "menuCode": oneItem["menuCode"],
             "optionList": itemsOption,
-            "qty": qty
+            "qty": qty,
           };
         }
         selectedItem.add(optionMap);
@@ -1092,65 +1140,65 @@ print("加1了");
         "machineCode": machineInfo.machineCode,
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
-        //"takeout": (_dining_type == "2") ? true: false,
         "takeout": machineInfo.isTakeoutMode,
       };
       LogUtil.d("webBootOrderformData: $formData");
-      request('webBootOrder',
-          method: 'POST',
-          parameters: formData,
-          timeout: const Duration(seconds: 15)
-      ).then((val) {
 
-        EasyLoading.dismiss();
-        var response = json.decode(val.toString());
-        debugPrint("webBootOrder response: $response");
+      final val = await request(
+        'webBootOrder',
+        method: 'POST',
+        parameters: formData,
+        timeout: const Duration(seconds: 15),
+      );
 
-        if (response['code'] == 200 && response != null) {
-          //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
+      await EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      debugPrint("webBootOrder response: $response");
 
-          doSubmitOrderId.value = response['data']["orderId"];
-          int serverTotal = (response['data']["total"] as num?)?.toInt() ?? 0;
-          int tax1 = response['data']["tax1"] ?? 0;
-          int tax2 = response['data']["tax2"] ?? 0;
+      if (response['code'] == 200 && response != null) {
+        doSubmitOrderId.value = response['data']["orderId"];
+        int serverTotal = (response['data']["total"] as num?)?.toInt() ?? 0;
+        int tax1 = response['data']["tax1"] ?? 0;
+        int tax2 = response['data']["tax2"] ?? 0;
 
-          // 本地合计用 SUM(currentPrice) 已含称重商品实际价格，优先使用
-          int localTotal = int.tryParse(orderTotlaPrice.toString()) ?? serverTotal;
-          if (serverTotal > 0 && serverTotal != localTotal) {
-            // 按本地合计与服务器合计的比例修正税额
-            final ratio = localTotal / serverTotal;
-            tax1 = (tax1 * ratio).round();
-            tax2 = (tax2 * ratio).round();
-          }
-          final displayTotal = localTotal > 0 ? localTotal.toString() : serverTotal.toString();
-
-          showSelectMealTypeAndPaymentMethodDialog(displayTotal,
-              tax1: tax1, tax2: tax2);
-        } else {
-          //getBookingBootMenu();
-          FirebaseAnalytics.instance.logEvent(name: "submit_order_fail",parameters: {
-            "machineCode": machineInfo.machineCode,
-          });
-          if (response != null && response['data'] != null && response['data']["menuLackMap"] != null) {
-            menuLackMap.value = response['data']["menuLackMap"];
-          }
-          //showToast(response['data']["message"]);
-          Get.dialog(
-              DialogUtils.alertOneButton(response['data']["message"],
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
+        int localTotal =
+            int.tryParse(orderTotlaPrice.toString()) ?? serverTotal;
+        if (serverTotal > 0 && serverTotal != localTotal) {
+          final ratio = localTotal / serverTotal;
+          tax1 = (tax1 * ratio).round();
+          tax2 = (tax2 * ratio).round();
         }
-      }).catchError((e) {
-        _handleOrderResultAlert(times: times);
-      });
-    } else {
-      FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-        "machineCode": machineInfo.machineCode,
-      });
+        final displayTotal =
+            localTotal > 0 ? localTotal.toString() : serverTotal.toString();
+
+        showSelectMealTypeAndPaymentMethodDialog(displayTotal,
+            tax1: tax1, tax2: tax2);
+      } else {
+        FirebaseAnalytics.instance.logEvent(
+          name: "submit_order_fail",
+          parameters: {"machineCode": machineInfo.machineCode},
+        );
+        if (response != null &&
+            response['data'] != null &&
+            response['data']["menuLackMap"] != null) {
+          menuLackMap.value = response['data']["menuLackMap"];
+        }
+        Get.dialog(
+          DialogUtils.alertOneButton(
+            response['data']["message"],
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
+            confirm: () => Get.back(),
+          ),
+        );
+      }
+    } catch (e) {
+      _handleOrderResultAlert(times: times);
+    } finally {
+      _submitInFlight = false;
+      if (!paymentIsShow) {
+        canAddCart.value = true;
+      }
     }
   }
 
@@ -1212,11 +1260,9 @@ print("加1了");
 
           },
           onCancelClick: (String isBack) async {
-            // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
-            //   await CashChanger.endDeposit(DepositAction.repay.index);
-            // }
             debugPrint('onCancelClick');
             paymentIsShow = false;
+            canAddCart.value = true;
             if (isBack == "back") {
               CancelOrder();
             }
