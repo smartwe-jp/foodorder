@@ -52,7 +52,6 @@ class PrintService extends GetxService {
 
   PrintService(this._machineInfo);
 
-
   get printerList => _machineInfo.printerList;
   List<SseSubscriptionSetting> get sseList => _machineInfo.sseSettingList;
 
@@ -70,9 +69,6 @@ class PrintService extends GetxService {
       _processingUuids.remove(_processingUuids.first);
     }
   }
-
-  get printerList => _machineInfo.printerList;
-  get sseList => _machineInfo.sseSettingList;
 
   //Label打印先存在在一个队列中
 
@@ -254,7 +250,6 @@ class PrintService extends GetxService {
       orElse: () => null,
     );
     final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
-
 
     bool isCenterPrintOn = centerPrinter != null &&
         !centerPrinter["isOff"] &&
@@ -538,9 +533,9 @@ class PrintService extends GetxService {
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
   printTableSeatInfo(Map data) async {
-
     logI("---printTableSeatInfo---");
     final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
+    debugPrint("SmartWeSSE: $smartWeSSE");
 
     if (smartWeSSE == null || !smartWeSSE.printSeat) {
       debugPrint("SmartWe SSE printSeat is off");
