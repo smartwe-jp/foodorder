@@ -2367,7 +2367,7 @@ class SystemSettingPageView extends GetView {
                         ),
                       ]
                   ),
-
+                  const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: OutlinedButton.icon(
@@ -2376,6 +2376,7 @@ class SystemSettingPageView extends GetView {
                       label: Text('SSE購読を追加'),
                     ),
                   ),
+                  const SizedBox(height: 8),
                   ...controller.machineInfo.sseSettingList.map((sseItem) =>
                       editSSETable(sseItem)
                   ).toList(),

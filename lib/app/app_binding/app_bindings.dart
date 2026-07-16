@@ -19,7 +19,7 @@ class AppBindings extends Bindings {
     //Get.lazyPut(() => AppConfig());
     Get.lazyPut(() => OrderSqlController(), fenix: true);
     Get.lazyPut(() => SseService(), fenix: true);
-    Get.lazyPut(() => SseSubscriptionManager(Get.find<SseService>()), fenix: true);
+    Get.lazyPut(() => SseSubscriptionManager(), fenix: true);
     Get.lazyPut(() => PrinterCheckService(), fenix: true);
     Get.lazyPut(() => PosCheckService(), fenix: true);
     Get.lazyPut(() => PrintInfoService(), fenix: true);
