@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:foodorder/app/config/http_conf.dart';
 import 'package:foodorder/app/services/sse_service.dart';
+import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -397,28 +398,7 @@ class TransitPageController extends GetxController {
     }
   
 
-    MachineInfoController machineInfo = Get.find<MachineInfoController>();
-    Get.lazyPut(() => PrintService(machineInfo));
-
-     final sseService = Get.find<SseService>();
-  
-    final sseSettingList = machineInfo.sseSettingList;
-
-    for (final sseSetting in sseSettingList) {
-      if (sseSetting['name'] == 'SmartWe SSE') { //针对切换机器码重新设置存储值
-        sseSetting['identify'] = machineInfo.machineCode;
-      }
-      if (sseSetting['isOn'] == true) {
-        final url = servicePath[sseSetting['server']];// + sseSetting['identify'];
-        if (url != null && url.isNotEmpty) {
-          //final address = url + sseSetting['identify'];
-          final needInput = sseSetting['needInput'] ?? false;
-          final address = url + (needInput ? sseSetting['identify']:machineInfo.machineCode);
-          sseService.addSseListen(address);
-        }
-      }
-    }
-    HomeServices.setSSESettingList(sseSettingList);
+    await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
 
     if (systemSettingData["isAllowOneYen"] == "0") {
       try {
@@ -432,6 +412,7 @@ class TransitPageController extends GetxController {
         print('error: $e');
       }
     }
+    final machineInfo = Get.find<MachineInfoController>();
     final list = machineInfo.homeList;
     if (list.isNotEmpty) {
       heroImageUrl = list.first;

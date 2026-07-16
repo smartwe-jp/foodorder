@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
+import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
 
@@ -16,27 +17,17 @@ import '../../../widget/CostomIconButton.dart';
 
 extension SystemSettingPageExtension on SystemSettingPageView {
 
-  editSSETable(Map sseItem) {
+  editSSETable(SseSubscriptionSetting sseItem) {
 
-    final name = sseItem['name'] ?? "";
-    final address = sseItem['address'] ?? "";
-    final identify = sseItem['identify'] ?? "";
-    final isOn = sseItem['isOn'] ?? false;
-    final needInput = sseItem['needInput'] ?? false;
-    final needCenterPrint = sseItem['needCenterPrint'] ?? false;
-    final centerOn = sseItem['centerOn'] ?? false;
-    final printSeat = sseItem['printSeat'] ?? true;
+    final name = sseItem.name;
+    final needInput = sseItem.needsIdentifyInput;
+    final needCenterPrint = sseItem.needsCenterPrint;
+    final centerOn = sseItem.centerOn;
+    final printSeat = sseItem.printSeat;
     var statusColor = Colors.red;
-
-    for (var item in controller.sseService.subscriptions.entries) {
-      if (item.key.contains(identify) && identify.isNotEmpty) {
-        if (item.value == true) {
-          statusColor = Colors.green;
-        } else {
-          statusColor = Colors.orange;
-        }
-        break;
-      }
+    final connectionStatus = controller.sseManager.connectionStatus(sseItem);
+    if (connectionStatus != null) {
+      statusColor = connectionStatus ? Colors.green : Colors.orange;
     }
 
     return Table(
@@ -72,8 +63,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   ),
                 ),
                 _setSSECell(
-                    name,
-                    address, identify, isOn,
+                    sseItem,
                     needInput: needInput,
                     needCenterPrint: needCenterPrint,
                     centerOn: centerOn,
@@ -85,8 +75,10 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     );
   }
 
-  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true, bool needCenterPrint = false, 
+  _setSSECell(SseSubscriptionSetting setting, {bool needInput = true, bool needCenterPrint = false,
   bool centerOn = false, bool printSeat = true}) {
+    final identify = setting.identify;
+    final isOn = setting.isEnabled;
     return Container(
         margin: EdgeInsets.only(
             top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -104,7 +96,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   highlightColor: Colors.transparent, // 透明色
                   splashColor: Colors.transparent,
                   onTap: (){
-                    controller.editSSESetting(name, address, identify, isOn);
+                    controller.editSSESetting(setting);
                   },
                   child: Container(
                     //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -149,11 +141,18 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   FlutterSwitch(
                     value: isOn,
                     onToggle: (value) async {
-                      controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
+                      controller.updateSSESetting(setting.key,
+                          isOn: value,
+                          centerOn: value ? centerOn : false);
                     },
                   ),
                   SizedBox(width: ScreenAdapter.width(10)),
-                  
+                  if (needInput)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () =>
+                          controller.removeSSESetting(setting.key),
+                    ),
                 ],
               ),
 
@@ -175,13 +174,14 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   FlutterSwitch(
                     value: centerOn,
                     onToggle: (value) {
-                      controller.updateSSESetting(name, centerOn: value);
+                      controller.updateSSESetting(setting.key, centerOn: value);
                     },
                   ),
                 ],
               ),
 
-              if (isOn && name == "SmartWe SSE") 
+
+              if (isOn && setting.type == SseSubscriptionType.smartWe)
                 Row(
                 children: [
                   
@@ -197,7 +197,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   FlutterSwitch(
                     value: printSeat,
                     onToggle: (value) {
-                      controller.updateSSESetting(name, printSeat: value);
+                      controller.updateSSESetting(setting.key, printSeat: value);
                     },
                   ),
                 ],

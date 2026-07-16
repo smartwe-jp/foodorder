@@ -267,21 +267,13 @@ class HomeServices {
     await Storage.setData("machineModeInfo", data);
   }
 
-
-  static Future<List> getSSESettingList() async {
-    List? list = await Storage.getData("SSESetting");
-    if (list != null) {
-      return list;
-    } else {
-      return [];
-    }
+  static Future<List<dynamic>> getSSESettingList() async {
+    final data = await Storage.getData("SSESetting");
+    return data is List ? List<dynamic>.from(data) : <dynamic>[];
   }
 
-  static Future<bool> removeSSESetting() async {
-    return await Storage.remove("SSESetting");
-  }
+  static Future<void> setSSESettingList(List<Map<String, dynamic>> sseSettingList) async {
 
-  static Future<void> setSSESettingList(List sseSettingList) async {
     final data = json.encode(sseSettingList);
     await Storage.setData("SSESetting", data);
   }
@@ -547,3 +539,4 @@ class HomeServices {
     return passwordinfo;
   }
 }
+

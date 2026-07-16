@@ -9,8 +9,10 @@ import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
+import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:open_file/open_file.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -20,7 +22,6 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
-import '../../../config/http_conf.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
@@ -42,7 +43,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
   AppConfig appConfig = Get.find();
   PrintService printService = Get.find<PrintService>();
   SseService sseService = Get.find<SseService>();
-  MachineInfoController machineInfo = Get.find<MachineInfoController>();
+  SseSubscriptionManager sseManager = Get.find<SseSubscriptionManager>();
+  final machineInfo = Get.find<MachineInfoController>();
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
@@ -351,32 +353,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
     //save
     await HomeServices.setPrinterListInfo(machineInfo.printerList);
-    //获取SSE设置
-    //machineInfo.sseSettingList = await HomeServices.getSSESettingList();
-    if (machineInfo.sseSettingList.isEmpty) {
-      //如果没有SSE设置，则添加默认设置
-      machineInfo.sseSettingList.add({
-        'name': 'SmartWe SSE',
-        'server': 'sseSubscribeSmartWe',//servicePath[
-        'identify': machineInfo.machineCode,
-        'isOn': false,
-        'needCenterPrint': true,
-        'centerOn': false,
-        'needInput': false,
-        'printOption': true,
-      });
-      machineInfo.sseSettingList.add({
-        'name': 'Panda SSE',
-        'server': 'sseSubscribePanda',
-        'identify': '',
-        'isOn': false,
-        'needCenterPrint': false,
-        'centerOn': false,
-        'needInput': true,
-        'printOption': true,
-      });
-      await HomeServices.setSSESettingList(machineInfo.sseSettingList);
-    }
 
     //machineModeInfo = await HomeServices.getMachineModeInfo();
     if (machineInfo.machineModeInfo.isEmpty) {
@@ -389,77 +365,91 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
   }
 
-  editSSESetting(
-      String name, String address, String identify, bool isOn) async {
-    Get.dialog(SimpleInputAlert(
-        title: "$nameのIDを入力してください",
-        originValue: identify,
-        onConfirmClick: (value) async {
-          // if (value.isEmpty) {
-          //   showToast("IDを入力してください");
-          //   return;
-          // }
-          if (isOn) {
-            //先关闭现有连接
-            //先找到对应的SSE设置
-            Map sseItem = machineInfo.sseSettingList.firstWhere(
-                (item) => item['name'] == name,
-                orElse: () => {'name': name, 'isOn': false, 'identify': ''});
-            updateSSESetting(name, isOn: false, identify: sseItem['identify'] ?? '');
-            await Future.delayed(const Duration(milliseconds: 3000));
-            //再开启新的连接
-            updateSSESetting(name, isOn: value.isNotEmpty, identify: value);
-          } else {
-            //如果是关闭状态，则直接更新设置
-            updateSSESetting(name, identify: value);
-          }
-        }));
+  void showAddSseSubscriptionDialog() {
+    Get.dialog(
+      SimpleDialog(
+        title: const Text('SSEタイプを選択してください'),
+        children: SseSubscriptionType.values.map((type) {
+          return ListTile(
+            title: Text(type.displayName),
+            subtitle: Text(type == SseSubscriptionType.smartWe
+                ? '現在の端末番号を使用します'
+                : 'identifyの入力が必要です'),
+            onTap: () {
+              Get.back();
+              if (type == SseSubscriptionType.smartWe) {
+                addSSESubscription(type);
+              } else {
+                _showPandaIdentifyInput();
+              }
+            },
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  updateSSESetting(String name,
-      {bool? isOn, String? identify, bool? centerOn, bool? printOption, bool? printSeat}) async {
-    if (machineInfo.sseSettingList.isNotEmpty) {
-      for (var i = 0; i < machineInfo.sseSettingList.length; i++) {
-        if (machineInfo.sseSettingList[i]['name'] == name) {
-          if (isOn != null) {
-            machineInfo.sseSettingList[i]['isOn'] = isOn;
-          }
-          if (identify != null) {
-            machineInfo.sseSettingList[i]['identify'] = identify;
-          }
+  void _showPandaIdentifyInput() {
+    Get.dialog(
+      SimpleInputAlert(
+        title: 'Panda SSEのIDを入力してください',
+        onConfirmClick: (value) async {
+          await addSSESubscription(
+            SseSubscriptionType.panda,
+            identify: value,
+          );
+        },
+      ),
+    );
+  }
 
-          if (centerOn != null) {
-            machineInfo.sseSettingList[i]['centerOn'] = centerOn;
-          }
 
-          if (printOption != null) {
-            machineInfo.sseSettingList[i]['printOption'] = printOption;
-          }
-
-          if (printSeat != null) {
-            machineInfo.sseSettingList[i]['printSeat'] = printSeat;
-          }
-          final needInput = machineInfo.sseSettingList[i]['needInput'] ?? false;
-          if ((identify != null && identify.isNotEmpty) || !needInput) {
-            //debugPrint("updateSSESetting: $name, $identify");
-            final domain = servicePath[machineInfo.sseSettingList[i]['server']];
-            if (isOn != null && domain != null) {
-              debugPrint("SSE domain: $domain"
-                  " identify: $identify isOn: $isOn");
-              //如果开启了SSE连接，则添加监听
-              
-              final sseAddress = domain + (needInput ? (identify ?? ''):machineInfo.machineCode);
-              isOn
-                  ? sseService.addSseListen(sseAddress)
-                  : sseService.disconnect(sseAddress);
-            }
-          }
-        }
-      }
-      HomeServices.setSSESettingList(machineInfo.sseSettingList);
-      //machineInfo.sseSettingList = machineInfo.sseSettingList;
+  Future<void> addSSESubscription(
+    SseSubscriptionType type, {
+    String identify = '',
+  }) async {
+    final added = await sseManager.add(type, identify: identify);
+    if (!added) {
+      showToast(identify.trim().isEmpty && type == SseSubscriptionType.panda
+          ? 'IDを入力してください'
+          : '同じSSE購読が既に登録されています');
     }
+    update();
+  }
 
+  void editSSESetting(SseSubscriptionSetting setting) {
+    Get.dialog(
+      SimpleInputAlert(
+        title: '${setting.name}のIDを入力してください',
+        originValue: setting.identify,
+        onConfirmClick: (value) async {
+          final updated = await sseManager.update(setting.key, identify: value);
+          if (!updated) showToast('IDが空か、既に登録されています');
+          update();
+        },
+      ),
+    );
+  }
+
+  Future<void> updateSSESetting(
+    String key, {
+    bool? isOn,
+    bool? centerOn,
+    bool? printOption,
+    bool? printSeat,
+  }) async {
+    await sseManager.update(
+      key,
+      isEnabled: isOn,
+      centerOn: centerOn,
+      printOption: printOption,
+      printSeat: printSeat,
+    );
+    update();
+  }
+
+  Future<void> removeSSESetting(String key) async {
+    await sseManager.remove(key);
     update();
   }
 

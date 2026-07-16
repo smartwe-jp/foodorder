@@ -2307,6 +2307,14 @@ class SystemSettingPageView extends GetView {
                       ]
                   ),
 
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: OutlinedButton.icon(
+                      onPressed: controller.showAddSseSubscriptionDialog,
+                      icon: Icon(Icons.add),
+                      label: Text('SSE購読を追加'),
+                    ),
+                  ),
                   ...controller.machineInfo.sseSettingList.map((sseItem) =>
                     editSSETable(sseItem)
                   ).toList(),

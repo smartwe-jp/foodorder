@@ -2,6 +2,7 @@
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
+import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
@@ -18,6 +19,7 @@ class AppBindings extends Bindings {
     Get.lazyPut(() => AppConfig());
     Get.lazyPut(() => OrderSqlController(), fenix: true);
     Get.lazyPut(() => SseService(), fenix: true);
+    Get.lazyPut(() => SseSubscriptionManager(Get.find<SseService>()), fenix: true);
     Get.lazyPut(() => PrinterCheckService(), fenix: true);
     Get.lazyPut(() => PosCheckService(), fenix: true);
     Get.lazyPut(() => PrintInfoService(), fenix: true);

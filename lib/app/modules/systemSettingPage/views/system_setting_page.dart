@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
@@ -141,7 +142,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               //SSE设置
               const SizedBox(height: 16),
               _areaTitle('注文連携設定'),
-              _sseSettingArea(List<Map>.from(logic.machineInfo.sseSettingList)),
+              _sseSettingArea(logic.machineInfo.sseSettingList),
 
 
               const SizedBox(height: 44),
@@ -1493,7 +1494,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
   //订单关联设置 为设置SSE消息接收，和打印机设置类似。
 
-  Widget _sseSettingArea(List<Map> sseSettingList) {
+  Widget _sseSettingArea(List<SseSubscriptionSetting> sseSettingList) {
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.all(8),
@@ -1503,7 +1504,17 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _settingTitle('SSE設定'),
+            Row(
+              children: [
+                _settingTitle('SSE設定'),
+                const Spacer(),
+                OutlinedButton.icon(
+                  onPressed: controller.showAddSseSubscriptionDialog,
+                  icon: const Icon(Icons.add),
+                  label: const Text('購読を追加'),
+                ),
+              ],
+            ),
             const Divider(),
             GridView.builder(
               shrinkWrap: true,
@@ -1526,27 +1537,19 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     );
   }
 
-  Widget _sseCard(Map sseItem) {
-    final name = sseItem['name'] ?? '';
-    final identify = sseItem['identify'] ?? '';
-    final isOn = sseItem['isOn'] ?? false;
-    final needInput = sseItem['needInput'] ?? false;
-    final needCenterPrint = sseItem['needCenterPrint'] ?? false;
-    final centerOn = sseItem['centerOn'] ?? false;
-    final printOption = sseItem['printOption'] ?? true;
-    final address = sseItem['address'] ?? "";
+  Widget _sseCard(SseSubscriptionSetting sseItem) {
+    final name = sseItem.name;
+    final identify = sseItem.identify;
+    final isOn = sseItem.isEnabled;
+    final needInput = sseItem.needsIdentifyInput;
+    final needCenterPrint = sseItem.needsCenterPrint;
+    final centerOn = sseItem.centerOn;
+    final printOption = sseItem.printOption;
     var statusColor = Colors.red;
-    final printSeat = sseItem['printSeat'] ?? true;
-
-    for (var item in controller.sseService.subscriptions.entries) {
-      if (item.key.contains(identify) && identify.isNotEmpty) {
-        if (item.value == true) {
-          statusColor = Colors.green;
-        } else {
-          statusColor = Colors.orange;
-        }
-        break;
-      }
+    final printSeat = sseItem.printSeat;
+    final connectionStatus = controller.sseManager.connectionStatus(sseItem);
+    if (connectionStatus != null) {
+      statusColor = connectionStatus ? Colors.green : Colors.orange;
     }
 
     return Container(
@@ -1593,7 +1596,9 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         //   identify: identify,
                         //   centerOn: value ? centerOn : false,
                         // );
-                        controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
+                        controller.updateSSESetting(sseItem.key,
+                            isOn: value,
+                            centerOn: value ? centerOn : false);
                       },
                       activeColor: Colors.blue,
                     ),
@@ -1608,8 +1613,14 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.blue),
                   onPressed: () {
-                    controller.editSSESetting(name, address, identify, isOn);
+                    controller.editSSESetting(sseItem);
                   },
+                ),
+
+              if (needInput)
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => controller.removeSSESetting(sseItem.key),
                 ),
 
             ],
@@ -1621,7 +1632,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _settingContent('番号：'),
-              _settingContent(identify ?? '', color: Colors.blue),
+              _settingContent(identify, color: Colors.blue),
             ],
           ),
 
@@ -1635,7 +1646,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 Switch(
                   value: centerOn,
                   onChanged: (value) {
-                    controller.updateSSESetting(name, centerOn: value);
+                    controller.updateSSESetting(sseItem.key, centerOn: value);
                   },
                   activeColor: Colors.blue,
                 ),
@@ -1652,13 +1663,13 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 Switch(
                   value: printOption,
                   onChanged: (value) {
-                    controller.updateSSESetting(name, printOption: value);
+                    controller.updateSSESetting(sseItem.key, printOption: value);
                   },
                   activeColor: Colors.blue,
                 ),
               ],
             ),
-          if (isOn && name == "SmartWe SSE")
+          if (isOn && sseItem.type == SseSubscriptionType.smartWe)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1667,7 +1678,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 Switch(
                   value: printSeat,
                   onChanged: (value) {
-                    controller.updateSSESetting(name, printSeat: value);
+                    controller.updateSSESetting(sseItem.key, printSeat: value);
                   },
                   activeColor: Colors.blue,
                 ),
