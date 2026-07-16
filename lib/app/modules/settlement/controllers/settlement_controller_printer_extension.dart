@@ -53,7 +53,14 @@ class PrintService extends GetxService {
   PrintService(this._machineInfo);
 
   get printerList => _machineInfo.printerList;
-  get sseList => _machineInfo.sseSettingList;
+  List<SseSubscriptionSetting> get sseList => _machineInfo.sseSettingList;
+
+  SseSubscriptionSetting? _findSseSetting(SseSubscriptionType type) {
+    for (final setting in sseList) {
+      if (setting.type == type) return setting;
+    }
+    return null;
+  }
 
   void _addProcessingUuid(String uuid) {
     _processingUuids.add(uuid);
@@ -63,366 +70,7 @@ class PrintService extends GetxService {
   }
 
   //Label打印先存在在一个队列中
-  //final Queue<Widget> labelPrintQueue = Queue<Widget>();
-
-  final printTestData =
-  {
-    "uuid": null,
-    "bizId": 464362784279691264,
-    "orderTime": "02-18 17:30",
-    "remark": "",
-    "from_plate": "Shop",
-    "order_sn_code": "0222",
-    "payment_code": "",
-    "order_type": "Shop_In",
-    "pay_type": "Paid",
-    "orderLinesMap": {
-      "10": [
-        {
-          "categoryName": "ヨーグルト",
-          "name": "マンゴーとパッションフルーツのヨーグルト芒果百香酸奶",
-          "initialPrice": 750,
-          "price": 1020,
-          "qty": 1,
-          "bizId": 464362784279691265,
-          "options": {
-            "甘（糖度）": [
-              {
-                "name": "甘さなし",
-                "price": 0,
-                "qty": 1,
-                "totalPrice": 0
-              }
-            ],
-            "氷(冰量)": [
-              {
-                "name": "普通",
-                "price": 0,
-                "qty": 1,
-                "totalPrice": 0
-              }
-            ],
-            "トッピング": [
-              {
-                "name": "绿茶ゼリー绿茶冻",
-                "price": 120,
-                "qty": 1,
-                "totalPrice": 120
-              },
-              {
-                "name": "芋団子",
-                "price": 150,
-                "qty": 1,
-                "totalPrice": 150
-              }
-            ]
-          },
-          "extend1qr": "P0028|520cc,S005,T001",
-          "extend2qr": null
-        }
-      ]
-    },
-    "orderLines": [
-      {
-        "categoryName": "ヨーグルト",
-        "name": "マンゴーとパッションフルーツのヨーグルト芒果百香酸奶",
-        "initialPrice": 750,
-        "price": 1020,
-        "qty": 1,
-        "bizId": 464362784279691265,
-        "options": {
-          "甘（糖度）": [
-            {
-              "name": "甘さなし",
-              "price": 0,
-              "qty": 1,
-              "totalPrice": 0
-            }
-          ],
-          "氷(冰量)": [
-            {
-              "name": "普通",
-              "price": 0,
-              "qty": 1,
-              "totalPrice": 0
-            }
-          ],
-          "トッピング": [
-            {
-              "name": "绿茶ゼリー绿茶冻",
-              "price": 120,
-              "qty": 1,
-              "totalPrice": 120
-            },
-            {
-              "name": "芋団子",
-              "price": 150,
-              "qty": 1,
-              "totalPrice": 150
-            }
-          ]
-        },
-        "extend1qr": "P0028|520cc,S005,T001",
-        "extend2qr": null
-      }
-    ]
-  };
-
-
-  final testData = [
-    {
-      "uuid": "YK-0HObr4iVk_NaDfVw9WoEH",
-      "bizId": 462461846396796928,
-      "orderTime": "19:12",
-      "remark": "",
-      "from_plate": "Shop",
-      "order_sn_code": "A17",
-      "payment_code": "",
-      "order_type": "Shop_In",
-      "pay_type": "Paid",
-      "orderLinesMap": {
-        "12": [
-          {
-            "categoryName": "ドリンク",
-            "name": "ジンジャーエール",
-            "price": 600,
-            "qty": 1,
-            "bizId": 462461855189106697,
-            "options": {},
-            "extend2qr": null
-          }
-        ],
-        "10": [
-          {
-            "categoryName": "メインディッシュ",
-            "name": "お刺身5種盛り",
-            "price": 3000,
-            "qty": 1,
-            "bizId": 462461855189106688,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "ポテサラ",
-            "price": 1400,
-            "qty": 1,
-            "bizId": 462461855189106689,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "ローストビーフサラダ",
-            "price": 2800,
-            "qty": 1,
-            "bizId": 462461855189106690,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "おでん",
-            "price": 1500,
-            "qty": 1,
-            "bizId": 462461855189106691,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "おすすめ",
-            "name": "和牛煮込み",
-            "price": 1200,
-            "qty": 1,
-            "bizId": 462461855189106692,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "すき焼き",
-            "price": 8000,
-            "qty": 2,
-            "bizId": 462461855189106693,
-            "options": {
-              "トッピング": [
-                {"name": "うどん", "price": null, "qty": 1}
-              ]
-            },
-            "extend2qr": null
-          },
-          {
-            "categoryName": "小食",
-            "name": "追い 卵",
-            "price": 600,
-            "qty": 3,
-            "bizId": 462461855189106695,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "おすすめ",
-            "name": "和牛フレーク丼",
-            "price": 2500,
-            "qty": 1,
-            "bizId": 462461855189106696,
-            "options": {},
-            "extend2qr": null
-          }
-        ]
-      },
-      "orderLines": null
-    },
-    {
-      "uuid": "eg36fyjt5igDZVTl7yNzEs7j",
-      "bizId": 462461756707897344,
-      "orderTime": "19:56",
-      "remark": "",
-      "from_plate": "Shop",
-      "order_sn_code": "A9",
-      "payment_code": "",
-      "order_type": "Shop_In",
-      "pay_type": "Paid",
-      "orderLinesMap": {
-        "10": [
-          {
-            "categoryName": "アイス",
-            "name": "アイス",
-            "price": 1000,
-            "qty": 1,
-            "bizId": 462462547208372224,
-            "options": {
-              "味": [
-                {"name": "ココナツ", "price": null, "qty": 1}
-              ]
-            },
-            "extend2qr": null
-          }
-        ]
-      },
-      "orderLines": null
-    },
-    {
-      "uuid": "XsBjuzH1zlwqCPWDInYd3iDr",
-      "bizId": 462461756707897344,
-      "orderTime": "19:58",
-      "remark": "",
-      "from_plate": "Shop",
-      "order_sn_code": "A9",
-      "payment_code": "",
-      "order_type": "Shop_In",
-      "pay_type": "Paid",
-      "orderLinesMap": {
-        "10": [
-          {
-            "categoryName": "メインディッシュ",
-            "name": "和牛煮込み",
-            "price": 1200,
-            "qty": 1,
-            "bizId": 462462566741508096,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "ホッケ",
-            "price": 2500,
-            "qty": 1,
-            "bizId": 462462566741508097,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "焼鳥-かわ",
-            "price": 750,
-            "qty": 3,
-            "bizId": 462462566741508098,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "メインディッシュ",
-            "name": "カツレツ",
-            "price": 2400,
-            "qty": 1,
-            "bizId": 462462566741508099,
-            "options": {},
-            "extend2qr": null
-          }
-        ]
-      },
-      "orderLines": null
-    },
-    {
-      "uuid": "mLhBiJaR0KPV0FaElX-fed42",
-      "bizId": 462460811105992704,
-      "orderTime": "20:03",
-      "remark": "",
-      "from_plate": "Shop",
-      "order_sn_code": "A15",
-      "payment_code": "",
-      "order_type": "Shop_In",
-      "pay_type": "Paid",
-      "orderLinesMap": {
-        "12": [
-          {
-            "categoryName": "ドリンク",
-            "name": "ウーロン茶",
-            "price": 600,
-            "qty": 1,
-            "bizId": 462462655712133120,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "ドリンク",
-            "name": "ジンジャーエール",
-            "price": 600,
-            "qty": 1,
-            "bizId": 462462655712133121,
-            "options": {},
-            "extend2qr": null
-          },
-          {
-            "categoryName": "ドリンク",
-            "name": "コーラ",
-            "price": 600,
-            "qty": 1,
-            "bizId": 462462655712133122,
-            "options": {},
-            "extend2qr": null
-          }
-        ]
-      },
-      "orderLines": null
-    },
-    {
-      "uuid": "QRNRA_Q5ZQX_vASszPuqGjV-",
-      "bizId": 462461756707897344,
-      "orderTime": "20:14",
-      "remark": "",
-      "from_plate": "Shop",
-      "order_sn_code": "A9",
-      "payment_code": "",
-      "order_type": "Shop_In",
-      "pay_type": "Paid",
-      "orderLinesMap": {
-        "10": [
-          {
-            "categoryName": "メインディッシュ",
-            "name": "和牛煮込み",
-            "price": 1200,
-            "qty": 1,
-            "bizId": 462462819377020928,
-            "options": {},
-            "extend2qr": null
-          }
-        ]
-      },
-      "orderLines": null
-    }
-  ];
+  //final Queue<Widget> labelPrintQueue = Queue<Widget>()
 
   // 全局队列 + 是否正在排队
   //定义个类型 包含Widget 和 [Map]
@@ -555,19 +203,6 @@ class PrintService extends GetxService {
     }
   }
 
-  Future<void> testPrint() async {
-    int index = 0;
-    for (var data in testData) {
-      //间隔2秒打印
-      index += 1;
-      printData(data);
-      await Future.delayed(Duration(seconds: 15));
-      if (index > 1) {
-        break;
-      }
-    }
-  }
-
   _orderTypeFromString(String orderTypeStr) {
     switch (orderTypeStr.toLowerCase()) {
       case 'Shop_In':
@@ -614,10 +249,7 @@ class PrintService extends GetxService {
       (p) => p["type"] == 11,
       orElse: () => null,
     );
-    final smartWeSSE = sseList.firstWhere(
-      (sse) => sse.type == SseSubscriptionType.smartWe,
-      orElse: () => null,
-    );
+    final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
 
     bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
     bool smartWeCenterOn = smartWeSSE != null && smartWeSSE.centerOn && isCenterPrintOn;
@@ -955,10 +587,7 @@ class PrintService extends GetxService {
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
   printTableSeatInfo(Map data) async {
     logI("---printTableSeatInfo---");
-    final smartWeSSE = sseList.firstWhere(
-      (sse) => sse.type == SseSubscriptionType.smartWe,
-      orElse: () => null,
-    );
+    final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
     
 
     if (smartWeSSE == null || !smartWeSSE.printSeat) {
