@@ -448,9 +448,30 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  Future<void> removeSSESetting(String key) async {
-    await sseManager.remove(key);
-    update();
+  void removeSSESetting(String key) {
+    SseSubscriptionSetting? setting;
+    for (final item in sseManager.settings) {
+      if (item.key == key) {
+        setting = item;
+        break;
+      }
+    }
+    if (setting == null) return;
+
+    Get.dialog(
+      DialogUtils.alert(
+        'このSSE購読設定を削除しますか？\n${setting.name}  ID：${setting.identify}',
+        title: '削除確認',
+        canceltitle: 'キャンセル',
+        confirmtitle: '削除',
+        cancle: () => Get.back(),
+        confirm: () async {
+          Get.back();
+          await sseManager.remove(key);
+          update();
+        },
+      ),
+    );
   }
 
   addCustomPrinter() async {
