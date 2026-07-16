@@ -419,10 +419,24 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       return;
     }
 
-    final itemData = normalWeighResult['itemData'] as Map;
-    final weight = normalWeighResult['weight'] as double;
-    final price = normalWeighResult['price'] as int;
-    final unitPricePer100g = normalWeighResult['unitPricePer100g'] as int;
+    final itemData = normalWeighResult['itemData'];
+    if (itemData is! Map) {
+      showToast('称重数据异常，请重新称重');
+      return;
+    }
+    final weight = (normalWeighResult['weight'] is num)
+        ? (normalWeighResult['weight'] as num).toDouble()
+        : double.tryParse('${normalWeighResult['weight']}') ?? 0;
+    final price = (normalWeighResult['price'] is num)
+        ? (normalWeighResult['price'] as num).toInt()
+        : int.tryParse('${normalWeighResult['price']}') ?? 0;
+    final unitPricePer100g = (normalWeighResult['unitPricePer100g'] is num)
+        ? (normalWeighResult['unitPricePer100g'] as num).toInt()
+        : int.tryParse('${normalWeighResult['unitPricePer100g']}') ?? 0;
+    if (weight <= 0 || price <= 0) {
+      showToast('重量无效，请重新称重');
+      return;
+    }
 
     // --- 1. 口味商品单独入购物车 ---
     final selectedItem = selectedOptionMenuItem;

@@ -120,7 +120,7 @@ class SpicyHotPotCategoryPage extends StatelessWidget {
         childAspectRatio: 0.40,
       ),
       itemBuilder: (context, index) {
-        final item = items[index] as Map;print("zouzhelileme");
+        final item = items[index] as Map;
         return _buildMenuItem(item, ctrl);
       },
       itemCount: items.length,

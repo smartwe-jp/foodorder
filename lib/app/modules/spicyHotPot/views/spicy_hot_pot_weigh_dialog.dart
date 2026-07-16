@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/font.dart';
-import '../../../modules/systemSettingPage/views/CustomKeyboard.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/scale_serial_service.dart';
 import '../../../widget/KioskTap.dart';
 
 const _kBg = Color(0xFFF5EFDE);
@@ -12,6 +13,7 @@ const _kGrey = Color(0xFF888888);
 const _kBorder = Color(0xFFE0D5C5);
 
 /// 麻辣烫称重输入弹窗（参考效果图：暖奶油背景 + 超大克重显示）
+/// 重量实时填入；未稳定不可确认。建议秤 232-1 连续发送以便跟屏跳动。
 class SpicyWeighDialog extends StatefulWidget {
   final Map itemData;
   final int unitPricePer100g;
@@ -29,29 +31,62 @@ class SpicyWeighDialog extends StatefulWidget {
 }
 
 class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
-  String _input = '';
+  String _input = '0';
+  bool _stable = false;
+  Worker? _scaleWorker;
+
+  ScaleSerialService get _scale {
+    if (!Get.isRegistered<ScaleSerialService>()) {
+      Get.put(ScaleSerialService(), permanent: true);
+    }
+    return Get.find<ScaleSerialService>();
+  }
 
   double get _weight => double.tryParse(_input) ?? 0;
   int get _price =>
       _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).ceil() : 0;
-  bool get _hasInput => _input.isNotEmpty && _weight > 0;
+  bool get _hasWeight => _weight > 0;
+  bool get _canConfirm => _hasWeight && _stable;
 
-  void _onKey(String key) {
-    setState(() {
-      if (key == '削除') {
-        if (_input.isNotEmpty) _input = _input.substring(0, _input.length - 1);
-        return;
+  @override
+  void initState() {
+    super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    FocusManager.instance.primaryFocus?.unfocus();
+    _startScaleListen();
+  }
+
+  Future<void> _startScaleListen() async {
+    _scale.clearReading();
+    try {
+      if (!_scale.connectedRx.value) {
+        await _scale.connect(persist: false);
       }
-      if (key == '.') {
-        if (!_input.contains('.') && _input.isNotEmpty) _input += '.';
-        return;
-      }
-      _input = (_input == '0') ? key : _input + key;
+    } catch (e) {
+      debugPrint('称重弹窗连接电子秤失败: $e');
+    }
+    _scaleWorker = ever<ScaleReading?>(_scale.weightRx, (reading) {
+      if (!mounted || reading == null) return;
+      setState(() {
+        _stable = reading.isStable;
+        final g = reading.grams;
+        _input = g == g.roundToDouble()
+            ? g.toStringAsFixed(0)
+            : g.toStringAsFixed(1);
+      });
     });
   }
 
+  @override
+  void dispose() {
+    _scale.clearReading();
+    _scaleWorker?.dispose();
+    _scaleWorker = null;
+    super.dispose();
+  }
+
   void _confirm() {
-    if (!_hasInput) return;
+    if (!_canConfirm) return;
     Get.back();
     widget.onConfirm(_weight, _price);
   }
@@ -83,13 +118,47 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
           children: [
             _buildTopArea(title),
             _buildWeightBlock(displayWeight),
-            _buildKeyboard(),
+            _buildScaleStatus(),
             _buildUnitPriceHint(),
             _buildButtons(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildScaleStatus() {
+    return Obx(() {
+      final linked = _scale.connectedRx.value;
+      final showStable = _canConfirm;
+      final settling = _hasWeight && !_stable;
+      String tip;
+      if (!linked) {
+        tip = '电子秤未连接';
+      } else if (showStable) {
+        tip = '重量已稳定';
+      } else if (settling) {
+        tip = '重量跳动中，请等待稳定…';
+      } else {
+        tip = '请将菜品放上称重台';
+      }
+      return Padding(
+        padding: EdgeInsets.only(bottom: ScreenAdapter.height(8)),
+        child: Text(
+          tip,
+          style: TextStyle(
+            color: showStable
+                ? const Color(0xFF4CAF50)
+                : settling
+                    ? const Color(0xFFFF9800)
+                    : _kGrey,
+            fontSize: ScreenAdapter.fontSize(22),
+            fontFamily: GFont.getFontFamily(),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    });
   }
 
   // 顶部：步骤指示器 + 标题 + 菜名
@@ -191,7 +260,7 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
                 Text(
                   displayWeight,
                   style: TextStyle(
-                    color: _hasInput ? _kText : _kGrey,
+                    color: _hasWeight ? _kText : _kGrey,
                     fontSize: ScreenAdapter.fontSize(88),
                     fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w800,
@@ -218,9 +287,9 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                _hasInput ? '¥ $_price' : '¥ ---',
+                _hasWeight ? '¥ $_price' : '¥ ---',
                 style: TextStyle(
-                  color: _hasInput ? _kRed : _kGrey,
+                  color: _hasWeight ? _kRed : _kGrey,
                   fontSize: ScreenAdapter.fontSize(44),
                   fontFamily: GFont.getFontFamily(),
                   fontWeight: FontWeight.w800,
@@ -238,13 +307,6 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildKeyboard() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: ScreenAdapter.width(20)),
-      child: CustomKeyboard(onKeyPressed: _onKey),
     );
   }
 
@@ -330,19 +392,19 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
           // 確認 → 選口味
           Expanded(
             child: KioskTap(
-              onTap: _hasInput ? _confirm : null,
+              onTap: _canConfirm ? _confirm : null,
               child: Container(
                 height: ScreenAdapter.height(92),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: _hasInput ? _kRed : const Color(0xFFBDBDBD),
+                  color: _canConfirm ? _kRed : const Color(0xFFBDBDBD),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '重量確認，選口味',
+                      _hasWeight && !_stable ? '安定待ち…' : '重量確認，選口味',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: ScreenAdapter.fontSize(28),

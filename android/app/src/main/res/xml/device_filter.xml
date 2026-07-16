@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FTDI FT232R -->
+    <usb-device vendor-id="1027" product-id="24577" />
+    <!-- FTDI FT231X -->
+    <usb-device vendor-id="1027" product-id="24597" />
+    <!-- Silicon Labs CP210x -->
+    <usb-device vendor-id="4292" product-id="60000" />
+    <!-- Prolific PL2303 -->
+    <usb-device vendor-id="1659" product-id="8963" />
+    <!-- QinHeng CH340 / CH341 (常见 USB 转串口) -->
+    <usb-device vendor-id="6790" product-id="29987" />
+    <!-- CH340 另一常见 PID -->
+    <usb-device vendor-id="6790" product-id="21795" />
+    <!-- CDC ACM 类设备：不限定 PID，由运行时列举 -->
+</resources>

@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
+import 'package:foodorder/app/services/scale_serial_service.dart';
 
 import 'package:get/get.dart';
 
@@ -10,6 +11,7 @@ import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../services/PosCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/showToast.dart';
 import '../controllers/system_setting_page_controller.dart';
 import 'SetPassword.dart';
 import 'SetPosIp.dart';
@@ -543,6 +545,217 @@ class SystemSettingPageView extends GetView {
               )),
         ],
       ),
+    );
+  }
+
+  /// 电子秤串口选择（Android USB Host / Windows COM）
+  Widget setScaleSerialPort() {
+    if (!Get.isRegistered<ScaleSerialService>()) {
+      Get.put(ScaleSerialService(), permanent: true);
+    }
+    final scale = Get.find<ScaleSerialService>();
+    // 异步刷新设备列表 + 已保存口
+    scale.loadSavedPortName().then((name) {
+      if (name != null && name.isNotEmpty) {
+        scale.portNameRx.value = name;
+      }
+    });
+    scale.refreshPorts();
+
+    return Container(
+      margin: EdgeInsets.only(
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(
+        left: ScreenAdapter.width(20),
+        top: ScreenAdapter.height(3),
+        bottom: ScreenAdapter.height(3),
+        right: ScreenAdapter.width(12),
+      ),
+      child: Obx(() {
+        final ports = scale.portsRx.toList();
+        final current = scale.portNameRx.value;
+        final linked = scale.connectedRx.value;
+        final err = scale.lastErrorRx.value;
+        final connecting = scale.connectingRx.value;
+        final raw = scale.lastRawRx.value;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              connecting
+                  ? '接続中...'
+                  : linked
+                      ? '接続中: ${scale.portLabel(current)}'
+                      : '未接続${current.isNotEmpty ? "（保存済）" : ""}',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(20),
+                color: linked
+                    ? ColorsUtil.hexToColor("#409eff")
+                    : ColorsUtil.hexToColor("#666666"),
+              ),
+            ),
+            if (err.isNotEmpty)
+              Text(
+                err,
+                style: TextStyle(
+                  fontFamily: 'NotoSansJP',
+                  fontSize: ScreenAdapter.fontSize(16),
+                  color: ColorsUtil.hexToColor("#d90000"),
+                ),
+              ),
+            if (raw.isNotEmpty)
+              Text(
+                '受信: $raw',
+                style: TextStyle(
+                  fontFamily: 'NotoSansJP',
+                  fontSize: ScreenAdapter.fontSize(16),
+                  color: ColorsUtil.hexToColor("#44C2B8"),
+                ),
+              ),
+            Text(
+              '※ AndroidはUSB機器一覧から選択。秤に載せ「受信」が出れば正解。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+            SizedBox(height: ScreenAdapter.height(8)),
+            Wrap(
+              spacing: ScreenAdapter.width(10),
+              runSpacing: ScreenAdapter.height(8),
+              children: [
+                ...ports.map((p) {
+                  final label = scale.portLabel(p);
+                  final selected = current == p && linked;
+                  final saved = current == p;
+                  return InkWell(
+                    onTap: () async {
+                      if (scale.connectingRx.value) {
+                        showToast('接続処理中です');
+                        return;
+                      }
+                      bool ok = false;
+                      try {
+                        ok = await scale.connect(portName: p, persist: true);
+                      } catch (e) {
+                        ok = false;
+                        scale.lastErrorRx.value = e.toString();
+                      }
+                      showToast(ok
+                          ? '接続成功。秤に載せ「受信」を確認してください'
+                          : '接続失敗: ${scale.lastErrorRx.value}');
+                    },
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: ScreenAdapter.width(420),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ScreenAdapter.width(16),
+                        vertical: ScreenAdapter.height(10),
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? ColorsUtil.hexToColor("#409eff")
+                            : saved
+                                ? ColorsUtil.hexToColor("#a0cfff")
+                                : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(16),
+                          color: selected
+                              ? Colors.white
+                              : ColorsUtil.hexToColor("#000000"),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+                InkWell(
+                  onTap: () async {
+                    await scale.refreshPorts();
+                    showToast(scale.portsRx.isEmpty
+                        ? 'USB機器なし。ケーブルと権限を確認'
+                        : '再検索しました（${scale.portsRx.length}件）');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ScreenAdapter.width(16),
+                      vertical: ScreenAdapter.height(10),
+                    ),
+                    decoration: BoxDecoration(
+                      color: ColorsUtil.hexToColor("#909399"),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '再検索',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(18),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    if (scale.connectingRx.value) {
+                      showToast('接続処理中です');
+                      return;
+                    }
+                    bool ok = false;
+                    try {
+                      ok = await scale.connect();
+                    } catch (e) {
+                      ok = false;
+                      scale.lastErrorRx.value = e.toString();
+                    }
+                    showToast(ok
+                        ? '再接続成功'
+                        : '再接続失敗: ${scale.lastErrorRx.value}');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ScreenAdapter.width(16),
+                      vertical: ScreenAdapter.height(10),
+                    ),
+                    decoration: BoxDecoration(
+                      color: ColorsUtil.hexToColor("#44C2B8"),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '再接続',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(18),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (ports.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: ScreenAdapter.height(6)),
+                child: Text(
+                  'USBシリアル機器が見つかりません。電子秤を挿し、権限ダイアログで許可してください。',
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: ScreenAdapter.fontSize(16),
+                    color: ColorsUtil.hexToColor("#d90000"),
+                  ),
+                ),
+              ),
+          ],
+        );
+      }),
     );
   }
 
@@ -1936,6 +2149,24 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                           setSpicyHotPotOrderType(),
+                                        ]
+                                    ),
+                                  // 店铺开通麻辣烫即可配置电子秤（不必先勾选モード里的麻辣烫）
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "電子秤",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setScaleSerialPort(),
                                         ]
                                     ),
                                   if(controller.lineup.value == true)
