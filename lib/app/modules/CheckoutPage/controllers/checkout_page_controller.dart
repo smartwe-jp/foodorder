@@ -7,6 +7,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
+import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -73,7 +74,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   String scanTextValue = '';
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
-  get sseList => machineInfo.sseSettingList;
+  bool get isSseEnabled =>
+      Get.find<SseSubscriptionManager>().hasEnabledSubscriptions;
 
   bool get containTax => machineInfo.taxSystem;
 
@@ -115,8 +117,6 @@ class CheckoutPageController extends GetxController with StateMixin {
     //startRepeatingAnimation();
     _checkToCloseLoading();
     if (firstLoad) {
-      bool isSseEnabled =
-          sseList.isNotEmpty && sseList.any((item) => item.isEnabled);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {

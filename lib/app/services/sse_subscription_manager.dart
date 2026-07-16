@@ -9,6 +9,9 @@ class SseSubscriptionManager extends GetxService {
   final RxList<SseSubscriptionSetting> settings =
       <SseSubscriptionSetting>[].obs;
 
+  bool get hasEnabledSubscriptions =>
+      settings.any((setting) => setting.isEnabled);
+
   String _machineCode = '';
 
   Future<void> initialize(String machineCode) async {

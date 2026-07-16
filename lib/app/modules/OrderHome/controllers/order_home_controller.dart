@@ -9,6 +9,7 @@ import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
+import '../../../services/sse_subscription_manager.dart';
 import '../views/widgets/checkStatusView.dart';
 
 class OrderHomeController extends GetxController with StateMixin {
@@ -17,7 +18,8 @@ class OrderHomeController extends GetxController with StateMixin {
   MachineInfoController machineInfo = Get.find();
   PrinterCheckService printerCheckService = Get.find();
   get printerList => machineInfo.printerList;
-  get sseList => machineInfo.sseSettingList;
+  bool get isSseEnabled =>
+      Get.find<SseSubscriptionManager>().hasEnabledSubscriptions;
 
   bool machineLanguages_JP = false;
   bool machineLanguages_CH = false;
@@ -51,8 +53,6 @@ class OrderHomeController extends GetxController with StateMixin {
     startRepeatingAnimation();
 
     if (firstLoad) {
-      bool isSseEnabled =
-          sseList.isNotEmpty && sseList.any((item) => item.isEnabled);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
