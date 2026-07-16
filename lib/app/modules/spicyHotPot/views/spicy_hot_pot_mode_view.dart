@@ -8,6 +8,7 @@ import '../../../services/showImage.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/option_list.dart';
 import '../../../widget/KioskTap.dart';
 import '../controllers/spicy_hot_pot_checkout_controller.dart';
+import 'widgets/spicy_hot_pot_chrome.dart';
 
 // 设计色彩常量（参考效果图）
 const _kBg = Color(0xFFF5F5F5);
@@ -69,17 +70,37 @@ class SpicyHotPotModeView extends StatelessWidget {
   }
 
   Widget _buildBody(SpicyHotPotCheckoutController ctrl) {
-    return Stack(
-      children: [
-        Container(width: double.infinity, height: double.infinity, color: _kBg),
-        Column(
+    // 普通注文选项步：用设计图白顶栏布局，不再套青绿顶栏
+    return Obx(() {
+      final isOptionStep = ctrl.isNormalMode && ctrl.normalStep.value == 1;
+      final shouldAutoOpenWeigh = ctrl.isNormalMode &&
+          ctrl.normalStep.value == 0 &&
+          ctrl.categoryMenuList.length == 1;
+      if (shouldAutoOpenWeigh) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ctrl.showScaleDialogForItem(ctrl.categoryMenuList.first as Map);
+        });
+        return const Scaffold(
+          backgroundColor: _kBg,
+          body: SizedBox.shrink(),
+        );
+      }
+      if (isOptionStep) {
+        return Scaffold(
+          backgroundColor: _kBg,
+          body: _buildNormalOptionView(ctrl),
+        );
+      }
+      return Scaffold(
+        backgroundColor: _kBg,
+        body: Column(
           children: [
             _buildTopBar(ctrl),
             Expanded(child: _buildContent(ctrl)),
           ],
         ),
-      ],
-    );
+      );
+    });
   }
 
   // ==================== 顶部导航栏 ====================
@@ -360,23 +381,39 @@ class SpicyHotPotModeView extends StatelessWidget {
   Widget _buildNormalOptionView(SpicyHotPotCheckoutController ctrl) {
     return Column(
       children: [
-        _buildOptionViewHeader(ctrl),
-        Container(height: 1, color: _kBorder),
+        const SpicyHotPotStepHeader(currentStep: 3),
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
-              ScreenAdapter.width(24),
-              ScreenAdapter.height(20),
-              ScreenAdapter.width(24),
+              ScreenAdapter.width(32),
+              ScreenAdapter.height(24),
+              ScreenAdapter.width(32),
               ScreenAdapter.height(16),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 顶部口味商品：仅自身 Obx 刷新选中态
+                Text(
+                  'スープをお選びください',
+                  style: TextStyle(
+                    color: _kText,
+                    fontSize: ScreenAdapter.fontSize(40),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: ScreenAdapter.height(6)),
+                Text(
+                  'お好みのスープをタップしてください',
+                  style: TextStyle(
+                    color: _kGrey,
+                    fontSize: ScreenAdapter.fontSize(22),
+                    fontFamily: GFont.getFontFamily(),
+                  ),
+                ),
+                SizedBox(height: ScreenAdapter.height(20)),
                 if (ctrl.optionMenuList.isNotEmpty)
                   _buildOptionItemCards(ctrl.optionMenuList, ctrl),
-                // 下方子选项：仅随 selectedOptionMenuCode 变化重建
                 _buildNormalSelectedOptionsSection(ctrl),
               ],
             ),
@@ -387,9 +424,7 @@ class SpicyHotPotModeView extends StatelessWidget {
     );
   }
 
-  /// 选中口味后的子选项区域（独立 Obx，不牵连顶部卡片）
-  /// 使用 optionsDisplayMenuCode：大图先高亮，选项组延后一帧再替换；
-  /// 切换时不清空旧内容，避免中间空白闪一下
+  /// 选中汤底后的子选项（辣度等）
   Widget _buildNormalSelectedOptionsSection(
       SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
@@ -406,31 +441,13 @@ class SpicyHotPotModeView extends StatelessWidget {
       if (selectedItem == null) return const SizedBox.shrink();
 
       final groups = _flattenOptionGroups([selectedItem]);
+      final soupName = selectedItem['mainTitle']?.toString() ?? '';
 
       return Column(
         key: ValueKey('options-$selectedCode'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: ScreenAdapter.height(24)),
-          Row(
-            children: [
-              Expanded(child: Divider(color: _kBorder, thickness: 1)),
-              Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: ScreenAdapter.width(16)),
-                child: Text(
-                  '选择口味',
-                  style: TextStyle(
-                    color: _kGrey,
-                    fontSize: ScreenAdapter.fontSize(22),
-                    fontFamily: GFont.getFontFamily(),
-                  ),
-                ),
-              ),
-              Expanded(child: Divider(color: _kBorder, thickness: 1)),
-            ],
-          ),
-          SizedBox(height: ScreenAdapter.height(20)),
+          SizedBox(height: ScreenAdapter.height(28)),
           if (groups.isEmpty)
             Center(
               child: Padding(
@@ -447,117 +464,153 @@ class SpicyHotPotModeView extends StatelessWidget {
               ),
             )
           else
-            ...groups.asMap().entries.map((e) => _buildNormalOptionGroupWidget(
-                e.value, e.key + 1, ctrl, selectedCode)),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.fromLTRB(
+                ScreenAdapter.width(20),
+                ScreenAdapter.height(18),
+                ScreenAdapter.width(20),
+                ScreenAdapter.height(12),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _kBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    soupName.isNotEmpty ? '${soupName}のオプションを選択' : 'オプションを選択',
+                    style: TextStyle(
+                      color: _kText,
+                      fontSize: ScreenAdapter.fontSize(26),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: ScreenAdapter.height(12)),
+                  ...groups.asMap().entries.map((e) =>
+                      _buildNormalOptionGroupWidget(
+                          e.value, e.key + 1, ctrl, selectedCode)),
+                ],
+              ),
+            ),
         ],
       );
     });
   }
 
-  /// 顶部口味商品卡片（optionMenuList，单选）
-  /// 按下缩放 + 即时选中高亮，子选项延后加载
+  /// 汤底横排卡片（设计图风格）
   Widget _buildOptionItemCards(List items, SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       final selectedCode = ctrl.selectedOptionMenuCode.value;
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 2,
-        mainAxisSpacing: ScreenAdapter.height(14),
-        crossAxisSpacing: ScreenAdapter.width(14),
-        childAspectRatio: 0.95,
-        children: items.map((raw) {
-          final item = raw as Map;
-          final code = item['menuCode']?.toString() ?? '';
-          final name = item['mainTitle']?.toString() ?? '';
-          final img =
-              item['homeImage']?.toString() ?? item['image']?.toString() ?? '';
-          final remark = item['remark']?.toString() ?? '';
-          final isSelected = selectedCode == code;
+      return SizedBox(
+        height: ScreenAdapter.height(260),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: items.length,
+          separatorBuilder: (_, __) => SizedBox(width: ScreenAdapter.width(14)),
+          itemBuilder: (_, index) {
+            final item = items[index] as Map;
+            final code = item['menuCode']?.toString() ?? '';
+            final name = item['mainTitle']?.toString() ?? '';
+            final img = item['homeImage']?.toString() ??
+                item['image']?.toString() ??
+                '';
+            final isSelected = selectedCode == code;
+            final isRecommend = index == 0;
 
-          return KioskTap(
-            onTap: () => ctrl.selectOptionMenuItem(code),
-            debounceDuration: const Duration(milliseconds: 120),
-            builder: (context, pressed, child) {
-              return Transform.scale(
-                scale: pressed ? 0.96 : 1.0,
-                child: child,
-              );
-            },
-            child: Container(
-              key: ValueKey('option-item-$code'),
-              padding: EdgeInsets.all(ScreenAdapter.width(15)),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFEAF8F7) : _kCard,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected ? _kRed : _kBorder,
-                  width: isSelected ? 2 : 1,
+            return KioskTap(
+              onTap: () => ctrl.selectOptionMenuItem(code),
+              debounceDuration: const Duration(milliseconds: 120),
+              child: Container(
+                width: ScreenAdapter.width(180),
+                padding: EdgeInsets.fromLTRB(
+                  ScreenAdapter.width(10),
+                  ScreenAdapter.height(10),
+                  ScreenAdapter.width(10),
+                  ScreenAdapter.height(12),
                 ),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Color(0x0D000000),
-                      blurRadius: 8,
-                      offset: Offset(0, 2))
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: img.isNotEmpty
-                              ? Image.network(
-                                  img,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  gaplessPlayback: true,
-                                  errorBuilder: (_, __, ___) =>
-                                      _buildOptionItemPlaceholder(isSelected),
-                                )
-                              : _buildOptionItemPlaceholder(isSelected),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFFEAF8F7) : _kCard,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isSelected ? _kRed : _kBorder,
+                    width: isSelected ? 2.5 : 1,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: SizedBox(
+                                width: ScreenAdapter.width(138),
+                                height: ScreenAdapter.width(138),
+                                child: img.isNotEmpty
+                                    ? Image.network(
+                                        img,
+                                        fit: BoxFit.cover,
+                                        gaplessPlayback: true,
+                                        errorBuilder: (_, __, ___) =>
+                                            _buildOptionItemPlaceholder(
+                                                isSelected),
+                                      )
+                                    : _buildOptionItemPlaceholder(isSelected),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: ScreenAdapter.height(10)),
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isSelected ? _kRed : _kText,
+                            fontSize: ScreenAdapter.fontSize(22),
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (isRecommend)
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ScreenAdapter.width(8),
+                            vertical: ScreenAdapter.height(3),
+                          ),
+                          decoration: BoxDecoration(
+                            color: _kRed,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'おすすめ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: ScreenAdapter.fontSize(14),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: ScreenAdapter.height(12)),
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: isSelected ? _kRed : _kText,
-                      fontSize: ScreenAdapter.fontSize(28),
-                      fontFamily: GFont.getFontFamily(),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (remark.isNotEmpty) ...[
-                    SizedBox(height: ScreenAdapter.height(4)),
-                    Text(
-                      remark,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: _kGrey,
-                        fontSize: ScreenAdapter.fontSize(20),
-                        fontFamily: GFont.getFontFamily(),
-                        height: 1.25,
-                      ),
-                    ),
                   ],
-                ],
+                ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          },
+        ),
       );
     });
   }
@@ -568,78 +621,9 @@ class SpicyHotPotModeView extends StatelessWidget {
       child: Center(
         child: Icon(
           Icons.ramen_dining,
-          size: ScreenAdapter.fontSize(40),
+          size: ScreenAdapter.fontSize(48),
           color: isSelected ? _kRed : const Color(0xFFBDBDBD),
         ),
-      ),
-    );
-  }
-
-  Widget _buildOptionViewHeader(SpicyHotPotCheckoutController ctrl) {
-    return Container(
-      color: _kCard,
-      padding: EdgeInsets.fromLTRB(
-        ScreenAdapter.width(36),
-        ScreenAdapter.height(22),
-        ScreenAdapter.width(36),
-        ScreenAdapter.height(18),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'STEP 02 · 选择口味',
-                  style: TextStyle(
-                    color: _kRed,
-                    fontSize: ScreenAdapter.fontSize(22),
-                    fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
-                ),
-                SizedBox(height: ScreenAdapter.height(4)),
-                // 称重结果小横幅
-                Obx(() {
-                  final result = ctrl.normalWeighResult;
-                  final weight =
-                      (result['weight'] as double? ?? 0).toStringAsFixed(0);
-                  final price = result['price'] as int? ?? 0;
-                  return Row(
-                    children: [
-                      Icon(Icons.scale,
-                          color: Gcolor.primaryColor,
-                          size: ScreenAdapter.fontSize(26)),
-                      SizedBox(width: ScreenAdapter.width(6)),
-                      Text(
-                        '${weight}g',
-                        style: TextStyle(
-                          color: _kText,
-                          fontSize: ScreenAdapter.fontSize(30),
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(width: ScreenAdapter.width(16)),
-                      Text(
-                        '¥ $price',
-                        style: TextStyle(
-                          color: _kPrice,
-                          fontSize: ScreenAdapter.fontSize(30),
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ],
-            ),
-          ),
-          _buildStepIndicator(2),
-        ],
       ),
     );
   }
@@ -691,9 +675,8 @@ class SpicyHotPotModeView extends StatelessWidget {
 
     // 初始 checked 一律 false；选中态由 OptionListWidget 内部维护
     final optionListInfo = options.map((opt) {
-      final code = opt['optionCode']?.toString() ??
-          opt['menuCode']?.toString() ??
-          '';
+      final code =
+          opt['optionCode']?.toString() ?? opt['menuCode']?.toString() ?? '';
       return {
         ...opt,
         'optionCode': code,
@@ -705,9 +688,8 @@ class SpicyHotPotModeView extends StatelessWidget {
       };
     }).toList();
 
-    final titleLabel = isMulti
-        ? '$index. $groupName（可多选）'
-        : '$index. $groupName';
+    final titleLabel =
+        isMulti ? '$index. $groupName（可多选）' : '$index. $groupName';
 
     return Container(
       margin: EdgeInsets.only(bottom: ScreenAdapter.height(16)),
@@ -729,8 +711,8 @@ class SpicyHotPotModeView extends StatelessWidget {
         optionSelectMaxNum: multipleState,
         title: titleLabel,
         subTitle: groupRemark,
-        onSelected: (gCode, optionCode, optionName, optionPrice, isAdd,
-            isSelected) {
+        onSelected:
+            (gCode, optionCode, optionName, optionPrice, isAdd, isSelected) {
           ctrl.updateNormalOptionFromWidget(
               groupKey, optionCode, optionName, isAdd, isMulti);
         },
@@ -740,87 +722,16 @@ class SpicyHotPotModeView extends StatelessWidget {
 
   /// 普通注文步骤1底部按钮
   Widget _buildNormalOptionButtons(SpicyHotPotCheckoutController ctrl) {
-    return Container(
-      color: _kCard,
-      padding: EdgeInsets.fromLTRB(
-        ScreenAdapter.width(28),
-        ScreenAdapter.height(16),
-        ScreenAdapter.width(28),
-        ScreenAdapter.height(24),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: ScreenAdapter.width(220),
-            child: KioskTap(
-              onTap: () => ctrl.cancelNormalWeigh(),
-              child: Container(
-                height: ScreenAdapter.height(92),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _kBorder, width: 1.5),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.arrow_back,
-                        color: _kGrey, size: ScreenAdapter.fontSize(26)),
-                    SizedBox(width: ScreenAdapter.width(6)),
-                    Text(
-                      'やり直す',
-                      style: TextStyle(
-                        color: _kGrey,
-                        fontSize: ScreenAdapter.fontSize(26),
-                        fontFamily: GFont.getFontFamily(),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: ScreenAdapter.width(16)),
-          Expanded(
-            child: Obx(() {
-              // 依赖选中汤底 + 子选项，未完成时禁用下一步
-              final canNext = ctrl.canConfirmNormalOrder;
-              return KioskTap(
-                onTap: canNext ? () => ctrl.confirmNormalOrder() : null,
-                child: Container(
-                  height: ScreenAdapter.height(92),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: canNext ? _kRed : const Color(0xFFBDBDBD),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '他の商品を見る',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(width: ScreenAdapter.width(8)),
-                      Icon(Icons.arrow_forward,
-                          color: Colors.white,
-                          size: ScreenAdapter.fontSize(28)),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
+    return Obx(() {
+      final canNext = ctrl.canConfirmNormalOrder;
+      return SpicyHotPotBottomBar(
+        onBack: () => ctrl.cancelNormalWeigh(),
+        backLabel: '戻る',
+        onNext: canNext ? () => ctrl.confirmNormalOrder() : null,
+        nextLabel: '次へ',
+        nextEnabled: canNext,
+      );
+    });
   }
 
   // ==================== 扫码注文模式 ====================
