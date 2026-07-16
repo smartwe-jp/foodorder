@@ -396,6 +396,9 @@ class TransitPageController extends GetxController {
       await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingData);
       debugPrint('update MachineInfoController done');
     }
+
+    MachineInfoController machineInfo = Get.find<MachineInfoController>();
+    Get.lazyPut(() => PrintService(machineInfo));
   
 
     await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
@@ -412,7 +415,7 @@ class TransitPageController extends GetxController {
         print('error: $e');
       }
     }
-    final machineInfo = Get.find<MachineInfoController>();
+
     final list = machineInfo.homeList;
     if (list.isNotEmpty) {
       heroImageUrl = list.first;

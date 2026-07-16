@@ -1298,6 +1298,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       "40x40": "300x300",
       "60x50": "460x375",
       "50x50": "384x375",
+      "50x60": "384x460",
       "40x50": "300x375"
     };
     //size 是 value 找到对应的 key
@@ -1655,7 +1656,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
           const SizedBox(height: 8),
 
-          if (isOn)
+          if (isOn == SseSubscriptionType.smartWe)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
