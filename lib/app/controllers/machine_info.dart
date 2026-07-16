@@ -1,4 +1,6 @@
 import 'package:foodorder/app/services/HomeServices.dart';
+import 'package:foodorder/app/models/sse_subscription_setting.dart';
+import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:get/get.dart';
 
 import '../services/CustomLogerHandler.dart';
@@ -40,7 +42,8 @@ class MachineInfoController extends GetxController {
   late String printLogoImageUrl;
   //String machineMode = '1'; //1 券卖机  2 精算机 3 自助收银
   late List printerList;
-  late List sseSettingList;
+  List<SseSubscriptionSetting> get sseSettingList =>
+      Get.find<SseSubscriptionManager>().settings;
 
   late bool isAllowCash;
   late bool isAllowReimburse;
@@ -304,7 +307,7 @@ class MachineInfoController extends GetxController {
     logI('loadMachineSettingInfo 5');
 
     printerList = await HomeServices.getPrinterListInfo();
-    sseSettingList = await HomeServices.getSSESettingList();
+    await Get.find<SseSubscriptionManager>().initialize(machineCode);
 
     machineModeInfo = await HomeServices.getMachineModeInfo();
     logI('machineModeInfo: $machineModeInfo');

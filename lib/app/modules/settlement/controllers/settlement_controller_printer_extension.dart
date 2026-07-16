@@ -10,6 +10,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
@@ -614,12 +615,12 @@ class PrintService extends GetxService {
       orElse: () => null,
     );
     final smartWeSSE = sseList.firstWhere(
-      (sse) => sse["name"] == 'SmartWe SSE',
+      (sse) => sse.type == SseSubscriptionType.smartWe,
       orElse: () => null,
     );
 
     bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
-    bool smartWeCenterOn = smartWeSSE != null && smartWeSSE["centerOn"] && isCenterPrintOn;
+    bool smartWeCenterOn = smartWeSSE != null && smartWeSSE.centerOn && isCenterPrintOn;
     List orderLineItems = [];
 
     for (var key in orderLinesMap.keys) {
@@ -955,12 +956,12 @@ class PrintService extends GetxService {
   printTableSeatInfo(Map data) async {
     logI("---printTableSeatInfo---");
     final smartWeSSE = sseList.firstWhere(
-      (sse) => sse["name"] == 'SmartWe SSE',
+      (sse) => sse.type == SseSubscriptionType.smartWe,
       orElse: () => null,
     );
     
 
-    if (smartWeSSE == null || !(smartWeSSE["printSeat"] ?? true)) {
+    if (smartWeSSE == null || !smartWeSSE.printSeat) {
       debugPrint("SmartWe SSE printSeat is off");
       return;
     }

@@ -51,7 +51,8 @@ class OrderHomeController extends GetxController with StateMixin {
     startRepeatingAnimation();
 
     if (firstLoad) {
-      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      bool isSseEnabled =
+          sseList.isNotEmpty && sseList.any((item) => item.isEnabled);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {

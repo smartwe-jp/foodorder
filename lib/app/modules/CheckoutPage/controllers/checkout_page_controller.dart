@@ -116,7 +116,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     _checkToCloseLoading();
     if (firstLoad) {
       bool isSseEnabled =
-          sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+          sseList.isNotEmpty && sseList.any((item) => item.isEnabled);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
