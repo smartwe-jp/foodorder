@@ -347,6 +347,7 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   void askBeforeExchange() {
+    var confirmationHandled = false;
     EasyLoading.dismiss();
     Get.dialog(
       GetBuilder<SettingController>(
@@ -431,8 +432,20 @@ extension ExchangeControllerExtension on SettingController {
             title: "tag_title".tr,
             confirmtitle: "tag_button_yes".tr,
             confirm: () {
-              Get.back();
+              if (confirmationHandled) {
+                logger.warning(
+                    '-- exchange confirmation ignored: already handled --');
+                return;
+              }
+              confirmationHandled = true;
+              if (ExchangeFlowGuard.isRunning) {
+                logger.warning(
+                    '-- exchange confirmation ignored: flow already running --');
+                Get.back();
+                return;
+              }
               ctl.exchangeFlow(type, count, discount);
+              Get.back();
             },
             cancle: () {
               taskTouch = false;
@@ -447,7 +460,17 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   //exchangeFlow
-  exchangeFlow(type, count, disconut) async {
+  Future<void> exchangeFlow(type, count, disconut) async {
+    final started = await ExchangeFlowGuard.run(
+      () => _runExchangeFlow(type, count, disconut),
+    );
+    if (!started) {
+      logger.warning(
+          '-- exchangeFlow ignored: another exchange is already running --');
+    }
+  }
+
+  Future<void> _runExchangeFlow(type, count, disconut) async {
     await CashChanger.removeEventsListener();
     //isExchange = true;
     logI('exChangeFlow: $type, $count, $disconut');
@@ -765,5 +788,24 @@ extension ExchangeControllerExtension on SettingController {
 
   exchangeMoney() async {
     debugPrint('exchangeMoney');
+  }
+}
+
+class ExchangeFlowGuard {
+  static bool _running = false;
+
+  static bool get isRunning => _running;
+
+  static Future<bool> run(Future<void> Function() operation) async {
+    if (_running) {
+      return false;
+    }
+    _running = true;
+    try {
+      await operation();
+      return true;
+    } finally {
+      _running = false;
+    }
   }
 }

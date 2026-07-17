@@ -101,6 +101,7 @@ class SettlementController extends GetxController with StateMixin {
   bool isScanCheckOut = false; //扫码支付是否精算模式
 
   RxMap posResultReportData = {}.obs;
+  bool isOutMoney = false; 
 
   //String shopCode = '';
 

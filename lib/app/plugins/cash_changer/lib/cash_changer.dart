@@ -71,7 +71,7 @@ class CashChanger {
 
   //remove event listener
   static Future<void> removeEventsListener() async {
-    CashChangerPlatform.instance.removeEvenstListener();
+    await CashChangerPlatform.instance.removeEvenstListener();
   }
 
   static Future<String?> get getPlatformVersion async {

@@ -362,6 +362,11 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   _startOutputMoney(outMoney) async {
+    if (isOutMoney) {
+      logger.info("-- isOutMoney == true --");
+      return;
+    }
+    isOutMoney = true;
     logger.info('-- startOutPutMoney : $outMoney --');
     var success = false;
     debugPrint("startOutPutMoney");
@@ -379,12 +384,14 @@ extension SettlementControllerExtension on SettlementController {
           //已经结束入金，处理取引终了
           //_getPayCubeOutMoney();
           success = true;
+          isOutMoney = false;
         },
         onRetry: () {
           debugPrint("startOutPutMoney 2");
           _startOutputMoney(outMoney);
         },
         showError: (String error) {
+          isOutMoney = false;
           success = false;
           debugPrint("startOutPutMoney error: $error");
           logger.info('-- startOutPutMoney error: $error --');
