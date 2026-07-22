@@ -146,7 +146,7 @@ extension MenuPageControllerExtension on MenuPageController {
 
   }
 
-  menuItemView(item, context, {popupType: "old", aspectRatio: 1.0}) {
+  menuItemView(item, context, {popupType = "old", aspectRatio = 1.0}) {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
@@ -253,7 +253,7 @@ extension MenuPageControllerExtension on MenuPageController {
     }
   }
 
-  showCategoryTwoItemList(items, context, {popupType: "old"}) {
+  showCategoryTwoItemList(items, context, {popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType));
@@ -261,7 +261,7 @@ extension MenuPageControllerExtension on MenuPageController {
     return GridMenuView(children: children, childAspectRatio: 0.71,);
   }
 
-  showCategoryFourItemList(items, context, {popupType: "old"}) {
+  showCategoryFourItemList(items, context, {popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType));

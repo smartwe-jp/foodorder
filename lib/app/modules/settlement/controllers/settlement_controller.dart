@@ -371,7 +371,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //三种扫码支付都未开通，弹出dialog
-  _showScanCodeNoOpenDialog(checknum, showContent,{payType:"qr"}) {
+  _showScanCodeNoOpenDialog(checknum, showContent,{payType ="qr"}) {
     logI("_showScanCodeNoOpenDialog checknum = $checknum");
     EasyLoading.dismiss();
     scanQrCodeController.text = "";
