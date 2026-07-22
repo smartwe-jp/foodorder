@@ -7,8 +7,23 @@ class NumberKeyboardDialog extends StatefulWidget {
   final String? initialValue;
   final Function(String) onConfirm;
 
-  const NumberKeyboardDialog({Key? key, required this.title, required this.onConfirm,
-    this.initialValue = ""
+  /// 重量数字字号（称重页可加大）
+  final double inputFontSize;
+
+  /// 输入框最小高度
+  final double inputMinHeight;
+
+  /// 输入框 / 按键圆角
+  final double borderRadius;
+
+  const NumberKeyboardDialog({
+    Key? key,
+    required this.title,
+    required this.onConfirm,
+    this.initialValue = "",
+    this.inputFontSize = 32,
+    this.inputMinHeight = 48,
+    this.borderRadius = 8,
   }) : super(key: key);
 
   @override
@@ -44,42 +59,62 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final radius = widget.borderRadius;
     return SimpleDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+      ),
       children: [
-        SizedBox(height: 30),
-        Center(child: Text(widget.title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
-        SizedBox(height: 10),
-        Center(child: Container(
-          alignment: Alignment.center,
+        const SizedBox(height: 30),
+        Center(
+          child: Text(
+            widget.title,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: Container(
+            alignment: Alignment.center,
             constraints: BoxConstraints(
               minWidth: 200,
               maxWidth: 300,
+              minHeight: widget.inputMinHeight,
             ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(radius),
             ),
-            child: Text(input, style: TextStyle(fontSize: 32)
-            ))),
-        SizedBox(height: 10),
+            child: Text(
+              input.isEmpty ? '0' : input,
+              style: TextStyle(
+                fontSize: widget.inputFontSize,
+                fontWeight: FontWeight.w700,
+                height: 1.1,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 500, // 限制高度，避免布局溢出
+          height: 500,
           width: 550,
           child: Column(
             children: [
               CustomKeyboard(
+                borderRadius: radius,
                 onKeyPressed: (value) {
                   if (value == '削除') {
                     _onDelete();
                   } else if (value.contains('.')) {
-
+                    // 重量按克整数输入，忽略小数点
                   } else {
                     _onKeyTap(value);
                   }
                 },
               ),
-              SizedBox(height: 50),
-              // 确认按钮
+              const SizedBox(height: 50),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -87,7 +122,7 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
+                          borderRadius: BorderRadius.circular(radius),
                         ),
                         minimumSize: const Size(160, 68),
                       ),
@@ -99,7 +134,7 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
+                          borderRadius: BorderRadius.circular(radius),
                         ),
                         minimumSize: const Size(160, 68),
                       ),
@@ -112,8 +147,6 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
                   ],
                 ),
               ),
-
-
             ],
           ),
         ),

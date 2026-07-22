@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../views/spicy_hot_pot_category_page.dart';
 import '../views/spicy_hot_pot_weigh_dialog.dart';
@@ -54,6 +56,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       <String, List<String>>{}.obs;
   // optionCode → optionName 映射（入购物车时取名称用）
   final Map<String, String> _optionNameCache = {};
+  // groupKey → 分组显示名（入车 optionVoListMsg 用「组名:选项」）
+  final Map<String, String> _optionGroupTitleCache = {};
   bool _isSingleWeighPageOpen = false;
 
   // ==================== getter ====================
@@ -69,10 +73,24 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   void onInit() {
     super.onInit();
     checkLanguage.value = Get.arguments?['checkLanguage'] ?? 'JP';
+    _applyLanguageLocale(checkLanguage.value);
     if (!isNormalMode) {
       itemFocusNode.requestFocus();
     }
     selectShopCategory();
+  }
+
+  /// 按首页传入语言同步 GetX locale（驱动 .tr / 字体）
+  void _applyLanguageLocale(String language) {
+    var locale = const Locale('ja', 'JP');
+    if (language == 'CH') {
+      locale = const Locale('zh', 'CN');
+    } else if (language == 'EN') {
+      locale = const Locale('en', 'US');
+    } else if (language == 'KO') {
+      locale = const Locale('ko', 'KR');
+    }
+    Get.updateLocale(locale);
   }
 
   @override
@@ -238,6 +256,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     selectedOptionMenuCode.value = '';
     optionsDisplayMenuCode.value = '';
     _optionNameCache.clear();
+    _optionGroupTitleCache.clear();
     // optionMenuList 只有1个商品时自动选中，直接展示子选项
     if (optionMenuList.length == 1) {
       final code =
@@ -245,6 +264,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       selectedOptionMenuCode.value = code;
       optionsDisplayMenuCode.value = code;
     }
+    // 进入选项页前预拉汤底图，避免首次 Image 请求被重建打断
+    _precacheOptionImages();
     normalStep.value = 1;
     // ModeView 始终在路由栈中（Get.to 不替换），设好 normalStep 后
     // 由 SpicyWeighPage._confirm() / SpicyWeighDialog._confirm() 调 Get.back() 返回
@@ -257,6 +278,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     if (selectedOptionMenuCode.value == menuCode) return;
     normalOptionSelections.clear();
     _optionNameCache.clear();
+    _optionGroupTitleCache.clear();
     // 即时高亮大图；下方选项保留旧内容直到下一帧换新，避免空白闪一下
     selectedOptionMenuCode.value = menuCode;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -270,7 +292,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   /// groupKey: 分组标识（groupName 或 menuCode）
   /// isMulti: 是否允许多选
   void toggleNormalSectionOption(
-      String groupKey, String optionCode, String optionName, bool isMulti) {
+      String groupKey, String optionCode, String optionName, bool isMulti,
+      {String groupTitle = ''}) {
     final current = List<String>.from(normalOptionSelections[groupKey] ?? []);
     if (current.contains(optionCode)) {
       current.remove(optionCode);
@@ -281,22 +304,49 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     normalOptionSelections[groupKey] = current;
     normalOptionSelections.refresh();
     _optionNameCache[optionCode] = optionName;
+    if (groupTitle.isNotEmpty) {
+      _optionGroupTitleCache[groupKey] = groupTitle;
+    }
   }
 
   /// 普通注文：由 OptionListWidget / OptionWidget 回调更新选中状态
   void updateNormalOptionFromWidget(String groupKey, String optionCode,
-      String optionName, bool isAdd, bool isMulti) {
+      String optionName, bool isAdd, bool isMulti,
+      {String groupTitle = ''}) {
     final current = List<String>.from(normalOptionSelections[groupKey] ?? []);
     if (isAdd) {
       if (!isMulti) current.clear();
       if (!current.contains(optionCode)) current.add(optionCode);
       _optionNameCache[optionCode] = optionName;
+      if (groupTitle.isNotEmpty) {
+        _optionGroupTitleCache[groupKey] = groupTitle;
+      }
     } else {
       current.remove(optionCode);
       _optionNameCache.remove(optionCode);
     }
     normalOptionSelections[groupKey] = current;
     normalOptionSelections.refresh();
+  }
+
+  /// 组装与普通菜单一致的 optionVoListMsg：`组名:选项1,选项2`
+  String _buildNormalOptionVoListMsg() {
+    final parts = <String>[];
+    for (final entry in normalOptionSelections.entries) {
+      if (entry.value.isEmpty) continue;
+      final titles = entry.value
+          .map((code) => _optionNameCache[code] ?? code)
+          .where((name) => name.isNotEmpty)
+          .join(',');
+      if (titles.isEmpty) continue;
+      final groupTitle = _optionGroupTitleCache[entry.key] ?? '';
+      if (groupTitle.isNotEmpty) {
+        parts.add('$groupTitle:$titles');
+      } else {
+        parts.add(titles);
+      }
+    }
+    return parts.join(',');
   }
 
   /// 当前选中的口味商品（汤底）
@@ -442,12 +492,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     final selectedItem = selectedOptionMenuItem;
     if (selectedItem != null) {
       final subCodes = <String>[];
-      final subNames = <String>[];
       for (final entry in normalOptionSelections.entries) {
-        for (final code in entry.value) {
-          subCodes.add(code);
-          subNames.add(_optionNameCache[code] ?? code);
-        }
+        subCodes.addAll(entry.value);
       }
       await orderSqlController.addToCart({
         'menuCode': selectedItem['menuCode'] ?? '',
@@ -456,7 +502,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         'currentPrice': selectedItem['currentPrice'] ?? 0,
         'unitPrice': selectedItem['currentPrice'] ?? 0,
         'optionGroupVoList': subCodes.join(','),
-        'optionVoListMsg': subNames.join(','),
+        // 与普通商品一致：组名:选项名
+        'optionVoListMsg': _buildNormalOptionVoListMsg(),
         'goodsNum': 1,
         'qtyBounds': selectedItem['qtyBounds'] ?? 0,
         'itemType': 'spicy',
@@ -483,6 +530,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       selectedOptionMenuCode.value = '';
       optionsDisplayMenuCode.value = '';
       _optionNameCache.clear();
+      _optionGroupTitleCache.clear();
       showScaleDialogForItem(categoryMenuList.first as Map);
     } else {
       _resetNormalState();
@@ -495,6 +543,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     selectedOptionMenuCode.value = '';
     optionsDisplayMenuCode.value = '';
     _optionNameCache.clear();
+    _optionGroupTitleCache.clear();
     normalStep.value = 0;
   }
 
@@ -533,22 +582,32 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   }
 
   /// 从商品 Map 中提取已勾选的选项 codes/names
+  /// names 格式与普通菜单一致：`组名:选项1,选项2`
   Map<String, List<String>> _extractSelectedOptions(Map item) {
     final optionGroupList = item['optionGroupVoList'];
     final List<String> codes = [];
-    final List<String> names = [];
+    final List<String> nameParts = [];
     if (optionGroupList is List) {
       for (var group in optionGroupList) {
         if (group is! Map) continue;
+        final groupTitle = group['groupName']?.toString() ??
+            group['groupTitle']?.toString() ??
+            '';
+        final selectedTitles = <String>[];
         for (var opt in (group['optionVoList'] ?? [])) {
           if (opt is Map && opt['checked'] == true) {
             codes.add(opt['optionCode']?.toString() ?? '');
-            names.add(opt['mainTitle']?.toString() ?? '');
+            final title = opt['mainTitle']?.toString() ?? '';
+            if (title.isNotEmpty) selectedTitles.add(title);
           }
         }
+        if (selectedTitles.isEmpty) continue;
+        final titles = selectedTitles.join(',');
+        nameParts.add(
+            groupTitle.isNotEmpty ? '$groupTitle:$titles' : titles);
       }
     }
-    return {'codes': codes, 'names': names};
+    return {'codes': codes, 'names': nameParts};
   }
 
   // ==================== 购物车 ====================
@@ -618,8 +677,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   }
 
   Future<void> getShopCategoryMenu(String categoryCode) async {
-    final queryTakeout =
-        machineInfo.currentMode == MachineMode.takeout ? "0" : "2";
+    // 外带进麻辣烫时 currentMode 为 spicyHotPot，用 isTakeoutMode 保留外带语义
+    final queryTakeout = machineInfo.isTakeoutMode ? "0" : "2";
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
@@ -638,7 +697,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         categoryMenuList.clear();
         optionMenuList.clear();
         final items = response['data'] as List;
-        for (var item in items) {
+        for (var item in items) {LogUtil.d(item);
           logI('菜品: ${item['mainTitle']} priceType=${item['priceType']}');
           if (item['priceType'] == "HUNDRED_GRAM") {
             categoryMenuList.add(item);
@@ -648,6 +707,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         }
         logI(
             '称重商品: ${categoryMenuList.length}, 选项商品: ${optionMenuList.length}');
+        // 菜单到手后后台预缓存汤底图
+        _precacheOptionImages();
         // 导航由 view 的 _buildNormalCategoryView addPostFrameCallback 触发，此处无需重复
       }
 
@@ -656,6 +717,18 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       logE('获取菜品超时');
     } catch (e) {
       logE('获取菜品失败: $e');
+    }
+  }
+
+  /// 预缓存汤底/选项商品图（磁盘缓存，二次进入更快）
+  void _precacheOptionImages() {
+    for (final raw in optionMenuList) {
+      if (raw is! Map) continue;
+      final url = (raw['homeImage'] ?? raw['image'] ?? '').toString().trim();
+      if (url.isEmpty) continue;
+      menuImageCacheManager.getSingleFile(url).then((_) {}, onError: (e, _) {
+        logI('汤底图预缓存失败: $url, $e');
+      });
     }
   }
 

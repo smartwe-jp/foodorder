@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomKeyboard extends StatelessWidget {
   final Function(String) onKeyPressed;
+  final double borderRadius;
 
-  CustomKeyboard({required this.onKeyPressed});
+  CustomKeyboard({
+    required this.onKeyPressed,
+    this.borderRadius = 8.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +31,15 @@ class CustomKeyboard extends StatelessWidget {
         }
 
         return Material(
-          color: Colors.transparent, // 设置为透明以保持背景颜色
+          color: Colors.transparent,
           child: InkWell(
             onTap: () => onKeyPressed(keyLabel),
-            borderRadius: BorderRadius.circular(8.0), // 圆角边框
+            borderRadius: BorderRadius.circular(borderRadius),
             child: Container(
               margin: EdgeInsets.all(4.0),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
               alignment: Alignment.center,
               child: Text(

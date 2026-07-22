@@ -542,6 +542,19 @@ class CheckoutPageController extends GetxController with StateMixin {
     //}
   }
 
+  /// 首页店内/外带入口：店铺开通麻辣烫则进麻辣烫流程，否则走普通券卖
+  void startDiningOrder({required bool takeout}) {
+    if (machineInfo.isShopSpicyHotPot) {
+      machineInfo.currentMode = MachineMode.spicyHotPot;
+      machineInfo.spicyHotPotTakeout = takeout;
+    } else {
+      machineInfo.spicyHotPotTakeout = false;
+      machineInfo.currentMode =
+          takeout ? MachineMode.takeout : MachineMode.sell;
+    }
+    goMenu(selectLanguage);
+  }
+
   goMenu(String lan) {
     // machineInfo.mealType = mealType;
     //machineInfo.currentMode = MachineMode.sell;

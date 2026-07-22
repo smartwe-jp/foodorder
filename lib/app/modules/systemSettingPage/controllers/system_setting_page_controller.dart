@@ -742,34 +742,29 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy, bool? spicyHotPot}) {
+  // 麻辣烫不再作为モード开关，由店铺缓存 smartwe_spicyHotPot 控制
+  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
     if (sell != null) {
       machineInfo.machineModeInfo['sell'] = sell;
       if (sell) machineInfo.machineModeInfo['scanbuy'] = false;
     }
 
-      if (takeout != null) machineInfo.machineModeInfo['takeout'] = takeout;
+    if (takeout != null) machineInfo.machineModeInfo['takeout'] = takeout;
 
-      if (checkout != null) {
-        machineInfo.machineModeInfo['checkout'] = checkout;
-        //if (checkout) machineModeInfo['scanbuy'] = false;
-      }
+    if (checkout != null) {
+      machineInfo.machineModeInfo['checkout'] = checkout;
+      //if (checkout) machineModeInfo['scanbuy'] = false;
+    }
 
-      if (scanbuy != null) {
-        machineInfo.machineModeInfo['scanbuy'] = scanbuy;
-        if (scanbuy) machineInfo.machineModeInfo['sell'] = false;
-      }
+    if (scanbuy != null) {
+      machineInfo.machineModeInfo['scanbuy'] = scanbuy;
+      if (scanbuy) machineInfo.machineModeInfo['sell'] = false;
+    }
 
-      if (spicyHotPot != null) {
-        machineInfo.machineModeInfo['spicyHotPot'] = spicyHotPot;
-      }
-
-      HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
-      final mainController = Get.find<CheckoutPageController>();
-      mainController.update();
-      update();
-
-
+    HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
+    final mainController = Get.find<CheckoutPageController>();
+    mainController.update();
+    update();
   }
 
   checkMenuDirection(checkedType) {

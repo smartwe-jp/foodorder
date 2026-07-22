@@ -172,4 +172,33 @@ const Map<String, String> zh_CN = {
 
   "menu_spicy_hot_pot":"麻辣烫",
 
+  // 麻辣烫称重 / 口味选择
+  "spicy_step_start":"开始",
+  "spicy_step_weigh":"称重",
+  "spicy_step_soup":"汤底",
+  "spicy_step_topping":"选配料",
+  "spicy_step_checkout":"结账",
+  "spicy_step_pay":"支付",
+  "spicy_weigh_title":"请将碗放到秤上称重",
+  "spicy_weigh_subtitle":"请把碗放在称重台上",
+  "spicy_weigh_unit_price":"单价",
+  "spicy_weigh_remeasure":"重新称重",
+  "spicy_weigh_scale_disconnected":"电子秤未连接",
+  "spicy_weigh_stable":"重量已稳定",
+  "spicy_weigh_settling":"称重中…请等待稳定",
+  "spicy_weigh_container_tip":"容器重量将在结账时扣除",
+  "spicy_weigh_skip":"跳过称重",
+  "spicy_weigh_waiting_stable":"等待稳定…",
+  "spicy_soup_title":"请选择汤底",
+  "spicy_soup_subtitle":"请点击喜欢的汤底",
+  "spicy_soup_no_extra_option":"该商品暂无可选项目",
+  "spicy_soup_select_options":"请选择选项",
+  "spicy_soup_options_for":"请选择@name的选项",
+  "spicy_soup_recommend":"推荐",
+  "spicy_weigh_manual_allow_title":"手动输入设置",
+  "spicy_weigh_manual_allow":"允许手动输入重量",
+  "spicy_weigh_manual_input":"手动输入",
+  "spicy_weigh_manual_input_title":"输入重量（g）",
+  "spicy_weigh_manual_ready":"已手动输入（可进入下一步）",
+
 };

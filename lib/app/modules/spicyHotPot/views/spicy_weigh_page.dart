@@ -7,12 +7,14 @@ import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/scale_serial_service.dart';
 import '../../../widget/KioskTap.dart';
+import '../../../widget/NumberKeyboard.dart';
 import 'widgets/spicy_hot_pot_chrome.dart';
 
 /// 麻辣烫全屏称重页面（只有1个称重商品时使用）
 ///
 /// UI 对齐设计图：logo+步骤条 / 计量说明 / 碗+秤示意+实时克重 / 戻る·跳过·次へ
 /// 功能：串口实时重量、稳定后才可下一步、跳过称重、重新称重
+/// 兜底：左上角长按开启「允许手动输入」后显示按钮，弹数字键盘录入克重
 class SpicyWeighPage extends StatefulWidget {
   final Map itemData;
   final int unitPricePer100g;
@@ -36,6 +38,10 @@ class SpicyWeighPage extends StatefulWidget {
 class _SpicyWeighPageState extends State<SpicyWeighPage> {
   String _input = '0';
   bool _stable = false;
+  /// 店员长按开启后，才显示「手动输入」按钮
+  bool _manualInputAllowed = false;
+  /// 当前重量是否来自手动键盘（避免串口覆盖）
+  bool _useManualWeight = false;
   Worker? _scaleWorker;
 
   ScaleSerialService get _scale {
@@ -77,6 +83,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     }
     _scaleWorker = ever<ScaleReading?>(_scale.weightRx, (reading) {
       if (!mounted || reading == null) return;
+      // 手动录入中不覆盖
+      if (_useManualWeight) return;
       setState(() {
         _stable = reading.isStable;
         final g = reading.grams;
@@ -104,6 +112,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     setState(() {
       _input = '0';
       _stable = false;
+      _useManualWeight = false;
     });
   }
 
@@ -113,24 +122,132 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     widget.onConfirm(_weight, _price);
   }
 
+  /// 左上角长按：是否允许手动输入
+  void _showManualAllowDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(3),
+        ),
+        title: Text(
+          'spicy_weigh_manual_allow_title'.tr,
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(28),
+            fontFamily: GFont.getFontFamily(),
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'spicy_weigh_manual_allow'.tr,
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24),
+                      fontFamily: GFont.getFontFamily(),
+                    ),
+                  ),
+                ),
+                Switch(
+                  value: _manualInputAllowed,
+                  activeColor: kSpicyAccent,
+                  onChanged: (v) {
+                    setState(() {
+                      _manualInputAllowed = v;
+                      if (!v) {
+                        _useManualWeight = false;
+                      }
+                    });
+                    setDialogState(() {});
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'tag_button_yes'.tr,
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontFamily: GFont.getFontFamily(),
+              ),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  void _openManualInputKeyboard() {
+    Get.dialog(
+      NumberKeyboardDialog(
+        title: 'spicy_weigh_manual_input_title'.tr,
+        initialValue: _hasWeight ? _input.split('.').first : '',
+        // 称重页：圆角更小、数字更大、输入框更高
+        borderRadius: 3,
+        inputFontSize: 40,
+        inputMinHeight: 72,
+        onConfirm: (value) {
+          if (value.isEmpty) return;
+          final grams = double.tryParse(value);
+          if (grams == null || grams <= 0) return;
+          setState(() {
+            _useManualWeight = true;
+            _stable = true;
+            _input = grams == grams.roundToDouble()
+                ? grams.toStringAsFixed(0)
+                : grams.toStringAsFixed(1);
+          });
+        },
+      ),
+      barrierDismissible: false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kSpicyBg,
       resizeToAvoidBottomInset: false,
-      body: Column(
+      body: Stack(
         children: [
-          const SpicyHotPotStepHeader(currentStep: 2),
-          Expanded(child: _buildContent()),
-          SpicyHotPotBottomBar(
-            onBack: _cancel,
-            backLabel: '戻る',
-            onMiddle: widget.onSkip != null ? _skip : null,
-            middleLabel: widget.onSkip != null ? '跳过称重' : null,
-            onNext: _confirm,
-            nextLabel: _hasWeight && !_stable ? '安定待ち…' : '次へ',
-            nextEnabled: _canConfirm,
+          Column(
+            children: [
+              const SpicyHotPotStepHeader(currentStep: 2),
+              Expanded(child: _buildContent()),
+              SpicyHotPotBottomBar(
+                onBack: _cancel,
+                backLabel: 'settlement_back'.tr,
+                onMiddle: widget.onSkip != null ? _skip : null,
+                middleLabel:
+                    widget.onSkip != null ? 'spicy_weigh_skip'.tr : null,
+                onNext: _confirm,
+                nextLabel: _hasWeight && !_stable
+                    ? 'spicy_weigh_waiting_stable'.tr
+                    : 'next_button'.tr,
+                nextEnabled: _canConfirm,
+              ),
+            ],
           ),
+          // 左上角隐形长按区：开启/关闭手动输入
+          /*Positioned(
+            left: 0,
+            top: 0,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onLongPress: _showManualAllowDialog,
+              child: SizedBox(
+                width: ScreenAdapter.width(140),
+                height: ScreenAdapter.height(100),
+              ),
+            ),
+          ),*/
         ],
       ),
     );
@@ -147,7 +264,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       child: Column(
         children: [
           Text(
-            'ボウルを計量してください',
+            'spicy_weigh_title'.tr,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: kSpicyText,
@@ -156,42 +273,42 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               fontWeight: FontWeight.w800,
             ),
           ),
-          SizedBox(height: ScreenAdapter.height(8)),
-          Text(
-            'ボウルを計量台にのせてください',
+          SizedBox(height: ScreenAdapter.height(18)),
+          /*Text(
+            'spicy_weigh_subtitle'.tr,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: kSpicyGrey,
               fontSize: ScreenAdapter.fontSize(24),
               fontFamily: GFont.getFontFamily(),
             ),
-          ),
+          ),*/
           SizedBox(height: ScreenAdapter.height(42)),
           _buildUnitPriceBadge(),
-          SizedBox(height: ScreenAdapter.height(28)),
+          SizedBox(height: ScreenAdapter.height(78)),
           _buildScaleVisual(),
           SizedBox(height: ScreenAdapter.height(14)),
           _buildStatusLine(),
           if (_hasWeight) ...[
-            SizedBox(height: ScreenAdapter.height(10)),
+            SizedBox(height: ScreenAdapter.height(15)),
             Text(
               '¥ $_price',
               style: TextStyle(
                 color: const Color(0xFFE64340),
-                fontSize: ScreenAdapter.fontSize(64),
+                fontSize: ScreenAdapter.fontSize(86),
                 fontFamily: GFont.getFontFamily(),
                 fontWeight: FontWeight.w900,
                 height: 1,
               ),
             ),
           ],
-          SizedBox(height: ScreenAdapter.height(18)),
+          SizedBox(height: ScreenAdapter.height(48)),
           _buildInfoTip(),
           SizedBox(height: ScreenAdapter.height(16)),
           KioskTap(
             onTap: _resetWeight,
             child: Text(
-              '再計量する',
+              'spicy_weigh_remeasure'.tr,
               style: TextStyle(
                 color: kSpicyAccent,
                 fontSize: ScreenAdapter.fontSize(22),
@@ -202,6 +319,33 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               ),
             ),
           ),
+          // 仅在长按开启「允许手动输入」后显示
+          if (_manualInputAllowed) ...[
+            SizedBox(height: ScreenAdapter.height(20)),
+            KioskTap(
+              onTap: _openManualInputKeyboard,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ScreenAdapter.width(36),
+                  vertical: ScreenAdapter.height(16),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: kSpicyAccent, width: 2),
+                ),
+                child: Text(
+                  'spicy_weigh_manual_input'.tr,
+                  style: TextStyle(
+                    color: kSpicyAccent,
+                    fontSize: ScreenAdapter.fontSize(26),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -214,7 +358,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         vertical: ScreenAdapter.height(16),
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4E8),
+        color: const Color(0xFFFBF6EE),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFFFC48A), width: 2),
         boxShadow: const [
@@ -230,12 +374,12 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '単価',
+            'spicy_weigh_unit_price'.tr,
             style: TextStyle(
               color: const Color(0xFF9A5B12),
               fontSize: ScreenAdapter.fontSize(22),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
             ),
           ),
           SizedBox(width: ScreenAdapter.width(14)),
@@ -245,7 +389,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               color: const Color(0xFF6F461A),
               fontSize: ScreenAdapter.fontSize(52),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
               height: 1,
             ),
           ),
@@ -258,7 +402,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
                 color: const Color(0xFF9A5B12),
                 fontSize: ScreenAdapter.fontSize(24),
                 fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -338,16 +482,18 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       final showStable = _canConfirm;
       final settling = _hasWeight && !_stable;
       String tip;
-      if (!linked) {
-        tip = '電子秤が未接続です';
+      if (_useManualWeight) {
+        tip = 'spicy_weigh_manual_ready'.tr;
+      } else if (!linked) {
+        tip = 'spicy_weigh_scale_disconnected'.tr;
       } else if (showStable) {
-        tip = '重量が安定しました';
+        tip = 'spicy_weigh_stable'.tr;
       } else if (settling) {
-        tip = '計量中…安定するまでお待ちください';
+        tip = 'spicy_weigh_settling'.tr;
       } else {
-        tip = 'ボウルを計量台にのせてください';
+        tip = 'spicy_weigh_subtitle'.tr;
       }
-      final color = showStable
+      final color = (_useManualWeight || showStable)
           ? const Color(0xFF4CAF50)
           : settling
               ? const Color(0xFFFF9800)
@@ -367,7 +513,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: color,
-                fontSize: ScreenAdapter.fontSize(22),
+                fontSize: ScreenAdapter.fontSize(32),
                 fontFamily: GFont.getFontFamily(),
                 fontWeight: FontWeight.w500,
               ),
@@ -390,18 +536,17 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.info_outline,
               color: kSpicyAccent, size: ScreenAdapter.fontSize(24)),
           SizedBox(width: ScreenAdapter.width(10)),
-          Expanded(
-            child: Text(
-              '容器の重さはお会計から差し引かれます',
-              style: TextStyle(
-                color: kSpicyGrey,
-                fontSize: ScreenAdapter.fontSize(20),
-                fontFamily: GFont.getFontFamily(),
-              ),
+          Text(
+            'spicy_weigh_container_tip'.tr,
+            style: TextStyle(
+              color: kSpicyGrey,
+              fontSize: ScreenAdapter.fontSize(24),
+              fontFamily: GFont.getFontFamily(),
             ),
           ),
         ],

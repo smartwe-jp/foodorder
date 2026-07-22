@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../config/font.dart';
 import '../../../../services/ScreenAdapter.dart';
 import '../../../../widget/KioskTap.dart';
@@ -10,15 +11,15 @@ const kSpicyMuted = Color(0xFF9E9E9E);
 const kSpicyBorder = Color(0xFFDCDCDC);
 const kSpicyBg = Color(0xFFF5F5F5);
 
-/// 麻辣烫流程 6 步（与设计图对齐）
-const kSpicySteps = [
-  '開始',
-  '秤重',
-  'スープ',
-  '具材選択',
-  'お会計',
-  '支払い',
-];
+/// 麻辣烫流程 6 步（与设计图对齐，文案走多语）
+List<String> get kSpicySteps => [
+      'spicy_step_start'.tr,
+      'spicy_step_weigh'.tr,
+      'spicy_step_soup'.tr,
+      'spicy_step_topping'.tr,
+      'spicy_step_checkout'.tr,
+      'spicy_step_pay'.tr,
+    ];
 
 /// 顶栏：左侧 logo + 右侧步骤条（白底）
 class SpicyHotPotStepHeader extends StatelessWidget {
@@ -40,8 +41,9 @@ class SpicyHotPotStepHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildLogo(),
-          SizedBox(width: ScreenAdapter.width(20)),
+          // 暂无店铺 logo / 店名，先隐藏左侧品牌区
+          // _buildLogo(),
+          // SizedBox(width: ScreenAdapter.width(20)),
           Expanded(child: _buildSteps()),
         ],
       ),
@@ -169,7 +171,7 @@ class SpicyHotPotStepHeader extends StatelessWidget {
   }
 }
 
-/// 结算页风格底栏按钮：灰底、白色返回/跳过、主色下一步
+/// 结算页风格底栏：左返回、中跳过（居中醒目色）、右下一步（弹性宽度）
 class SpicyHotPotBottomBar extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onNext;
@@ -177,7 +179,7 @@ class SpicyHotPotBottomBar extends StatelessWidget {
   final String nextLabel;
   final bool nextEnabled;
 
-  /// 中间可选按钮（如「跳过称重」）
+  /// 中间可选按钮（如「跳过称重」）——固定居中
   final VoidCallback? onMiddle;
   final String? middleLabel;
 
@@ -185,42 +187,58 @@ class SpicyHotPotBottomBar extends StatelessWidget {
     Key? key,
     this.onBack,
     this.onNext,
-    this.backLabel = '戻る',
-    this.nextLabel = '次へ',
+    this.backLabel = '',
+    this.nextLabel = '',
     this.nextEnabled = true,
     this.onMiddle,
     this.middleLabel,
   }) : super(key: key);
 
+  /// 跳过等次要操作的醒目色（与主色下一步区分）
+  static const Color _middleAccent = Color(0xFFFF9800);
+
   @override
   Widget build(BuildContext context) {
+    final resolvedBack =
+        backLabel.isEmpty ? 'settlement_back'.tr : backLabel;
+    final resolvedNext = nextLabel.isEmpty ? 'next_button'.tr : nextLabel;
     return Container(
       height: ScreenAdapter.height(200),
       color: const Color(0xFFDCDCDC),
       padding: EdgeInsets.symmetric(horizontal: ScreenAdapter.width(40)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          _plainBtn(
-            label: backLabel,
-            onTap: onBack,
-            width: ScreenAdapter.width(180),
+          // 左右：返回 + 下一步（弹性宽度）
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _plainBtn(
+                label: resolvedBack,
+                onTap: onBack,
+                width: ScreenAdapter.width(180),
+              ),
+              const Spacer(),
+              _filledBtn(
+                label: resolvedNext,
+                onTap: nextEnabled ? onNext : null,
+                enabled: nextEnabled,
+                minWidth: ScreenAdapter.width(180),
+                horizontalPadding: ScreenAdapter.width(20),
+              ),
+            ],
           ),
-          const Spacer(),
-          if (middleLabel != null) ...[
-            _plainBtn(
-              label: middleLabel!,
-              onTap: onMiddle,
-              width: ScreenAdapter.width(180),
+          // 中间：跳过称重 — 按内容宽度居中，不可撑满盖住左右按钮
+          if (middleLabel != null)
+            Align(
+              alignment: Alignment.center,
+              child: _middleBtn(
+                label: middleLabel!,
+                onTap: onMiddle,
+                minWidth: ScreenAdapter.width(180),
+                horizontalPadding: ScreenAdapter.width(20),
+              ),
             ),
-            SizedBox(width: ScreenAdapter.width(20)),
-          ],
-          _filledBtn(
-            label: nextLabel,
-            onTap: nextEnabled ? onNext : null,
-            enabled: nextEnabled,
-            width: ScreenAdapter.width(middleLabel != null ? 180 : 270),
-          ),
         ],
       ),
     );
@@ -229,14 +247,20 @@ class SpicyHotPotBottomBar extends StatelessWidget {
   Widget _plainBtn({
     required String label,
     VoidCallback? onTap,
-    required double width,
+    double? width,
+    double? minWidth,
+    double horizontalPadding = 0,
   }) {
     return KioskTap(
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
         width: width,
+        constraints: minWidth != null
+            ? BoxConstraints(minWidth: minWidth)
+            : null,
         height: ScreenAdapter.height(100),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5.0),
@@ -258,18 +282,71 @@ class SpicyHotPotBottomBar extends StatelessWidget {
     );
   }
 
+  Widget _middleBtn({
+    required String label,
+    VoidCallback? onTap,
+    required double minWidth,
+    double horizontalPadding = 0,
+  }) {
+    return KioskTap(
+      onTap: onTap,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: minWidth,
+          // 限制最大宽度，避免遮挡左右按钮
+          maxWidth: ScreenAdapter.width(280),
+        ),
+        child: Container(
+          alignment: Alignment.center,
+          height: ScreenAdapter.height(100),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          decoration: BoxDecoration(
+            color: _middleAccent,
+            borderRadius: BorderRadius.circular(5.0),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x33000000),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: ScreenAdapter.fontSize(34.0),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _filledBtn({
     required String label,
     VoidCallback? onTap,
     required bool enabled,
-    required double width,
+    double? width,
+    double? minWidth,
+    double horizontalPadding = 0,
   }) {
     return KioskTap(
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
         width: width,
+        constraints: minWidth != null
+            ? BoxConstraints(minWidth: minWidth)
+            : null,
         height: ScreenAdapter.height(100),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
         decoration: BoxDecoration(
           color: enabled ? kSpicyAccent : const Color(0xFFBDBDBD),
           borderRadius: BorderRadius.circular(5.0),

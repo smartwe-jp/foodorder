@@ -20,36 +20,32 @@ class PosCheckView extends StatelessWidget {
             style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
         ),
-        contentPadding: const EdgeInsets.all(10),
+        contentPadding: const EdgeInsets.fromLTRB(24, 10, 24, 20),
         children: [
-          Center(
-            child: SizedBox(
-              height: 170,
-              width: 300,
-              child: _buildStatusView(posCheckStatus.value),
-            ),
+          SizedBox(
+            width: 520,
+            child: _buildStatusView(posCheckStatus.value),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 24),
           if (posCheckStatus.value != 0)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (posCheckStatus.value == 0)
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      posCheckStatus.value = 0; // 重新检测
-                      // 这里可以调用检测方法
-                      onRetry();
-                    },
-                    child: Text('retry_button'.tr),
+                if (posCheckStatus.value == 2) ...[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        posCheckStatus.value = 0; // 重新检测
+                        onRetry();
+                      },
+                      child: Text('retry_button'.tr),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
+                  const SizedBox(width: 20),
+                ],
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      //posCheckStatus.value = 0;
                       Get.back();
                     },
                     child: Text('tag_button_yes'.tr),
@@ -66,33 +62,45 @@ class PosCheckView extends StatelessWidget {
     switch (status) {
       case 0:
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(strokeWidth: 8),
             const SizedBox(height: 20),
-            Text('pos_checking'.tr, style: const TextStyle(fontSize: 18)),
+            Text(
+              'pos_checking'.tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, height: 1.4),
+            ),
           ],
         );
       case 1:
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 80),
             const SizedBox(height: 20),
-            Text('pos_check_success'.tr, style: const TextStyle(fontSize: 18)),
+            Text(
+              'pos_check_success'.tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, height: 1.4),
+            ),
           ],
         );
       case 2:
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error, color: Colors.red, size: 80),
             const SizedBox(height: 20),
-            Text('pos_check_failed'.tr, style: const TextStyle(fontSize: 18)),
+            Text(
+              'pos_check_failed'.tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, height: 1.4),
+            ),
           ],
         );
       default:
-        return Container();
+        return const SizedBox.shrink();
     }
   }
 }

@@ -97,7 +97,9 @@ class CheckoutPageView extends GetView {
 
 
 
+  // 不计旧モード残留的 spicyHotPot / 注文方式字符串，避免首页按钮宽度算错
   int get buttonCount => controller.machineInfo.machineModeInfo.entries
+      .where((e) => e.key != 'spicyHotPot' && e.key != 'spicyHotPotOrderType')
       .map((e) {
         if (e.key == 'checkout') {
           return e.value && controller.machineInfo.actuarial;
@@ -134,10 +136,7 @@ class CheckoutPageView extends GetView {
             ),
             title:  buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_eatin'.tr,
             selected: true,
-            onTap: () {
-              controller.machineInfo.currentMode = MachineMode.sell;
-              controller.goMenu(controller.selectLanguage);
-            },
+            onTap: () => controller.startDiningOrder(takeout: false),
           ),
 
         if (controller.machineInfo.isScanbuyOn)
@@ -190,28 +189,7 @@ class CheckoutPageView extends GetView {
             ),
             title: buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_takeout'.tr,
             selected: buttonCount == 1,
-            onTap: () {
-              controller.machineInfo.currentMode = MachineMode.takeout;
-              controller.goMenu(controller.selectLanguage);
-            },
-          ),
-
-        if (controller.machineInfo.isSpicyHotPotOn)
-          BookingTypeButton(
-            width: _getItemWidth(),
-            bgColor: controller.themeColor,
-            textColor: controller.themeTextColor,
-            icon: Icon(
-              Icons.restaurant_menu,
-              color: controller.themeTextColor,
-              size: 120,
-            ),
-            title: 'menu_spicy_hot_pot'.tr,//麻辣烫
-            selected: buttonCount == 1,
-            onTap: () {
-              controller.machineInfo.currentMode = MachineMode.spicyHotPot;
-              controller.goMenu(controller.selectLanguage);
-            },
+            onTap: () => controller.startDiningOrder(takeout: true),
           ),
         ],
       

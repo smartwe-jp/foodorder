@@ -54,6 +54,10 @@ class MachineInfoController extends GetxController {
 
   //spicyHotPot mode
   late String isSpicyHotPotMode;
+  /// 店铺是否开通麻辣烫（来自 smartwe_spicyHotPot 缓存，非モード开关）
+  bool isShopSpicyHotPot = false;
+  /// 从首页「外带」进入麻辣烫流程时保留外带语义
+  bool spicyHotPotTakeout = false;
 
   //settings
   double machinePrintWidth = 385.0;
@@ -126,6 +130,7 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+  /// 旧モード开关（已弃用）；新逻辑请用 [isShopSpicyHotPot]
   bool get isSpicyHotPotOn => machineModeInfo['spicyHotPot'] ?? false;
   // 麻辣烫注文方式：'scan' 扫码注文（默认），'normal' 普通注文（触屏选择）
   String get spicyHotPotOrderType => machineModeInfo['spicyHotPotOrderType'] ?? 'scan';
@@ -141,7 +146,9 @@ class MachineInfoController extends GetxController {
   }
 
   bool get isTakeoutMode {
-    return currentMode == MachineMode.takeout || currentMode == MachineMode.scan;
+    return currentMode == MachineMode.takeout ||
+        currentMode == MachineMode.scan ||
+        (currentMode == MachineMode.spicyHotPot && spicyHotPotTakeout);
   }
 
   String get printType {
@@ -316,6 +323,10 @@ class MachineInfoController extends GetxController {
     machineModeInfo = await HomeServices.getMachineModeInfo();
     logI('machineModeInfo: $machineModeInfo');
 
+    // 店铺是否开通麻辣烫（TransitPage 写入的 smartwe_spicyHotPot）
+    final spicyHotPotFlag = await HomeServices.getSmartweSpicyHotPotData();
+    isShopSpicyHotPot = spicyHotPotFlag?.toString() == '1';
+    logI('isShopSpicyHotPot: $isShopSpicyHotPot');
 
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
 

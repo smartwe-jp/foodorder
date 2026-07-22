@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/color.dart';
@@ -60,7 +61,7 @@ class SpicyHotPotModeView extends StatelessWidget {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: ctrl.goHome,
-                child: const Text('戻る', style: TextStyle(color: _kRed)),
+                child: Text('settlement_back'.tr, style: TextStyle(color: _kRed)),
               ),
             ],
           ),
@@ -394,7 +395,7 @@ class SpicyHotPotModeView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'スープをお選びください',
+                  'spicy_soup_title'.tr,
                   style: TextStyle(
                     color: _kText,
                     fontSize: ScreenAdapter.fontSize(40),
@@ -404,7 +405,7 @@ class SpicyHotPotModeView extends StatelessWidget {
                 ),
                 SizedBox(height: ScreenAdapter.height(6)),
                 Text(
-                  'お好みのスープをタップしてください',
+                  'spicy_soup_subtitle'.tr,
                   style: TextStyle(
                     color: _kGrey,
                     fontSize: ScreenAdapter.fontSize(22),
@@ -454,7 +455,7 @@ class SpicyHotPotModeView extends StatelessWidget {
                 padding:
                     EdgeInsets.symmetric(vertical: ScreenAdapter.height(24)),
                 child: Text(
-                  'このメニューに追加オプションはありません',
+                  'spicy_soup_no_extra_option'.tr,
                   style: TextStyle(
                     color: _kGrey,
                     fontSize: ScreenAdapter.fontSize(24),
@@ -481,7 +482,10 @@ class SpicyHotPotModeView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    soupName.isNotEmpty ? '${soupName}のオプションを選択' : 'オプションを選択',
+                    soupName.isNotEmpty
+                        ? 'spicy_soup_options_for'
+                            .trParams({'name': soupName})
+                        : 'spicy_soup_select_options'.tr,
                     style: TextStyle(
                       color: _kText,
                       fontSize: ScreenAdapter.fontSize(26),
@@ -501,118 +505,186 @@ class SpicyHotPotModeView extends StatelessWidget {
     });
   }
 
-  /// 汤底横排卡片（设计图风格）
+  /// 汤底卡片：间距减半、每行最多 4 个，图片 BoxFit.cover 填满方格
   Widget _buildOptionItemCards(List items, SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       final selectedCode = ctrl.selectedOptionMenuCode.value;
-      return SizedBox(
-        height: ScreenAdapter.height(260),
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: items.length,
-          separatorBuilder: (_, __) => SizedBox(width: ScreenAdapter.width(14)),
-          itemBuilder: (_, index) {
-            final item = items[index] as Map;
-            final code = item['menuCode']?.toString() ?? '';
-            final name = item['mainTitle']?.toString() ?? '';
-            final img = item['homeImage']?.toString() ??
-                item['image']?.toString() ??
-                '';
-            final isSelected = selectedCode == code;
-            final isRecommend = index == 0;
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final count = items.length;
+          // 每行最多 4 个；少于 4 个则按实际数量均分（图更大）
+          final columns = count <= 0 ? 1 : (count > 4 ? 4 : count);
+          // 原间距 16，减半
+          final spacing = ScreenAdapter.width(8);
+          final runSpacing = ScreenAdapter.height(8);
+          final cardWidth =
+              (constraints.maxWidth - spacing * (columns - 1)) / columns;
+          // 图片贴满卡片宽，subtitle 才能左右下齐平无空隙
+          final hPad = 0.0;
+          final imageSize = cardWidth.clamp(100.0, 320.0);
 
-            return KioskTap(
-              onTap: () => ctrl.selectOptionMenuItem(code),
-              debounceDuration: const Duration(milliseconds: 120),
-              child: Container(
-                width: ScreenAdapter.width(180),
-                padding: EdgeInsets.fromLTRB(
-                  ScreenAdapter.width(10),
-                  ScreenAdapter.height(10),
-                  ScreenAdapter.width(10),
-                  ScreenAdapter.height(12),
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFFEAF8F7) : _kCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected ? _kRed : _kBorder,
-                    width: isSelected ? 2.5 : 1,
+          return Wrap(
+            spacing: spacing,
+            runSpacing: runSpacing,
+            children: List.generate(count, (index) {
+              final item = items[index] as Map;
+              final code = item['menuCode']?.toString() ?? '';
+              final name = item['mainTitle']?.toString() ?? '';
+              final subtitle = _optionItemSubtitle(item);
+              final img = item['homeImage']?.toString() ??
+                  item['image']?.toString() ??
+                  '';
+              final isSelected = selectedCode == code;
+              final isRecommend = index == 0;
+
+              return KioskTap(
+                onTap: () => ctrl.selectOptionMenuItem(code),
+                debounceDuration: const Duration(milliseconds: 120),
+                child: Container(
+                  width: cardWidth,
+                  padding: EdgeInsets.only(
+                    top: ScreenAdapter.height(0),
+                    bottom: ScreenAdapter.height(18),
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5.0),
-                              child: SizedBox(
-                                width: ScreenAdapter.width(138),
-                                height: ScreenAdapter.width(138),
-                                child: img.isNotEmpty
-                                    ? Image.network(
-                                        img,
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFFEAF8F7) : _kCard,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected ? _kRed : _kBorder,
+                      width: isSelected ? 2.5 : 1,
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // 图片顶满；subtitle 贴底左右齐平
+                          SizedBox(
+                            width: imageSize,
+                            height: imageSize,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                img.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        key: ValueKey(img),
+                                        imageUrl: img,
+                                        cacheManager: menuImageCacheManager,
                                         fit: BoxFit.cover,
-                                        gaplessPlayback: true,
-                                        errorBuilder: (_, __, ___) =>
+                                        width: imageSize,
+                                        height: imageSize,
+                                        fadeInDuration: Duration.zero,
+                                        fadeOutDuration: Duration.zero,
+                                        memCacheWidth:
+                                            (imageSize * 2).round().clamp(1, 1400),
+                                        memCacheHeight:
+                                            (imageSize * 2).round().clamp(1, 1400),
+                                        placeholder: (_, __) =>
+                                            _buildOptionItemPlaceholder(
+                                                isSelected),
+                                        errorWidget: (_, __, ___) =>
                                             _buildOptionItemPlaceholder(
                                                 isSelected),
                                       )
                                     : _buildOptionItemPlaceholder(isSelected),
+                                if (subtitle.isNotEmpty)
+                                  Positioned(
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ScreenAdapter.width(8),
+                                        vertical: ScreenAdapter.height(4),
+                                      ),
+                                      color: const Color.fromARGB(
+                                          169, 255, 255, 255),
+                                      child: Text(
+                                        subtitle,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(18),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: GFont.getFontFamily(),
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.itemSubTitleColor),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: ScreenAdapter.height(16)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ScreenAdapter.width(4),
+                            ),
+                            child: Text(
+                              name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: isSelected ? _kRed : _kText,
+                                fontSize: ScreenAdapter.fontSize(24),
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w700,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (isRecommend)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ScreenAdapter.width(8),
+                              vertical: ScreenAdapter.height(3),
+                            ),
+                            decoration: BoxDecoration(
+                              color: _kRed,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'spicy_soup_recommend'.tr,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: ScreenAdapter.fontSize(14),
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(height: ScreenAdapter.height(10)),
-                        Text(
-                          name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: isSelected ? _kRed : _kText,
-                            fontSize: ScreenAdapter.fontSize(22),
-                            fontFamily: GFont.getFontFamily(),
-                            fontWeight: FontWeight.w700,
-                            height: 1.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (isRecommend)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: ScreenAdapter.width(8),
-                            vertical: ScreenAdapter.height(3),
-                          ),
-                          decoration: BoxDecoration(
-                            color: _kRed,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'おすすめ',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: ScreenAdapter.fontSize(14),
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            }),
+          );
+        },
       );
     });
+  }
+
+  /// 解析汤底商品副标题（兼容 string / list，与菜单字段一致）
+  String _optionItemSubtitle(Map item) {
+    final raw = item['subtitle'] ?? item['subTitle'] ?? item['remark'];
+    if (raw == null) return '';
+    if (raw is List) {
+      return raw
+          .map((e) => e?.toString().trim() ?? '')
+          .where((e) => e.isNotEmpty)
+          .join(' ');
+    }
+    return raw.toString().trim();
   }
 
   Widget _buildOptionItemPlaceholder(bool isSelected) {
@@ -621,7 +693,7 @@ class SpicyHotPotModeView extends StatelessWidget {
       child: Center(
         child: Icon(
           Icons.ramen_dining,
-          size: ScreenAdapter.fontSize(48),
+          size: ScreenAdapter.fontSize(64),
           color: isSelected ? _kRed : const Color(0xFFBDBDBD),
         ),
       ),
@@ -714,7 +786,8 @@ class SpicyHotPotModeView extends StatelessWidget {
         onSelected:
             (gCode, optionCode, optionName, optionPrice, isAdd, isSelected) {
           ctrl.updateNormalOptionFromWidget(
-              groupKey, optionCode, optionName, isAdd, isMulti);
+              groupKey, optionCode, optionName, isAdd, isMulti,
+              groupTitle: groupName);
         },
       ),
     );
@@ -726,9 +799,9 @@ class SpicyHotPotModeView extends StatelessWidget {
       final canNext = ctrl.canConfirmNormalOrder;
       return SpicyHotPotBottomBar(
         onBack: () => ctrl.cancelNormalWeigh(),
-        backLabel: '戻る',
+        backLabel: 'settlement_back'.tr,
         onNext: canNext ? () => ctrl.confirmNormalOrder() : null,
-        nextLabel: '次へ',
+        nextLabel: 'next_button'.tr,
         nextEnabled: canNext,
       );
     });

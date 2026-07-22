@@ -759,13 +759,12 @@ class SystemSettingPageView extends GetView {
     );
   }
 
-  //设置机器类型：多按钮自动换行，避免 5 个挤在一行
+  //设置机器类型：多按钮自动换行（麻辣烫由店铺开通，不再作为モード芯片）
   setMachineMode(Map machineInfos) {
     bool isSellOn = machineInfos['sell'] ?? false;
     bool isTakeoutOn = machineInfos['takeout'] ?? false;
     bool isCheckoutOn = machineInfos['checkout'] ?? false;
     bool isScanbuyOn = machineInfos['scanbuy'] ?? false;
-    bool isSpicyHotPotOn = machineInfos['spicyHotPot'] ?? false;
 
     final buttons = <Widget>[
       _machineModeChip(
@@ -791,13 +790,6 @@ class SystemSettingPageView extends GetView {
         selected: isScanbuyOn,
         onTap: () => controller.updateMachineMode(scanbuy: !isScanbuyOn),
       ),
-      if (controller.isspicyHotPot.value == "1")
-        _machineModeChip(
-          label: "麻辣烫",
-          selected: isSpicyHotPotOn,
-          onTap: () =>
-              controller.updateMachineMode(spicyHotPot: !isSpicyHotPotOn),
-        ),
     ];
 
     return Container(
@@ -2134,7 +2126,8 @@ class SystemSettingPageView extends GetView {
                                           setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                         ]
                                     ), //设置机器类型
-                                  if(controller.machineInfo.machineModeInfo['spicyHotPot'] == true)
+                                  // 店铺开通麻辣烫即可配置注文方式与电子秤
+                                  if(controller.isspicyHotPot.value == "1")
                                     TableRow(
                                         children: <Widget>[
                                           Container(
@@ -2151,7 +2144,6 @@ class SystemSettingPageView extends GetView {
                                           setSpicyHotPotOrderType(),
                                         ]
                                     ),
-                                  // 店铺开通麻辣烫即可配置电子秤（不必先勾选モード里的麻辣烫）
                                   if(controller.isspicyHotPot.value == "1")
                                     TableRow(
                                         children: <Widget>[
