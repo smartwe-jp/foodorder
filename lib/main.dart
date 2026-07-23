@@ -6,28 +6,25 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:foodorder/app/services/app_event_outbox.dart';
+import 'package:foodorder/app/services/app_event_sync_service.dart';
+import 'package:foodorder/app/services/incident_outbox.dart';
+import 'package:foodorder/app/services/incident_sync_service.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
 import 'app/controllers/app_config.dart';
-import 'app/modules/TransitPage/controllers/transit_page_controller.dart';
-import 'app/routes/app_pages.dart';
-import 'app/print_task/print_task_models.dart';
 import 'app/print_failed/print_failed_models.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'app/services/CustomLogerHandler.dart';
-import 'app/services/ResetToHomeTimer.dart';
+import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
 
 class _NavBounceTrack {
@@ -75,11 +72,28 @@ class RouteDebugObserver extends NavigatorObserver {
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    CustomLogHandler.setEventSink(appEventReporter.record);
+    await CustomLogHandler.initializeLogging();
+    CustomLogHandler.configureContext(
+      environment: appEnvironment,
+    );
+    logI(
+      'Application bootstrap started',
+      tag: 'Bootstrap',
+      eventCode: 'APP_BOOTSTRAP_STARTED',
     );
     await GetStorage.init();
     await Hive.initFlutter();
+    await appEventOutbox.initialize();
+    await appEventReporter.initialize();
+    await incidentOutbox.initialize();
+    if (openObserveUploadEnabled) {
+      await appEventSyncService.start();
+      await incidentSyncService.start();
+    }
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     // if (!Hive.isAdapterRegistered(61)) {
     //   Hive.registerAdapter(PrintJobAdapter());
     // }
@@ -106,13 +120,20 @@ void main() {
       return config;
     });
 
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    FlutterError.onError = (details) {
+      _captureUnhandledIncident(
+        eventCode: 'UNHANDLED_FLUTTER_ERROR',
+        message: 'Unhandled Flutter error',
+        error: details.exception,
+        stackTrace: details.stack,
+      );
+      FirebaseCrashlytics.instance.recordFlutterError(details);
+    };
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
-    await CustomLogHandler.initializeLogging();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
       runApp(ScreenUtilInit(
@@ -157,8 +178,9 @@ void main() {
                     builder: (context, widget) {
                       return MediaQuery(
                         ///设置文字大小不随系统设置改变
-                        data: MediaQuery.of(context)
-                            .copyWith(textScaleFactor: 1.0),
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: TextScaler.noScaling,
+                        ),
                         child: FlutterEasyLoading(child: widget),
                       );
                     },
@@ -182,8 +204,30 @@ void main() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
     print('runZonedGuarded: Caught error in my root zone.:$error');
-    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    _captureUnhandledIncident(
+      eventCode: 'UNHANDLED_ROOT_ZONE_ERROR',
+      message: 'Unhandled root zone error',
+      error: error,
+      stackTrace: stackTrace,
+    );
+    if (Firebase.apps.isNotEmpty) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
   });
+}
+
+void _captureUnhandledIncident({
+  required String eventCode,
+  required String message,
+  required Object error,
+  StackTrace? stackTrace,
+}) {
+  incidentReporter.capture(
+    eventCode: eventCode,
+    message: message,
+    error: error,
+    stackTrace: stackTrace,
+  );
 }
 
 void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {

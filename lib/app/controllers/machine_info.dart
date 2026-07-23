@@ -202,8 +202,15 @@ class MachineInfoController extends GetxController {
 
     machineCode = await HomeServices.getMachineInfo() ?? "";
     shopCode = await HomeServices.getShopCode() ?? "";
+    CustomLogHandler.configureContext(
+      merchantId: shopCode,
+      machineId: machineCode,
+    );
 
-    logI('loadMachineSettingInfo 0');
+    logI(
+      'Machine log context configured',
+      eventCode: 'MACHINE_CONTEXT_CONFIGURED',
+    );
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
     logI('--isBackHome: $isBackHome');

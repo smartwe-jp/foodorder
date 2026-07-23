@@ -1,0 +1,71 @@
+map_hash_bucket_size 128;
+
+limit_req_zone $binary_remote_addr zone=incident_ingest:10m rate=5r/s;
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+map $http_x_ingest_key $ingest_key_valid {
+    default 0;
+    "${INGEST_KEY}" 1;
+}
+
+upstream openobserve_backend {
+    server openobserve:5080;
+    keepalive 16;
+}
+
+server {
+    listen 8080;
+    server_name _;
+
+    server_tokens off;
+
+    location = /nginx-health {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location ~ ^/app-(events|incidents)$ {
+        if ($ingest_key_valid = 0) {
+            return 401;
+        }
+
+        limit_except POST {
+            deny all;
+        }
+
+        limit_req zone=incident_ingest burst=50 nodelay;
+        client_max_body_size 2m;
+
+        proxy_http_version 1.1;
+        proxy_set_header Authorization "Basic ${OPENOBSERVE_BASIC_AUTH}";
+        proxy_set_header Content-Type "application/json";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        rewrite ^/app-(events|incidents)$ /api/default/app_events/_json break;
+        proxy_pass http://openobserve_backend;
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+    }
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_pass http://openobserve_backend;
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+}
