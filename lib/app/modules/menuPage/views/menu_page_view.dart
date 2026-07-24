@@ -10,6 +10,8 @@ import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/check_out_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_page_sideBar.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/spicy_scan_tip_banner.dart';
+import 'package:foodorder/app/modules/spicyHotPot/views/widgets/spicy_hot_pot_chrome.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
 
 import 'package:get/get.dart';
@@ -256,9 +258,17 @@ class MenuPageView extends GetView<MenuPageController> {
                         ),
                         child: Column(
                           children: [
+                            // 麻辣烫：顶部步骤条（第4步=配料，左侧返回）+ 扫码提示
+                            if (controller.machineInfo.isShopSpicyHotPot) ...[
+                              SpicyHotPotStepHeader(
+                                currentStep: 4,
+                                onBack: () => controller.gotoLanguageHome(),
+                              ),
+                              const SpicyScanTipBanner(),
+                            ],
                             if (controller.machineInfo.machineType == MachineType.new_panel_max && controller.machineInfo.menu_direction != "1")
                               topArea(),
-                            //顶部导航
+                            //顶部导航（横分类：步骤条、扫码提示之下）
                             if (controller.machineInfo.menu_direction == "1")
                             GetBuilder<MenuPageController>(
                                 id: 'side_bar',
@@ -278,7 +288,7 @@ class MenuPageView extends GetView<MenuPageController> {
                             }),
                         
                             SizedBox(height: ScreenAdapter.height(15)),
-                        
+
                             Expanded(
                               child: Row(
                                 children: [
@@ -291,7 +301,7 @@ class MenuPageView extends GetView<MenuPageController> {
                                         children: [
                                           Expanded(
                                               child: MenuView(state: controller)),
-                        
+
                                           if (controller.machineInfo.menu_direction != '1')
                                             bottomCart()
                                         ],

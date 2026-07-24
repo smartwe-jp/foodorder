@@ -200,4 +200,10 @@ const Map<String, String> en_US = {
   "spicy_weigh_manual_input":"Manual input",
   "spicy_weigh_manual_input_title":"Enter weight (g)",
   "spicy_weigh_manual_ready":"Manual weight entered (you can continue)",
+
+  "spicy_menu_scan_title":"Scan barcode to add to cart",
+  "spicy_menu_scan_subtitle":"Or tap a product directly",
+  "spicy_menu_scan_howto":"How to use",
+  "spicy_menu_scan_howto_title":"How to use barcode",
+  "spicy_menu_scan_howto_body":"Scan the barcode and the item will be added to your cart automatically",
 };

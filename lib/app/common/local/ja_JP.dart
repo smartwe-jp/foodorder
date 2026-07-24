@@ -202,4 +202,10 @@ const Map<String, String> ja_JP = {
   "spicy_weigh_manual_input":"手動入力",
   "spicy_weigh_manual_input_title":"重量を入力（g）",
   "spicy_weigh_manual_ready":"手動入力済み（次へ進めます）",
+
+  "spicy_menu_scan_title":"商品バーコードをスキャンしてカートに追加",
+  "spicy_menu_scan_subtitle":"商品を直接タップしても追加できます",
+  "spicy_menu_scan_howto":"使い方",
+  "spicy_menu_scan_howto_title":"バーコードの使い方",
+  "spicy_menu_scan_howto_body":"バーコードをスキャンすると、自動でカートに追加されます",
 };

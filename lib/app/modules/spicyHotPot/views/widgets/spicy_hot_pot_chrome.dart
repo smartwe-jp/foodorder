@@ -21,31 +21,82 @@ List<String> get kSpicySteps => [
       'spicy_step_pay'.tr,
     ];
 
-/// 顶栏：左侧 logo + 右侧步骤条（白底）
+/// 顶栏：可选左侧返回 + 右侧步骤条（白底）
 class SpicyHotPotStepHeader extends StatelessWidget {
   /// 当前步骤，1-based（1=開始 … 6=支払い）
   final int currentStep;
 
-  const SpicyHotPotStepHeader({Key? key, required this.currentStep})
-      : super(key: key);
+  /// 左侧返回；为 null 时不显示返回按钮
+  final VoidCallback? onBack;
+  final String? backLabel;
+
+  const SpicyHotPotStepHeader({
+    Key? key,
+    required this.currentStep,
+    this.onBack,
+    this.backLabel,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.fromLTRB(
-        ScreenAdapter.width(28),
+        ScreenAdapter.width(onBack != null ? 16 : 28),
         ScreenAdapter.height(18),
         ScreenAdapter.width(20),
         ScreenAdapter.height(14),
       ),
       child: Row(
         children: [
+          if (onBack != null) ...[
+            _buildBackButton(),
+            SizedBox(width: ScreenAdapter.width(12)),
+          ],
           // 暂无店铺 logo / 店名，先隐藏左侧品牌区
           // _buildLogo(),
           // SizedBox(width: ScreenAdapter.width(20)),
           Expanded(child: _buildSteps()),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    final label =
+        (backLabel == null || backLabel!.isEmpty) ? 'settlement_back'.tr : backLabel!;
+    return KioskTap(
+      onTap: onBack,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: ScreenAdapter.width(16),
+          vertical: ScreenAdapter.height(10),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: kSpicyBorder, width: 1.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.arrow_back_ios_new,
+              size: ScreenAdapter.fontSize(22),
+              color: kSpicyText,
+            ),
+            SizedBox(width: ScreenAdapter.width(4)),
+            Text(
+              label,
+              style: TextStyle(
+                color: kSpicyText,
+                fontSize: ScreenAdapter.fontSize(24),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

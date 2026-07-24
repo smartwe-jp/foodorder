@@ -73,10 +73,12 @@ class SpicyHotPotModeView extends StatelessWidget {
   Widget _buildBody(SpicyHotPotCheckoutController ctrl) {
     // 普通注文选项步：用设计图白顶栏布局，不再套青绿顶栏
     return Obx(() {
-      final isOptionStep = ctrl.isNormalMode && ctrl.normalStep.value == 1;
-      final shouldAutoOpenWeigh = ctrl.isNormalMode &&
-          ctrl.normalStep.value == 0 &&
-          ctrl.categoryMenuList.length == 1;
+      // 必须先读 .obs，避免 isNormalMode==false 时 && 短路导致 Obx 无订阅
+      final normalStep = ctrl.normalStep.value;
+      final menuCount = ctrl.categoryMenuList.length;
+      final isOptionStep = ctrl.isNormalMode && normalStep == 1;
+      final shouldAutoOpenWeigh =
+          ctrl.isNormalMode && normalStep == 0 && menuCount == 1;
       if (shouldAutoOpenWeigh) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ctrl.showScaleDialogForItem(ctrl.categoryMenuList.first as Map);

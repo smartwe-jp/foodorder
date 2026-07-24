@@ -201,4 +201,10 @@ const Map<String, String> ko_KR = {
   "spicy_weigh_manual_input_title":"무게 입력 (g)",
   "spicy_weigh_manual_ready":"수동 입력 완료 (다음으로 진행 가능)",
 
+  "spicy_menu_scan_title":"바코드를 스캔하여 장바구니에 추가",
+  "spicy_menu_scan_subtitle":"상품을 직접 눌러도 추가할 수 있습니다",
+  "spicy_menu_scan_howto":"사용 방법",
+  "spicy_menu_scan_howto_title":"바코드 사용 방법",
+  "spicy_menu_scan_howto_body":"바코드를 스캔하면 장바구니에 자동으로 추가됩니다",
+
 };
