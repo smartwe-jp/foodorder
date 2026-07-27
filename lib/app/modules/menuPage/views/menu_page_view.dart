@@ -247,7 +247,13 @@ class MenuPageView extends GetView<MenuPageController> {
         return controller.obx((state) =>
             AnnotatedRegion(
               value: SystemUiOverlayStyle.light,
-              child: Stack(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  // 点空白后重新抢扫码焦点（麻辣烫菜单）
+                  controller.requestSpicyMenuScanFocus();
+                },
+                child: Stack(
                 children: [
                   GetBuilder<MenuPageController>(
                       id: 'background',
@@ -258,6 +264,25 @@ class MenuPageView extends GetView<MenuPageController> {
                         ),
                         child: Column(
                           children: [
+                            // 麻辣烫菜单：隐藏扫码输入（枪扫回车触发入车）
+                            if (controller.isSpicyHotPotMenuScanEnabled)
+                              SizedBox(
+                                height: 0,
+                                child: TextField(
+                                  controller: controller.spicyScanQrController,
+                                  focusNode: controller.spicyScanQrFocusNode,
+                                  autofocus: true,
+                                  showCursor: false,
+                                  keyboardType: TextInputType.text,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                  ),
+                                  onSubmitted: (_) {
+                                    controller.doSpicyMenuBarCodeQuery();
+                                  },
+                                ),
+                              ),
                             // 麻辣烫：顶部步骤条（第4步=配料，左侧返回）+ 扫码提示
                             if (controller.machineInfo.isShopSpicyHotPot) ...[
                               SpicyHotPotStepHeader(
@@ -338,6 +363,7 @@ class MenuPageView extends GetView<MenuPageController> {
                               : publicShowCartView(),
                         )),
                 ],
+              ),
               ),
             ),
           onLoading: Center(

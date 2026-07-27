@@ -207,4 +207,7 @@ const Map<String, String> en_US = {
   "spicy_menu_scan_howto":"How to use",
   "spicy_menu_scan_howto_title":"How to use barcode",
   "spicy_menu_scan_howto_body":"Scan the barcode and the item will be added to your cart automatically",
+  "spicy_menu_scan_weigh_reject":"Weighable items must be added on the weigh screen, not by scan here",
+  "spicy_menu_scan_not_found":"No item found for this barcode",
+  "spicy_menu_scan_loading":"Adding to cart…",
 };

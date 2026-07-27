@@ -28,6 +28,7 @@ import '../../../controllers/order_sql_controller.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/scale_serial_service.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
@@ -110,6 +111,16 @@ class MenuPageController extends GetxController with StateMixin {
   /// 下单请求进行中，防止重复提交
   bool _submitInFlight = false;
 
+  /// 麻辣烫菜单页：扫码枪隐藏输入（仅 spicyHotPot 模式）
+  final TextEditingController spicyScanQrController = TextEditingController();
+  final FocusNode spicyScanQrFocusNode =
+      FocusNode(debugLabel: 'SpicyMenuBarCode');
+  bool _spicyBarCodeQueryInFlight = false;
+
+  /// 是否启用菜单页扫码直接加购（麻辣烫选其他菜品页）
+  bool get isSpicyHotPotMenuScanEnabled =>
+      machineInfo.currentMode == MachineMode.spicyHotPot;
+
   bool isMenuAddLocked(String menuCode) => _cartAddInFlight.contains(menuCode);
 
   bool isCartRowLocked(int? cartId) =>
@@ -155,11 +166,19 @@ class MenuPageController extends GetxController with StateMixin {
     super.onReady();
     _checkToCloseLoading();
     _ensureCartToastReady();
+    // 麻辣烫菜单：页面就绪后抢扫码焦点
+    if (isSpicyHotPotMenuScanEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        requestSpicyMenuScanFocus();
+      });
+    }
   }
 
   @override
   void onClose() {
     debugPrint('MenuPageController onClose');
+    spicyScanQrController.dispose();
+    spicyScanQrFocusNode.dispose();
     _cartSoundPlayer?.dispose();
     _cartSoundPlayer = null;
     _deleteSoundPlayer?.dispose();
@@ -664,6 +683,128 @@ class MenuPageController extends GetxController with StateMixin {
       }
     } finally {
       _unlockCartAdd(menuCode);
+    }
+  }
+
+  /// 麻辣烫菜单页：重新抢扫码枪焦点
+  void requestSpicyMenuScanFocus() {
+    if (!isSpicyHotPotMenuScanEnabled) return;
+    try {
+      spicyScanQrController.clear();
+      spicyScanQrFocusNode.requestFocus();
+    } catch (e) {
+      logI('麻辣烫菜单扫码抢焦点失败: $e');
+    }
+  }
+
+  void _resetSpicyMenuScan({bool hideLoading = true, bool restoreFocus = true}) {
+    spicyScanQrController.clear();
+    if (hideLoading && EasyLoading.isShow) {
+      try {
+        EasyLoading.dismiss();
+      } catch (_) {}
+    }
+    if (restoreFocus) {
+      requestSpicyMenuScanFocus();
+    }
+  }
+
+  /// 扫码请求中的友好 loading（与自助扫码同款动画）
+  void _showSpicyScanEasyLoading() {
+    final tag = Text(
+      'spicy_menu_scan_loading'.tr,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontFamily: GFont.getFontFamily(),
+        fontSize: ScreenAdapter.fontSize(28),
+        fontWeight: FontWeight.w600,
+        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+      ),
+    );
+    EasyLoading.show(
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            tag,
+            Container(
+              margin: const EdgeInsets.only(top: 60),
+              height: ScreenAdapter.height(200),
+              child: Image.asset(
+                GImage.getImageString('imgpublic', 'printticketloading'),
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
+  /// 麻辣烫选其他菜品：扫码 → webBootBarCodeQuery → 直接入车（无规格）。
+  /// 称重商品（HUNDRED_GRAM）拒绝。
+  /// [barCode] 可传入（用法弹窗内扫码）；[restoreFocus] 为 false 时由调用方自行抢焦点。
+  Future<void> doSpicyMenuBarCodeQuery({
+    String? barCode,
+    bool restoreFocus = true,
+  }) async {
+    if (!isSpicyHotPotMenuScanEnabled) return;
+    final code = (barCode ?? spicyScanQrController.text).trim();
+    if (code.isEmpty) return;
+    if (_spicyBarCodeQueryInFlight) return;
+    _spicyBarCodeQueryInFlight = true;
+    try {
+      _showSpicyScanEasyLoading();
+      final formData = {
+        'language': checkLanguage.value,
+        'machineCode': machineInfo.machineCode,
+        'barCode': code,
+      };
+      logI('麻辣烫菜单扫码查询: $code');
+      final val =
+          await request('webBootBarCodeQuery', method: 'POST', parameters: formData);
+      final response = json.decode(val.toString());
+      if (response['code'] == 200 &&
+          response['data'] != null &&
+          response['data'] is Map &&
+          (response['data'] as Map).isNotEmpty) {
+        final item = Map<String, dynamic>.from(response['data'] as Map);
+        final priceType = '${item['priceType'] ?? ''}';
+        if (priceType == 'HUNDRED_GRAM') {
+          showToast('spicy_menu_scan_weigh_reject'.tr);
+          return;
+        }
+        final ctx = Get.context;
+        if (ctx != null) {
+          await publicAddCart(ctx, item);
+        } else {
+          final cartItem = {
+            'menuCode': item['menuCode'],
+            'mainTitle': item['mainTitle'],
+            'image': item['homeImage'],
+            'currentPrice': item['currentPrice'],
+            'unitPrice': item['currentPrice'],
+            'optionGroupVoList': '',
+            'optionVoListMsg': '',
+            'goodsNum': 1,
+            'qtyBounds': item['qtyBounds'],
+          };
+          await publicAddCartMenu(cartItem, true);
+        }
+      } else {
+        showToast('spicy_menu_scan_not_found'.tr);
+        logI('麻辣烫菜单扫码未查询到: $code');
+      }
+    } catch (e, st) {
+      logI('麻辣烫菜单扫码异常: $e\n$st');
+      showToast('spicy_menu_scan_not_found'.tr);
+    } finally {
+      _spicyBarCodeQueryInFlight = false;
+      _resetSpicyMenuScan(hideLoading: true, restoreFocus: restoreFocus);
     }
   }
 
@@ -1318,6 +1459,12 @@ print("加1了");
 
   gotoSettlement(String total, int tax) async {
     logI("gotoSettlement tax:$tax");
+    // 麻辣烫+现金机：结算跳转前提前释放电子秤 USB，
+    // 让 Android 有足够时间回收句柄再打开 FTDI 现金机
+    if (isSpicyHotPotMenuScanEnabled &&
+        (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
+      ScaleSerialService.releaseUsbSafely(reason: 'goto_settlement');
+    }
     Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
@@ -1377,10 +1524,11 @@ print("加1了");
     //clearCartList();
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
-    //getBookingBootMenu();
-    //Future.delayed(Duration(milliseconds: 100),() async {
-      Get.back();
-    //});
+    // 麻辣烫模式返回首页时重置 currentMode，避免遗留脏状态
+    if (machineInfo.currentMode == MachineMode.spicyHotPot) {
+      machineInfo.currentMode = MachineMode.sell;
+    }
+    Get.back();
   }
 
 

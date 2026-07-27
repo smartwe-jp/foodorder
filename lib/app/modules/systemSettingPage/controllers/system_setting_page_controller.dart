@@ -27,6 +27,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
+import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../settlement/views/label_constrained_box.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
@@ -88,6 +89,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool actuarial = false.obs; //是否开启精算
   RxBool  lineup = false.obs; //是否开启排队
   RxString isspicyHotPot = "0".obs; //是否开启麻辣烫
+
+  /// 麻辣烫：称重页是否显示手动输入按钮
+  RxBool spicyManualInputAllowed = false.obs;
+
+  /// 麻辣烫：皮重（克），称重显示/计价时扣除，默认 0
+  RxDouble spicyTareGrams = 0.0.obs;
 
   RxDouble downloadProgress = 0.0.obs;
 
@@ -257,6 +264,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
 
     isspicyHotPot.value = await HomeServices.getSmartweSpicyHotPotData();
+    spicyManualInputAllowed.value = await SpicyWeighSettings.loadManualAllowed();
+    spicyTareGrams.value = await SpicyWeighSettings.loadTareGrams();
     // wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     // wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
@@ -739,6 +748,21 @@ class SystemSettingPageController extends GetxController with StateMixin {
   updateSpicyHotPotOrderType(String type) {
     machineInfo.machineModeInfo['spicyHotPotOrderType'] = type;
     HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
+    update();
+  }
+
+  /// 麻辣烫：称重页手动输入开关
+  Future<void> updateSpicyManualInputAllowed(bool allowed) async {
+    spicyManualInputAllowed.value = allowed;
+    await SpicyWeighSettings.saveManualAllowed(allowed);
+    update();
+  }
+
+  /// 麻辣烫：皮重（克）
+  Future<void> updateSpicyTareGrams(double grams) async {
+    final g = grams < 0 ? 0.0 : grams;
+    spicyTareGrams.value = g;
+    await SpicyWeighSettings.saveTareGrams(g);
     update();
   }
 

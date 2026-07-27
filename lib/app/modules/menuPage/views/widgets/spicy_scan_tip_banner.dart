@@ -112,7 +112,6 @@ class SpicyScanTipBanner extends StatelessWidget {
     );
   }
 
-  /// 扫码用法弹窗：标题/副标题走多语，下方步骤图按语言加载
   void _showHowToUse() {
     var lang = 'JP';
     if (Get.isRegistered<MenuPageController>()) {
@@ -124,90 +123,166 @@ class SpicyScanTipBanner extends StatelessWidget {
     final assetPath =
         GImage.getImageString('imgpublic', 'spicy_scan_howto_$lang');
     Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.symmetric(
-          horizontal: ScreenAdapter.width(40),
-          vertical: ScreenAdapter.height(80),
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: ScreenAdapter.width(960),
-            ),
-            child: Material(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              clipBehavior: Clip.antiAlias,
+      SpicyScanHowToDialog(assetPath: assetPath),
+      barrierDismissible: true,
+    ).whenComplete(() {
+      // 关闭用法弹窗后，把扫码焦点还给菜单页
+      if (Get.isRegistered<MenuPageController>()) {
+        Get.find<MenuPageController>().requestSpicyMenuScanFocus();
+      }
+    });
+  }
+}
+
+/// 使用方法弹窗：打开期间仍可扫码入车（内置隐藏输入框抢焦点）
+class SpicyScanHowToDialog extends StatefulWidget {
+  final String assetPath;
+
+  const SpicyScanHowToDialog({Key? key, required this.assetPath})
+      : super(key: key);
+
+  @override
+  State<SpicyScanHowToDialog> createState() => _SpicyScanHowToDialogState();
+}
+
+class _SpicyScanHowToDialogState extends State<SpicyScanHowToDialog> {
+  static const Color _title = Color(0xFF222222);
+  static const Color _sub = Color(0xFF888888);
+
+  final TextEditingController _scanCtrl = TextEditingController();
+  final FocusNode _scanFocus = FocusNode(debugLabel: 'SpicyHowToScan');
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _scanFocus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scanCtrl.dispose();
+    _scanFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onScanSubmitted(String value) async {
+    if (!Get.isRegistered<MenuPageController>()) return;
+    final menu = Get.find<MenuPageController>();
+    await menu.doSpicyMenuBarCodeQuery(
+      barCode: value,
+      restoreFocus: false,
+    );
+    if (!mounted) return;
+    _scanCtrl.clear();
+    _scanFocus.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: ScreenAdapter.width(40),
+        vertical: ScreenAdapter.height(80),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: ScreenAdapter.width(960),
+          ),
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => _scanFocus.requestFocus(),
               child: Stack(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: ScreenAdapter.height(36)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ScreenAdapter.width(72),
-                        ),
-                        child: Text(
-                          'spicy_menu_scan_howto_title'.tr,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _title,
-                            fontSize: ScreenAdapter.fontSize(36),
-                            fontFamily: GFont.getFontFamily(),
-                            fontWeight: FontWeight.w700,
-                            height: 1.3,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: ScreenAdapter.height(12)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ScreenAdapter.width(48),
-                        ),
-                        child: Text(
-                          'spicy_menu_scan_howto_body'.tr,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _sub,
-                            fontSize: ScreenAdapter.fontSize(22),
-                            fontFamily: GFont.getFontFamily(),
-                            fontWeight: FontWeight.w500,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: ScreenAdapter.height(8)),
-                      Image.asset(
-                        assetPath,
-                        fit: BoxFit.contain,
-                        width: double.infinity,
-                      ),
-                    ],
+              children: [
+                // 弹窗内隐藏扫码框，保证用法说明打开时仍可扫码入车
+                SizedBox(
+                  height: 0,
+                  child: TextField(
+                    controller: _scanCtrl,
+                    focusNode: _scanFocus,
+                    autofocus: true,
+                    showCursor: false,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onSubmitted: _onScanSubmitted,
                   ),
-                  Positioned(
-                    top: ScreenAdapter.height(8),
-                    right: ScreenAdapter.width(8),
-                    child: KioskTap(
-                      onTap: () => Get.back(),
-                      child: Padding(
-                        padding: EdgeInsets.all(ScreenAdapter.width(12)),
-                        child: Icon(
-                          Icons.close,
-                          size: ScreenAdapter.fontSize(36),
-                          color: const Color(0xFF666666),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: ScreenAdapter.height(36)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ScreenAdapter.width(72),
+                      ),
+                      child: Text(
+                        'spicy_menu_scan_howto_title'.tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _title,
+                          fontSize: ScreenAdapter.fontSize(36),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
                         ),
                       ),
                     ),
+                    SizedBox(height: ScreenAdapter.height(12)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ScreenAdapter.width(48),
+                      ),
+                      child: Text(
+                        'spicy_menu_scan_howto_body'.tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _sub,
+                          fontSize: ScreenAdapter.fontSize(22),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w500,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: ScreenAdapter.height(8)),
+                    Image.asset(
+                      widget.assetPath,
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: ScreenAdapter.height(8),
+                  right: ScreenAdapter.width(8),
+                  child: KioskTap(
+                    onTap: () => Get.back(),
+                    child: Padding(
+                      padding: EdgeInsets.all(ScreenAdapter.width(12)),
+                      child: Icon(
+                        Icons.close,
+                        size: ScreenAdapter.fontSize(36),
+                        color: const Color(0xFF666666),
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
             ),
           ),
         ),
       ),
-      barrierDismissible: true,
     );
   }
 }

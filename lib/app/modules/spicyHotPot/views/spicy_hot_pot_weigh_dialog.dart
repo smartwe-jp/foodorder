@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/scale_serial_service.dart';
+import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
 
 const _kBg = Color(0xFFF5EFDE);
@@ -13,7 +14,7 @@ const _kGrey = Color(0xFF888888);
 const _kBorder = Color(0xFFE0D5C5);
 
 /// 麻辣烫称重输入弹窗（参考效果图：暖奶油背景 + 超大克重显示）
-/// 重量实时填入；未稳定不可确认。建议秤 232-1 连续发送以便跟屏跳动。
+/// 重量实时填入（减皮重）；未稳定不可确认。建议秤 232-1 连续发送以便跟屏跳动。
 class SpicyWeighDialog extends StatefulWidget {
   final Map itemData;
   final int unitPricePer100g;
@@ -33,6 +34,7 @@ class SpicyWeighDialog extends StatefulWidget {
 class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   String _input = '0';
   bool _stable = false;
+  double _tareGrams = 0;
   Worker? _scaleWorker;
 
   ScaleSerialService get _scale {
@@ -53,7 +55,15 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     FocusManager.instance.primaryFocus?.unfocus();
-    _startScaleListen();
+    _loadTareAndStart();
+  }
+
+  Future<void> _loadTareAndStart() async {
+    final tare = await SpicyWeighSettings.loadTareGrams();
+    if (mounted) {
+      setState(() => _tareGrams = tare);
+    }
+    await _startScaleListen();
   }
 
   Future<void> _startScaleListen() async {
@@ -67,12 +77,12 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
     }
     _scaleWorker = ever<ScaleReading?>(_scale.weightRx, (reading) {
       if (!mounted || reading == null) return;
+      final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
       setState(() {
         _stable = reading.isStable;
-        final g = reading.grams;
-        _input = g == g.roundToDouble()
-            ? g.toStringAsFixed(0)
-            : g.toStringAsFixed(1);
+        _input = net == net.roundToDouble()
+            ? net.toStringAsFixed(0)
+            : net.toStringAsFixed(1);
       });
     });
   }

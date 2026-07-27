@@ -209,4 +209,7 @@ const Map<String, String> ja_JP = {
   "spicy_menu_scan_howto":"使い方",
   "spicy_menu_scan_howto_title":"バーコードの使い方",
   "spicy_menu_scan_howto_body":"バーコードをスキャンすると、自動でカートに追加されます",
+  "spicy_menu_scan_weigh_reject":"計量商品は計量画面で操作してください。ここではスキャンできません",
+  "spicy_menu_scan_not_found":"該当する商品が見つかりません",
+  "spicy_menu_scan_loading":"カートに追加中…",
 };

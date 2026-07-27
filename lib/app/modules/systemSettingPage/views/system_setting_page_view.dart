@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
 import 'package:foodorder/app/services/scale_serial_service.dart';
 
@@ -835,6 +836,133 @@ class SystemSettingPageView extends GetView {
         );
       }),
     );
+  }
+
+  /// 麻辣烫：称重页手动输入开关（设置页控制，称重页不再长按）
+  Widget setSpicyWeighManualInput() {
+    return Obx(() {
+      final on = controller.spicyManualInputAllowed.value;
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyManualInputAllowed(true),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '許可',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: ScreenAdapter.width(16)),
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyManualInputAllowed(false),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: !on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '停止',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: !on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 許可すると計量画面に「手動入力」ボタンを常時表示します。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  /// 麻辣烫：皮重（软键盘录入，默认 0）
+  Widget setSpicyWeighTare() {
+    return Obx(() {
+      final tare = controller.spicyTareGrams.value.round();
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+          right: ScreenAdapter.width(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            NumberAdjustWidget(
+              initialNumber: tare,
+              minNumber: 0,
+              maxNumber: 9999,
+              content: '風袋(g) ',
+              onNumberChanged: (n) {
+                controller.updateSpicyTareGrams(n.toDouble());
+              },
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 計量画面の表示重量＝電子秤重量−風袋。毎日容器の風袋を設定してください（初期値0）。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   //设置机器类型：多按钮自动换行（麻辣烫由店铺开通，不再作为モード芯片）
@@ -2221,6 +2349,40 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                           setScaleSerialPort(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "手動入力",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyWeighManualInput(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "風袋重量",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyWeighTare(),
                                         ]
                                     ),
                                   if(controller.lineup.value == true)

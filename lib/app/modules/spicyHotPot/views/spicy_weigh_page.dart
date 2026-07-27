@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/scale_serial_service.dart';
+import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
 import '../../../widget/NumberKeyboard.dart';
 import 'widgets/spicy_hot_pot_chrome.dart';
@@ -13,8 +14,8 @@ import 'widgets/spicy_hot_pot_chrome.dart';
 /// 麻辣烫全屏称重页面（只有1个称重商品时使用）
 ///
 /// UI 对齐设计图：logo+步骤条 / 计量说明 / 碗+秤示意+实时克重 / 戻る·跳过·次へ
-/// 功能：串口实时重量、稳定后才可下一步、跳过称重、重新称重
-/// 兜底：左上角长按开启「允许手动输入」后显示按钮，弹数字键盘录入克重
+/// 功能：串口实时重量（减皮重）、稳定后才可下一步、跳过称重、重新称重
+/// 手动输入：由系统设置「手動入力」开关控制是否显示按钮
 class SpicyWeighPage extends StatefulWidget {
   final Map itemData;
   final int unitPricePer100g;
@@ -38,10 +39,12 @@ class SpicyWeighPage extends StatefulWidget {
 class _SpicyWeighPageState extends State<SpicyWeighPage> {
   String _input = '0';
   bool _stable = false;
-  /// 店员长按开启后，才显示「手动输入」按钮
+  /// 系统设置「手動入力」为开时显示按钮
   bool _manualInputAllowed = false;
-  /// 当前重量是否来自手动键盘（避免串口覆盖）
+  /// 当前重量是否来自手动键盘（避免串口覆盖；手动值为净重，不再减皮重）
   bool _useManualWeight = false;
+  /// 皮重（克），来自设置，默认 0
+  double _tareGrams = 0;
   Worker? _scaleWorker;
 
   ScaleSerialService get _scale {
@@ -61,7 +64,22 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   void initState() {
     super.initState();
     _hideSystemKeyboard();
-    _startScaleListen();
+    _initWeigh();
+  }
+
+  Future<void> _initWeigh() async {
+    await _loadWeighSettings();
+    await _startScaleListen();
+  }
+
+  Future<void> _loadWeighSettings() async {
+    final manual = await SpicyWeighSettings.loadManualAllowed();
+    final tare = await SpicyWeighSettings.loadTareGrams();
+    if (!mounted) return;
+    setState(() {
+      _manualInputAllowed = manual;
+      _tareGrams = tare;
+    });
   }
 
   void _hideSystemKeyboard() {
@@ -85,12 +103,12 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       if (!mounted || reading == null) return;
       // 手动录入中不覆盖
       if (_useManualWeight) return;
+      final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
       setState(() {
         _stable = reading.isStable;
-        final g = reading.grams;
-        _input = g == g.roundToDouble()
-            ? g.toStringAsFixed(0)
-            : g.toStringAsFixed(1);
+        _input = net == net.roundToDouble()
+            ? net.toStringAsFixed(0)
+            : net.toStringAsFixed(1);
       });
     });
   }
@@ -126,68 +144,6 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     if (!_canConfirm) return;
     Get.back();
     widget.onConfirm(_weight, _price);
-  }
-
-  /// 左上角长按：是否允许手动输入
-  void _showManualAllowDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3),
-        ),
-        title: Text(
-          'spicy_weigh_manual_allow_title'.tr,
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(28),
-            fontFamily: GFont.getFontFamily(),
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        content: StatefulBuilder(
-          builder: (context, setDialogState) {
-            return Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'spicy_weigh_manual_allow'.tr,
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(24),
-                      fontFamily: GFont.getFontFamily(),
-                    ),
-                  ),
-                ),
-                Switch(
-                  value: _manualInputAllowed,
-                  activeColor: kSpicyAccent,
-                  onChanged: (v) {
-                    setState(() {
-                      _manualInputAllowed = v;
-                      if (!v) {
-                        _useManualWeight = false;
-                      }
-                    });
-                    setDialogState(() {});
-                  },
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'tag_button_yes'.tr,
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontFamily: GFont.getFontFamily(),
-              ),
-            ),
-          ),
-        ],
-      ),
-      barrierDismissible: true,
-    );
   }
 
   void _openManualInputKeyboard() {
@@ -241,19 +197,6 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               ),
             ],
           ),
-          // 左上角隐形长按区：开启/关闭手动输入
-          /*Positioned(
-            left: 0,
-            top: 0,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onLongPress: _showManualAllowDialog,
-              child: SizedBox(
-                width: ScreenAdapter.width(140),
-                height: ScreenAdapter.height(100),
-              ),
-            ),
-          ),*/
         ],
       ),
     );
@@ -325,7 +268,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               ),
             ),
           ),
-          // 仅在长按开启「允许手动输入」后显示
+          // 系统设置「手動入力」开启后显示
           if (_manualInputAllowed) ...[
             SizedBox(height: ScreenAdapter.height(20)),
             KioskTap(

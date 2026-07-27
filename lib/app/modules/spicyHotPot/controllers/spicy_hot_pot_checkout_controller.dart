@@ -58,6 +58,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   // groupKey → 分组显示名（入车 optionVoListMsg 用「组名:选项」）
   final Map<String, String> _optionGroupTitleCache = {};
   bool _isSingleWeighPageOpen = false;
+  final RxBool normalOrderSubmitting = false.obs;
 
   // ==================== getter ====================
 
@@ -259,8 +260,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     _optionGroupTitleCache.clear();
     // optionMenuList 只有1个商品时自动选中，直接展示子选项
     if (optionMenuList.length == 1) {
-      final code =
-          (optionMenuList.first as Map)['menuCode']?.toString() ?? '';
+      final code = (optionMenuList.first as Map)['menuCode']?.toString() ?? '';
       selectedOptionMenuCode.value = code;
       optionsDisplayMenuCode.value = code;
     }
@@ -366,6 +366,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   ///    - smallest：最少必选数量（未达则不可下一步）
   ///    - multipleState：最多可选数量（超出则不可下一步）
   bool get canConfirmNormalOrder {
+    if (normalOrderSubmitting.value) return false;
     // 显式读取，确保 Obx 能追踪选中态变化
     final selectedCode = selectedOptionMenuCode.value;
     final selections = normalOptionSelections;
@@ -462,6 +463,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   ///   1. 口味商品（optionMenuList 选中项）+ 子选项（辣度、加料等）→ 独立商品
   ///   2. 称重商品（HUNDRED_GRAM）→ 独立商品，无选项
   Future<void> confirmNormalOrder() async {
+    if (normalOrderSubmitting.value) return;
     if (normalWeighResult.isEmpty) return;
     final validationMsg = normalOrderValidationMessage;
     if (validationMsg != null) {
@@ -488,14 +490,16 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       return;
     }
 
-    // --- 1. 口味商品单独入购物车 ---
+    final cartItems = <Map<String, dynamic>>[];
+
+    // --- 1. 组装口味商品 ---
     final selectedItem = selectedOptionMenuItem;
     if (selectedItem != null) {
       final subCodes = <String>[];
       for (final entry in normalOptionSelections.entries) {
         subCodes.addAll(entry.value);
       }
-      await orderSqlController.addToCart({
+      cartItems.add({
         'menuCode': selectedItem['menuCode'] ?? '',
         'mainTitle': selectedItem['mainTitle'] ?? '',
         'image': selectedItem['homeImage'] ?? selectedItem['image'] ?? '',
@@ -507,13 +511,25 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         'goodsNum': 1,
         'qtyBounds': selectedItem['qtyBounds'] ?? 0,
         'itemType': 'spicy',
-      }, checkItem: false);
-      orderSqlController.getCardList();
+      });
     }
 
-    // --- 2. 称重商品单独入购物车（无选项） ---
-    await _addWeighItemToCart(itemData, weight, price, unitPricePer100g);
-    await updateTotalPrice();
+    // --- 2. 组装称重商品，并与口味商品在同一事务中写入 ---
+    cartItems
+        .add(_buildWeighCartItem(itemData, weight, price, unitPricePer100g));
+
+    normalOrderSubmitting.value = true;
+    try {
+      await orderSqlController.addCartItemsAtomically(cartItems);
+      await orderSqlController.getCardList();
+      await updateTotalPrice();
+    } catch (e, st) {
+      logE('麻辣烫组合商品入购物车失败: $e\n$st');
+      showToast('加入购物车失败，请重试');
+      return;
+    } finally {
+      normalOrderSubmitting.value = false;
+    }
 
     // offNamed 替换 ModeView（ModeView 出栈，controller 销毁，无需手动清状态）
     // 用 toNamed 的话 ModeView 留在栈中，后续 normalStep=0 的 Obx 重建会触发称重页被压入 MenuPage 上方
@@ -603,8 +619,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         }
         if (selectedTitles.isEmpty) continue;
         final titles = selectedTitles.join(',');
-        nameParts.add(
-            groupTitle.isNotEmpty ? '$groupTitle:$titles' : titles);
+        nameParts.add(groupTitle.isNotEmpty ? '$groupTitle:$titles' : titles);
       }
     }
     return {'codes': codes, 'names': nameParts};
@@ -616,7 +631,25 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       Map itemData, double weight, int price, int unitPricePer100g,
       {List<String> optionCodes = const [],
       List<String> optionNames = const []}) async {
-    await orderSqlController.addToCart({
+    await orderSqlController.addToCart(
+        _buildWeighCartItem(
+          itemData,
+          weight,
+          price,
+          unitPricePer100g,
+          optionCodes: optionCodes,
+          optionNames: optionNames,
+        ),
+        checkItem: false);
+    orderSqlController.getCardList();
+    logI('称重商品入购物车: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
+  }
+
+  Map<String, dynamic> _buildWeighCartItem(
+      Map itemData, double weight, int price, int unitPricePer100g,
+      {List<String> optionCodes = const [],
+      List<String> optionNames = const []}) {
+    return {
       'menuCode': itemData['menuCode'] ?? '',
       'mainTitle': itemData['mainTitle'] ?? '称重商品',
       'image': itemData['homeImage'] ?? itemData['image'] ?? '',
@@ -628,10 +661,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       'spicyGrams': weight.toInt(),
       'qtyBounds': 0,
       'itemType': 'spicy',
-      'weighUnitPricePer100g': unitPricePer100g.toString(),
-    }, checkItem: false);
-    orderSqlController.getCardList();
-    logI('称重商品入购物车: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
+    };
   }
 
   Future<void> updateTotalPrice() async {
@@ -704,7 +734,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         categoryMenuList.clear();
         optionMenuList.clear();
         final items = response['data'] as List;
-        for (var item in items) {LogUtil.d(item);
+        for (var item in items) {
+          LogUtil.d(item);
           logI('菜品: ${item['mainTitle']} priceType=${item['priceType']}');
           if (item['priceType'] == "HUNDRED_GRAM") {
             categoryMenuList.add(item);

@@ -13,16 +13,17 @@ class ItemServices {
   List<ShopItemModel> shoppingList = [];
   DateTime nowTime = DateTime.now();
 
-
   Future openDB() async {
     return await sqlService.openDB();
   }
 
-
-
-
   Future addToCart(data) async {
     return await sqlService.addToCart(data);
+  }
+
+  Future<List<int>> addCartItemsAtomically(
+      List<Map<String, dynamic>> items) async {
+    return await sqlService.addCartItemsAtomically(items);
   }
 
   Future checkToCartItem(data) async {

@@ -207,5 +207,8 @@ const Map<String, String> zh_CN = {
   "spicy_menu_scan_howto":"使用方法",
   "spicy_menu_scan_howto_title":"条码使用方法",
   "spicy_menu_scan_howto_body":"扫描条码后，商品会自动加入购物车",
+  "spicy_menu_scan_weigh_reject":"称重商品请在称重步骤操作，无法在此扫码加入",
+  "spicy_menu_scan_not_found":"未找到该条码对应的商品",
+  "spicy_menu_scan_loading":"正在加入购物车…",
 
 };

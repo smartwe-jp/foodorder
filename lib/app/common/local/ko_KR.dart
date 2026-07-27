@@ -207,5 +207,8 @@ const Map<String, String> ko_KR = {
   "spicy_menu_scan_howto":"사용 방법",
   "spicy_menu_scan_howto_title":"바코드 사용 방법",
   "spicy_menu_scan_howto_body":"바코드를 스캔하면 장바구니에 자동으로 추가됩니다",
+  "spicy_menu_scan_weigh_reject":"계량 상품은 계량 화면에서 진행해 주세요. 여기서는 스캔할 수 없습니다",
+  "spicy_menu_scan_not_found":"해당 바코드의 상품을 찾을 수 없습니다",
+  "spicy_menu_scan_loading":"장바구니에 추가 중…",
 
 };

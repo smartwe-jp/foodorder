@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 
 import '../models/ItemModel.dart';
@@ -30,7 +29,7 @@ class OrderSqlController extends GetxService {
   }
 
   //获取购物车数据
-  getCardList() async{
+  getCardList() async {
     try {
       getcartItems = await itemServices.getCartList();
       cartItems.clear();
@@ -39,13 +38,12 @@ class OrderSqlController extends GetxService {
       });
 
       //update();
-
     } catch (e) {
       print(e);
     }
   }
 
-  getAscCardList() async{
+  getAscCardList() async {
     try {
       getcartItems = await itemServices.getAscCartList();
       cartItems.clear();
@@ -54,7 +52,6 @@ class OrderSqlController extends GetxService {
       });
 
       //update();
-
     } catch (e) {
       print(e);
     }
@@ -69,36 +66,32 @@ class OrderSqlController extends GetxService {
   getCartItemNum(menuCode) async {
     var result;
     result = await itemServices.getCartItemNumber(menuCode);
-    if(result[0]["totalGoodsNum"] == null){
+    if (result[0]["totalGoodsNum"] == null) {
       return 0;
-    }else{
+    } else {
       return result[0]["totalGoodsNum"];
     }
-
   }
 
   getCartItemNewId(menuCode) async {
     var result;
     result = await itemServices.getCartItemNewId(menuCode);
-    if(result[0] == null){
+    if (result[0] == null) {
       return 0;
-    }else{
+    } else {
       return result[0]["id"];
     }
-
   }
 
   getCartTotalNum() async {
     var result;
     result = await itemServices.getCartTotalNumber();
-    if(result == null || result[0]["totalGoodsNum"] == null){
+    if (result == null || result[0]["totalGoodsNum"] == null) {
       return 0;
-    }else{
+    } else {
       return result[0]["totalGoodsNum"];
     }
-
   }
-
 
   Future addToCart(item, {bool checkItem = false}) async {
     isLoading = true;
@@ -121,12 +114,22 @@ class OrderSqlController extends GetxService {
     return result;
   }
 
+  /// 原子写入一组购物车记录，避免组合商品只写入一部分。
+  Future<List<int>> addCartItemsAtomically(
+      List<Map<String, dynamic>> items) async {
+    isLoading = true;
+    try {
+      return await itemServices.addCartItemsAtomically(items);
+    } finally {
+      isLoading = false;
+    }
+  }
+
   Future addToCartNum(item) async {
     isLoading = true;
     //update();
     var result;
     result = await itemServices.addToCartNum(item);
-
 
     isLoading = false;
     //update();
@@ -138,7 +141,7 @@ class OrderSqlController extends GetxService {
     //update();
     var result;
     var checkResult = await itemServices.getCartItemNumberByID(item['cartId']);
-    if(checkResult[0]["goodsNum"]>1){
+    if (checkResult[0]["goodsNum"] > 1) {
       result = await itemServices.reduceToCartNum(item);
     }
 

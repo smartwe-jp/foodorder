@@ -194,15 +194,20 @@ class SettlementController extends GetxController with StateMixin {
       if(machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1"){
         if(machineInfo.currentMode == MachineMode.checkout) {//精算时候请求
           logI("精算请求了new order id");
-          Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
-          Get.find<CheckoutPageController>().resetStateBack();
+          if (Get.isRegistered<CheckoutPageController>()) {
+            Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
+            Get.find<CheckoutPageController>().resetStateBack();
+          }
         }else if(machineInfo.currentMode == MachineMode.scan){
           logI("自助精算请求了new order id");
-          Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
+          if (Get.isRegistered<SelfCheckoutscanningcodeController>()) {
+            Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
+          }
         }else{
           logI("普通支付请求了new order id");
-          //Get.find<MenuPageController>().getBookingBootIndexCategory();
-          Get.find<MenuPageController>().postNewOrderId();
+          if (Get.isRegistered<MenuPageController>()) {
+            Get.find<MenuPageController>().postNewOrderId();
+          }
         }
       }
       posManager.resetState();// if pos reset
