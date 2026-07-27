@@ -1061,7 +1061,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第二个分类 小菜
-  showCategoryTwo(showItemList, context, {popupType: "old"}) {
+  showCategoryTwo(showItemList, context, {popupType = "old"}) {
     if (showItemList != null && showItemList.length > 0) {
       return Container(
         child: showCategoryTwoItemList(showItemList, context,
@@ -1644,7 +1644,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第四个酒水分类
-  showCategoryFour(showItemList, context, {popupType: "old"}) {
+  showCategoryFour(showItemList, context, {popupType = "old"}) {
     if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -1658,7 +1658,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategoryTwoItemOne(item, context, {popupType: "old"}) {
+  showCategoryTwoItemOne(item, context, {popupType = "old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -1761,7 +1761,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategoryFourItemOne(item, context, {popupType: "old"}) {
+  showCategoryFourItemOne(item, context, {popupType = "old"}) {
     Offset temp;
 
     return Container(
@@ -2450,7 +2450,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第六个分类 每页两列一行
-  showCategorySix(showItemList, context, {popupType: "old"}) {
+  showCategorySix(showItemList, context, {popupType = "old"}) {
     //debugPrint("showItemList:${showItemList}");
     if (showItemList != null && showItemList.length > 0) {
       return Container(
@@ -2465,7 +2465,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategorySixItemList(items, context, {popupType: "old"}) {
+  showCategorySixItemList(items, context, {popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType));
@@ -2474,7 +2474,7 @@ extension MenuPageCategory on MenuPageController {
     return GridMenuView(children: children, crossAxisCount: 2);
   }
 
-  showCategorySixItemOne(item, context, {popupType: "old"}) {
+  showCategorySixItemOne(item, context, {popupType = "old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2558,7 +2558,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第七个分类 每页三列一行  饮品
-  showCategorySeven(showItemList, context, {popupType: "old"}) {
+  showCategorySeven(showItemList, context, {popupType = "old"}) {
     if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -2571,7 +2571,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategorySevenItemList(items, context, {popupType: "old"}) {
+  showCategorySevenItemList(items, context, {popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.63));
@@ -2598,7 +2598,7 @@ extension MenuPageCategory on MenuPageController {
     // );
   }
 
-  showCategorySevenItemOne(item, context, {popupType: "old"}) {
+  showCategorySevenItemOne(item, context, {popupType = "old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2684,7 +2684,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第八个分类 混合排列，第一行一大两小，其余三个一行每页三列一行
-  showCategoryEight(showItemList, context, {popupType: "old"}) {
+  showCategoryEight(showItemList, context, {popupType = "old"}) {
     if (showItemList != null && showItemList.length > 0) {
       if (showItemList.length >= 3) {
         var _leftItem = showItemList[0];
@@ -2768,7 +2768,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategoryEightItemList(items, context, {popupType: "old"}) {
+  showCategoryEightItemList(items, context, {popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
@@ -2776,7 +2776,7 @@ extension MenuPageCategory on MenuPageController {
     return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.71, canScroll: false,);
   }
 
-  showCategoryEightItemOne(item, context, {popupType: "old"}) {
+  showCategoryEightItemOne(item, context, {popupType = "old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2865,7 +2865,7 @@ extension MenuPageCategory on MenuPageController {
   }
 
   //第九个分类 混合排列，第一行一大两小，其余2个一行每页2列一行
-  showCategoryNine(showItemList, context, {popupType: "old"}) {
+  showCategoryNine(showItemList, context, {popupType = "old"}) {
     if (showItemList.length > 0) {
       if (showItemList.length >= 3) {
         var _leftItem = showItemList[0];
@@ -2948,7 +2948,7 @@ extension MenuPageCategory on MenuPageController {
     }
   }
 
-  showCategoryNineItemList(items, context ,{popupType: "old"}) {
+  showCategoryNineItemList(items, context ,{popupType = "old"}) {
     List<Widget> children = [];
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
@@ -2956,7 +2956,7 @@ extension MenuPageCategory on MenuPageController {
     return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.76, canScroll: false,);
   }
 
-  showCategoryNineItemOne(item, context, {popupType: "old"}) {
+  showCategoryNineItemOne(item, context, {popupType = "old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(

@@ -66,10 +66,10 @@
 @import path_provider_foundation;
 #endif
 
-#if __has_include(<paycube/PaycubePlugin.h>)
-#import <paycube/PaycubePlugin.h>
+#if __has_include(<paycube_old/PaycubePlugin.h>)
+#import <paycube_old/PaycubePlugin.h>
 #else
-@import paycube;
+@import paycube_old;
 #endif
 
 #if __has_include(<permission_handler_apple/PermissionHandlerPlugin.h>)
@@ -90,10 +90,10 @@
 @import shared_preferences_foundation;
 #endif
 
-#if __has_include(<sqflite/SqflitePlugin.h>)
-#import <sqflite/SqflitePlugin.h>
+#if __has_include(<sqflite_darwin/SqflitePlugin.h>)
+#import <sqflite_darwin/SqflitePlugin.h>
 #else
-@import sqflite;
+@import sqflite_darwin;
 #endif
 
 @implementation GeneratedPluginRegistrant

@@ -612,7 +612,7 @@ class MenuzongPageView extends GetView {
 
 
   //第二个分类 小菜
-  _showCategoryTwo(showItemList,context,{popupType:"old"}) {
+  _showCategoryTwo(showItemList,context,{popupType ="old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -625,7 +625,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategoryTwoItemList(items,context,{popupType:"old"}) {
+  showCategoryTwoItemList(items,context,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -646,7 +646,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategoryTwoItemOne(item,context,{popupType:"old"}) {
+  showCategoryTwoItemOne(item,context,{popupType ="old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -1272,7 +1272,7 @@ class MenuzongPageView extends GetView {
   }
 
   //第四个酒水分类
-  _showCategoryFour(showItemList,context,{popupType:"old"}) {
+  _showCategoryFour(showItemList,context,{popupType ="old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -1285,7 +1285,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategoryFourItemList(items,context,{popupType:"old"}) {
+  showCategoryFourItemList(items,context,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(
         top: ScreenAdapter.height(8),
@@ -1309,7 +1309,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategoryFourItemOne(item,context,{popupType:"old"}) {
+  showCategoryFourItemOne(item,context,{popupType ="old"}) {
     Offset temp;
 
     return Container(
@@ -1933,7 +1933,7 @@ class MenuzongPageView extends GetView {
   }
 
   //第六个分类 每页两列一行
-  _showCategorySix(showItemList,context,{popupType:"old"}) {
+  _showCategorySix(showItemList,context,{popupType ="old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -1946,7 +1946,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategorySixItemList(items,{popupType:"old"}) {
+  showCategorySixItemList(items,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -1967,7 +1967,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategorySixItemOne(item,context,{popupType:"old"}) {
+  showCategorySixItemOne(item,context,{popupType ="old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2048,7 +2048,7 @@ class MenuzongPageView extends GetView {
   }
 
   //第七个分类 每页三列一行  饮品
-  _showCategorySeven(showItemList,{popupType:"old"}) {
+  _showCategorySeven(showItemList,{popupType ="old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
@@ -2061,7 +2061,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategorySevenItemList(items,{popupType:"old"}) {
+  showCategorySevenItemList(items,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -2082,7 +2082,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategorySevenItemOne(item,context,{popupType:"old"}) {
+  showCategorySevenItemOne(item,context,{popupType ="old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2168,7 +2168,7 @@ class MenuzongPageView extends GetView {
   }
 
   //第八个分类 混合排列，第一行一大两小，其余三个一行每页三列一行
-  _showCategoryEight(showItemList,context,{popupType:"old"}) {
+  _showCategoryEight(showItemList,context,{popupType ="old"}) {
     if (showItemList.length > 0) {
       if(showItemList.length >=3){
         var _leftItem = showItemList[0];
@@ -2427,7 +2427,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategoryEightItemList(items,{popupType:"old"}) {
+  showCategoryEightItemList(items,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -2449,7 +2449,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategoryEightItemOne(item,context,{popupType:"old"}) {
+  showCategoryEightItemOne(item,context,{popupType ="old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -2534,7 +2534,7 @@ class MenuzongPageView extends GetView {
   }
 
   //第九个分类 混合排列，第一行一大两小，其余2个一行每页2列一行
-  _showCategoryNine(showItemList,context,{popupType:"old"}) {
+  _showCategoryNine(showItemList,context,{popupType ="old"}) {
     if (showItemList.length > 0) {
       if(showItemList.length >=3){
         var _leftItem = showItemList[0];
@@ -2798,7 +2798,7 @@ class MenuzongPageView extends GetView {
     }
   }
 
-  showCategoryNineItemList(items,{popupType:"old"}) {
+  showCategoryNineItemList(items,{popupType ="old"}) {
     return Padding(
       padding: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
@@ -2819,7 +2819,7 @@ class MenuzongPageView extends GetView {
     );
   }
 
-  showCategoryNineItemOne(item,context,{popupType:"old"}) {
+  showCategoryNineItemOne(item,context,{popupType ="old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(

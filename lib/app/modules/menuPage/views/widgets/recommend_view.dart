@@ -15,7 +15,7 @@ import 'grid_item_view.dart';
 import 'menu_sheet_views.dart';
 
 extension RecommendView on MenuPageController {
-  recommendItemView(item, {popupType: "old", aspectRatio: 1.0}) {
+  recommendItemView(item, {popupType = "old", aspectRatio = 1.0}) {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],

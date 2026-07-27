@@ -4,13 +4,13 @@ appName: smartwe_ticket_machine
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 
-  sdk: '>=2.18.6 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
 
 dependency_overrides:
   win32: 5.5.4
 
 
-dependencies: 
+dependencies:
   yaml: any
   sqflite_common_ffi: any
   cupertino_icons: ^1.0.5
@@ -19,7 +19,7 @@ dependencies:
   shared_preferences: ^2.0.15
   package_info_plus: 8.3.0
   fluttertoast: ^8.2.5
-  sqflite: 2.0.2
+  sqflite: ^2.4.2
   cached_network_image: ^3.3.0
   event_bus: ^2.0.0
   flutter_easyloading: ^3.0.5
@@ -57,7 +57,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   uuid: ^4.5.2
-  intl: 0.19.0
+  intl: ^0.20.2
   archive: ^3.3.0
   transparent_image: ^2.0.1
   animated_widgets: ^1.1.0
@@ -78,10 +78,10 @@ dependencies:
   flutter:
     sdk: flutter
  #不同版本Android加载不同的插件
-#  paycube_old: # Android 7
-#    path: ./lib/app/plugins/paycube_old
-  paycube: # Android 11
-    path: ./lib/app/plugins/paycube
+  paycube_old: # Android 7
+    path: ./lib/app/plugins/paycube_old
+#  paycube: # Android 11
+#    path: ./lib/app/plugins/paycube
   flutter_plugin_msprinter: 
     path: ./lib/app/plugins/flutter_plugin_msprinter
   appset: 
@@ -174,4 +174,3 @@ flutter:
       fonts: 
         - asset: assets/fonts/Work_Sans/bW1.ttc
   uses-material-design: true
-

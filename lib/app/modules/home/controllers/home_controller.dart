@@ -28,10 +28,10 @@ import '../../../widget/DialogUtils.dart';
 class HomeController extends GetxController {
   //TODO: Implement HomeController
 
-  Timer? allowtimer;
-  Timer? stoptimer;
-  Timer? stopChecktimer;
-  Timer? closetimer;
+  // Timer? allowtimer;
+  // Timer? stoptimer;
+  // Timer? stopChecktimer;
+  // Timer? closetimer;
   Timer? printRetryTimer;
   bool _retryingPrint = false;
   AppConfig appConfig = Get.find();
@@ -209,18 +209,18 @@ class HomeController extends GetxController {
     //倒计时，一定时间不开启现金机则继续执行下一步
     countDownTimer();
     String checkStatus = await payCube.CheckPayCubeStatus;
-    debugPrint("checkStatus:$checkStatus");
+    logI("checkStatus:$checkStatus");
 
     //如果检测现金机打开错误，则重新打开一下
-    if (checkStatus == "openError") {
+    if(checkStatus == "openError"){
       int _openCount = 0;
       for (var i = 0; i < 3; i++) {
         String openStatus = await payCube.openPayCube;
-        debugPrint("openStatus:$openStatus");
+        logI("openStatus:$openStatus");
         _openCount++;
-        debugPrint("打开次数$_openCount");
+        logI("打开次数$_openCount");
         if (openStatus == "openSuccess") {
-          seconds.value = 60;
+          seconds.value=60;
           countDownTimer();
           startToubi();
           return;
@@ -236,6 +236,7 @@ class HomeController extends GetxController {
       //await Paycube.setReceiveEvent;
       startToubi();
     }
+
   }
 
   _sendFailureEmail() async {
@@ -275,96 +276,40 @@ class HomeController extends GetxController {
 
     // Paycube.getPayCubeListener();
     // await Paycube.setReceiveEvent;
-    debugPrint("--startToubi--");
+    logI("--startToubi--");
     await Future.delayed(Duration(milliseconds: 500));
     await payCube.startPayCube(onSuccess: () {
-      debugPrint("---onSuccess---");
+      logI("---onSuccess---");
       seconds.value=60;
       countDownTimer();
-       stopPayCube();
+      stopPayCube();
     }, catchError: (error) {
       showCashTimer?.cancel();
       _isCashState.value = false;
       _sendFailureEmail();
       prohibitOneCash();
-      debugPrint("startToubi catchError:$error");
+      logI("startToubi catchError:$error");
     });
-
-
-    // if(connectCount > 10){
-    //   showCashTimer?.cancel();
-    //   _isCashState.value = false;
-    //   await _sendFailureEmail();
-    //   await prohibitOneCash();
-    //   //getIsFirstOpen();
-    // }
-    // //print("链接次数${}");
-    // // 循环一定要记得设置取消条件，手动取消
-    // if (startPayCube == "AllowSuccess") {
-    //   seconds.value=60;
-    //   _countDownTimer();
-    //
-    //   await stopPayCube();
-    //
-    // }else if (startPayCube == "Error-F0--16") {
-    //   //await Paycube.endTrade;
-    //   //await Future.delayed(Duration(milliseconds: 200));
-    //   //sleep(Duration(milliseconds: 200));
-    //   //startToubi(connectCount: connectCount + 1);
-    // }else if (startPayCube == "Error-A0--02") {
-    //   //sleep(Duration(milliseconds: 300));
-    // }else{
-    //   //startToubi(connectCount: connectCount + 1);
-    // }
-
   }
 
   stopPayCube() async {
-    debugPrint("--stopPayCube--");
+    logI("--stopPayCube--");
     checkSteeps.value = 3;
     update();
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
     bool endStatus = await payCube.endPayCube(onSuccess: () {
-      debugPrint("endPayCube");
+      logI("endPayCube");
     }, catchError: (error) {
-      debugPrint("endPayCube catchError:$error");
+      logI("endPayCube catchError:$error");
     });
-    debugPrint("endStatus:$endStatus");
+    logI("endStatus:$endStatus");
     if (endStatus) {
       //倒计时，一定时间不开启现金机则继续执行下一步
       seconds.value=60;
       countDownTimer();
       closePayCube();
-
     }
-    // else if(endStatus == "Error-A0--02"){
-    //   //await stopPayCube();
-    // }else{
-    //   //await stopPayCube();
-    // }
-
-
-    // stopChecktimer?.cancel();
-    // stopChecktimer = Timer.periodic(Duration(milliseconds: 550), (Timer stopcheck) async {
-    //   _stopStatus =  await Paycube.getPayCubeStopCashStatus;
-    //   debugPrint("_stopStatus:$_stopStatus");
-    //   // 循环一定要记得设置取消条件，手动取消
-    //   if (_stopStatus == "StopSuccess") {
-    //     //倒计时，一定时间不开启现金机则继续执行下一步
-    //     seconds.value=60;
-    //     _countDownTimer();
-    //     closePaycube();
-    //     stopcheck.cancel();
-    //
-    //   }else if(_stopStatus == "Error-A0--02"){
-    //     //处理中
-    //     sleep(Duration(milliseconds: 200));
-    //     await Paycube.endPayCube;
-    //   }else{
-    //     await Paycube.endPayCube;
-    //   }
-    // });
   }
 
   closePayCube() async {
@@ -374,11 +319,11 @@ class HomeController extends GetxController {
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
     bool endTrade = await payCube.endTrade(onSuccess: () {
-      debugPrint("endTrade");
+      logI("endTrade");
     }, catchError: (error) {
-      debugPrint("endTrade catchError:$error");
+      logI("endTrade catchError:$error");
     });
-    debugPrint("endTrade:$endTrade");
+    logI("endTrade:$endTrade");
     if (endTrade) {
       showCashTimer?.cancel();
       seconds.value=60;
@@ -386,28 +331,9 @@ class HomeController extends GetxController {
       //现金机打开一次后，判断是否第一次打开
       prohibitOneCash();
     }else{
-
+      logI("endTrade失败");
       //await Paycube.endTrade;
     }
-
-    // closetimer?.cancel();
-    // closetimer = Timer.periodic(Duration(milliseconds: 550), (Timer closecheck) async {
-    //   _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
-    //   debugPrint("_closeStatus:$_closeStatus");
-    //   // 循环一定要记得设置取消条件，手动取消
-    //   if (_closeStatus == "EndSuccess" ) {
-    //     showCashTimer?.cancel();
-    //     seconds.value=60;
-    //
-    //     //现金机打开一次后，判断是否第一次打开
-    //     prohibitOneCash();
-    //
-    //     closecheck.cancel();
-    //   }else{
-    //
-    //     await Paycube.endTrade;
-    //   }
-    // });
   }
 
   //禁用一元入金和出金
