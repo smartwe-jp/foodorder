@@ -14,6 +14,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:logging/logging.dart';
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
+import 'app/config/app_environment.dart';
 import 'app/config/color.dart';
 import 'app/controllers/app_config.dart';
 import 'app/routes/app_pages.dart';
@@ -62,6 +63,8 @@ class RouteDebugObserver extends NavigatorObserver {
 }
 
 void main() {
+  AppEnvironmentConfig.ensureValid();
+
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 

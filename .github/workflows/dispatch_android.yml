@@ -55,7 +55,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.7'
+          flutter-version: '3.35.1'
           channel: 'stable'
 
       # 步骤 5: 获取 Flutter 依赖包 (现在可以成功访问私有库)
@@ -75,7 +75,7 @@ jobs:
       # 步骤 7: 构建 Flutter APK 和 App Bundle
       - name: Build Flutter (APK & App Bundle)
         run: |
-          flutter build apk --release
+          flutter build apk --release --dart-define=APP_ENV=prod
       #    flutter build appbundle --release
       
       # 步骤 7.1: 生成版本信息文件
