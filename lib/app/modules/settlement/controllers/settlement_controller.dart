@@ -16,6 +16,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
+import 'package:foodorder/app/services/scale_serial_service.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -1068,6 +1069,8 @@ class SettlementController extends GetxController with StateMixin {
     //入金开始
     debugPrint("Starttoubi $connectCount");
     logI("Start open cash $connectCount");
+    // 投币前释放电子秤 USB，避免与 Android11 FTDI 现金机抢口；异常已吞掉
+    await ScaleSerialService.releaseUsbSafely(reason: 'Starttoubi');
     await Future.delayed(Duration(milliseconds: 500));
     bool result = await payCube.startPayCube(onSuccess: () {
       debugPrint("onSuccess");

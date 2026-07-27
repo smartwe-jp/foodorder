@@ -200,6 +200,7 @@ const Map<String, String> zh_CN = {
   "spicy_weigh_manual_input":"手动输入",
   "spicy_weigh_manual_input_title":"输入重量（g）",
   "spicy_weigh_manual_ready":"已手动输入（可进入下一步）",
+  "spicy_mode_preparing":"正在准备称重…",
 
   "spicy_menu_scan_title":"扫描商品条码加入购物车",
   "spicy_menu_scan_subtitle":"也可以直接点击商品",

@@ -467,7 +467,7 @@ class SystemSettingPageView extends GetView {
     );
   }
 
-  // 麻辣烫模式下的注文方式设置（扫码注文 vs 普通注文）
+  // 麻辣烫注文方式设置（UI 已隐藏，固定普通注文；保留方法便于以后恢复扫码出汤底）
   setSpicyHotPotOrderType() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -554,11 +554,14 @@ class SystemSettingPageView extends GetView {
       Get.put(ScaleSerialService(), permanent: true);
     }
     final scale = Get.find<ScaleSerialService>();
-    // 异步刷新设备列表 + 已保存口
+    // 异步刷新设备列表 + 已保存口 / 通信参数
     scale.loadSavedPortName().then((name) {
       if (name != null && name.isNotEmpty) {
         scale.portNameRx.value = name;
       }
+    });
+    scale.loadSavedParams().then((p) {
+      scale.paramsRx.value = p;
     });
     scale.refreshPorts();
 
@@ -578,16 +581,17 @@ class SystemSettingPageView extends GetView {
         final err = scale.lastErrorRx.value;
         final connecting = scale.connectingRx.value;
         final raw = scale.lastRawRx.value;
+        final params = scale.paramsRx.value;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               connecting
-                  ? '接続中...'
+                  ? '接続処理中...'
                   : linked
-                      ? '接続中: ${scale.portLabel(current)}'
-                      : '未接続${current.isNotEmpty ? "（保存済）" : ""}',
+                      ? '接続済み: ${scale.portLabel(current)}  [${params.label}]'
+                      : '未接続${current.isNotEmpty ? "（保存済・未オープン）" : ""}',
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(20),
@@ -615,12 +619,86 @@ class SystemSettingPageView extends GetView {
                 ),
               ),
             Text(
-              '※ AndroidはUSB機器一覧から選択。秤に載せ「受信」が出れば正解。',
+              '※ 接続済み＝USBオープン成功。「受信」に ST,+xxxxx g（または HEX）が出れば通信成功。無受信時は下の通信パラメータを切替。',
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(15),
                 color: ColorsUtil.hexToColor("#999999"),
               ),
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '通信パラメータ（A&D出厂は 2400 7E1）',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(16),
+                color: ColorsUtil.hexToColor("#666666"),
+              ),
+            ),
+            SizedBox(height: ScreenAdapter.height(4)),
+            Wrap(
+              spacing: ScreenAdapter.width(10),
+              runSpacing: ScreenAdapter.height(8),
+              children: [
+                for (final p in [
+                  ScaleSerialParams.andFactory,
+                  ScaleSerialParams.appStandard,
+                ])
+                  InkWell(
+                    onTap: () async {
+                      if (scale.connectingRx.value) {
+                        showToast('接続処理中です');
+                        return;
+                      }
+                      final port = current.isNotEmpty
+                          ? current
+                          : (scale.portsRx.isNotEmpty
+                              ? scale.portsRx.first
+                              : '');
+                      if (port.isEmpty) {
+                        showToast('先にUSB機器を選択してください');
+                        return;
+                      }
+                      bool ok = false;
+                      try {
+                        ok = await scale.connect(
+                          portName: port,
+                          persist: true,
+                          params: p,
+                          autoProbe: false,
+                        );
+                      } catch (e) {
+                        ok = false;
+                        scale.lastErrorRx.value = e.toString();
+                      }
+                      showToast(ok
+                          ? '接続: ${p.label}。秤に載せ「受信」を確認'
+                          : '接続失敗: ${scale.lastErrorRx.value}');
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ScreenAdapter.width(14),
+                        vertical: ScreenAdapter.height(8),
+                      ),
+                      decoration: BoxDecoration(
+                        color: params.id == p.id && linked
+                            ? ColorsUtil.hexToColor("#e6a23c")
+                            : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        p.label,
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(15),
+                          color: params.id == p.id && linked
+                              ? Colors.white
+                              : ColorsUtil.hexToColor("#000000"),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             SizedBox(height: ScreenAdapter.height(8)),
             Wrap(
@@ -2126,24 +2204,8 @@ class SystemSettingPageView extends GetView {
                                           setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                         ]
                                     ), //设置机器类型
-                                  // 店铺开通麻辣烫即可配置注文方式与电子秤
-                                  if(controller.isspicyHotPot.value == "1")
-                                    TableRow(
-                                        children: <Widget>[
-                                          Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "麻辣烫注文",
-                                              style: TextStyle(
-                                                  fontFamily: 'NotoSansJP',
-                                                  fontSize: ScreenAdapter.fontSize(22),
-                                                  fontWeight: FontWeight.w500
-                                              ),
-                                            ),
-                                          ),
-                                          setSpicyHotPotOrderType(),
-                                        ]
-                                    ),
+                                  // 麻辣烫注文方式设置已隐藏：固定普通注文（称重→汤底→其他菜）
+                                  // 以后若恢复扫码出汤底模式，再展示 setSpicyHotPotOrderType()
                                   if(controller.isspicyHotPot.value == "1")
                                     TableRow(
                                         children: <Widget>[

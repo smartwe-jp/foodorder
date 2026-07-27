@@ -39,15 +39,7 @@ class SpicyHotPotModeView extends StatelessWidget {
     final ctrl = _ctrl;
     return ctrl.obx(
       (_) => _buildBody(ctrl),
-      onLoading: Scaffold(
-        backgroundColor: _kBg,
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: const AlwaysStoppedAnimation<Color>(_kRed),
-            strokeWidth: 3,
-          ),
-        ),
-      ),
+      onLoading: _buildPreparingPage(),
       onError: (err) => Scaffold(
         backgroundColor: _kBg,
         body: Center(
@@ -70,23 +62,63 @@ class SpicyHotPotModeView extends StatelessWidget {
     );
   }
 
+  /// 拉菜单/跳转称重前的过渡页：带步骤条，避免空白白屏
+  Widget _buildPreparingPage() {
+    return Scaffold(
+      backgroundColor: _kBg,
+      body: Column(
+        children: [
+          const SpicyHotPotStepHeader(currentStep: 2),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(_kRed),
+                    strokeWidth: 3,
+                  ),
+                  SizedBox(height: ScreenAdapter.height(28)),
+                  Text(
+                    'spicy_mode_preparing'.tr,
+                    style: TextStyle(
+                      color: _kGrey,
+                      fontSize: ScreenAdapter.fontSize(28),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBody(SpicyHotPotCheckoutController ctrl) {
-    // 普通注文选项步：用设计图白顶栏布局，不再套青绿顶栏
+    // 扫码模式不依赖 normalStep 路由，避免外层 Obx 无意义订阅
+    if (!ctrl.isNormalMode) {
+      return Scaffold(
+        backgroundColor: _kBg,
+        body: Column(
+          children: [
+            _buildTopBar(ctrl),
+            Expanded(child: _buildScanOrderView(ctrl)),
+          ],
+        ),
+      );
+    }
+
+    // 普通注文：必须先读 .obs，禁止用 && 短路导致 Obx 无订阅崩溃
     return Obx(() {
-      // 必须先读 .obs，避免 isNormalMode==false 时 && 短路导致 Obx 无订阅
       final normalStep = ctrl.normalStep.value;
       final menuCount = ctrl.categoryMenuList.length;
-      final isOptionStep = ctrl.isNormalMode && normalStep == 1;
-      final shouldAutoOpenWeigh =
-          ctrl.isNormalMode && normalStep == 0 && menuCount == 1;
-      if (shouldAutoOpenWeigh) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ctrl.showScaleDialogForItem(ctrl.categoryMenuList.first as Map);
-        });
-        return const Scaffold(
-          backgroundColor: _kBg,
-          body: SizedBox.shrink(),
-        );
+      final isOptionStep = normalStep == 1;
+      // 单称重商品：控制器已负责跳转称重页，此处只展示准备页，不再画空白 Scaffold
+      if (normalStep == 0 && menuCount == 1) {
+        return _buildPreparingPage();
       }
       if (isOptionStep) {
         return Scaffold(
@@ -99,7 +131,7 @@ class SpicyHotPotModeView extends StatelessWidget {
         body: Column(
           children: [
             _buildTopBar(ctrl),
-            Expanded(child: _buildContent(ctrl)),
+            Expanded(child: _buildNormalCategoryView(ctrl)),
           ],
         ),
       );
@@ -145,11 +177,6 @@ class SpicyHotPotModeView extends StatelessWidget {
   }
 
   // ==================== 内容区路由 ====================
-
-  Widget _buildContent(SpicyHotPotCheckoutController ctrl) {
-    if (ctrl.isNormalMode) return _buildNormalOrderView(ctrl);
-    return _buildScanOrderView(ctrl);
-  }
 
   // ==================== 步骤指示器 ====================
 
@@ -204,22 +231,8 @@ class SpicyHotPotModeView extends StatelessWidget {
 
   // ==================== 普通注文模式 ====================
 
-  Widget _buildNormalOrderView(SpicyHotPotCheckoutController ctrl) {
-    return Obx(() {
-      if (ctrl.normalStep.value == 1) return _buildNormalOptionView(ctrl);
-      return _buildNormalCategoryView(ctrl);
-    });
-  }
-
-  /// 普通注文第0步：选择称重商品
+  /// 普通注文第0步：选择称重商品（多称重商品时展示；单商品由控制器直接进称重页）
   Widget _buildNormalCategoryView(SpicyHotPotCheckoutController ctrl) {
-    // 单商品：addPostFrameCallback 触发 Get.off(SpicyWeighPage)，此处只是一帧奶油色过渡
-    if (ctrl.categoryMenuList.length == 1) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ctrl.showScaleDialogForItem(ctrl.categoryMenuList.first as Map);
-      });
-      return const Scaffold(backgroundColor: _kBg, body: SizedBox.shrink());
-    }
     return Column(
       children: [
         // 步骤提示头部
@@ -248,17 +261,19 @@ class SpicyHotPotModeView extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: ScreenAdapter.height(4)),
-                    Obx(() => Text(
-                          ctrl.selectedCategoryName.value.isNotEmpty
-                              ? ctrl.selectedCategoryName.value
-                              : '商品を選んでください',
-                          style: TextStyle(
-                            color: _kText,
-                            fontSize: ScreenAdapter.fontSize(32),
-                            fontFamily: GFont.getFontFamily(),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )),
+                    Obx(() {
+                      // 显式读 .value，保证 Obx 始终有订阅
+                      final name = ctrl.selectedCategoryName.value;
+                      return Text(
+                        name.isNotEmpty ? name : '商品を選んでください',
+                        style: TextStyle(
+                          color: _kText,
+                          fontSize: ScreenAdapter.fontSize(32),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -270,8 +285,9 @@ class SpicyHotPotModeView extends StatelessWidget {
         // 商品网格
         Expanded(
           child: Obx(() {
-            final items = ctrl.categoryMenuData;
-            if (items.isEmpty) {
+            // 先读 length，确保空列表时也有订阅
+            final menuCount = ctrl.categoryMenuList.length;
+            if (menuCount == 0) {
               return Center(
                 child: Text(
                   '称重商品なし',
@@ -280,6 +296,7 @@ class SpicyHotPotModeView extends StatelessWidget {
                 ),
               );
             }
+            final items = ctrl.categoryMenuList.toList();
             return GridView.builder(
               padding: EdgeInsets.all(ScreenAdapter.width(16)),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -432,7 +449,11 @@ class SpicyHotPotModeView extends StatelessWidget {
       SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       final selectedCode = ctrl.optionsDisplayMenuCode.value;
-      if (selectedCode.isEmpty) return const SizedBox.shrink();
+      // 订阅选项列表，切换汤底数据时也能刷新
+      final optionCount = ctrl.optionMenuList.length;
+      if (selectedCode.isEmpty || optionCount == 0) {
+        return const SizedBox.shrink();
+      }
 
       Map? selectedItem;
       for (final i in ctrl.optionMenuList) {
@@ -511,6 +532,7 @@ class SpicyHotPotModeView extends StatelessWidget {
   Widget _buildOptionItemCards(List items, SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       final selectedCode = ctrl.selectedOptionMenuCode.value;
+      // 保持对选中码的订阅（即使 items 为空也不至于无 obs）
       return LayoutBuilder(
         builder: (context, constraints) {
           final count = items.length;
@@ -798,6 +820,9 @@ class SpicyHotPotModeView extends StatelessWidget {
   /// 普通注文步骤1底部按钮
   Widget _buildNormalOptionButtons(SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
+      // 强制订阅选中态与选项选择，避免 getter 内部短路导致 Obx 无订阅
+      final _ = ctrl.selectedOptionMenuCode.value;
+      final __ = ctrl.normalOptionSelections.length;
       final canNext = ctrl.canConfirmNormalOrder;
       return SpicyHotPotBottomBar(
         onBack: () => ctrl.cancelNormalWeigh(),
@@ -817,8 +842,10 @@ class SpicyHotPotModeView extends StatelessWidget {
         if (!hasFocus) ctrl.itemFocusNode.requestFocus();
       },
       child: Obx(() {
-        final hasScannedItem = !ctrl.isScannedItemEmpty;
-        final canNext = _hasSelectedOption(ctrl);
+        // 显式读 length，确保空购物扫码态也有订阅（避免 RxMap.isEmpty 未注册）
+        final scannedCount = ctrl.scannedItem.length;
+        final hasScannedItem = scannedCount > 0;
+        final canNext = hasScannedItem && _hasSelectedOption(ctrl);
 
         if (!hasScannedItem) {
           return Container(

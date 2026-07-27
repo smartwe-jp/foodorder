@@ -200,6 +200,7 @@ const Map<String, String> en_US = {
   "spicy_weigh_manual_input":"Manual input",
   "spicy_weigh_manual_input_title":"Enter weight (g)",
   "spicy_weigh_manual_ready":"Manual weight entered (you can continue)",
+  "spicy_mode_preparing":"Preparing the scale…",
 
   "spicy_menu_scan_title":"Scan barcode to add to cart",
   "spicy_menu_scan_subtitle":"Or tap a product directly",

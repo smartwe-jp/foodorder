@@ -19,6 +19,7 @@ import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../plugins/paycube_old/lib/paycube.dart';
 import '../../../services/CustomLogerHandler.dart';
+import '../../../services/scale_serial_service.dart';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
@@ -225,6 +226,8 @@ class HomeController extends GetxController {
   openPayCube() async {
     checkSteeps.value = 2;
     update();
+    // 开机自检开现金机前先释放秤 USB
+    await ScaleSerialService.releaseUsbSafely(reason: 'home_openPayCube');
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
     String checkStatus = await payCube.CheckPayCubeStatus;
@@ -288,6 +291,7 @@ class HomeController extends GetxController {
     // Paycube.getPayCubeListener();
     // await Paycube.setReceiveEvent;
     logI("--startToubi--");
+    await ScaleSerialService.releaseUsbSafely(reason: 'home_startToubi');
     await Future.delayed(Duration(milliseconds: 500));
     await payCube.startPayCube(onSuccess: () {
       logI("---onSuccess---");

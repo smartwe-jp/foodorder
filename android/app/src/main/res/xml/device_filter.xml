@@ -12,5 +12,7 @@
     <usb-device vendor-id="6790" product-id="29987" />
     <!-- CH340 另一常见 PID -->
     <usb-device vendor-id="6790" product-id="21795" />
+    <!-- A&D AX-USB / RATOC USB-Serial Converter (VID 0584 / PID B050) -->
+    <usb-device vendor-id="1412" product-id="45136" />
     <!-- CDC ACM 类设备：不限定 PID，由运行时列举 -->
 </resources>

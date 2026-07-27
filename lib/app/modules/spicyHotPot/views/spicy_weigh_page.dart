@@ -97,9 +97,15 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
 
   @override
   void dispose() {
-    _scale.clearReading();
-    _scaleWorker?.dispose();
-    _scaleWorker = null;
+    try {
+      _scaleWorker?.dispose();
+      _scaleWorker = null;
+      _scale.clearReading();
+    } catch (e) {
+      debugPrint('称重页 dispose 清理异常: $e');
+    }
+    // 异步释放 USB，不 await、不抛错，避免 dispose 崩溃
+    ScaleSerialService.releaseUsbSafely(reason: 'weigh_page_dispose');
     super.dispose();
   }
 
@@ -478,7 +484,9 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
 
   Widget _buildStatusLine() {
     return Obx(() {
+      // 同时订阅连接态与重量，避免仅依赖本地 bool 时 Obx 判定无订阅
       final linked = _scale.connectedRx.value;
+      final _ = _scale.weightRx.value;
       final showStable = _canConfirm;
       final settling = _hasWeight && !_stable;
       String tip;

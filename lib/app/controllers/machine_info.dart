@@ -132,8 +132,9 @@ class MachineInfoController extends GetxController {
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
   /// 旧モード开关（已弃用）；新逻辑请用 [isShopSpicyHotPot]
   bool get isSpicyHotPotOn => machineModeInfo['spicyHotPot'] ?? false;
-  // 麻辣烫注文方式：'scan' 扫码注文（默认），'normal' 普通注文（触屏选择）
-  String get spicyHotPotOrderType => machineModeInfo['spicyHotPotOrderType'] ?? 'scan';
+  /// 麻辣烫注文方式：固定为普通注文（称重→汤底口味→其他菜）。
+  /// 扫码出汤底模式暂不开放，以后需要时再恢复设置项与 'scan'。
+  String get spicyHotPotOrderType => 'normal';
 
   //1 券卖机  2 精算机 3 自助收银
   String get machineMode {

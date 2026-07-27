@@ -735,7 +735,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //   }
   // }
 
-  // 更新麻辣烫注文方式：'scan' 扫码注文，'normal' 普通注文
+  // 更新麻辣烫注文方式（当前 UI 已隐藏，固定 normal；保留便于以后恢复扫码模式）
   updateSpicyHotPotOrderType(String type) {
     machineInfo.machineModeInfo['spicyHotPotOrderType'] = type;
     HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);

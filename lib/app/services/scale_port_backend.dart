@@ -20,9 +20,84 @@ class ScaleOpenResult {
   const ScaleOpenResult.fail(this.error) : ok = false;
 }
 
+/// 串口通信参数（与 UsbPort 常量一致：parity 0=none, 2=even）
+class ScaleSerialParams {
+  final int baudRate;
+  final int dataBits;
+  final int stopBits;
+  final int parity;
+  final String label;
+
+  const ScaleSerialParams({
+    required this.baudRate,
+    required this.dataBits,
+    required this.stopBits,
+    required this.parity,
+    required this.label,
+  });
+
+  /// App 原默认 / 多数设定：9600 8N1
+  static const appStandard = ScaleSerialParams(
+    baudRate: 9600,
+    dataBits: 8,
+    stopBits: 1,
+    parity: 0,
+    label: '9600 8N1',
+  );
+
+  /// A&D EK-L 出厂：2400 7E1（bps0 / btpr0）
+  static const andFactory = ScaleSerialParams(
+    baudRate: 2400,
+    dataBits: 7,
+    stopBits: 1,
+    parity: 2,
+    label: '2400 7E1(A&D出厂)',
+  );
+
+  static const presets = <ScaleSerialParams>[
+    appStandard,
+    andFactory,
+    ScaleSerialParams(
+      baudRate: 4800,
+      dataBits: 8,
+      stopBits: 1,
+      parity: 0,
+      label: '4800 8N1',
+    ),
+    ScaleSerialParams(
+      baudRate: 9600,
+      dataBits: 7,
+      stopBits: 1,
+      parity: 2,
+      label: '9600 7E1',
+    ),
+    ScaleSerialParams(
+      baudRate: 2400,
+      dataBits: 8,
+      stopBits: 1,
+      parity: 0,
+      label: '2400 8N1',
+    ),
+  ];
+
+  String get id =>
+      '${baudRate}_${dataBits}${parity == 2 ? 'E' : 'N'}$stopBits';
+
+  static ScaleSerialParams? fromId(String? id) {
+    if (id == null || id.isEmpty) return null;
+    for (final p in presets) {
+      if (p.id == id) return p;
+    }
+    return null;
+  }
+
+  @override
+  String toString() => label;
+}
+
 abstract class ScalePortBackend {
   Future<List<ScalePortItem>> listPorts();
-  Future<ScaleOpenResult> open(String id, {required int baudRate});
+  Future<ScaleOpenResult> open(String id, {required ScaleSerialParams params});
   Stream<Uint8List>? get inputStream;
   Future<void> close();
 }
@@ -36,7 +111,7 @@ ScalePortBackend createScalePortBackend() {
 
 /// 常见 USB 转串口芯片 VID（十进制），降低误开打印机/摄像头导致原生崩溃
 const _kKnownUartVids = <int>{
-  0x0403, // FTDI
+  // 注意：不包含 0x0403 FTDI —— 现金机 PayCube(D2XX) 使用，电子秤列表需排除
   0x10C4, // CP210x
   0x067B, // PL2303
   0x1A86, // CH340/CH341
@@ -44,27 +119,66 @@ const _kKnownUartVids = <int>{
   0x2A03, // Arduino.org
   0x04D8, // Microchip
   0x1B4F, // SparkFun
+  0x0584, // RATOC / A&D AX-USB 官方 USB-RS232（如 0584:B050）
+};
+
+/// 现金机等占用的 USB VID，电子秤禁止列举/打开
+const _kCashMachineVids = <int>{
+  0x0403, // FTDI — PayCube Android11
+};
+
+/// A&D AX-USB（RATOC）等：自动探测常失败，需按驱动类型依次强制尝试
+const _kForceDriverVids = <int>{
+  0x0584,
 };
 
 bool _looksLikeUart(UsbDevice d) {
   final vid = d.vid;
+  if (vid != null && _kCashMachineVids.contains(vid)) return false;
   if (vid != null && _kKnownUartVids.contains(vid)) return true;
   final name =
       '${d.productName ?? ''} ${d.manufacturerName ?? ''} ${d.deviceName}'
           .toLowerCase();
+  // 名称像 FTDI 的也不给秤用（防误选现金机）
+  if (name.contains('ftdi')) return false;
   const keys = [
     'serial',
     'uart',
     'ch340',
     'ch341',
     'cp210',
-    'ft232',
     'pl2303',
     'cdc',
     'usb-serial',
     'usb serial',
+    'usb_serial',
+    'ratoc',
+    'a&d',
+    'a and d',
   ];
   return keys.any(name.contains);
+}
+
+bool _isCashMachineUsb(UsbDevice d) {
+  final vid = d.vid;
+  return vid != null && _kCashMachineVids.contains(vid);
+}
+
+/// 为指定设备选择 create() 驱动尝试顺序（空字符串=库自动探测）
+List<String> _driverTypesFor(UsbDevice d) {
+  final vid = d.vid;
+  if (vid != null && _kForceDriverVids.contains(vid)) {
+    // A&D AX-USB：现场多为 FTDI/CDC 兼容，PL2303 次之
+    return [
+      UsbSerial.FTDI,
+      UsbSerial.CDC,
+      UsbSerial.PL2303,
+      UsbSerial.CH34x,
+      UsbSerial.CP210x,
+      '',
+    ];
+  }
+  return [''];
 }
 
 /// Android：UsbManager + usb_serial
@@ -82,11 +196,16 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
     if (!Platform.isAndroid) return [];
     try {
       final all = await UsbSerial.listDevices();
-      // 优先只展示串口芯片；过滤后为空再回退全部（部分秤 VID 未知）
-      final uart = all.where(_looksLikeUart).toList();
-      _devices = uart.isNotEmpty ? uart : all;
-      if (uart.isEmpty && all.isNotEmpty) {
-        logI('电子秤：未匹配已知UART VID，回退全部USB设备 ${all.length} 台');
+      // 永远排除现金机 FTDI，即使「回退全部」也不列入
+      final safe = all.where((d) => !_isCashMachineUsb(d)).toList();
+      final uart = safe.where(_looksLikeUart).toList();
+      _devices = uart.isNotEmpty ? uart : safe;
+      if (uart.isEmpty && safe.isNotEmpty) {
+        logI('电子秤：未匹配已知UART VID，回退非现金机USB ${safe.length} 台');
+      }
+      if (all.length != safe.length) {
+        logI(
+            '电子秤：已排除现金机FTDI ${all.length - safe.length} 台，剩余 ${_devices.length}');
       }
       return _devices.map((d) {
         final id = _encodeId(d);
@@ -137,8 +256,38 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
     return null;
   }
 
+  /// 按 VID 尝试合适驱动；A&D AX-USB(0584) 自动探测会报 Not an Serial device
+  Future<UsbPort?> _createUsbPort(UsbDevice device) async {
+    Object? lastError;
+    for (final type in _driverTypesFor(device)) {
+      final typeLabel = type.isEmpty ? 'auto' : type;
+      try {
+        // 部分驱动对未知芯片会卡住，必须限时
+        final port = await device
+            .create(type)
+            .timeout(const Duration(seconds: 3));
+        if (port != null) {
+          logI('电子秤 USB create 成功 type=$typeLabel ${_encodeId(device)}');
+          return port;
+        }
+        logI('电子秤 USB create 返回 null type=$typeLabel');
+      } on TimeoutException {
+        lastError = 'create($typeLabel) 超时';
+        logI('电子秤 USB create 超时 type=$typeLabel');
+      } catch (e) {
+        lastError = e;
+        logI('电子秤 USB create 失败 type=$typeLabel: $e');
+      }
+    }
+    if (lastError != null) throw lastError;
+    return null;
+  }
+
   @override
-  Future<ScaleOpenResult> open(String id, {required int baudRate}) async {
+  Future<ScaleOpenResult> open(
+    String id, {
+    required ScaleSerialParams params,
+  }) async {
     await close();
     try {
       if (_devices.isEmpty) {
@@ -153,24 +302,36 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
         return const ScaleOpenResult.fail('未找到该 USB 设备，请重新选择');
       }
 
+      if (_isCashMachineUsb(device)) {
+        return const ScaleOpenResult.fail('禁止打开现金机 USB(FTDI 0x0403)');
+      }
+
       // 非 UART 设备强提醒：仍允许试开，但包住异常
       if (!_looksLikeUart(device)) {
         logI('警告：设备可能不是串口芯片 ${_encodeId(device)}');
       }
 
       UsbPort? port;
+      Object? createError;
       try {
-        port = await device.create();
+        port = await _createUsbPort(device);
       } catch (e) {
+        createError = e;
         return ScaleOpenResult.fail('创建失败（可能不是串口设备）: $e');
       }
       if (port == null) {
-        return const ScaleOpenResult.fail('无法创建端口（权限？）');
+        return ScaleOpenResult.fail(
+            '无法创建端口（权限？）${createError != null ? " $createError" : ""}');
       }
 
       bool opened = false;
       try {
-        opened = await port.open() == true;
+        opened = await port.open().timeout(const Duration(seconds: 3)) == true;
+      } on TimeoutException {
+        try {
+          await port.close();
+        } catch (_) {}
+        return const ScaleOpenResult.fail('USB 打开超时');
       } catch (e) {
         try {
           await port.close();
@@ -191,11 +352,12 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
 
       try {
         await port.setPortParameters(
-          baudRate,
-          UsbPort.DATABITS_8,
-          UsbPort.STOPBITS_1,
-          UsbPort.PARITY_NONE,
+          params.baudRate,
+          params.dataBits,
+          params.stopBits,
+          params.parity,
         );
+        logI('电子秤串口参数: ${params.label}');
       } catch (e) {
         logI('setPortParameters 失败: $e');
       }
@@ -262,7 +424,10 @@ class LibSerialScaleBackend implements ScalePortBackend {
   }
 
   @override
-  Future<ScaleOpenResult> open(String id, {required int baudRate}) async {
+  Future<ScaleOpenResult> open(
+    String id, {
+    required ScaleSerialParams params,
+  }) async {
     await close();
     if (!_isSafeCom(id)) {
       return ScaleOpenResult.fail('不允许打开非 COM 口: $id');
@@ -290,16 +455,22 @@ class LibSerialScaleBackend implements ScalePortBackend {
       }
 
       try {
+        final parity = params.parity == 2
+            ? SerialPortParity.even
+            : params.parity == 1
+                ? SerialPortParity.odd
+                : SerialPortParity.none;
         final config = SerialPortConfig()
-          ..baudRate = baudRate
-          ..bits = 8
-          ..parity = SerialPortParity.none
-          ..stopBits = 1;
+          ..baudRate = params.baudRate
+          ..bits = params.dataBits
+          ..parity = parity
+          ..stopBits = params.stopBits;
         try {
           config.setFlowControl(SerialPortFlowControl.none);
         } catch (_) {}
         port.config = config;
         config.dispose();
+        logI('电子秤串口参数: ${params.label}');
       } catch (e) {
         logI('配置失败: $e');
       }

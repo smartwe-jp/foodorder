@@ -79,9 +79,14 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
 
   @override
   void dispose() {
-    _scale.clearReading();
-    _scaleWorker?.dispose();
-    _scaleWorker = null;
+    try {
+      _scaleWorker?.dispose();
+      _scaleWorker = null;
+      _scale.clearReading();
+    } catch (e) {
+      debugPrint('称重弹窗 dispose 清理异常: $e');
+    }
+    ScaleSerialService.releaseUsbSafely(reason: 'weigh_dialog_dispose');
     super.dispose();
   }
 
@@ -129,7 +134,9 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
 
   Widget _buildScaleStatus() {
     return Obx(() {
+      // 同时订阅连接态与重量，保证 Obx 始终有合法订阅
       final linked = _scale.connectedRx.value;
+      final _ = _scale.weightRx.value;
       final showStable = _canConfirm;
       final settling = _hasWeight && !_stable;
       String tip;

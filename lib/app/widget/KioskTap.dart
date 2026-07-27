@@ -47,7 +47,12 @@ class _KioskTapState extends State<KioskTap> {
 
   void _setPressed(bool value) {
     if (_pressed == value) return;
-    setState(() => _pressed = value);
+    // 无按下视觉反馈时不要 setState，避免全树无意义重建造成点击卡顿
+    if (widget.builder != null || widget.onPressedChanged != null) {
+      setState(() => _pressed = value);
+    } else {
+      _pressed = value;
+    }
     widget.onPressedChanged?.call(value);
   }
 

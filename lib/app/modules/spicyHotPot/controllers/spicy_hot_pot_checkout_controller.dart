@@ -16,9 +16,8 @@ import '../views/spicy_weigh_page.dart';
 
 /// 麻辣烫模式主控制器（Flutter 3.44 初始版本）
 ///
-/// 支持两种注文方式（系统设置 spicyHotPotOrderType）：
-/// - scan：扫码注文 — 扫码 → 选口味选项 → 称重 → 入购物车
-/// - normal：普通注文 — 称重 → 选汤底/口味 → 按选项组规则校验后入购物车
+/// 当前固定普通注文：称重 → 选汤底/口味 → 选其他菜品。
+/// 扫码注文代码保留，设置项已隐藏，以后需要再开放。
 ///
 /// 称重商品 priceType=HUNDRED_GRAM；口味商品入购物车 itemType=spicy
 class SpicyHotPotCheckoutController extends GetxController with StateMixin {
@@ -62,7 +61,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   // ==================== getter ====================
 
-  bool get isNormalMode => machineInfo.spicyHotPotOrderType == 'normal';
+  // 固定普通注文；扫码模式以后再开放
+  bool get isNormalMode => true;
   bool get isScannedItemEmpty => scannedItem.isEmpty;
   Map get scannedItemData => scannedItem;
   List get categoryMenuData => categoryMenuList;
@@ -667,6 +667,13 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         selectedCategoryName.value = target['categoryName'] ?? '';
         await getShopCategoryMenu(target['categoryCode'] ?? '');
         change(null, status: RxStatus.success());
+        // 普通注文单称重商品：success 后再进称重，底层显示准备页而非空白
+        if (isNormalMode && categoryMenuList.length == 1) {
+          final item = Map<String, dynamic>.from(categoryMenuList.first as Map);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showScaleDialogForItem(item);
+          });
+        }
       } else {
         change(null, status: RxStatus.error('暂无可用分类'));
       }
@@ -709,7 +716,6 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
             '称重商品: ${categoryMenuList.length}, 选项商品: ${optionMenuList.length}');
         // 菜单到手后后台预缓存汤底图
         _precacheOptionImages();
-        // 导航由 view 的 _buildNormalCategoryView addPostFrameCallback 触发，此处无需重复
       }
 
       //change(null, status: RxStatus.success());
