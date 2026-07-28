@@ -1,7 +1,2 @@
-param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$FlutterArgs
-)
-
-& fvm dart run tool/variant.dart run windows --env dev @FlutterArgs
+& fvm dart run tool/variant.dart run windows --env dev @args
 exit $LASTEXITCODE

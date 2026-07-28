@@ -457,7 +457,7 @@ Future<int> _runFvm(
   );
 
   final subscriptions = <StreamSubscription<ProcessSignal>>[];
-  if (forwardSignals) {
+  if (forwardSignals && !Platform.isWindows) {
     for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {
       try {
         subscriptions.add(
