@@ -74,7 +74,10 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   void onInit() {
     super.onInit();
     checkLanguage.value = Get.arguments?['checkLanguage'] ?? 'JP';
-    _applyLanguageLocale(checkLanguage.value);
+    // 延后到帧结束后再切 locale，避免 build 中 updateLocale → forceAppUpdate 崩溃
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyLanguageLocale(checkLanguage.value);
+    });
     if (!isNormalMode) {
       itemFocusNode.requestFocus();
     }
@@ -90,6 +93,11 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       locale = const Locale('en', 'US');
     } else if (language == 'KO') {
       locale = const Locale('ko', 'KR');
+    }
+    // 已是目标语言则跳过，减少无意义的全树重建
+    if (Get.locale?.languageCode == locale.languageCode &&
+        Get.locale?.countryCode == locale.countryCode) {
+      return;
     }
     Get.updateLocale(locale);
   }
@@ -188,11 +196,11 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     }
   }
 
-  /// 跳过称重：切到券卖模式，直接进入普通菜单购商品（不入车、不选口味）
+  /// 跳过称重：直接进入配菜菜单（保留 spicyHotPot mode，菜单页扫码仍可用）
   /// 清掉麻辣烫相关页面，保留结账首页，使菜单返回回到首页而非麻辣烫页
   void skipWeighToSellMode() {
-    logI('跳过称重，进入券卖模式');
-    machineInfo.currentMode = MachineMode.sell;
+    logI('跳过称重，进入配菜菜单（mode 保持 spicyHotPot）');
+    // 不改 currentMode：保留 spicyHotPot，菜单页扫码入车才能正常工作
     Get.offNamedUntil(
       '/menu-page',
       (route) => route.settings.name == '/checkout-page',

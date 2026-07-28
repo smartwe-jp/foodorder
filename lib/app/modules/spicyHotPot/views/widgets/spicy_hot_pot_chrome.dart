@@ -274,8 +274,9 @@ class SpicyHotPotBottomBar extends StatelessWidget {
                 label: resolvedNext,
                 onTap: nextEnabled ? onNext : null,
                 enabled: nextEnabled,
-                minWidth: ScreenAdapter.width(180),
-                horizontalPadding: ScreenAdapter.width(20),
+                // 放宽约 2/3，让「下一步」更醒目
+                minWidth: ScreenAdapter.width(300),
+                horizontalPadding: ScreenAdapter.width(28),
               ),
             ],
           ),

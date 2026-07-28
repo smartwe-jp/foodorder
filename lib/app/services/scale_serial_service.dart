@@ -336,11 +336,11 @@ class ScaleSerialService extends GetxService {
   void _onBytes(Uint8List data) {
     try {
       if (data.isEmpty) return;
-      final hex =
-          data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
-      logI('电子秤收到 ${data.length}B: $hex');
-      // 尚未拼成行时也先显示，便于确认「有字节进来」
+      // 首包：确认 USB 有数据（仅输出一次，之后不再打印原始字节）
       if (lastRawRx.value.isEmpty) {
+        final hex =
+            data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
+        logI('电子秤首包 ${data.length}B: $hex');
         lastRawRx.value = 'HEX $hex';
       }
 
@@ -411,7 +411,7 @@ class ScaleSerialService extends GetxService {
 
     _lastGrams = v;
     _lastParsedRaw = line;
-    debugPrint('[Scale] raw: $line -> ${v}g');
+    logI('电子秤重量变化: ${v}g');
 
     // 重量变化或协议报 US：立即实时刷新，标记未稳
     _settleTimer?.cancel();
