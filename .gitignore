@@ -38,6 +38,8 @@ windows/out/
 .pub-cache/
 .pub/
 /build/
+**/flutter/ephemeral/
+**/Flutter/ephemeral/
 
 # Web related
 lib/generated_plugin_registrant.dart

@@ -278,6 +278,7 @@ Future<void> _activateVariant(
     variantContents: manifestContents,
   );
   manifest.copySync('${_root.path}/pubspec.yaml');
+  _cleanGeneratedPluginSymlinks();
 
   if (!useVariantLock) {
     return;
@@ -291,6 +292,21 @@ Future<void> _activateVariant(
     );
   }
   lock.copySync('${_root.path}/pubspec.lock');
+}
+
+void _cleanGeneratedPluginSymlinks() {
+  const paths = <String>[
+    'linux/flutter/ephemeral/.plugin_symlinks',
+    'macos/Flutter/ephemeral/.plugin_symlinks',
+    'windows/flutter/ephemeral/.plugin_symlinks',
+  ];
+
+  for (final path in paths) {
+    final directory = Directory('${_root.path}/$path');
+    if (directory.existsSync()) {
+      directory.deleteSync(recursive: true);
+    }
+  }
 }
 
 void _validateManifest(String variant, String contents) {
@@ -423,6 +439,7 @@ Future<void> _restoreBackup({required bool refreshPackages}) async {
   restoreFiles();
 
   if (refreshPackages) {
+    _cleanGeneratedPluginSymlinks();
     final result = await _runFvm(const ['flutter', 'pub', 'get']);
     if (result != 0) {
       stderr.writeln(
