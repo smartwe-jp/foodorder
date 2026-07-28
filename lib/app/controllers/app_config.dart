@@ -1,11 +1,11 @@
-
 import 'package:foodorder/app/plugins/paycube/lib/paycube.dart';
 import 'package:foodorder/app/plugins/paycube_old/lib/paycube.dart';
 import 'package:get/get.dart';
 
-class AppConfig extends GetxController {
+import '../config/app_variant.dart';
 
-  bool machineType = false; // true for new_panel, false for old_panel
+class AppConfig extends GetxController {
+  bool get machineType => AppVariantConfig.isAndroid11;
 
   get payCube => machineType ? Paycube() : PayCube();
   get isAndroid11 => machineType;

@@ -3,5 +3,5 @@ param(
     [string[]]$FlutterArgs
 )
 
-& "$PSScriptRoot\run_windows_release.ps1" @FlutterArgs
+& fvm dart run tool/variant.dart run android11 --env dev @FlutterArgs
 exit $LASTEXITCODE

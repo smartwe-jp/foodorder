@@ -86,7 +86,9 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows Release
-        run: flutter build windows --release --dart-define=APP_ENV=prod
+        env:
+          VARIANT_USE_SYSTEM_FLUTTER: 'true'
+        run: dart run tool/variant.dart build-windows windows --env prod --release
 
       - name: Prepare Inno Script
         shell: pwsh
@@ -153,13 +155,12 @@ jobs:
           if (-not $j.id) { Write-Error "Upload failed: $($resp.Content)"; exit 1 }
           Write-Host "Uploaded to Drive file id: $($j.id)"
 
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: installer-${{ steps.ver.outputs.version }}
-      #     path: |
-      #       output/*
-      #       build/windows/x64/runner/Release/**
+      - name: Upload Installer as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-${{ steps.ver.outputs.version }}
+          path: output/*.exe
+          if-no-files-found: error
 
       # - name: Create GitHub Release
       #   if: startsWith(github.ref, 'refs/tags/v')

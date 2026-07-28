@@ -3,5 +3,5 @@ param(
     [string[]]$FlutterArgs
 )
 
-& fvm flutter run -t lib/main.dart --dart-define=APP_ENV=dev @FlutterArgs
+& "$PSScriptRoot\run_windows_dev.ps1" @FlutterArgs
 exit $LASTEXITCODE

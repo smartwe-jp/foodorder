@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-fvm flutter run -t lib/main.dart --dart-define=APP_ENV=dev "$@"
+exec "$(dirname "$0")/run_windows_dev" "$@"
