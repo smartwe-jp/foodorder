@@ -97,7 +97,7 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
         borderRadius: BorderRadius.circular(10),
       ),
       children: [
-        Container( 
+        Container(
           alignment: Alignment.center,
           color: Colors.white,
           width: ScreenAdapter.width(550),

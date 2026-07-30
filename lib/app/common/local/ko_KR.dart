@@ -191,6 +191,7 @@ const Map<String, String> ko_KR = {
   "spicy_weigh_waiting_stable":"안정 대기…",
   "spicy_soup_title":"육수를 선택해 주세요",
   "spicy_soup_subtitle":"원하시는 육수를 눌러 주세요",
+  "spicy_soup_weigh_amount":"계량 금액",
   "spicy_soup_no_extra_option":"이 메뉴에는 추가 옵션이 없습니다",
   "spicy_soup_select_options":"옵션을 선택해 주세요",
   "spicy_soup_options_for":"@name 옵션을 선택해 주세요",

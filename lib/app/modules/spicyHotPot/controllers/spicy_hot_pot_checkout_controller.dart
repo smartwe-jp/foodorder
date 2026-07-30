@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/menuPage/views/option_widgets/option_view.dart';
 import 'package:foodorder/app/services/logUtil.dart';
+import 'package:foodorder/app/services/spicy_weigh_settings.dart';
 import 'package:get/get.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
@@ -36,11 +38,14 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   // 当前扫码/选中的商品（含选项组），两种模式复用
   RxMap scannedItem = {}.obs;
 
-  // 称重商品分类列表（priceType == HUNDRED_GRAM）
+  // 称重商品分类列表（priceType == HUNDRED_GRAM，不含赠品）
   RxList categoryMenuList = [].obs;
-  // 选项商品列表（非称重商品，普通注文模式下供用户勾选）
+  // 选项商品列表（非称重商品，普通注文模式下供用户勾选，不含赠品）
   RxList optionMenuList = [].obs;
+  // freeGift=true 的赠品菜（满额后弹窗选择，不进称重/汤底列表）
+  RxList freeGiftMenuList = [].obs;
   RxString selectedCategoryName = ''.obs;
+  bool _giftDialogShowing = false;
 
   // 普通注文模式步骤：0=选择并称重，1=选择选项并确认
   RxInt normalStep = 0.obs;
@@ -470,8 +475,9 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   /// 普通注文：确认选项，分两条入购物车（对照扫码模式）
   ///   1. 口味商品（optionMenuList 选中项）+ 子选项（辣度、加料等）→ 独立商品
   ///   2. 称重商品（HUNDRED_GRAM）→ 独立商品，无选项
+  ///   3. 称重金额达到満額贈呈门槛时，弹窗选择 freeGift 赠品（OptionView）
   Future<void> confirmNormalOrder() async {
-    if (normalOrderSubmitting.value) return;
+    if (normalOrderSubmitting.value || _giftDialogShowing) return;
     if (normalWeighResult.isEmpty) return;
     final validationMsg = normalOrderValidationMessage;
     if (validationMsg != null) {
@@ -522,10 +528,130 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       });
     }
 
-    // --- 2. 组装称重商品，并与口味商品在同一事务中写入 ---
+    // --- 2. 组装称重商品 ---
     cartItems
         .add(_buildWeighCartItem(itemData, weight, price, unitPricePer100g));
 
+    // --- 3. 满额赠品：达到门槛则弹 OptionView（有规格）或直接入车（无规格）---
+    if (await _shouldOfferFreeGift(price)) {
+      final gift = Map<String, dynamic>.from(freeGiftMenuList.first as Map);
+      final groups = gift['optionGroupVoList'];
+      if (groups is List && groups.isNotEmpty) {
+        _showFreeGiftOptionDialog(gift, cartItems);
+        return;
+      }
+      cartItems.insert(
+        0,
+        _buildGiftCartItem(
+          gift,
+          gift['currentPrice'] ?? 0,
+          '',
+          '',
+        ),
+      );
+    }
+
+    await _finishNormalOrder(cartItems);
+  }
+
+  /// 称重金额是否达到満額贈呈门槛，且存在 freeGift 菜品
+  Future<bool> _shouldOfferFreeGift(int weighPrice) async {
+    if (freeGiftMenuList.isEmpty) return false;
+    final threshold = await SpicyWeighSettings.loadGiftThresholdYen();
+    if (threshold <= 0) return false;
+    return weighPrice >= threshold;
+  }
+
+  /// 弹出赠品 OptionView（与菜单页规格弹窗一致）
+  void _showFreeGiftOptionDialog(
+    Map gift,
+    List<Map<String, dynamic>> baseCartItems,
+  ) {
+    if (_giftDialogShowing) return;
+    _giftDialogShowing = true;
+
+    final optionInfo =
+        List<dynamic>.from(gift['optionGroupVoList'] ?? const []);
+    final itemPrice = gift['currentPrice'] ?? 0;
+    final prepared = OptionView.prepareState(
+      itemPrice: itemPrice is int ? itemPrice : int.tryParse('$itemPrice') ?? 0,
+      optionInfo: optionInfo,
+    );
+
+    // 有图用图片选项卡，无图用标签（与菜单页 / 汤底页一致）
+    final hasImage = optionInfo.any((g) {
+      if (g is! Map) return false;
+      final opts = g['optionVoList'];
+      if (opts is! List) return false;
+      return opts.any((o) {
+        if (o is! Map) return false;
+        final img =
+            o['homeImage']?.toString() ?? o['image']?.toString() ?? '';
+        return img.isNotEmpty;
+      });
+    });
+
+    Get.generalDialog(
+      pageBuilder: (_, __, ___) => OptionView(
+        isLabel: !hasImage,
+        languageKey: checkLanguage.value,
+        itemPrice: itemPrice is int ? itemPrice : int.tryParse('$itemPrice') ?? 0,
+        originalPrice: gift['price'] ?? itemPrice,
+        optionInfo: optionInfo,
+        mainTitle: gift['mainTitle'] ?? '',
+        subtitle: _giftSubtitle(gift),
+        preparedState: prepared,
+        addToCartCallback: (price, options, optionTitle) async {
+          final optionsString =
+              options.map((e) => e.toString()).toList().join(',');
+          Get.back();
+          final items = List<Map<String, dynamic>>.from(baseCartItems);
+          items.insert(
+            0,
+            _buildGiftCartItem(gift, price, optionsString, optionTitle),
+          );
+          await _finishNormalOrder(items);
+        },
+      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      transitionDuration: Duration.zero,
+      transitionBuilder: (_, __, ___, child) => child,
+    ).whenComplete(() {
+      _giftDialogShowing = false;
+    });
+  }
+
+  List _giftSubtitle(Map gift) {
+    final s = gift['subtitle'];
+    if (s is List) return s;
+    return const [];
+  }
+
+  Map<String, dynamic> _buildGiftCartItem(
+    Map gift,
+    dynamic price,
+    String optionCodes,
+    String optionTitle,
+  ) {
+    final p = price is int ? price : int.tryParse('$price') ?? 0;
+    return {
+      'menuCode': gift['menuCode'] ?? '',
+      'mainTitle': gift['mainTitle'] ?? '',
+      'image': gift['homeImage'] ?? gift['image'] ?? '',
+      'currentPrice': p,
+      'unitPrice': p,
+      'optionGroupVoList': optionCodes,
+      'optionVoListMsg': optionTitle,
+      'goodsNum': 1,
+      'qtyBounds': gift['qtyBounds'] ?? 0,
+      'itemType': 'spicy',
+    };
+  }
+
+  /// 写入购物车并进入菜单页选其他菜
+  Future<void> _finishNormalOrder(List<Map<String, dynamic>> cartItems) async {
+    if (normalOrderSubmitting.value) return;
     normalOrderSubmitting.value = true;
     try {
       await orderSqlController.addCartItemsAtomically(cartItems);
@@ -543,6 +669,12 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     // 用 toNamed 的话 ModeView 留在栈中，后续 normalStep=0 的 Obx 重建会触发称重页被压入 MenuPage 上方
     Get.offNamed('/menu-page',
         arguments: {"checkLanguage": checkLanguage.value});
+  }
+
+  static bool _isFreeGiftItem(dynamic item) {
+    if (item is! Map) return false;
+    final v = item['freeGift'];
+    return v == true || v == 1 || v == '1' || v == 'true';
   }
 
   /// 普通注文：取消选项，重新称重
@@ -741,10 +873,18 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           response['data'] != null) {
         categoryMenuList.clear();
         optionMenuList.clear();
+        freeGiftMenuList.clear();
         final items = response['data'] as List;
+        LogUtil.d(items);
         for (var item in items) {
           LogUtil.d(item);
-          logI('菜品: ${item['mainTitle']} priceType=${item['priceType']}');
+          logI(
+              '菜品: ${item['mainTitle']} priceType=${item['priceType']} freeGift=${item['freeGift']}');
+          // 赠品不进称重列表、不进汤底列表，满额后单独弹窗
+          if (_isFreeGiftItem(item)) {
+            freeGiftMenuList.add(item);
+            continue;
+          }
           if (item['priceType'] == "HUNDRED_GRAM") {
             categoryMenuList.add(item);
           } else {
@@ -752,7 +892,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           }
         }
         logI(
-            '称重商品: ${categoryMenuList.length}, 选项商品: ${optionMenuList.length}');
+            '称重商品: ${categoryMenuList.length}, 选项商品: ${optionMenuList.length}, 赠品: ${freeGiftMenuList.length}');
         // 菜单到手后后台预缓存汤底图
         _precacheOptionImages();
       }

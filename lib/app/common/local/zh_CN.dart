@@ -191,6 +191,7 @@ const Map<String, String> zh_CN = {
   "spicy_weigh_waiting_stable":"等待稳定…",
   "spicy_soup_title":"请选择汤底",
   "spicy_soup_subtitle":"请点击喜欢的汤底",
+  "spicy_soup_weigh_amount":"称重金额",
   "spicy_soup_no_extra_option":"该商品暂无可选项目",
   "spicy_soup_select_options":"请选择选项",
   "spicy_soup_options_for":"请选择@name的选项",

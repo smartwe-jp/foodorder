@@ -193,6 +193,7 @@ const Map<String, String> ja_JP = {
   "spicy_weigh_waiting_stable":"安定待ち…",
   "spicy_soup_title":"スープをお選びください",
   "spicy_soup_subtitle":"お好みのスープをタップしてください",
+  "spicy_soup_weigh_amount":"計量金額",
   "spicy_soup_no_extra_option":"このメニューに追加オプションはありません",
   "spicy_soup_select_options":"オプションを選択",
   "spicy_soup_options_for":"@nameのオプションを選択",

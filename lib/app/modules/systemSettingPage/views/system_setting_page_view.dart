@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
 import 'package:foodorder/app/services/scale_serial_service.dart';
+import 'package:foodorder/app/widget/NumberKeyboard.dart';
 
 import 'package:get/get.dart';
 
@@ -564,7 +564,8 @@ class SystemSettingPageView extends GetView {
     scale.loadSavedParams().then((p) {
       scale.paramsRx.value = p;
     });
-    scale.refreshPorts();
+    // 有保存口则自动重连，设置页直接显示「接続済み」
+    scale.autoConnectForSettings();
 
     return Container(
       margin: EdgeInsets.only(
@@ -584,21 +585,32 @@ class SystemSettingPageView extends GetView {
         final raw = scale.lastRawRx.value;
         final params = scale.paramsRx.value;
 
+        String statusText;
+        Color statusColor;
+        if (connecting) {
+          statusText = '接続処理中...';
+          statusColor = ColorsUtil.hexToColor('#666666');
+        } else if (linked) {
+          statusText =
+              '接続済み: ${scale.portLabel(current)}  [${params.label}]';
+          statusColor = ColorsUtil.hexToColor('#409eff');
+        } else if (current.isNotEmpty) {
+          statusText = '設定済・再接続中…';
+          statusColor = ColorsUtil.hexToColor('#e6a23c');
+        } else {
+          statusText = '未接続';
+          statusColor = ColorsUtil.hexToColor('#666666');
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              connecting
-                  ? '接続処理中...'
-                  : linked
-                      ? '接続済み: ${scale.portLabel(current)}  [${params.label}]'
-                      : '未接続${current.isNotEmpty ? "（保存済・未オープン）" : ""}',
+              statusText,
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(20),
-                color: linked
-                    ? ColorsUtil.hexToColor("#409eff")
-                    : ColorsUtil.hexToColor("#666666"),
+                color: statusColor,
               ),
             ),
             if (err.isNotEmpty)
@@ -925,7 +937,7 @@ class SystemSettingPageView extends GetView {
     });
   }
 
-  /// 麻辣烫：皮重（软键盘录入，默认 0）
+  /// 麻辣烫：皮重（软键盘录入，默认 0；无加减，后缀 g）
   Widget setSpicyWeighTare() {
     return Obx(() {
       final tare = controller.spicyTareGrams.value.round();
@@ -941,14 +953,13 @@ class SystemSettingPageView extends GetView {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            NumberAdjustWidget(
-              initialNumber: tare,
+            _spicyNumberTapField(
+              value: tare,
+              unit: 'g',
+              title: '風袋重量を入力（g）',
               minNumber: 0,
               maxNumber: 9999,
-              content: '風袋(g) ',
-              onNumberChanged: (n) {
-                controller.updateSpicyTareGrams(n.toDouble());
-              },
+              onChanged: (n) => controller.updateSpicyTareGrams(n.toDouble()),
             ),
             SizedBox(height: ScreenAdapter.height(6)),
             Text(
@@ -963,6 +974,112 @@ class SystemSettingPageView extends GetView {
         ),
       );
     });
+  }
+
+  /// 麻辣烫：称重菜品满额赠送门槛（日元）。赠送菜品由菜单管理后台配置。
+  Widget setSpicyGiftThreshold() {
+    return Obx(() {
+      final yen = controller.spicyGiftThresholdYen.value;
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+          right: ScreenAdapter.width(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _spicyNumberTapField(
+              value: yen,
+              unit: '円',
+              title: '満額贈呈の金額を入力（円）',
+              minNumber: 0,
+              maxNumber: 99999,
+              onChanged: (n) => controller.updateSpicyGiftThresholdYen(n),
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 計量商品がこの金額以上になると、メニュー管理で設定した贈呈商品を1つ付与します（0＝無効）。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  /// 仅点数字打开软键盘，无加减；右侧显示单位（g / 円）
+  Widget _spicyNumberTapField({
+    required int value,
+    required String unit,
+    required String title,
+    required int minNumber,
+    required int maxNumber,
+    required ValueChanged<int> onChanged,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Get.dialog(
+              NumberKeyboardDialog(
+                initialValue: '$value',
+                title: title,
+                onConfirm: (text) {
+                  if (text.isEmpty) return;
+                  var number = int.tryParse(text) ?? value;
+                  if (number > maxNumber) number = maxNumber;
+                  if (number < minNumber) number = minNumber;
+                  onChanged(number);
+                },
+              ),
+              barrierDismissible: false,
+            );
+          },
+          child: Container(
+            constraints: BoxConstraints(
+              minWidth: ScreenAdapter.width(120),
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: ScreenAdapter.width(20),
+              vertical: ScreenAdapter.height(12),
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(22),
+                color: ColorsUtil.hexToColor('#000000'),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: ScreenAdapter.width(10)),
+        Text(
+          unit,
+          style: TextStyle(
+            fontFamily: 'NotoSansJP',
+            fontSize: ScreenAdapter.fontSize(22),
+            fontWeight: FontWeight.w500,
+            color: ColorsUtil.hexToColor('#333333'),
+          ),
+        ),
+      ],
+    );
   }
 
   //设置机器类型：多按钮自动换行（麻辣烫由店铺开通，不再作为モード芯片）
@@ -2383,6 +2500,23 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                           setSpicyWeighTare(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "満額贈呈",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyGiftThreshold(),
                                         ]
                                     ),
                                   if(controller.lineup.value == true)

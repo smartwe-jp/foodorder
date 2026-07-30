@@ -817,21 +817,95 @@ class SpicyHotPotModeView extends StatelessWidget {
     );
   }
 
-  /// 普通注文步骤1底部按钮
+  /// 普通注文步骤1底部：称重结果摘要 + 返回/下一步
   Widget _buildNormalOptionButtons(SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       // 强制订阅选中态与选项选择，避免 getter 内部短路导致 Obx 无订阅
       final _ = ctrl.selectedOptionMenuCode.value;
       final __ = ctrl.normalOptionSelections.length;
       final canNext = ctrl.canConfirmNormalOrder;
-      return SpicyHotPotBottomBar(
-        onBack: () => ctrl.cancelNormalWeigh(),
-        backLabel: 'settlement_back'.tr,
-        onNext: canNext ? () => ctrl.confirmNormalOrder() : null,
-        nextLabel: 'next_button'.tr,
-        nextEnabled: canNext,
+
+      final weigh = ctrl.normalWeighResult;
+      final weight = (weigh['weight'] is num)
+          ? (weigh['weight'] as num).toDouble()
+          : double.tryParse('${weigh['weight']}') ?? 0;
+      final price = (weigh['price'] is num)
+          ? (weigh['price'] as num).toInt()
+          : int.tryParse('${weigh['price']}') ?? 0;
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (price > 0 || weight > 0) _buildWeighResultSummary(weight, price),
+          SpicyHotPotBottomBar(
+            onBack: () => ctrl.cancelNormalWeigh(),
+            backLabel: 'settlement_back'.tr,
+            onNext: canNext ? () => ctrl.confirmNormalOrder() : null,
+            nextLabel: 'next_button'.tr,
+            nextEnabled: canNext,
+          ),
+        ],
       );
     });
+  }
+
+  /// 汤底页底部：展示上一页称重结果（克重 + 金额）
+  Widget _buildWeighResultSummary(double weight, int price) {
+    final weightText = weight == weight.roundToDouble()
+        ? '${weight.toInt()}g'
+        : '${weight.toStringAsFixed(1)}g';
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenAdapter.width(40),
+        vertical: ScreenAdapter.height(18),
+      ),
+      child: Row(
+        children: [
+          Text(
+            'spicy_soup_weigh_amount'.tr,
+            style: TextStyle(
+              color: _kGrey,
+              fontSize: ScreenAdapter.fontSize(26),
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: ScreenAdapter.width(16)),
+          Text(
+            weightText,
+            style: TextStyle(
+              color: _kText,
+              fontSize: ScreenAdapter.fontSize(28),
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            '¥',
+            style: TextStyle(
+              color: _kPrice,
+              fontSize: ScreenAdapter.fontSize(28),
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(width: ScreenAdapter.width(4)),
+          Text(
+            '$price',
+            style: TextStyle(
+              color: _kPrice,
+              fontSize: ScreenAdapter.fontSize(44),
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w900,
+              height: 1,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // ==================== 扫码注文模式 ====================

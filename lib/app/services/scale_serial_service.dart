@@ -71,6 +71,9 @@ class ScaleSerialService extends GetxService {
   /// 展示用标签：key -> label
   final portLabelsRx = <String, String>{}.obs;
 
+  /// 设置页自动重连防抖（避免 TableRow 重建反复 connect）
+  bool _settingsAutoConnectScheduled = false;
+
   Future<String?> loadSavedPortName() => Storage.getString(storageKey);
 
   Future<void> savePortName(String name) async {
@@ -118,6 +121,45 @@ class ScaleSerialService extends GetxService {
   List<String> listPorts({bool onlyLikely = true}) => portsRx.toList();
 
   String portLabel(String id) => portLabelsRx[id] ?? id;
+
+  /// 设置页进入时：若有已保存口且当前未连接，自动重连以显示「接続済み」
+  Future<void> autoConnectForSettings() async {
+    if (connectedRx.value || connectingRx.value) return;
+    if (_settingsAutoConnectScheduled) return;
+    _settingsAutoConnectScheduled = true;
+    try {
+      final name = await loadSavedPortName();
+      if (name == null || name.isEmpty) {
+        _settingsAutoConnectScheduled = false;
+        return;
+      }
+      // 先刷新列表，便于展示标签；失败也不阻断连接
+      try {
+        await refreshPorts();
+      } catch (_) {}
+      if (connectedRx.value || connectingRx.value) return;
+      portNameRx.value = name;
+      final params = await loadSavedParams();
+      paramsRx.value = params;
+      await connect(
+        portName: name,
+        persist: true,
+        params: params,
+        autoProbe: false,
+      );
+    } catch (e, st) {
+      logI('设置页电子秤自动连接异常: $e\n$st');
+    } finally {
+      // 连上后保持挡板，直到 disconnect；失败则稍后允许再试
+      if (connectedRx.value) {
+        // keep _settingsAutoConnectScheduled == true
+      } else {
+        Future.delayed(const Duration(seconds: 2), () {
+          _settingsAutoConnectScheduled = false;
+        });
+      }
+    }
+  }
 
   /// 现金投币 / 结算 / 称重页离开时调用：释放 USB，异常全部吞掉，不抛给 UI。
   static Future<void> releaseUsbSafely({String reason = ''}) async {
@@ -447,6 +489,7 @@ class ScaleSerialService extends GetxService {
 
   Future<void> disconnect() async {
     _session++;
+    _settingsAutoConnectScheduled = false;
     _settleTimer?.cancel();
     _settleTimer = null;
     try {

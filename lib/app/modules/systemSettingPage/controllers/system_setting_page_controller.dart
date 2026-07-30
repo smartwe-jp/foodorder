@@ -96,6 +96,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   /// 麻辣烫：皮重（克），称重显示/计价时扣除，默认 0
   RxDouble spicyTareGrams = 0.0.obs;
 
+  /// 麻辣烫：称重菜品满额赠送门槛（日元），0＝关闭；赠品由菜单后台配置
+  RxInt spicyGiftThresholdYen = 0.obs;
+
   RxDouble downloadProgress = 0.0.obs;
 
   RxMap usbDevice = {}.obs;
@@ -266,6 +269,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     isspicyHotPot.value = await HomeServices.getSmartweSpicyHotPotData();
     spicyManualInputAllowed.value = await SpicyWeighSettings.loadManualAllowed();
     spicyTareGrams.value = await SpicyWeighSettings.loadTareGrams();
+    spicyGiftThresholdYen.value =
+        await SpicyWeighSettings.loadGiftThresholdYen();
     // wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     // wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
@@ -763,6 +768,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
     final g = grams < 0 ? 0.0 : grams;
     spicyTareGrams.value = g;
     await SpicyWeighSettings.saveTareGrams(g);
+    update();
+  }
+
+  /// 麻辣烫：称重满额赠送门槛（日元），0＝关闭
+  Future<void> updateSpicyGiftThresholdYen(int yen) async {
+    final y = yen < 0 ? 0 : yen;
+    spicyGiftThresholdYen.value = y;
+    await SpicyWeighSettings.saveGiftThresholdYen(y);
     update();
   }
 

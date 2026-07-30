@@ -191,6 +191,7 @@ const Map<String, String> en_US = {
   "spicy_weigh_waiting_stable":"Waiting…",
   "spicy_soup_title":"Choose your soup base",
   "spicy_soup_subtitle":"Tap the soup you prefer",
+  "spicy_soup_weigh_amount":"Weighed amount",
   "spicy_soup_no_extra_option":"No extra options for this item",
   "spicy_soup_select_options":"Select options",
   "spicy_soup_options_for":"Select options for @name",
