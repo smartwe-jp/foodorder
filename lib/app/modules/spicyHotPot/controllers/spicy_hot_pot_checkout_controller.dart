@@ -12,6 +12,7 @@ import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
+import '../views/spicy_bowl_scan_dialog.dart';
 import '../views/spicy_hot_pot_category_page.dart';
 import '../views/spicy_hot_pot_weigh_dialog.dart';
 import '../views/spicy_weigh_page.dart';
@@ -55,15 +56,24 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   RxString selectedOptionMenuCode = ''.obs;
   // 下方子选项展示用的 menuCode（延后一帧，避免拖慢大图点击）
   RxString optionsDisplayMenuCode = ''.obs;
-  // 普通注文选项选择：groupKey → [已选optionCode]
+  // 普通注文选项选择：groupKey → [已选optionCode]（旧内联选项；现以弹窗结果为准）
   RxMap<String, List<String>> normalOptionSelections =
       <String, List<String>>{}.obs;
   // optionCode → optionName 映射（入购物车时取名称用）
   final Map<String, String> _optionNameCache = {};
   // groupKey → 分组显示名（入车 optionVoListMsg 用「组名:选项」）
   final Map<String, String> _optionGroupTitleCache = {};
+  // 汤底规格弹窗确认后的选项码 / 文案 / 含规格总价
+  final RxList<String> selectedSoupOptionCodes = <String>[].obs;
+  final RxString selectedSoupOptionMsg = ''.obs;
+  final RxInt selectedSoupTotalPrice = 0.obs;
+  final RxBool soupOptionsConfirmed = false.obs;
+  bool _soupOptionDialogShowing = false;
   bool _isSingleWeighPageOpen = false;
   final RxBool normalOrderSubmitting = false.obs;
+
+  /// 当前会话盆号（扫盆码开启时写入，带到 webBootOrder.tableNo）
+  final RxString tableNo = ''.obs;
 
   // ==================== getter ====================
 
@@ -209,7 +219,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     Get.offNamedUntil(
       '/menu-page',
       (route) => route.settings.name == '/checkout-page',
-      arguments: {"checkLanguage": checkLanguage.value},
+      arguments: menuPageArguments(),
     );
   }
 
@@ -245,12 +255,10 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
     if (categoryMenuList.length == 1) {
       // 单商品时用 Get.off() 替换了中间页，此处用 offNamed 替换 SpicyWeighPage
-      Get.offNamed('/menu-page',
-          arguments: {"checkLanguage": checkLanguage.value});
+      Get.offNamed('/menu-page', arguments: menuPageArguments());
     } else {
       // 多商品用 Dialog，dialog 已自行 Get.back()，此处 push menu page 即可
-      Get.toNamed('/menu-page',
-          arguments: {"checkLanguage": checkLanguage.value});
+      Get.toNamed('/menu-page', arguments: menuPageArguments());
     }
   }
 
@@ -271,33 +279,160 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     optionsDisplayMenuCode.value = '';
     _optionNameCache.clear();
     _optionGroupTitleCache.clear();
-    // optionMenuList 只有1个商品时自动选中，直接展示子选项
-    if (optionMenuList.length == 1) {
-      final code = (optionMenuList.first as Map)['menuCode']?.toString() ?? '';
-      selectedOptionMenuCode.value = code;
-      optionsDisplayMenuCode.value = code;
-    }
+    _clearSoupSelectionExtras();
     // 进入选项页前预拉汤底图，避免首次 Image 请求被重建打断
     _precacheOptionImages();
     normalStep.value = 1;
+    // 仅 1 个汤底时：无规格直接选中；有规格延后弹窗（等页面出来）
+    if (optionMenuList.length == 1) {
+      final code = (optionMenuList.first as Map)['menuCode']?.toString() ?? '';
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (normalStep.value == 1) {
+          selectOptionMenuItem(code);
+        }
+      });
+    }
     // ModeView 始终在路由栈中（Get.to 不替换），设好 normalStep 后
     // 由 SpicyWeighPage._confirm() / SpicyWeighDialog._confirm() 调 Get.back() 返回
     // ModeView 的 Obx 监听到 normalStep=1，自动切换到选项视图
   }
 
-  /// 普通注文：选中 optionMenuList 中的一个商品（顶部大图卡片）
-  /// 大图选中态即时更新；子选项延后一帧再挂载，且不先清空，避免闪烁
+  /// 普通注文：选中汤底
+  /// 有规格 → 弹 OptionView（与菜单页一致）；无规格 → 直接选中
   void selectOptionMenuItem(String menuCode) {
-    if (selectedOptionMenuCode.value == menuCode) return;
+    Map? item;
+    for (final i in optionMenuList) {
+      final m = i as Map;
+      if (m['menuCode']?.toString() == menuCode) {
+        item = m;
+        break;
+      }
+    }
+    if (item == null) return;
+
+    if (_soupHasChoosableOptions(item)) {
+      _showSoupOptionDialog(item);
+      return;
+    }
+
+    _applySoupSelection(
+      menuCode,
+      totalPrice: item['currentPrice'] ?? 0,
+      optionCodes: const [],
+      optionTitle: '',
+    );
+  }
+
+  bool _soupHasChoosableOptions(Map item) {
+    final groups =
+        (item['optionGroupVoList'] as List?)?.whereType<Map>().toList() ?? [];
+    if (groups.isEmpty) return false;
+    return groups.any((g) {
+      final opts = g['optionVoList'];
+      return opts is List && opts.isNotEmpty;
+    });
+  }
+
+  void _applySoupSelection(
+    String menuCode, {
+    required dynamic totalPrice,
+    required List optionCodes,
+    required String optionTitle,
+  }) {
     normalOptionSelections.clear();
     _optionNameCache.clear();
     _optionGroupTitleCache.clear();
-    // 即时高亮大图；下方选项保留旧内容直到下一帧换新，避免空白闪一下
     selectedOptionMenuCode.value = menuCode;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (selectedOptionMenuCode.value == menuCode) {
-        optionsDisplayMenuCode.value = menuCode;
-      }
+    optionsDisplayMenuCode.value = menuCode;
+    selectedSoupOptionCodes
+        .assignAll(optionCodes.map((e) => e.toString()).toList());
+    selectedSoupOptionMsg.value = optionTitle;
+    final p = totalPrice is int
+        ? totalPrice
+        : int.tryParse('$totalPrice') ?? 0;
+    selectedSoupTotalPrice.value = p;
+    soupOptionsConfirmed.value = true;
+  }
+
+  void _clearSoupSelectionExtras() {
+    selectedSoupOptionCodes.clear();
+    selectedSoupOptionMsg.value = '';
+    selectedSoupTotalPrice.value = 0;
+    soupOptionsConfirmed.value = false;
+  }
+
+  /// 底部摘要：只显示已选规格组，去掉空组与竖线占位
+  String _formatSoupOptionDisplayTitle(String raw) {
+    if (raw.trim().isEmpty) return '';
+    return raw
+        .replaceAll('｜', '　')
+        .replaceAll('|', '　')
+        .split(RegExp(r'[　\s]+'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .join('、');
+  }
+
+  /// 汤底规格弹窗（复用菜单页 OptionView）
+  void _showSoupOptionDialog(Map item) {
+    if (_soupOptionDialogShowing) return;
+    _soupOptionDialogShowing = true;
+
+    final optionInfo =
+        List<dynamic>.from(item['optionGroupVoList'] ?? const []);
+    final itemPrice = item['currentPrice'] ?? 0;
+    final priceInt =
+        itemPrice is int ? itemPrice : int.tryParse('$itemPrice') ?? 0;
+    final prepared = OptionView.prepareState(
+      itemPrice: priceInt,
+      optionInfo: optionInfo,
+    );
+
+    final hasImage = optionInfo.any((g) {
+      if (g is! Map) return false;
+      final opts = g['optionVoList'];
+      if (opts is! List) return false;
+      return opts.any((o) {
+        if (o is! Map) return false;
+        final img =
+            o['homeImage']?.toString() ?? o['image']?.toString() ?? '';
+        return img.isNotEmpty;
+      });
+    });
+
+    final subtitle = item['subtitle'];
+    final subtitleList = subtitle is List ? subtitle : const [];
+
+    Get.generalDialog(
+      pageBuilder: (_, __, ___) => OptionView(
+        isLabel: !hasImage,
+        languageKey: checkLanguage.value,
+        itemPrice: priceInt,
+        originalPrice: item['price'] ?? itemPrice,
+        optionInfo: optionInfo,
+        mainTitle: item['mainTitle'] ?? '',
+        subtitle: subtitleList,
+        preparedState: prepared,
+        addToCartCallback: (price, options, optionTitle) {
+          // 先拷贝弹窗结果再关弹窗，避免 dispose 清空同源 list
+          final codes = options.map((e) => e.toString()).toList();
+          // OptionView 用全角空格拼各组，空组也会占位；只保留有选中的，顿号分隔
+          final title = _formatSoupOptionDisplayTitle('$optionTitle');
+          _applySoupSelection(
+            item['menuCode']?.toString() ?? '',
+            totalPrice: price,
+            optionCodes: codes,
+            optionTitle: title,
+          );
+          Get.back();
+        },
+      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      transitionDuration: Duration.zero,
+      transitionBuilder: (_, __, ___, child) => child,
+    ).whenComplete(() {
+      _soupOptionDialogShowing = false;
     });
   }
 
@@ -344,6 +479,9 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   /// 组装与普通菜单一致的 optionVoListMsg：`组名:选项1,选项2`
   String _buildNormalOptionVoListMsg() {
+    if (selectedSoupOptionMsg.value.isNotEmpty) {
+      return selectedSoupOptionMsg.value;
+    }
     final parts = <String>[];
     for (final entry in normalOptionSelections.entries) {
       if (entry.value.isEmpty) continue;
@@ -374,52 +512,22 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   }
 
   /// 普通注文是否可进入下一步：
-  /// 1. 必须选中汤底（optionMenuList）
-  /// 2. 若该汤底下有选项组，按各组规则校验：
-  ///    - smallest：最少必选数量（未达则不可下一步）
-  ///    - multipleState：最多可选数量（超出则不可下一步）
+  /// 1. 必须选中汤底
+  /// 2. 有规格时须已在 OptionView 确认（soupOptionsConfirmed）
   bool get canConfirmNormalOrder {
     if (normalOrderSubmitting.value) return false;
-    // 显式读取，确保 Obx 能追踪选中态变化
     final selectedCode = selectedOptionMenuCode.value;
-    final selections = normalOptionSelections;
+    // 订阅弹窗确认与选项文案，保证 Obx 刷新
+    final confirmed = soupOptionsConfirmed.value;
+    final _ = selectedSoupOptionMsg.value;
+    final __ = selectedSoupOptionCodes.length;
     if (selectedCode.isEmpty) return false;
 
-    Map? selectedItem;
-    for (final i in optionMenuList) {
-      final item = i as Map;
-      if (item['menuCode']?.toString() == selectedCode) {
-        selectedItem = item;
-        break;
-      }
-    }
+    final selectedItem = selectedOptionMenuItem;
     if (selectedItem == null) return false;
 
-    final groups =
-        (selectedItem['optionGroupVoList'] as List?)?.whereType<Map>().toList();
-    if (groups == null || groups.isEmpty) {
-      // 无子选项组：选中汤底即可
-      return true;
-    }
-
-    for (final group in groups) {
-      final options =
-          (group['optionVoList'] as List?)?.whereType<Map>().toList() ?? [];
-      if (options.isEmpty) continue;
-
-      final groupName = group['groupName']?.toString() ?? '';
-      final groupKey = group['groupCode']?.toString().isNotEmpty == true
-          ? group['groupCode'].toString()
-          : groupName;
-      final selectedCount = (selections[groupKey] ?? <String>[]).length;
-
-      // 与菜单页 OptionView 一致：smallest=最少必选，multipleState=最多可选
-      final minNum = int.tryParse((group['smallest'] ?? '0').toString()) ?? 0;
-      final maxNum =
-          int.tryParse((group['multipleState'] ?? '1').toString()) ?? 1;
-
-      if (selectedCount < minNum) return false;
-      if (maxNum > 0 && selectedCount > maxNum) return false;
+    if (_soupHasChoosableOptions(selectedItem)) {
+      return confirmed;
     }
     return true;
   }
@@ -429,45 +537,12 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     final selectedCode = selectedOptionMenuCode.value;
     if (selectedCode.isEmpty) return '请先选择汤底';
 
-    Map? selectedItem;
-    for (final i in optionMenuList) {
-      final item = i as Map;
-      if (item['menuCode']?.toString() == selectedCode) {
-        selectedItem = item;
-        break;
-      }
-    }
+    final selectedItem = selectedOptionMenuItem;
     if (selectedItem == null) return '请先选择汤底';
 
-    final groups =
-        (selectedItem['optionGroupVoList'] as List?)?.whereType<Map>().toList();
-    if (groups == null || groups.isEmpty) return null;
-
-    for (final group in groups) {
-      final options =
-          (group['optionVoList'] as List?)?.whereType<Map>().toList() ?? [];
-      if (options.isEmpty) continue;
-
-      final groupName = group['groupName']?.toString() ?? '';
-      final groupKey = group['groupCode']?.toString().isNotEmpty == true
-          ? group['groupCode'].toString()
-          : groupName;
-      final selectedCount =
-          (normalOptionSelections[groupKey] ?? <String>[]).length;
-      final minNum = int.tryParse((group['smallest'] ?? '0').toString()) ?? 0;
-      final maxNum =
-          int.tryParse((group['multipleState'] ?? '1').toString()) ?? 1;
-
-      if (selectedCount < minNum) {
-        return 'menu_option_less_smallest'
-            .tr
-            .replaceAll('%%', groupName.isNotEmpty ? groupName : '选项');
-      }
-      if (maxNum > 0 && selectedCount > maxNum) {
-        return 'menu_option_more_multipleState'
-            .tr
-            .replaceAll('%%', groupName.isNotEmpty ? groupName : '选项');
-      }
+    if (_soupHasChoosableOptions(selectedItem) &&
+        !soupOptionsConfirmed.value) {
+      return 'spicy_soup_select_options'.tr;
     }
     return null;
   }
@@ -509,18 +584,21 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     // --- 1. 组装口味商品 ---
     final selectedItem = selectedOptionMenuItem;
     if (selectedItem != null) {
-      final subCodes = <String>[];
-      for (final entry in normalOptionSelections.entries) {
-        subCodes.addAll(entry.value);
-      }
+      final subCodes = selectedSoupOptionCodes.isNotEmpty
+          ? selectedSoupOptionCodes.toList()
+          : <String>[
+              for (final entry in normalOptionSelections.entries) ...entry.value
+            ];
+      final linePrice = selectedSoupTotalPrice.value > 0
+          ? selectedSoupTotalPrice.value
+          : (selectedItem['currentPrice'] ?? 0);
       cartItems.add({
         'menuCode': selectedItem['menuCode'] ?? '',
         'mainTitle': selectedItem['mainTitle'] ?? '',
         'image': selectedItem['homeImage'] ?? selectedItem['image'] ?? '',
-        'currentPrice': selectedItem['currentPrice'] ?? 0,
-        'unitPrice': selectedItem['currentPrice'] ?? 0,
+        'currentPrice': linePrice,
+        'unitPrice': linePrice,
         'optionGroupVoList': subCodes.join(','),
-        // 与普通商品一致：组名:选项名
         'optionVoListMsg': _buildNormalOptionVoListMsg(),
         'goodsNum': 1,
         'qtyBounds': selectedItem['qtyBounds'] ?? 0,
@@ -602,6 +680,11 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         subtitle: _giftSubtitle(gift),
         preparedState: prepared,
         addToCartCallback: (price, options, optionTitle) async {
+          // 有可选规格却未选时，不入车、不关弹窗
+          if (!_giftOptionsSelected(gift, options)) {
+            showToast('spicy_gift_select_option'.tr);
+            return;
+          }
           final optionsString =
               options.map((e) => e.toString()).toList().join(',');
           Get.back();
@@ -626,6 +709,21 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     final s = gift['subtitle'];
     if (s is List) return s;
     return const [];
+  }
+
+  /// 赠品有可选项时，必须至少选中一个 option 才允许入车
+  bool _giftOptionsSelected(Map gift, List options) {
+    final groups =
+        (gift['optionGroupVoList'] as List?)?.whereType<Map>().toList() ?? [];
+    if (groups.isEmpty) return true;
+
+    final hasChoosable = groups.any((g) {
+      final opts = g['optionVoList'];
+      return opts is List && opts.isNotEmpty;
+    });
+    if (!hasChoosable) return true;
+
+    return options.isNotEmpty;
   }
 
   Map<String, dynamic> _buildGiftCartItem(
@@ -667,8 +765,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
     // offNamed 替换 ModeView（ModeView 出栈，controller 销毁，无需手动清状态）
     // 用 toNamed 的话 ModeView 留在栈中，后续 normalStep=0 的 Obx 重建会触发称重页被压入 MenuPage 上方
-    Get.offNamed('/menu-page',
-        arguments: {"checkLanguage": checkLanguage.value});
+    Get.offNamed('/menu-page', arguments: menuPageArguments());
   }
 
   static bool _isFreeGiftItem(dynamic item) {
@@ -687,6 +784,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       optionsDisplayMenuCode.value = '';
       _optionNameCache.clear();
       _optionGroupTitleCache.clear();
+      _clearSoupSelectionExtras();
       showScaleDialogForItem(categoryMenuList.first as Map);
     } else {
       _resetNormalState();
@@ -700,6 +798,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     optionsDisplayMenuCode.value = '';
     _optionNameCache.clear();
     _optionGroupTitleCache.clear();
+    _clearSoupSelectionExtras();
     normalStep.value = 0;
   }
 
@@ -798,7 +897,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       'optionGroupVoList': optionCodes.join(','),
       'optionVoListMsg': optionNames.join(','),
       'goodsNum': 1,
-      'spicyGrams': weight.toInt(),
+      'spicyGrams': weight.floor(),
       'qtyBounds': 0,
       'itemType': 'spicy',
     };
@@ -918,6 +1017,45 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   }
 
   // ==================== 导航 ====================
+
+  /// 进入菜单页时的路由参数（含盆号）
+  Map<String, dynamic> menuPageArguments() {
+    final args = <String, dynamic>{
+      'checkLanguage': checkLanguage.value,
+    };
+    if (tableNo.value.isNotEmpty) {
+      args['tableNo'] = tableNo.value;
+    }
+    return args;
+  }
+
+  void setTableNo(String code) {
+    tableNo.value = code.trim();
+    logI('麻辣烫盆号 tableNo=${tableNo.value}');
+  }
+
+  /// 称重页/弹窗：若开启扫盆码且尚无盆号，先弹窗扫码
+  Future<SpicyBowlScanResult> ensureBowlScanned() async {
+    final enabled = await SpicyWeighSettings.loadBowlScanEnabled();
+    if (!enabled) return const SpicyBowlScanResult.proceed();
+    if (tableNo.value.isNotEmpty) {
+      return SpicyBowlScanResult.proceed(tableNo.value);
+    }
+
+    final result = await Get.dialog<SpicyBowlScanResult>(
+      const SpicyBowlScanDialog(),
+      barrierDismissible: false,
+    );
+    if (result == null) {
+      // 异常关闭：视为返回
+      return const SpicyBowlScanResult.back();
+    }
+    if (result.action == SpicyBowlScanAction.proceed &&
+        (result.tableNo?.trim().isNotEmpty ?? false)) {
+      setTableNo(result.tableNo!);
+    }
+    return result;
+  }
 
   void goHome() {
     // Get.lazyPut 下 controller 随路由销毁，无需手动重置状态

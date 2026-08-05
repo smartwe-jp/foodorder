@@ -93,11 +93,17 @@ class SystemSettingPageController extends GetxController with StateMixin {
   /// 麻辣烫：称重页是否显示手动输入按钮
   RxBool spicyManualInputAllowed = false.obs;
 
+  /// 麻辣烫：称重页是否先扫盆边二维码/条码（下单带 tableNo）
+  RxBool spicyBowlScanEnabled = false.obs;
+
   /// 麻辣烫：皮重（克），称重显示/计价时扣除，默认 0
   RxDouble spicyTareGrams = 0.0.obs;
 
   /// 麻辣烫：称重菜品满额赠送门槛（日元），0＝关闭；赠品由菜单后台配置
   RxInt spicyGiftThresholdYen = 0.obs;
+
+  /// 麻辣烫：称重最低额度（日元），0＝不限制；未达则不可下一步选汤底
+  RxInt spicyMinAmountYen = 0.obs;
 
   RxDouble downloadProgress = 0.0.obs;
 
@@ -268,9 +274,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     isspicyHotPot.value = await HomeServices.getSmartweSpicyHotPotData();
     spicyManualInputAllowed.value = await SpicyWeighSettings.loadManualAllowed();
+    spicyBowlScanEnabled.value = await SpicyWeighSettings.loadBowlScanEnabled();
     spicyTareGrams.value = await SpicyWeighSettings.loadTareGrams();
     spicyGiftThresholdYen.value =
         await SpicyWeighSettings.loadGiftThresholdYen();
+    spicyMinAmountYen.value = await SpicyWeighSettings.loadMinAmountYen();
     // wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     // wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
@@ -763,6 +771,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
+  /// 麻辣烫：称重页扫盆码开关（开启后下单带 tableNo）
+  Future<void> updateSpicyBowlScanEnabled(bool enabled) async {
+    spicyBowlScanEnabled.value = enabled;
+    await SpicyWeighSettings.saveBowlScanEnabled(enabled);
+    update();
+  }
+
   /// 麻辣烫：皮重（克）
   Future<void> updateSpicyTareGrams(double grams) async {
     final g = grams < 0 ? 0.0 : grams;
@@ -776,6 +791,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
     final y = yen < 0 ? 0 : yen;
     spicyGiftThresholdYen.value = y;
     await SpicyWeighSettings.saveGiftThresholdYen(y);
+    update();
+  }
+
+  /// 麻辣烫：称重最低额度（日元），0＝不限制
+  Future<void> updateSpicyMinAmountYen(int yen) async {
+    final y = yen < 0 ? 0 : yen;
+    spicyMinAmountYen.value = y;
+    await SpicyWeighSettings.saveMinAmountYen(y);
     update();
   }
 

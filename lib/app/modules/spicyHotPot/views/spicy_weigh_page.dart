@@ -9,6 +9,8 @@ import '../../../services/scale_serial_service.dart';
 import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
 import '../../../widget/NumberKeyboard.dart';
+import '../controllers/spicy_hot_pot_checkout_controller.dart';
+import 'spicy_bowl_scan_dialog.dart';
 import 'widgets/spicy_hot_pot_chrome.dart';
 
 /// 麻辣烫全屏称重页面（只有1个称重商品时使用）
@@ -45,6 +47,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   bool _useManualWeight = false;
   /// 皮重（克），来自设置，默认 0
   double _tareGrams = 0;
+  /// 最低额度（日元），来自设置；0＝不限制
+  int _minAmountYen = 0;
   Worker? _scaleWorker;
 
   ScaleSerialService get _scale {
@@ -54,17 +58,65 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     return Get.find<ScaleSerialService>();
   }
 
-  double get _weight => double.tryParse(_input) ?? 0;
+  double get _weight {
+    final raw = double.tryParse(_input) ?? 0;
+    // 显示、计价、入车均向下取整克重
+    if (raw <= 0) return 0;
+    return raw.floorToDouble();
+  }
+  // 价格：按向下取整后的克重 × 单价，再向下取整
   int get _price =>
-      _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).ceil() : 0;
+      _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).floor() : 0;
   bool get _hasWeight => _weight > 0;
-  bool get _canConfirm => _hasWeight && _stable;
+  /// 界面展示：整数克重
+  String get _displayWeight => _weight <= 0 ? '0' : _weight.toInt().toString();
+  bool get _meetsMinAmount =>
+      _minAmountYen <= 0 || _price >= _minAmountYen;
+  bool get _canConfirm => _hasWeight && _stable && _meetsMinAmount;
+
+  String get _nextLabel {
+    if (_hasWeight && !_stable) return 'spicy_weigh_waiting_stable'.tr;
+    if (_hasWeight && _stable && !_meetsMinAmount) {
+      return 'spicy_weigh_below_min'.tr;
+    }
+    return 'next_button'.tr;
+  }
 
   @override
   void initState() {
     super.initState();
     _hideSystemKeyboard();
-    _initWeigh();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _bootstrap();
+    });
+  }
+
+  Future<void> _bootstrap() async {
+    final result = await _ensureBowlScanIfNeeded();
+    if (!mounted) return;
+    switch (result.action) {
+      case SpicyBowlScanAction.back:
+        widget.onCancel?.call();
+        return;
+      case SpicyBowlScanAction.skip:
+        if (widget.onSkip != null) {
+          widget.onSkip!();
+        } else {
+          widget.onCancel?.call();
+        }
+        return;
+      case SpicyBowlScanAction.proceed:
+        await _initWeigh();
+        return;
+    }
+  }
+
+  /// 设置开启扫盆码时，先弹窗扫码
+  Future<SpicyBowlScanResult> _ensureBowlScanIfNeeded() async {
+    if (!Get.isRegistered<SpicyHotPotCheckoutController>()) {
+      return const SpicyBowlScanResult.proceed();
+    }
+    return Get.find<SpicyHotPotCheckoutController>().ensureBowlScanned();
   }
 
   Future<void> _initWeigh() async {
@@ -75,10 +127,12 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   Future<void> _loadWeighSettings() async {
     final manual = await SpicyWeighSettings.loadManualAllowed();
     final tare = await SpicyWeighSettings.loadTareGrams();
+    final minYen = await SpicyWeighSettings.loadMinAmountYen();
     if (!mounted) return;
     setState(() {
       _manualInputAllowed = manual;
       _tareGrams = tare;
+      _minAmountYen = minYen;
     });
   }
 
@@ -106,9 +160,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
       setState(() {
         _stable = reading.isStable;
-        _input = net == net.roundToDouble()
-            ? net.toStringAsFixed(0)
-            : net.toStringAsFixed(1);
+        // 实时重量向下取整显示
+        _input = net <= 0 ? '0' : net.floor().toString();
       });
     });
   }
@@ -143,6 +196,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   void _confirm() {
     if (!_canConfirm) return;
     Get.back();
+    // 传向下取整后的克重与价格，入车/下单与显示一致
     widget.onConfirm(_weight, _price);
   }
 
@@ -162,9 +216,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           setState(() {
             _useManualWeight = true;
             _stable = true;
-            _input = grams == grams.roundToDouble()
-                ? grams.toStringAsFixed(0)
-                : grams.toStringAsFixed(1);
+            // 手动输入也向下取整
+            _input = grams <= 0 ? '0' : grams.floor().toString();
           });
         },
       ),
@@ -182,6 +235,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           Column(
             children: [
               const SpicyHotPotStepHeader(currentStep: 2),
+              const SpicyTableNoBanner(),
               Expanded(child: _buildContent()),
               SpicyHotPotBottomBar(
                 onBack: _cancel,
@@ -190,9 +244,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
                 middleLabel:
                     widget.onSkip != null ? 'spicy_weigh_skip'.tr : null,
                 onNext: _confirm,
-                nextLabel: _hasWeight && !_stable
-                    ? 'spicy_weigh_waiting_stable'.tr
-                    : 'next_button'.tr,
+                nextLabel: _nextLabel,
                 nextEnabled: _canConfirm,
               ),
             ],
@@ -234,10 +286,18 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           ),*/
           SizedBox(height: ScreenAdapter.height(42)),
           _buildUnitPriceBadge(),
-          SizedBox(height: ScreenAdapter.height(78)),
+          if (_minAmountYen > 0) ...[
+            SizedBox(height: ScreenAdapter.height(16)),
+            _buildMinAmountTip(),
+          ],
+          SizedBox(height: ScreenAdapter.height(_minAmountYen > 0 ? 50 : 78)),
           _buildScaleVisual(),
           SizedBox(height: ScreenAdapter.height(14)),
           _buildStatusLine(),
+          if (_tareGrams > 0) ...[
+            SizedBox(height: ScreenAdapter.height(12)),
+            _buildTareTip(),
+          ],
           if (_hasWeight) ...[
             SizedBox(height: ScreenAdapter.height(15)),
             Text(
@@ -303,13 +363,13 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   Widget _buildUnitPriceBadge() {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(36),
-        vertical: ScreenAdapter.height(16),
+        horizontal: ScreenAdapter.width(45),
+        vertical: ScreenAdapter.height(18),
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFFBF6EE),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFFFC48A), width: 2),
+        color: const Color(0xFFE6FAEF),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE6FAEF), width: 2),
         boxShadow: const [
           BoxShadow(
             color: Color(0x12000000),
@@ -328,17 +388,17 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               color: const Color(0xFF9A5B12),
               fontSize: ScreenAdapter.fontSize(22),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w400,
             ),
           ),
           SizedBox(width: ScreenAdapter.width(14)),
           Text(
             '¥${widget.unitPricePer100g}',
             style: TextStyle(
-              color: const Color(0xFF6F461A),
-              fontSize: ScreenAdapter.fontSize(52),
+              color: const Color(0xF9553918),
+              fontSize: ScreenAdapter.fontSize(45),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w400,
               height: 1,
             ),
           ),
@@ -351,7 +411,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
                 color: const Color(0xFF9A5B12),
                 fontSize: ScreenAdapter.fontSize(24),
                 fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
@@ -396,8 +456,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
                     child: ScaleTransition(scale: animation, child: child),
                   ),
                   child: Text(
-                    '${_input} g',
-                    key: ValueKey(_input),
+                    '${_displayWeight} g',
+                    key: ValueKey(_displayWeight),
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     style: TextStyle(
@@ -430,13 +490,17 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       // 同时订阅连接态与重量，避免仅依赖本地 bool 时 Obx 判定无订阅
       final linked = _scale.connectedRx.value;
       final _ = _scale.weightRx.value;
+      final belowMin = _hasWeight && _stable && !_meetsMinAmount;
       final showStable = _canConfirm;
       final settling = _hasWeight && !_stable;
       String tip;
-      if (_useManualWeight) {
+      if (_useManualWeight && _meetsMinAmount) {
         tip = 'spicy_weigh_manual_ready'.tr;
       } else if (!linked) {
         tip = 'spicy_weigh_scale_disconnected'.tr;
+      } else if (belowMin) {
+        tip = 'spicy_weigh_below_min_tip'
+            .trParams({'amount': '$_minAmountYen'});
       } else if (showStable) {
         tip = 'spicy_weigh_stable'.tr;
       } else if (settling) {
@@ -444,11 +508,13 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       } else {
         tip = 'spicy_weigh_subtitle'.tr;
       }
-      final color = (_useManualWeight || showStable)
-          ? const Color(0xFF4CAF50)
-          : settling
-              ? const Color(0xFFFF9800)
-              : kSpicyGrey;
+      final color = belowMin
+          ? const Color(0xFFE64340)
+          : (_useManualWeight || showStable)
+              ? const Color(0xFF4CAF50)
+              : settling
+                  ? const Color(0xFFFF9800)
+                  : kSpicyGrey;
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -498,6 +564,84 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               color: kSpicyGrey,
               fontSize: ScreenAdapter.fontSize(24),
               fontFamily: GFont.getFontFamily(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 最低金额 > 0 时提示需达到多少才能下一步
+  Widget _buildMinAmountTip() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenAdapter.width(20),
+        vertical: ScreenAdapter.height(14),
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF3E0),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFFFCC80), width: 1),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.warning_amber_rounded,
+              color: const Color(0xFFE65100),
+              size: ScreenAdapter.fontSize(26)),
+          SizedBox(width: ScreenAdapter.width(10)),
+          Flexible(
+            child: Text(
+              'spicy_weigh_min_amount_hint'
+                  .trParams({'amount': '$_minAmountYen'}),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFFE65100),
+                fontSize: ScreenAdapter.fontSize(24),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 皮重 > 0 时：说明屏幕重量已扣除容器，会比电子秤显示更轻
+  Widget _buildTareTip() {
+    final tareText = _tareGrams == _tareGrams.roundToDouble()
+        ? _tareGrams.toInt().toString()
+        : _tareGrams.toStringAsFixed(1);
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenAdapter.width(20),
+        vertical: ScreenAdapter.height(12),
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3E5F5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFCE93D8), width: 1),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline,
+              color: const Color(0xFF7B1FA2),
+              size: ScreenAdapter.fontSize(24)),
+          SizedBox(width: ScreenAdapter.width(10)),
+          Flexible(
+            child: Text(
+              'spicy_weigh_tare_hint'.trParams({'tare': tareText}),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFF6A1B9A),
+                fontSize: ScreenAdapter.fontSize(22),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

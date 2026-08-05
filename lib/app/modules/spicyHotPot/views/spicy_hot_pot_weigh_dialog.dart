@@ -6,6 +6,9 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/scale_serial_service.dart';
 import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
+import '../controllers/spicy_hot_pot_checkout_controller.dart';
+import 'spicy_bowl_scan_dialog.dart';
+import 'widgets/spicy_hot_pot_chrome.dart';
 
 const _kBg = Color(0xFFF5EFDE);
 const _kRed = Color(0xFFC82333);
@@ -35,6 +38,8 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   String _input = '0';
   bool _stable = false;
   double _tareGrams = 0;
+  /// 最低额度（日元），0＝不限制
+  int _minAmountYen = 0;
   Worker? _scaleWorker;
 
   ScaleSerialService get _scale {
@@ -44,24 +49,68 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
     return Get.find<ScaleSerialService>();
   }
 
-  double get _weight => double.tryParse(_input) ?? 0;
+  double get _weight {
+    final raw = double.tryParse(_input) ?? 0;
+    // 显示、计价、入车均向下取整克重
+    if (raw <= 0) return 0;
+    return raw.floorToDouble();
+  }
+  // 价格：按向下取整后的克重 × 单价，再向下取整
   int get _price =>
-      _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).ceil() : 0;
+      _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).floor() : 0;
   bool get _hasWeight => _weight > 0;
-  bool get _canConfirm => _hasWeight && _stable;
+  String get _displayWeight => _weight <= 0 ? '0' : _weight.toInt().toString();
+  bool get _meetsMinAmount =>
+      _minAmountYen <= 0 || _price >= _minAmountYen;
+  bool get _canConfirm => _hasWeight && _stable && _meetsMinAmount;
 
   @override
   void initState() {
     super.initState();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     FocusManager.instance.primaryFocus?.unfocus();
-    _loadTareAndStart();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _bootstrap();
+    });
+  }
+
+  Future<void> _bootstrap() async {
+    final result = await _ensureBowlScanIfNeeded();
+    if (!mounted) return;
+    switch (result.action) {
+      case SpicyBowlScanAction.back:
+        Get.back();
+        if (Get.isRegistered<SpicyHotPotCheckoutController>()) {
+          Get.find<SpicyHotPotCheckoutController>().goHome();
+        }
+        return;
+      case SpicyBowlScanAction.skip:
+        Get.back();
+        if (Get.isRegistered<SpicyHotPotCheckoutController>()) {
+          Get.find<SpicyHotPotCheckoutController>().skipWeighToSellMode();
+        }
+        return;
+      case SpicyBowlScanAction.proceed:
+        await _loadTareAndStart();
+        return;
+    }
+  }
+
+  Future<SpicyBowlScanResult> _ensureBowlScanIfNeeded() async {
+    if (!Get.isRegistered<SpicyHotPotCheckoutController>()) {
+      return const SpicyBowlScanResult.proceed();
+    }
+    return Get.find<SpicyHotPotCheckoutController>().ensureBowlScanned();
   }
 
   Future<void> _loadTareAndStart() async {
     final tare = await SpicyWeighSettings.loadTareGrams();
+    final minYen = await SpicyWeighSettings.loadMinAmountYen();
     if (mounted) {
-      setState(() => _tareGrams = tare);
+      setState(() {
+        _tareGrams = tare;
+        _minAmountYen = minYen;
+      });
     }
     await _startScaleListen();
   }
@@ -80,9 +129,8 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
       final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
       setState(() {
         _stable = reading.isStable;
-        _input = net == net.roundToDouble()
-            ? net.toStringAsFixed(0)
-            : net.toStringAsFixed(1);
+        // 实时重量向下取整显示
+        _input = net <= 0 ? '0' : net.floor().toString();
       });
     });
   }
@@ -103,13 +151,14 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   void _confirm() {
     if (!_canConfirm) return;
     Get.back();
+    // 传向下取整后的克重与价格，入车/下单与显示一致
     widget.onConfirm(_weight, _price);
   }
 
   @override
   Widget build(BuildContext context) {
     final title = widget.itemData['mainTitle'] ?? '';
-    final displayWeight = _input.isEmpty ? '0' : _input;
+    final displayWeight = _displayWeight;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -132,6 +181,7 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildTopArea(title),
+            const SpicyTableNoBanner(),
             _buildWeightBlock(displayWeight),
             _buildScaleStatus(),
             _buildUnitPriceHint(),
@@ -147,11 +197,15 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
       // 同时订阅连接态与重量，保证 Obx 始终有合法订阅
       final linked = _scale.connectedRx.value;
       final _ = _scale.weightRx.value;
+      final belowMin = _hasWeight && _stable && !_meetsMinAmount;
       final showStable = _canConfirm;
       final settling = _hasWeight && !_stable;
       String tip;
       if (!linked) {
         tip = '电子秤未连接';
+      } else if (belowMin) {
+        tip = 'spicy_weigh_below_min_tip'
+            .trParams({'amount': '$_minAmountYen'});
       } else if (showStable) {
         tip = '重量已稳定';
       } else if (settling) {
@@ -164,11 +218,13 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
         child: Text(
           tip,
           style: TextStyle(
-            color: showStable
-                ? const Color(0xFF4CAF50)
-                : settling
-                    ? const Color(0xFFFF9800)
-                    : _kGrey,
+            color: belowMin
+                ? const Color(0xFFE64340)
+                : showStable
+                    ? const Color(0xFF4CAF50)
+                    : settling
+                        ? const Color(0xFFFF9800)
+                        : _kGrey,
             fontSize: ScreenAdapter.fontSize(22),
             fontFamily: GFont.getFontFamily(),
             fontWeight: FontWeight.w500,
@@ -421,7 +477,11 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      _hasWeight && !_stable ? '安定待ち…' : '重量確認，選口味',
+                      _hasWeight && !_stable
+                          ? '安定待ち…'
+                          : (_hasWeight && _stable && !_meetsMinAmount)
+                              ? 'spicy_weigh_below_min'.tr
+                              : '重量確認，選口味',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: ScreenAdapter.fontSize(28),

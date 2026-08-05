@@ -99,6 +99,8 @@ abstract class ScalePortBackend {
   Future<List<ScalePortItem>> listPorts();
   Future<ScaleOpenResult> open(String id, {required ScaleSerialParams params});
   Stream<Uint8List>? get inputStream;
+  /// 向秤发送命令（如 A&D `Q\r\n` 即时要数）
+  Future<bool> write(Uint8List data);
   Future<void> close();
 }
 
@@ -190,6 +192,19 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
 
   @override
   Stream<Uint8List>? get inputStream => _controller.stream;
+
+  @override
+  Future<bool> write(Uint8List data) async {
+    final port = _port;
+    if (port == null || data.isEmpty) return false;
+    try {
+      await port.write(data);
+      return true;
+    } catch (e) {
+      logI('电子秤 USB write 失败: $e');
+      return false;
+    }
+  }
 
   @override
   Future<List<ScalePortItem>> listPorts() async {
@@ -409,6 +424,19 @@ class LibSerialScaleBackend implements ScalePortBackend {
   @override
   Stream<Uint8List>? get inputStream => _controller.stream;
 
+  @override
+  Future<bool> write(Uint8List data) async {
+    final port = _port;
+    if (port == null || data.isEmpty || !port.isOpen) return false;
+    try {
+      final n = port.write(data);
+      return n > 0;
+    } catch (e) {
+      logI('电子秤 COM write 失败: $e');
+      return false;
+    }
+  }
+
   static bool _isSafeCom(String name) =>
       RegExp(r'^COM\d+$', caseSensitive: false).hasMatch(name);
 
@@ -436,16 +464,17 @@ class LibSerialScaleBackend implements ScalePortBackend {
     try {
       port = SerialPort(id);
       var opened = false;
+      // 优先读写：A&D 命令模式需发 Q\r\n
       try {
-        opened = port.openRead();
+        opened = port.openReadWrite();
       } catch (e) {
-        logI('openRead 失败: $e');
+        logI('openReadWrite 失败: $e');
       }
       if (!opened) {
         try {
-          opened = port.openReadWrite();
+          opened = port.openRead();
         } catch (e) {
-          logI('openReadWrite 失败: $e');
+          logI('openRead 失败: $e');
         }
       }
       if (!opened) {

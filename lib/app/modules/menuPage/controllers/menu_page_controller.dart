@@ -51,6 +51,9 @@ class MenuPageController extends GetxController with StateMixin {
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
 
+  /// 麻辣烫扫盆码得到的盆号；普通券卖或未开扫码时为空，不传 webBootOrder.tableNo
+  String spicyTableNo = '';
+
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
   RxList showCartItems = [].obs;
@@ -204,6 +207,10 @@ class MenuPageController extends GetxController with StateMixin {
   readyQueryData(){
     if(Get.arguments != null){
       checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
+      final rawTableNo = Get.arguments['tableNo'];
+      if (rawTableNo != null) {
+        spicyTableNo = rawTableNo.toString().trim();
+      }
     }
 
     MyImageCacheManager.preloadImages();
@@ -1276,13 +1283,18 @@ print("加1了");
         selectedItem.add(optionMap);
       }
       var orderTotlaPrice = getItemTotal(ordersqlcontroller.cartItems);
-      var formData = {
+      var formData = <String, dynamic>{
         "language": checkLanguage.value,
         "machineCode": machineInfo.machineCode,
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         "takeout": machineInfo.isTakeoutMode,
       };
+      // 仅麻辣烫且已扫盆号时带 tableNo；普通券卖/未开扫码不传该参数
+      if (machineInfo.currentMode == MachineMode.spicyHotPot &&
+          spicyTableNo.isNotEmpty) {
+        formData['tableNo'] = spicyTableNo;
+      }
       LogUtil.d("webBootOrderformData: $formData");
 
       final val = await request(

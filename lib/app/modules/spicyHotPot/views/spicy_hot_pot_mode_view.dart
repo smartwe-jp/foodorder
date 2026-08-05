@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:get/get.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -402,6 +403,7 @@ class SpicyHotPotModeView extends StatelessWidget {
     return Column(
       children: [
         const SpicyHotPotStepHeader(currentStep: 3),
+        const SpicyTableNoBanner(),
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -419,22 +421,12 @@ class SpicyHotPotModeView extends StatelessWidget {
                     color: _kText,
                     fontSize: ScreenAdapter.fontSize(40),
                     fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: ScreenAdapter.height(6)),
-                Text(
-                  'spicy_soup_subtitle'.tr,
-                  style: TextStyle(
-                    color: _kGrey,
-                    fontSize: ScreenAdapter.fontSize(22),
-                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(height: ScreenAdapter.height(20)),
                 if (ctrl.optionMenuList.isNotEmpty)
                   _buildOptionItemCards(ctrl.optionMenuList, ctrl),
-                _buildNormalSelectedOptionsSection(ctrl),
               ],
             ),
           ),
@@ -444,108 +436,32 @@ class SpicyHotPotModeView extends StatelessWidget {
     );
   }
 
-  /// 选中汤底后的子选项（辣度等）
-  Widget _buildNormalSelectedOptionsSection(
-      SpicyHotPotCheckoutController ctrl) {
-    return Obx(() {
-      final selectedCode = ctrl.optionsDisplayMenuCode.value;
-      // 订阅选项列表，切换汤底数据时也能刷新
-      final optionCount = ctrl.optionMenuList.length;
-      if (selectedCode.isEmpty || optionCount == 0) {
-        return const SizedBox.shrink();
-      }
-
-      Map? selectedItem;
-      for (final i in ctrl.optionMenuList) {
-        if ((i as Map)['menuCode']?.toString() == selectedCode) {
-          selectedItem = i;
-          break;
-        }
-      }
-      if (selectedItem == null) return const SizedBox.shrink();
-
-      final groups = _flattenOptionGroups([selectedItem]);
-      final soupName = selectedItem['mainTitle']?.toString() ?? '';
-
-      return Column(
-        key: ValueKey('options-$selectedCode'),
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: ScreenAdapter.height(28)),
-          if (groups.isEmpty)
-            Center(
-              child: Padding(
-                padding:
-                    EdgeInsets.symmetric(vertical: ScreenAdapter.height(24)),
-                child: Text(
-                  'spicy_soup_no_extra_option'.tr,
-                  style: TextStyle(
-                    color: _kGrey,
-                    fontSize: ScreenAdapter.fontSize(24),
-                    fontFamily: GFont.getFontFamily(),
-                  ),
-                ),
-              ),
-            )
-          else
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.fromLTRB(
-                ScreenAdapter.width(20),
-                ScreenAdapter.height(18),
-                ScreenAdapter.width(20),
-                ScreenAdapter.height(12),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: _kBorder),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    soupName.isNotEmpty
-                        ? 'spicy_soup_options_for'
-                            .trParams({'name': soupName})
-                        : 'spicy_soup_select_options'.tr,
-                    style: TextStyle(
-                      color: _kText,
-                      fontSize: ScreenAdapter.fontSize(26),
-                      fontFamily: GFont.getFontFamily(),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: ScreenAdapter.height(12)),
-                  ...groups.asMap().entries.map((e) =>
-                      _buildNormalOptionGroupWidget(
-                          e.value, e.key + 1, ctrl, selectedCode)),
-                ],
-              ),
-            ),
-        ],
-      );
-    });
-  }
-
-  /// 汤底卡片：间距减半、每行最多 4 个，图片 BoxFit.cover 填满方格
+  /// 汤底卡片：每行 3 个；标题左对齐，现价+原价右下（选中规格只在底部摘要显示）
   Widget _buildOptionItemCards(List items, SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
       final selectedCode = ctrl.selectedOptionMenuCode.value;
+      final optionsConfirmed = ctrl.soupOptionsConfirmed.value;
       // 保持对选中码的订阅（即使 items 为空也不至于无 obs）
       return LayoutBuilder(
         builder: (context, constraints) {
           final count = items.length;
-          // 每行最多 4 个；少于 4 个则按实际数量均分（图更大）
-          final columns = count <= 0 ? 1 : (count > 4 ? 4 : count);
-          // 原间距 16，减半
+          // 每行固定按 3 个汤底布局
+          const columns = 3;
+          const borderW = 2.0;
           final spacing = ScreenAdapter.width(8);
           final runSpacing = ScreenAdapter.height(8);
           final cardWidth =
               (constraints.maxWidth - spacing * (columns - 1)) / columns;
-          // 图片贴满卡片宽，subtitle 才能左右下齐平无空隙
-          final hPad = 0.0;
-          final imageSize = cardWidth.clamp(100.0, 320.0);
+          // 内容区宽度去掉边框，避免图宽=卡片宽导致溢出
+          final contentW = (cardWidth - borderW * 2).clamp(80.0, 320.0);
+          final midGap = ScreenAdapter.height(8);
+          // 字号对齐菜单页 GridItemView：标题 28 / 价格 28
+          final titleH = ScreenAdapter.fontSize(28) * 1.2 * 2;
+          final priceH = ScreenAdapter.fontSize(28);
+          final infoPadV = ScreenAdapter.height(8);
+          final infoH =
+              midGap + titleH + ScreenAdapter.height(6) + priceH + infoPadV;
+          final cardHeight = borderW * 2 + contentW + infoH;
 
           return Wrap(
             spacing: spacing,
@@ -554,110 +470,158 @@ class SpicyHotPotModeView extends StatelessWidget {
               final item = items[index] as Map;
               final code = item['menuCode']?.toString() ?? '';
               final name = item['mainTitle']?.toString() ?? '';
-              final subtitle = _optionItemSubtitle(item);
               final img = item['homeImage']?.toString() ??
                   item['image']?.toString() ??
                   '';
-              final isSelected = selectedCode == code;
+              final priceNum = item['currentPrice'] is num
+                  ? (item['currentPrice'] as num).toInt()
+                  : int.tryParse('${item['currentPrice']}') ?? 0;
+              final originalNum = item['price'] is num
+                  ? (item['price'] as num).toInt()
+                  : int.tryParse('${item['price']}') ?? 0;
+              final isSelected = selectedCode == code && optionsConfirmed;
               final isRecommend = index == 0;
+              final showOriginal =
+                  originalNum > 0 && originalNum != priceNum;
 
               return KioskTap(
                 onTap: () => ctrl.selectOptionMenuItem(code),
                 debounceDuration: const Duration(milliseconds: 120),
                 child: Container(
                   width: cardWidth,
-                  padding: EdgeInsets.only(
-                    top: ScreenAdapter.height(0),
-                    bottom: ScreenAdapter.height(18),
-                  ),
+                  height: cardHeight,
                   decoration: BoxDecoration(
                     color: isSelected ? const Color(0xFFEAF8F7) : _kCard,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected ? _kRed : _kBorder,
-                      width: isSelected ? 2.5 : 1,
+                      width: borderW,
                     ),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Stack(
                     children: [
                       Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // 图片顶满；subtitle 贴底左右齐平
                           SizedBox(
-                            width: imageSize,
-                            height: imageSize,
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                img.isNotEmpty
-                                    ? CachedNetworkImage(
-                                        key: ValueKey(img),
-                                        imageUrl: img,
-                                        cacheManager: menuImageCacheManager,
-                                        fit: BoxFit.cover,
-                                        width: imageSize,
-                                        height: imageSize,
-                                        fadeInDuration: Duration.zero,
-                                        fadeOutDuration: Duration.zero,
-                                        memCacheWidth:
-                                            (imageSize * 2).round().clamp(1, 1400),
-                                        memCacheHeight:
-                                            (imageSize * 2).round().clamp(1, 1400),
-                                        placeholder: (_, __) =>
-                                            _buildOptionItemPlaceholder(
-                                                isSelected),
-                                        errorWidget: (_, __, ___) =>
-                                            _buildOptionItemPlaceholder(
-                                                isSelected),
-                                      )
-                                    : _buildOptionItemPlaceholder(isSelected),
-                                if (subtitle.isNotEmpty)
-                                  Positioned(
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: ScreenAdapter.width(8),
-                                        vertical: ScreenAdapter.height(4),
-                                      ),
-                                      color: const Color.fromARGB(
-                                          169, 255, 255, 255),
-                                      child: Text(
-                                        subtitle,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(18),
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: GFont.getFontFamily(),
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.itemSubTitleColor),
-                                        ),
+                            width: contentW,
+                            height: contentW,
+                            child: img.isNotEmpty
+                                ? CachedNetworkImage(
+                                    key: ValueKey(img),
+                                    imageUrl: img,
+                                    cacheManager: menuImageCacheManager,
+                                    fit: BoxFit.cover,
+                                    width: contentW,
+                                    height: contentW,
+                                    fadeInDuration: Duration.zero,
+                                    fadeOutDuration: Duration.zero,
+                                    memCacheWidth: (contentW * 2)
+                                        .round()
+                                        .clamp(1, 1400),
+                                    memCacheHeight: (contentW * 2)
+                                        .round()
+                                        .clamp(1, 1400),
+                                    placeholder: (_, __) =>
+                                        _buildOptionItemPlaceholder(
+                                            isSelected),
+                                    errorWidget: (_, __, ___) =>
+                                        _buildOptionItemPlaceholder(
+                                            isSelected),
+                                  )
+                                : _buildOptionItemPlaceholder(isSelected),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                ScreenAdapter.width(10),
+                                midGap,
+                                ScreenAdapter.width(10),
+                                infoPadV,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: titleH,
+                                    width: double.infinity,
+                                    child: Text(
+                                      name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? _kRed
+                                            : ColorsUtil.hexToColor(
+                                                Gcolor.itemTitleColor),
+                                        fontSize: ScreenAdapter.fontSize(28),
+                                        fontFamily: GFont.getFontFamily(),
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2,
                                       ),
                                     ),
                                   ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: ScreenAdapter.height(16)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: ScreenAdapter.width(4),
-                            ),
-                            child: Text(
-                              name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: isSelected ? _kRed : _kText,
-                                fontSize: ScreenAdapter.fontSize(24),
-                                fontFamily: GFont.getFontFamily(),
-                                fontWeight: FontWeight.w700,
-                                height: 1.2,
+                                  const Spacer(),
+                                  SizedBox(
+                                    height: priceH,
+                                    width: double.infinity,
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: priceNum > 0 || showOriginal
+                                          ? Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                if (priceNum > 0) ...[
+                                                  Text(
+                                                    '¥',
+                                                    style: TextStyle(
+                                                      color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontFamily: GFont.getFontFamily(),
+                                                      fontWeight:FontWeight.w500,
+                                                      height: 1,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                      width: ScreenAdapter.width(5)),
+                                                  Text(
+                                                    '$priceNum'.formatSum(),
+                                                    style: TextStyle(
+                                                      color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+                                                      fontSize: ScreenAdapter.fontSize(28),
+                                                      fontFamily: GFont.getFontFamily(),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 1,
+                                                    ),
+                                                  ),
+                                                ],
+                                                if (showOriginal) ...[
+                                                  SizedBox(
+                                                      width: ScreenAdapter.width(5)),
+                                                  Text(
+                                                    '$originalNum'.formatSum(),
+                                                    style: TextStyle(
+                                                      color: const Color(0xFFA9A9A9),
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontFamily: GFont.getFontFamily(),
+                                                      fontWeight: FontWeight.w500,
+                                                      height: 1,
+                                                      decoration: TextDecoration.lineThrough,
+                                                      decorationColor:
+                                                          const Color(0xFFA9A9A9),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -698,19 +662,6 @@ class SpicyHotPotModeView extends StatelessWidget {
     });
   }
 
-  /// 解析汤底商品副标题（兼容 string / list，与菜单字段一致）
-  String _optionItemSubtitle(Map item) {
-    final raw = item['subtitle'] ?? item['subTitle'] ?? item['remark'];
-    if (raw == null) return '';
-    if (raw is List) {
-      return raw
-          .map((e) => e?.toString().trim() ?? '')
-          .where((e) => e.isNotEmpty)
-          .join(' ');
-    }
-    return raw.toString().trim();
-  }
-
   Widget _buildOptionItemPlaceholder(bool isSelected) {
     return Container(
       color: isSelected ? const Color(0xFFD8F0ED) : const Color(0xFFF0F0F0),
@@ -724,105 +675,15 @@ class SpicyHotPotModeView extends StatelessWidget {
     );
   }
 
-  /// 将 optionMenuList 中各 item 的 optionGroupVoList 展平为分组列表
-  /// 若 item 无 optionGroupVoList，则将 item 本身包装成一个分组
-  List<Map> _flattenOptionGroups(List items) {
-    final result = <Map>[];
-    for (final item in items) {
-      final groups =
-          (item['optionGroupVoList'] as List?)?.whereType<Map>().toList();
-      if (groups != null && groups.isNotEmpty) {
-        for (final g in groups) {
-          result.add({...g, '_parentMenuCode': item['menuCode'] ?? ''});
-        }
-      } else {
-        // 没有子选项组：item 本身即为一个可选项，包装成单选组
-        result.add({
-          'groupName': item['mainTitle'] ?? '',
-          'groupCode': item['menuCode'] ?? '',
-          'multipleState': '1',
-          'optionVoList': [item],
-          '_isDirectItem': true,
-        });
-      }
-    }
-    return result;
-  }
-
-  /// 普通注文选项组：复用 OptionListWidget / OptionWidget 样式
-  /// 注意：不在此处读取 normalOptionSelections，避免点子选项时整段 Obx 重建
-  Widget _buildNormalOptionGroupWidget(Map group, int index,
-      SpicyHotPotCheckoutController ctrl, String selectedMenuCode) {
-    final groupName = group['groupName']?.toString() ?? '';
-    final groupRemark = group['remark']?.toString() ?? '';
-    final groupKey = group['groupCode']?.toString().isNotEmpty == true
-        ? group['groupCode'].toString()
-        : groupName;
-    final options =
-        (group['optionVoList'] as List?)?.whereType<Map>().toList() ?? [];
-    final multipleState = (group['multipleState'] ?? '1').toString();
-    final isMulti = multipleState != '1';
-
-    // 有图用图片选项卡，无图用标签按钮（与菜单页 OptionWidget 一致）
-    final hasImage = options.any((o) {
-      final img = o['homeImage']?.toString() ?? o['image']?.toString() ?? '';
-      return img.isNotEmpty;
-    });
-
-    // 初始 checked 一律 false；选中态由 OptionListWidget 内部维护
-    final optionListInfo = options.map((opt) {
-      final code =
-          opt['optionCode']?.toString() ?? opt['menuCode']?.toString() ?? '';
-      return {
-        ...opt,
-        'optionCode': code,
-        'group': groupKey,
-        'mainTitle': opt['mainTitle'] ?? '',
-        'homeImage': opt['homeImage'] ?? opt['image'] ?? '',
-        'currentPrice': opt['currentPrice'] ?? 0,
-        'checked': false,
-      };
-    }).toList();
-
-    final titleLabel =
-        isMulti ? '$index. $groupName（可多选）' : '$index. $groupName';
-
-    return Container(
-      margin: EdgeInsets.only(bottom: ScreenAdapter.height(16)),
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(12),
-        vertical: ScreenAdapter.height(10),
-      ),
-      decoration: BoxDecoration(
-        color: ColorsUtil.hexToColor('#FAFAFA'),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: ColorsUtil.hexToColor('#ECEFED'), width: 1),
-      ),
-      // Key 随选中商品变化，切换口味时重建 OptionListWidget 内部选中态
-      child: OptionListWidget(
-        key: ValueKey('$selectedMenuCode-$groupKey'),
-        isLabel: !hasImage,
-        languageKey: ctrl.checkLanguage.value,
-        optionListInfo: optionListInfo,
-        optionSelectMaxNum: multipleState,
-        title: titleLabel,
-        subTitle: groupRemark,
-        onSelected:
-            (gCode, optionCode, optionName, optionPrice, isAdd, isSelected) {
-          ctrl.updateNormalOptionFromWidget(
-              groupKey, optionCode, optionName, isAdd, isMulti,
-              groupTitle: groupName);
-        },
-      ),
-    );
-  }
-
-  /// 普通注文步骤1底部：称重结果摘要 + 返回/下一步
+  /// 普通注文步骤1底部：已选汤底摘要 + 称重结果 + 返回/下一步
   Widget _buildNormalOptionButtons(SpicyHotPotCheckoutController ctrl) {
     return Obx(() {
-      // 强制订阅选中态与选项选择，避免 getter 内部短路导致 Obx 无订阅
-      final _ = ctrl.selectedOptionMenuCode.value;
-      final __ = ctrl.normalOptionSelections.length;
+      // 强制订阅选中态与弹窗确认结果
+      final selectedCode = ctrl.selectedOptionMenuCode.value;
+      final confirmed = ctrl.soupOptionsConfirmed.value;
+      final optionMsg = ctrl.selectedSoupOptionMsg.value;
+      final soupPrice = ctrl.selectedSoupTotalPrice.value;
+      final ___ = ctrl.selectedSoupOptionCodes.length;
       final canNext = ctrl.canConfirmNormalOrder;
 
       final weigh = ctrl.normalWeighResult;
@@ -833,9 +694,27 @@ class SpicyHotPotModeView extends StatelessWidget {
           ? (weigh['price'] as num).toInt()
           : int.tryParse('${weigh['price']}') ?? 0;
 
+      String soupName = '';
+      if (selectedCode.isNotEmpty && confirmed) {
+        for (final i in ctrl.optionMenuList) {
+          final m = i as Map;
+          if (m['menuCode']?.toString() == selectedCode) {
+            soupName = m['mainTitle']?.toString() ?? '';
+            break;
+          }
+        }
+      }
+
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // 已选汤底摘要：固定在称重金额上方
+          if (selectedCode.isNotEmpty && confirmed)
+            _buildSelectedSoupSummary(
+              soupName: soupName.isNotEmpty ? soupName : selectedCode,
+              optionMsg: optionMsg,
+              soupPrice: soupPrice,
+            ),
           if (price > 0 || weight > 0) _buildWeighResultSummary(weight, price),
           SpicyHotPotBottomBar(
             onBack: () => ctrl.cancelNormalWeigh(),
@@ -847,6 +726,109 @@ class SpicyHotPotModeView extends StatelessWidget {
         ],
       );
     });
+  }
+
+  /// 底部已选汤底摘要（在称重金额上方，一眼确认）
+  Widget _buildSelectedSoupSummary({
+    required String soupName,
+    required String optionMsg,
+    required int soupPrice,
+  }) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFFE8F8F6),
+        border: Border(
+          top: BorderSide(color: Color(0xFF44C2B8), width: 2),
+          bottom: BorderSide(color: Color(0xFFB2DFDB), width: 1),
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        ScreenAdapter.width(32),
+        ScreenAdapter.height(16),
+        ScreenAdapter.width(32),
+        ScreenAdapter.height(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: ScreenAdapter.width(8),
+            height: ScreenAdapter.height(56),
+            decoration: BoxDecoration(
+              color: _kRed,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          SizedBox(width: ScreenAdapter.width(14)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'spicy_soup_selected_label'.tr,
+                  style: TextStyle(
+                    color: _kGrey,
+                    fontSize: ScreenAdapter.fontSize(20),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SizedBox(height: ScreenAdapter.height(4)),
+                Text(
+                  soupName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: _kText,
+                    fontSize: ScreenAdapter.fontSize(32),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (optionMsg.isNotEmpty) ...[
+                  SizedBox(height: ScreenAdapter.height(6)),
+                  Text(
+                    optionMsg,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: _kRed,
+                      fontSize: ScreenAdapter.fontSize(24),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (soupPrice > 0) ...[
+            SizedBox(width: ScreenAdapter.width(12)),
+            Text(
+              '¥',
+              style: TextStyle(
+                color: _kPrice,
+                fontSize: ScreenAdapter.fontSize(24),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(width: ScreenAdapter.width(2)),
+            Text(
+              '$soupPrice'.formatSum(),
+              style: TextStyle(
+                color: _kPrice,
+                fontSize: ScreenAdapter.fontSize(36),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w600,
+                height: 1,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   /// 汤底页底部：展示上一页称重结果（克重 + 金额）

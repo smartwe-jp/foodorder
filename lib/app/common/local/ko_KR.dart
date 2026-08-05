@@ -190,8 +190,10 @@ const Map<String, String> ko_KR = {
   "spicy_weigh_skip":"계량 건너뛰기",
   "spicy_weigh_waiting_stable":"안정 대기…",
   "spicy_soup_title":"육수를 선택해 주세요",
-  "spicy_soup_subtitle":"원하시는 육수를 눌러 주세요",
+  "spicy_soup_subtitle":"육수를 눌러 주세요. 옵션이 있으면 팝업이 열립니다",
   "spicy_soup_weigh_amount":"계량 금액",
+  "spicy_soup_selected_label":"선택한 육수",
+  "spicy_gift_select_option":"증정 옵션을 먼저 선택해 주세요",
   "spicy_soup_no_extra_option":"이 메뉴에는 추가 옵션이 없습니다",
   "spicy_soup_select_options":"옵션을 선택해 주세요",
   "spicy_soup_options_for":"@name 옵션을 선택해 주세요",
@@ -201,6 +203,10 @@ const Map<String, String> ko_KR = {
   "spicy_weigh_manual_input":"수동 입력",
   "spicy_weigh_manual_input_title":"무게 입력 (g)",
   "spicy_weigh_manual_ready":"수동 입력 완료 (다음으로 진행 가능)",
+  "spicy_weigh_below_min":"최저 금액 미달",
+  "spicy_weigh_below_min_tip":"계량 금액이 최저 @amount 엔 미만입니다. 추가하거나 계량을 건너뛰세요",
+  "spicy_weigh_min_amount_hint":"다음으로 가려면 계량 금액이 ¥@amount 이상이어야 합니다",
+  "spicy_weigh_tare_hint":"용기 풍대 @tare g 를 차감했습니다. 화면 중량은 전자저울보다 적게 표시됩니다",
   "spicy_mode_preparing":"계량 준비 중…",
 
   "spicy_menu_scan_title":"바코드를 스캔하여 장바구니에 추가",
@@ -211,5 +217,12 @@ const Map<String, String> ko_KR = {
   "spicy_menu_scan_weigh_reject":"계량 상품은 계량 화면에서 진행해 주세요. 여기서는 스캔할 수 없습니다",
   "spicy_menu_scan_not_found":"해당 바코드의 상품을 찾을 수 없습니다",
   "spicy_menu_scan_loading":"장바구니에 추가 중…",
+
+  "spicy_bowl_scan_title":"그릇의 QR코드/바코드를 스캔해 주세요",
+  "spicy_bowl_scan_subtitle":"스캔한 번호를 이번 주문에 연결합니다",
+  "spicy_bowl_scan_cancel":"취소",
+  "spicy_bowl_scan_back":"돌아가기",
+  "spicy_bowl_scan_skip":"계량 건너뛰기",
+  "spicy_bowl_table_no":"그릇 번호：@no",
 
 };

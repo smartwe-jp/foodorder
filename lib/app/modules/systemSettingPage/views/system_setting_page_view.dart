@@ -632,7 +632,7 @@ class SystemSettingPageView extends GetView {
                 ),
               ),
             Text(
-              '※ 接続済み＝USBオープン成功。「受信」に ST,+xxxxx g（または HEX）が出れば通信成功。無受信時は下の通信パラメータを切替。',
+              '※ 接続済み＝USBオープン成功。「受信」に ST,+xxxxx g（または HEX）が出れば通信成功。無受信時は「2400 7E1(A&D出厂)」を選択して再接続。アプリは Q コマンドでポーリングします（出厂 prt=1 でも可）。連続送信にするなら秤の prt=0。',
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(15),
@@ -641,7 +641,7 @@ class SystemSettingPageView extends GetView {
             ),
             SizedBox(height: ScreenAdapter.height(6)),
             Text(
-              '通信パラメータ（A&D出厂は 2400 7E1）',
+              '通信パラメータ（A&D EK-L 出厂は 2400 7E1）',
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(16),
@@ -937,6 +937,93 @@ class SystemSettingPageView extends GetView {
     });
   }
 
+  /// 麻辣烫：称重页扫盆边二维码/条码（下单带 tableNo）
+  Widget setSpicyBowlScan() {
+    return Obx(() {
+      final on = controller.spicyBowlScanEnabled.value;
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyBowlScanEnabled(true),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '許可',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: ScreenAdapter.width(16)),
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyBowlScanEnabled(false),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: !on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '停止',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: !on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 許可すると計量画面で盆辺のQR/バーコードをスキャンし、注文に tableNo を付けます。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   /// 麻辣烫：皮重（软键盘录入，默认 0；无加减，后缀 g）
   Widget setSpicyWeighTare() {
     return Obx(() {
@@ -1003,6 +1090,45 @@ class SystemSettingPageView extends GetView {
             SizedBox(height: ScreenAdapter.height(6)),
             Text(
               '※ 計量商品がこの金額以上になると、メニュー管理で設定した贈呈商品を1つ付与します（0＝無効）。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  /// 麻辣烫：称重最低额度（日元）。未达则不可下一步选汤底，仅可跳过称重。
+  Widget setSpicyMinAmount() {
+    return Obx(() {
+      final yen = controller.spicyMinAmountYen.value;
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+          right: ScreenAdapter.width(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _spicyNumberTapField(
+              value: yen,
+              unit: '円',
+              title: '最低金額を入力（円）',
+              minNumber: 0,
+              maxNumber: 99999,
+              onChanged: (n) => controller.updateSpicyMinAmountYen(n),
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 計量金額（重量×単価）がこの金額未満の場合、次へ進めず「秤重をスキップ」のみ可能です（0＝制限なし）。',
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(15),
@@ -2491,6 +2617,23 @@ class SystemSettingPageView extends GetView {
                                           Container(
                                             alignment: Alignment.center,
                                             child: Text(
+                                              "盆番号",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyBowlScan(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
                                               "風袋重量",
                                               style: TextStyle(
                                                   fontFamily: 'NotoSansJP',
@@ -2517,6 +2660,23 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                           setSpicyGiftThreshold(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "最低金額",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyMinAmount(),
                                         ]
                                     ),
                                   if(controller.lineup.value == true)

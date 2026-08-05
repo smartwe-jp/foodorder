@@ -28,7 +28,9 @@ class ScaleReading {
 /// Android：只用 USB Host（usb_serial），避免 libserialport 选错口原生闪退。
 /// Windows：用 libserialport，且只允许 COMx。
 ///
-/// 实时重量：建议秤设为连续发送（A&D: prt=0）；
+/// A&D EK-L（EK-15KL / EK-30KL）说明书：
+/// - 出厂：bps=0 → 2400、btpr=0 → 7E1、**prt=1 → 按键输出（不连续）**
+/// - 连续跟屏：秤内设 prt=0（ストリーム）；或本服务发 `Q\r\n` 轮询（命令模式亦可）
 /// 稳定判定由本服务软件完成（重量在 [settleDuration] 内变化小于阈值），未稳不允许确认。
 class ScaleSerialService extends GetxService {
   static const String storageKey = 'scale_serial_port';
@@ -46,11 +48,19 @@ class ScaleSerialService extends GetxService {
   /// 自动探测时，每种参数等待首包的时长
   static const Duration _probeWait = Duration(milliseconds: 1600);
 
+  /// A&D 即时要数命令 `Q\r\n`（说明书 9-4）
+  static final Uint8List _cmdQuery =
+      Uint8List.fromList(const [0x51, 0x0D, 0x0A]);
+
+  /// 命令轮询间隔（出厂 prt=1 无连续流时靠此跟屏）
+  static const Duration _pollInterval = Duration(milliseconds: 280);
+
   final ScalePortBackend _backend = createScalePortBackend();
 
   StreamSubscription<Uint8List>? _sub;
   final StringBuffer _buf = StringBuffer();
   Timer? _settleTimer;
+  Timer? _pollTimer;
 
   /// 每次 [disconnect] 递增；用于中止进行中的 connect 探测，避免竞态崩
   int _session = 0;
@@ -145,7 +155,8 @@ class ScaleSerialService extends GetxService {
         portName: name,
         persist: true,
         params: params,
-        autoProbe: false,
+        // 换秤后出厂参数可能变；允许探测 + Q 轮询
+        autoProbe: true,
       );
     } catch (e, st) {
       logI('设置页电子秤自动连接异常: $e\n$st');
@@ -224,23 +235,23 @@ class ScaleSerialService extends GetxService {
       } else {
         final saved = await loadSavedParams();
         candidates.add(saved);
-        if (autoProbe) {
-          final preferAnd = _isAndUsb(name);
-          final order = preferAnd
-              ? [
-                  ScaleSerialParams.andFactory,
-                  ScaleSerialParams.appStandard,
-                  ...ScaleSerialParams.presets,
-                ]
-              : [
-                  ScaleSerialParams.appStandard,
-                  ScaleSerialParams.andFactory,
-                  ...ScaleSerialParams.presets,
-                ];
-          for (final p in order) {
-            if (!candidates.any((e) => e.id == p.id)) {
-              candidates.add(p);
-            }
+      }
+      if (autoProbe) {
+        final preferAnd = _isAndUsb(name);
+        final order = preferAnd
+            ? [
+                ScaleSerialParams.andFactory,
+                ScaleSerialParams.appStandard,
+                ...ScaleSerialParams.presets,
+              ]
+            : [
+                ScaleSerialParams.appStandard,
+                ScaleSerialParams.andFactory,
+                ...ScaleSerialParams.presets,
+              ];
+        for (final p in order) {
+          if (!candidates.any((e) => e.id == p.id)) {
+            candidates.add(p);
           }
         }
       }
@@ -303,10 +314,26 @@ class ScaleSerialService extends GetxService {
 
         connectedRx.value = true;
 
+        // 探测/连接后立刻发 Q：出厂 prt=1 无连续流时也能拿到首包
+        // ignore: unawaited_futures
+        _requestWeightOnce();
+
         if (probing) {
           lastErrorRx.value = '探测中: ${p.label}…';
+          // 探测期内再补发几次 Q，避免首发丢失
+          final probeSession = session;
+          Timer? probePoll;
+          probePoll = Timer.periodic(const Duration(milliseconds: 350), (_) {
+            if (probeSession != _session || gotFirst.isCompleted) {
+              probePoll?.cancel();
+              return;
+            }
+            // ignore: unawaited_futures
+            _requestWeightOnce();
+          });
           final got = await gotFirst.future
               .timeout(_probeWait, onTimeout: () => false);
+          probePoll.cancel();
           if (session != _session) return false;
           if (!got) {
             logI('电子秤探测无数据: ${p.label}，试下一种');
@@ -329,6 +356,7 @@ class ScaleSerialService extends GetxService {
           await saveParams(p);
         }
         logI('电子秤已连接: $name @${p.label}');
+        _startWeightPolling();
 
         // 最后一档：短时仍无数据则提示（不判失败）
         if (!probing && !gotFirst.isCompleted) {
@@ -338,7 +366,7 @@ class ScaleSerialService extends GetxService {
             if (tipSession != _session || !connectedRx.value) return;
             if (lastRawRx.value.isNotEmpty) return;
             lastErrorRx.value =
-                '未受信。確認: 秤 prt=0、通信パラメータ（現在 ${paramsRx.value.label}）、ケーブル';
+                '未受信。確認: 通信パラメータ（現在 ${paramsRx.value.label}、出厂2400 7E1）、ケーブル/AX-USB。秤 prt=0(連続) 推奨、未設定でもアプリがQポーリングします';
           });
         }
         return true;
@@ -403,6 +431,30 @@ class ScaleSerialService extends GetxService {
     }
   }
 
+  /// 发一次即时要数（说明书：`Q CR LF`）
+  Future<void> _requestWeightOnce() async {
+    if (!connectedRx.value) return;
+    try {
+      await _backend.write(_cmdQuery);
+    } catch (e) {
+      logI('电子秤 Q 命令发送失败: $e');
+    }
+  }
+
+  /// 出厂 prt=1（キー）无连续流时轮询；prt=0 时多收几帧无妨
+  void _startWeightPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(_pollInterval, (_) {
+      // ignore: unawaited_futures
+      _requestWeightOnce();
+    });
+  }
+
+  void _stopWeightPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
   /// 解析一帧：实时推送跳动克重；变化后重启稳定计时。
   void _parseLine(String line) {
     // 完全相同的原始帧：不刷 log，但若尚未稳定且计时器已关则补一轮稳重计时
@@ -420,6 +472,17 @@ class ScaleSerialService extends GetxService {
     if (lastErrorRx.value.startsWith('未受信') ||
         lastErrorRx.value.startsWith('探测中')) {
       lastErrorRx.value = '';
+    }
+
+    // 说明书：QT=个数、OL=超量程、单位 PC/% 非称重克
+    final upper = line.toUpperCase();
+    if (upper.startsWith('OL') || upper.startsWith('QT')) {
+      debugPrint('[Scale] raw(忽略非重量头): $line');
+      return;
+    }
+    if (RegExp(r'\b(PC|PCS|%)\b', caseSensitive: false).hasMatch(line)) {
+      debugPrint('[Scale] raw(忽略非g/kg): $line');
+      return;
     }
 
     final m = RegExp(
@@ -490,6 +553,7 @@ class ScaleSerialService extends GetxService {
   Future<void> disconnect() async {
     _session++;
     _settingsAutoConnectScheduled = false;
+    _stopWeightPolling();
     _settleTimer?.cancel();
     _settleTimer = null;
     try {

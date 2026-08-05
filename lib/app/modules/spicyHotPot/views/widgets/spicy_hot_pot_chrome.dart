@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../config/font.dart';
 import '../../../../services/ScreenAdapter.dart';
 import '../../../../widget/KioskTap.dart';
+import '../../controllers/spicy_hot_pot_checkout_controller.dart';
 
 const kSpicyAccent = Color(0xFF44C2B8);
 const kSpicyText = Color(0xFF333333);
@@ -219,6 +220,54 @@ class SpicyHotPotStepHeader extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// 已扫盆号提示条（称重页 / 汤底页等）
+class SpicyTableNoBanner extends StatelessWidget {
+  const SpicyTableNoBanner({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (!Get.isRegistered<SpicyHotPotCheckoutController>()) {
+      return const SizedBox.shrink();
+    }
+    final ctrl = Get.find<SpicyHotPotCheckoutController>();
+    return Obx(() {
+      final no = ctrl.tableNo.value.trim();
+      if (no.isEmpty) return const SizedBox.shrink();
+      return Container(
+        width: double.infinity,
+        color: const Color(0xFFE8F7F4),
+        padding: EdgeInsets.symmetric(
+          horizontal: ScreenAdapter.width(28),
+          vertical: ScreenAdapter.height(12),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.qr_code_2,
+              color: kSpicyAccent,
+              size: ScreenAdapter.fontSize(28),
+            ),
+            SizedBox(width: ScreenAdapter.width(10)),
+            Expanded(
+              child: Text(
+                'spicy_bowl_table_no'.trParams({'no': no}),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: kSpicyText,
+                  fontSize: ScreenAdapter.fontSize(24),
+                  fontFamily: GFont.getFontFamily(),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 

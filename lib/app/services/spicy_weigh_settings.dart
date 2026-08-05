@@ -1,10 +1,12 @@
 import 'Storage.dart';
 
-/// 麻辣烫称重相关本地设置（手动输入开关、皮重、满额赠送门槛）
+/// 麻辣烫称重相关本地设置（手动输入、皮重、满额赠送、最低额度、盆号扫码）
 class SpicyWeighSettings {
   static const String manualInputKey = 'spicy_weigh_manual_input';
   static const String tareGramsKey = 'spicy_weigh_tare_g';
   static const String giftThresholdYenKey = 'spicy_weigh_gift_threshold_yen';
+  static const String minAmountYenKey = 'spicy_weigh_min_amount_yen';
+  static const String bowlScanKey = 'spicy_weigh_bowl_scan';
 
   /// 是否在称重页显示「手动输入」按钮
   static Future<bool> loadManualAllowed() async {
@@ -14,6 +16,16 @@ class SpicyWeighSettings {
 
   static Future<void> saveManualAllowed(bool allowed) async {
     await Storage.setString(manualInputKey, allowed ? '1' : '0');
+  }
+
+  /// 是否开启称重页「扫盆边二维码/条码」，扫到的盆号带到下单 tableNo
+  static Future<bool> loadBowlScanEnabled() async {
+    final v = await Storage.getString(bowlScanKey);
+    return v == '1';
+  }
+
+  static Future<void> saveBowlScanEnabled(bool enabled) async {
+    await Storage.setString(bowlScanKey, enabled ? '1' : '0');
   }
 
   /// 皮重（克），默认 0
@@ -44,5 +56,17 @@ class SpicyWeighSettings {
   static Future<void> saveGiftThresholdYen(int yen) async {
     final y = yen < 0 ? 0 : yen;
     await Storage.setString(giftThresholdYenKey, y.toString());
+  }
+
+  /// 称重最低额度（日元）。重量×单价须 ≥ 该值才可下一步选汤底；0＝不限制。
+  static Future<int> loadMinAmountYen() async {
+    final v = await Storage.getString(minAmountYenKey);
+    if (v == null || v.isEmpty) return 0;
+    return int.tryParse(v) ?? 0;
+  }
+
+  static Future<void> saveMinAmountYen(int yen) async {
+    final y = yen < 0 ? 0 : yen;
+    await Storage.setString(minAmountYenKey, y.toString());
   }
 }
