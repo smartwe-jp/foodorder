@@ -7,7 +7,7 @@ final class _SettlementPaymentEventState {
   final PaymentFlowTerminalGuard terminalGuard = PaymentFlowTerminalGuard();
   bool cancelRequestReported = false;
   int qrPaymentAttempt = 0;
-  int posConnectAttempt = 0;x
+  int posConnectAttempt = 0;
   int posConnectedAttempt = 0;
   String lastOrderFinalizeFailureType = PaymentFailureType.unknown;
 }

@@ -9,6 +9,12 @@ abstract final class PaymentEventCode {
   static const String cashDeviceOpenStarted = 'CASH_DEVICE_OPEN_STARTED';
   static const String cashDeviceOpenSucceeded = 'CASH_DEVICE_OPEN_SUCCEEDED';
   static const String cashDeviceOpenFailed = 'CASH_DEVICE_OPEN_FAILED';
+  static const String cashDepositAmountUpdated =
+      'CASH_DEPOSIT_AMOUNT_UPDATED';
+  static const String cashDepositDenominationsUpdated =
+      'CASH_DEPOSIT_DENOMINATIONS_UPDATED';
+  static const String cashPayoutDenominationsUpdated =
+      'CASH_PAYOUT_DENOMINATIONS_UPDATED';
   static const String cashDepositStopStarted = 'CASH_DEPOSIT_STOP_STARTED';
   static const String cashDepositStopSucceeded = 'CASH_DEPOSIT_STOP_SUCCEEDED';
   static const String cashDepositStopFailed = 'CASH_DEPOSIT_STOP_FAILED';
@@ -82,21 +88,14 @@ String paymentMethodName(String paymentMethodCode) {
     case '2':
       return 'qr';
     case '3':
-      return 'credit_card';
     case '4':
-      return 'nfc';
     case '5':
-      return 'edy';
     case '6':
-      return 'id';
     case '7':
-      return 'nanaco';
     case '8':
-      return 'waon';
     case '9':
-      return 'quicpay';
     case '10':
-      return 'transport_ic';
+    return 'credit_card';
     default:
       return 'unknown';
   }

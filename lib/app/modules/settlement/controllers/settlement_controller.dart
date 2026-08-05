@@ -160,10 +160,7 @@ class SettlementController extends GetxController with StateMixin {
         showOutMoney.value = '0';
         update();
       }
-    } /*else if (payment_method_num.value == "2") {
-    //检测是否需要连接socket
-    checkpayconnectSocker();
-  }*/ else if (machineInfo.paymentMethod == "3" ||
+    } else if (machineInfo.paymentMethod == "3" ||
         machineInfo.paymentMethod == "4" ||
         machineInfo.paymentMethod == "5" ||
         machineInfo.paymentMethod == "6" ||
@@ -185,9 +182,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-
     change(null, status: RxStatus.success());
-
   }
 
   gotonewMenuPage() {
@@ -1542,19 +1537,40 @@ class SettlementController extends GetxController with StateMixin {
     payCube.onCashInfoChange = (int type, String value) {
       switch (type) {
         case 0:
-          //debugPrint("putMoney==$value");
-          logI("putMoney==$value");
+          _paymentInfo(
+            PaymentEventCode.cashDepositAmountUpdated,
+            'Cash deposit amount updated',
+            status: 'received',
+            data: <String, Object?>{
+              'listener_type': type,
+              'listener_value': value,
+            },
+          );
           _updatePutMoneyInfo(value);
           //_updatePutMoneyInfo(totalPrice.value);
           break;
         case 1:
-          //debugPrint("putCurrency==$value");
-          logI("putCurrency==$value");
+          _paymentInfo(
+            PaymentEventCode.cashDepositDenominationsUpdated,
+            'Cash deposit denominations updated',
+            status: 'received',
+            data: <String, Object?>{
+              'listener_type': type,
+              'listener_value': value,
+            },
+          );
           _getPayCubePutMoneyCurrency(value, canReportFromListen);
           break;
         case 2:
-          //debugPrint("currencyString==$value");
-          logI("currencyString==$value");
+          _paymentInfo(
+            PaymentEventCode.cashPayoutDenominationsUpdated,
+            'Cash payout denominations updated',
+            status: 'received',
+            data: <String, Object?>{
+              'listener_type': type,
+              'listener_value': value,
+            },
+          );
           _getPayCubeOutMoney(value, isRepayCash);
           break;
         default:
