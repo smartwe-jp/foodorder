@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'dart:typed_data';
 
 import 'package:foodorder/app/services/logUtil.dart';
@@ -207,6 +208,11 @@ class CreatePrintImageController extends GetxController {
       ),
     );
 
-    await completer.future;
+    try {
+      await completer.future;
+    } catch (e) {
+      logE('ensureImageLoaded error: $e');
+      await CachedNetworkImage.evictFromCache(imageUrl);
+    }
   }
 }

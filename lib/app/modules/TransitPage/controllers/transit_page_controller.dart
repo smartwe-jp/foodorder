@@ -346,7 +346,8 @@ class TransitPageController extends GetxController {
 
       await completer.future;
     } catch (e) {
-      logI('ensureImageLoaded error: $e');
+      logE('ensureImageLoaded error: $e');
+      await CachedNetworkImage.evictFromCache(imageUrl);
     }
 
   }
