@@ -13,7 +13,9 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    # Flutter 3.35.1 supports the Visual Studio 2022 toolchain. Pin the runner
+    # because windows-latest can move to a newer Visual Studio image.
+    runs-on: windows-2022
     env:
       FLUTTER_VERSION: 3.35.1
     steps:
@@ -86,9 +88,13 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows Release
+        shell: pwsh
         env:
           VARIANT_USE_SYSTEM_FLUTTER: 'true'
-        run: dart run tool/variant.dart build-windows windows --env prod --release
+        run: |
+          Remove-Item Env:CMAKE_GENERATOR -ErrorAction SilentlyContinue
+          flutter doctor -v
+          dart run tool/variant.dart build-windows windows --env prod --release
 
       - name: Prepare Inno Script
         shell: pwsh
