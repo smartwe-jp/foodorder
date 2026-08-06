@@ -14,6 +14,8 @@ final _backupDirectory = Directory(
   '${_root.path}${Platform.pathSeparator}.dart_tool'
   '${Platform.pathSeparator}variant_runner_backup',
 );
+final _ownerPidFile = File('${_backupDirectory.path}/owner.pid');
+final _childPidFile = File('${_backupDirectory.path}/child.pid');
 
 const _snapshotPaths = <String>[
   'pubspec.yaml',
@@ -47,6 +49,11 @@ Future<void> _main(List<String> arguments) async {
 
   final command = arguments.first;
   if (command == 'restore') {
+    if (await _backupHasActiveProcess()) {
+      _fail(
+        'A variant run or build is still active. Stop it before restoring.',
+      );
+    }
     await _restoreBackup(refreshPackages: true);
     return;
   }
@@ -379,10 +386,15 @@ Object? _toPlainValue(Object? value) {
 
 Future<void> _prepareBackup() async {
   if (_backupDirectory.existsSync()) {
-    _fail(
-      'A previous variant session was not restored. Run:\n'
-      'fvm dart run tool/variant.dart restore',
-    );
+    if (await _backupHasActiveProcess()) {
+      _fail(
+        'Another variant run or build is still active. '
+        'Stop it before starting a new one.',
+      );
+    }
+
+    stdout.writeln('Recovering a stale variant session...');
+    await _restoreBackup(refreshPackages: true);
   }
 
   _backupDirectory.createSync(recursive: true);
@@ -404,6 +416,42 @@ Future<void> _prepareBackup() async {
     jsonEncode(metadata),
     flush: true,
   );
+  _ownerPidFile.writeAsStringSync('$pid', flush: true);
+}
+
+Future<bool> _backupHasActiveProcess() async {
+  for (final file in [_ownerPidFile, _childPidFile]) {
+    if (!file.existsSync()) {
+      continue;
+    }
+
+    final processId = int.tryParse(file.readAsStringSync().trim());
+    if (processId != null && await _isProcessRunning(processId)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Future<bool> _isProcessRunning(int processId) async {
+  try {
+    if (Platform.isWindows) {
+      final result = await Process.run(
+        'tasklist',
+        ['/FI', 'PID eq $processId', '/FO', 'CSV', '/NH'],
+        runInShell: true,
+      );
+      return result.exitCode == 0 &&
+          result.stdout.toString().contains(',"$processId",');
+    }
+
+    final result = await Process.run('kill', ['-0', '$processId']);
+    return result.exitCode == 0;
+  } on ProcessException {
+    // If process inspection is unavailable, preserve the backup rather than
+    // risk restoring over a live variant session.
+    return true;
+  }
 }
 
 Future<void> _restoreBackup({required bool refreshPackages}) async {
@@ -472,6 +520,9 @@ Future<int> _runFvm(
     mode: ProcessStartMode.inheritStdio,
     runInShell: Platform.isWindows,
   );
+  if (_backupDirectory.existsSync()) {
+    _childPidFile.writeAsStringSync('${process.pid}', flush: true);
+  }
 
   final subscriptions = <StreamSubscription<ProcessSignal>>[];
   if (forwardSignals && !Platform.isWindows) {
@@ -488,11 +539,17 @@ Future<int> _runFvm(
     }
   }
 
-  final result = await process.exitCode;
-  for (final subscription in subscriptions) {
-    await subscription.cancel();
+  try {
+    return await process.exitCode;
+  } finally {
+    for (final subscription in subscriptions) {
+      await subscription.cancel();
+    }
+    if (_childPidFile.existsSync() &&
+        _childPidFile.readAsStringSync().trim() == '${process.pid}') {
+      _childPidFile.deleteSync();
+    }
   }
-  return result;
 }
 
 _RunOptions _parseRunOptions(List<String> arguments) {
