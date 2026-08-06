@@ -48,62 +48,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
-  //RxString machineCode = "".obs;
-
-  // RxString dining_type = "1".obs; //1 堂食  2 外袋  3 两种都可
-  // RxBool dining_type_one = false.obs; //false无堂食 true 堂食
-  // RxBool dining_type_two = false.obs; //false无外卖  true 外卖
-  // RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
-  // RxString print_paper_size = "1".obs; //1 默认58mm  2 宽纸80mm
-  //RxString print_paper_txt_size = "1".obs; //1 普通　2大　3特大
-  // RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须打印
-  // RxString is_allow_receipt_menu = "1".obs; //1 必须打印  2 不要
-  // RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
-  // RxString isReservation = "0".obs; // 0 不开启  1开启
-  // RxString is_allow_attendance = "0".obs; //0 不开启  1 开启
-  // RxString is_allow_settlementhome = "0".obs; //0 不开启  1 开启
-  // RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
-  // RxString is_allow_backhome = "0".obs; //0 返回  1 返回菜单
-  // RxString is_allow_rejishime = "0".obs; //0 不开启  1 开启
-  //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
-  // RxString is_allow_pos = "0".obs; //0 不开启  1 开启
-  // RxBool is_edit_mode = false.obs; //0 不开启  1 开启
-  // RxString pos_ip = "".obs;
-  // RxString pos_port = "".obs;
-
-  //券卖机设置里面也设置开启并设置好ip，则展示图标及请求wlan print的相关数据
-  // RxString is_allow_wlanPrint = "0".obs; //0 不开启  1 开启
-  // RxString is_allow_wlanPrint_continuous =
-  //     "0".obs; //0 单票  1 连票  Print Continuous
-  // RxString wlan_print_ip = "".obs;
-  // RxString wlan_print_port = "9100".obs;
-
-  // RxInt showPrintType = 0.obs; //0 receipt   1Lable
-
-  // RxString is_allow_wlanPrint_Two = "0".obs; //0 不开启  1 开启
-  // RxString is_allow_wlanPrint_Two_continuous =
-  //     "0".obs; //0 单票  1 连票  Print Continuous
-  // RxString wlan_print_ip_Two = "".obs;
-  // RxString wlan_print_port_Two = "9100".obs;
-
-  // String? is_allow_wlanPanelPrint;
-  // String? wlan_panel_print_ip;
-  // String? wlan_panel_print_port;
 
   RxBool actuarial = false.obs; //是否开启精算
   RxBool lineup = false.obs; //是否开启排队
 
   RxDouble downloadProgress = 0.0.obs;
-
-  //RxMap usbDevice = {}.obs;
-
-  // RxBool printDirection = false.obs;
-  // RxBool printTwoDirection = false.obs;
-  // RxBool printThreeDirection = false.obs;
-  // RxDouble printLabelWidth = 400.0.obs;
-  // RxDouble machinePrintWidth = 385.0.obs;
-  // RxList printerList = [].obs;
-  // RxList sseSettingList = [].obs;
 
   List<String> panelTypes = ['Mini', 'Max'];
   //String panelType = "Mini";
@@ -180,83 +129,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //获取系统设置信息
   _getSystemSettingInfo() async {
     await _checkAndInitialPrinters();
-    // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    // Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    // Map wlanPrintSettingInfoTwo =
-    //     await HomeServices.getWlanPrintSettingTwoInfo();
-    // Map wlanPanelPrintSettingInfo =
-    //     await HomeServices.getWlanPanelPrintSettingInfo();
-    // printDirection.value =
-    //     await HomeServices.getPrintDirection() == "1" ? true : false;
-    // printTwoDirection.value =
-    //     await HomeServices.getPrintTwoDirection() == "1" ? true : false;
-    // printThreeDirection.value =
-    //     await HomeServices.getPrintThreeDirection() == "1" ? true : false;
-    // printLabelWidth.value = await HomeServices.getLabelPrintWidth();
-    //machinePrintWidth.value = await HomeServices.getMachinePrintWidth();
-    //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
-    //usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
-
-    // is_edit_mode.value = await HomeServices.getEditMode();
-
-    // dining_type.value = systemSettingInfo['diningType'];
-    // if (dining_type.value == "1") {
-    //   dining_type_one.value = true;
-    //   dining_type_two.value = false;
-    // } else if (dining_type.value == "2") {
-    //   dining_type_one.value = false;
-    //   dining_type_two.value = true;
-    // } else if (dining_type.value == "3") {
-    //   dining_type_one.value = true;
-    //   dining_type_two.value = true;
-    // }
-    // menu_direction.value = systemSettingInfo['menuDirection'];
-    // _print_paper_size = systemSettingInfo['printPaperSize'];
-    // print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
-
-    // is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
-    // is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
-    // machine_mode.value = systemSettingInfo['machineMode'];
-    // isReservation.value = systemSettingInfo['isReservation'];
-    // is_allow_attendance.value = systemSettingInfo['isAllowAttendance'];
-    // is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
-    // is_allow_backhome.value = systemSettingInfo['isAllowBackHome'];
-    // is_allow_rejishime.value = systemSettingInfo['isAllowRejishime'] ?? "0";
-    // is_allow_pos.value = systemSettingInfo['isAllowPos'];
-    // is_allow_wlanPrint.value = systemSettingInfo['isAllowWlanPrint'];
-    // is_allow_wlanPrint_continuous.value =
-    //     systemSettingInfo['isAllowWlanPrintContinuous'];
-    // showPrintType.value = int.parse(systemSettingInfo['showPrintType']);
-    // is_allow_wlanPrint_Two.value = systemSettingInfo['isAllowWlanPrintTwo'];
-    // is_allow_wlanPrint_Two_continuous.value =
-    //     systemSettingInfo['isAllowWlanPrintTwoContinuous'];
-    // is_allow_wlanPanelPrint = systemSettingInfo['isAllowWlanPanelPrint'] ?? "0";
-    // panelType = systemSettingInfo['panelType'] ?? 'Mini';
-
-    // if (posSettingInfo['posIp'] != null &&
-    //     posSettingInfo['posIp'] != "" &&
-    //     posSettingInfo['posPort'] != null &&
-    //     posSettingInfo['posPort'] != "") {
-    //   pos_ip.value = posSettingInfo['posIp'];
-    //   pos_port.value = posSettingInfo['posPort'];
-    // }
-    // if (wlanPrintSettingInfo['wlanPrintIp'] != null &&
-    //     wlanPrintSettingInfo['wlanPrintIp'] != "" &&
-    //     wlanPrintSettingInfo['wlanPrintPort'] != null &&
-    //     wlanPrintSettingInfo['wlanPrintPort'] != "") {
-    //   wlan_print_ip.value = wlanPrintSettingInfo['wlanPrintIp'];
-    //   wlan_print_port.value = wlanPrintSettingInfo['wlanPrintPort'];
-    // }
-    // if (wlanPrintSettingInfoTwo['wlanPrintIp'] != null &&
-    //     wlanPrintSettingInfoTwo['wlanPrintIp'] != "" &&
-    //     wlanPrintSettingInfoTwo['wlanPrintPort'] != null &&
-    //     wlanPrintSettingInfoTwo['wlanPrintPort'] != "") {
-    //   wlan_print_ip_Two.value = wlanPrintSettingInfoTwo['wlanPrintIp'];
-    //   wlan_print_port_Two.value = wlanPrintSettingInfoTwo['wlanPrintPort'];
-    // }
     if (smartweMachineSetting != null) {
       actuarial.value = smartweMachineSetting["machineActuarial"];
       lineup.value = smartweMachineSetting["machineLineup"];
@@ -606,9 +480,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                     : 'smartwe_ticket_machine.exe';
                                 downloadAndroid(file_url + fileName);
                                 //testReadAndInstall();
-
-//                                 downloadAndroid(downloadUrl);
-// >>>>>>> 2.7.0-dev
                               },
                             ),
                           ),
@@ -744,38 +615,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //print('open result done');
     }
   }
-
-  // checkDiningtype(checkedType) {
-  //   if (checkedType == "1") {
-  //     dining_type_one.value = !dining_type_one.value;
-  //   } else if (checkedType == "2") {
-  //     dining_type_two.value = !dining_type_two.value;
-  //   }
-
-  //   var dining_type_tmp = "1";
-  //   if (dining_type_one.value == true && dining_type_two.value == false) {
-  //     dining_type_tmp = "1"; //店内
-  //   } else if (dining_type_one.value == false &&
-  //       dining_type_two.value == true) {
-  //     dining_type_tmp = "2"; //外带
-  //   } else if (dining_type_one.value == true && dining_type_two.value == true) {
-  //     dining_type_tmp = "3"; //店内外带都有
-  //   } else {
-  //     dining_type_one.value = true;
-  //     dining_type_tmp = "1";
-  //   }
-
-  //   dining_type.value = dining_type_tmp;
-  //   _updateSystemSetting("diningType", dining_type_tmp);
-  //   //该处逻辑需要修改，如果切换模式会有获取不到Controller的问题。
-  //   if (machine_mode == "1") {
-  //     //if (Get.isRegistered<OrderHomeController>())
-  //     //Get.find<OrderHomeController>().getSystemSettingInfo();
-  //   } else if (machine_mode == "2") {
-  //     // if (Get.isRegistered<CheckoutPageController>())
-  //     // Get.find<CheckoutPageController>().getSystemSettingInfo();
-  //   }
-  // }
 
   updateMachineMode(
       {bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
@@ -981,59 +820,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  // checkIsAllowWlanPrint(checkedType) async {
-  //   var wlanPrintSettingData;
-  //   if (checkedType == "1") {
-  //     wlanPrintSettingData = {
-  //       "wlanPrintIp": wlan_print_ip.value, //ip
-  //       "wlanPrintPort": wlan_print_port.value, //port
-  //     };
-  //   } else {
-  //     wlanPrintSettingData = {
-  //       "wlanPrintIp": "", //ip
-  //       "wlanPrintPort": "", //port
-  //     };
-
-  //     wlan_print_ip.value = "";
-  //     wlan_print_port.value = "";
-  //   }
-
-  //   Storage.setString(
-  //       'smartwe_wlanPrintSetting', json.encode(wlanPrintSettingData));
-  //   GetxStorage.setData(
-  //       'smartwe_wlanPrintSetting', json.encode(wlanPrintSettingData));
-
-  //   is_allow_wlanPrint.value = checkedType;
-
-  //   _updateSystemSetting("isAllowWlanPrint", checkedType);
-  // }
-
-  // checkIsAllowWlanPrintTwo(checkedType) async {
-  //   var wlanPrintSettingData;
-  //   if (checkedType == "1") {
-  //     wlanPrintSettingData = {
-  //       "wlanPrintIp": wlan_print_ip_Two.value, //ip
-  //       "wlanPrintPort": wlan_print_port_Two.value, //port
-  //     };
-  //   } else {
-  //     wlanPrintSettingData = {
-  //       "wlanPrintIp": "", //ip
-  //       "wlanPrintPort": "", //port
-  //     };
-
-  //     wlan_print_ip_Two.value = "";
-  //     wlan_print_port_Two.value = "";
-  //   }
-  //   Storage.setString(
-  //       'smartwe_wlanPrintSettingTwo', json.encode(wlanPrintSettingData));
-  //   GetxStorage.setData(
-  //       'smartwe_wlanPrintSettingTwo', json.encode(wlanPrintSettingData));
-
-  //   is_allow_wlanPrint_Two.value = checkedType;
-
-  //   _updateSystemSetting("isAllowWlanPrintTwo", checkedType);
-
-  // }
 
   posTest(posIp, posPort) async {
     _showEasyLoading(text: "POS Test Start");

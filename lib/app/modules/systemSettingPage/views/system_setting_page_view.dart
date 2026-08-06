@@ -2320,20 +2320,7 @@ class SystemSettingPageView extends GetView<SystemSettingPageController> {
                     ...controller.machineInfo.sseSettingList.map((sseItem) =>
                       editSSETable(sseItem)
                     ).toList(),
-        
-                    /*setDiningtype(),//食事のタイプ
-                    setMenuDirection(),//菜单方向
-                    setPrintPaperTxtSize(),//打印菜单文字大小
-                    setIsAllowReceipt(),//设置是否允强制必须打印领収书
-                    setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
-                    (controller.actuarial.value == true) ? setMachineMode() : Container(height: 0,), //设置机器类型
-                    (controller.lineup.value == true) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
-                    //setIsAllowAttendance(),//是否开启签到
-                    setIsAllowPos(),//是否开启pos机刷卡
-                    setIsAllowWlanPrint(),//是否开启网络打印机
-                    setIsAllowWlanPrintTwo(),//第二台打印机
-                    setIsAllowOneYen(),//是否允许一元
-                    setIsAllowSettlementHome(),//是否结算完后回到首页*/
+      
                   ],
                 ),
               ),
