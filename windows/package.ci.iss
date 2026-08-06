@@ -31,6 +31,9 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
+; Required when AppId uses a scripted {code:...} constant. This only disables
+; restoring the previous wizard language; upgrade identity remains unchanged.
+UsePreviousLanguage=no
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
