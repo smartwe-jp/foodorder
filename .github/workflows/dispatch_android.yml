@@ -38,6 +38,27 @@ jobs:
           git fetch --tags
           git checkout tags/${{ github.event.inputs.tag }}
 
+      # GitHub hosted runners only have limited free disk space. Flutter,
+      # Gradle, Android SDK and native build outputs can otherwise fill it.
+      - name: Free disk space for Android build
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Disk usage before cleanup:"
+          df -h /
+
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android/sdk/system-images
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          docker image prune --all --force || true
+          sudo apt-get clean
+
+          echo "Disk usage after cleanup:"
+          df -h /
+
       # 新增步骤: 配置 SSH 以访问私有依赖库
       - name: Configure SSH for Private Dependencies
         uses: webfactory/ssh-agent@v0.9.0
@@ -51,27 +72,16 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # 步骤 3: 缓存 Flutter 依赖
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/flutter
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-
-      # 步骤 4: 设置 Flutter 环境
+      # 步骤 3: 设置 Flutter 环境并使用 action 自带缓存
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.1'
           channel: 'stable'
+          cache: true
+          pub-cache: true
 
-      # 步骤 5: 获取 Flutter 依赖包 (现在可以成功访问私有库)
-      - name: Get Flutter dependencies
-        run: flutter pub get
-
-      # 步骤 6: 解码并配置签名文件
+      # 步骤 4: 解码并配置签名文件
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_JKS }}" | base64 --decode > android/app/upload-keystore.jks
@@ -81,14 +91,24 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/keystore.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/keystore.properties
 
-      # 步骤 7: 使用对应 YAML 和锁文件构建 Android 7 / Android 11 APK
+      # 步骤 5: 使用对应 YAML 和锁文件构建 Android 7 / Android 11 APK
       - name: Build Flutter APK (${{ matrix.package_suffix }})
         env:
           VARIANT_USE_SYSTEM_FLUTTER: 'true'
         run: |
+          echo "Disk usage before Flutter build:"
+          df -h /
           dart run tool/variant.dart build-apk "${{ matrix.variant }}" --env prod --release
+
+      - name: Report disk usage after build
+        if: always()
+        shell: bash
+        run: |
+          df -h /
+          du -sh /home/runner/.gradle /home/runner/.pub-cache \
+            "$ANDROID_SDK_ROOT" "$GITHUB_WORKSPACE/build" 2>/dev/null || true
       
-      # 步骤 7.1: 生成版本信息文件
+      # 步骤 5.1: 生成版本信息文件
       - id: generate_version_info
         name: Generate Version Info
         run: |
