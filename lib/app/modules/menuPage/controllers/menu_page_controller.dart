@@ -54,6 +54,10 @@ class MenuPageController extends GetxController with StateMixin {
   /// 麻辣烫扫盆码得到的盆号；普通券卖或未开扫码时为空，不传 webBootOrder.tableNo
   String spicyTableNo = '';
 
+  /// 扫码优惠金额（正数＝减免多少円）；码前缀 smartwe 时由优惠接口写入
+  /// 接口 key：webBootBarCodeMenuQuery（后续换接口只改 http_conf）
+  final RxInt cartDiscountYen = 0.obs;
+
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
   RxList showCartItems = [].obs;
@@ -351,9 +355,85 @@ class MenuPageController extends GetxController with StateMixin {
     showCartItems.value = List<ShopItemModel>.from(items.cast<ShopItemModel>());
     if (totalNum == 0) {
       showShopCart = false;
+      // 购物车清空后优惠作废
+      cartDiscountYen.value = 0;
     }
     // 购物车弹层、推荐页等仍依赖 GetBuilder 刷新
     update(['shopping_cart']);
+  }
+
+  /// 购物车商品合计（未减优惠）
+  int get cartItemsTotalYen => int.tryParse(shopCartTotalPrice.value) ?? 0;
+
+  /// 应付合计 = 商品合计 − 优惠（不低于 0）
+  int get cartPayableYen {
+    final p = cartItemsTotalYen - cartDiscountYen.value;
+    return p < 0 ? 0 : p;
+  }
+
+  String get displayCartPayable => '$cartPayableYen';
+
+  /// 条码前缀是否为优惠活动码（与后端约定：smartwe）
+  static const String _discountBarCodePrefix = 'smartwe';
+
+  bool _isDiscountBarCode(String code) =>
+      code.length >= _discountBarCodePrefix.length &&
+      code.toLowerCase().startsWith(_discountBarCodePrefix);
+
+  /// 优惠扫码：webBootBarCodeMenuQuery，用返回 data.discount 作为减免额
+  Future<void> _applyDiscountBarCode(String code) async {
+    final formData = {
+      'language': checkLanguage.value,
+      'machineCode': machineInfo.machineCode,
+      'barCode': code,
+    };
+    logI('菜单优惠扫码查询: $code');
+    final val = await request(
+      'webBootBarCodeMenuQuery',
+      method: 'POST',
+      parameters: formData,
+    );
+    final response = json.decode(val.toString());
+    if (response['code'] != 200 || response['data'] == null) {
+      showToast('spicy_menu_scan_not_found'.tr);
+      logI('优惠扫码未查询到: $code');
+      return;
+    }
+
+    final data = response['data'];
+    if (data is! Map) {
+      showToast('spicy_menu_scan_not_found'.tr);
+      return;
+    }
+    final rawDiscount = data['discount'];
+    final parsed = rawDiscount is int
+        ? rawDiscount
+        : int.tryParse('$rawDiscount') ?? 0;
+    // 接口返回正数折扣额（如 100）；展示 -100，下单传正数 discount
+    final discount = parsed.abs();
+    if (discount <= 0) {
+      showToast('spicy_menu_scan_not_found'.tr);
+      return;
+    }
+    // 优惠必须小于购物车商品合计，否则不可用
+    await getCartPriceTotal();
+    final cartTotal = cartItemsTotalYen;
+    if (discount >= cartTotal) {
+      Get.dialog(
+        DialogUtils.alertOneButton(
+          'menu_discount_invalid'.tr,
+          title: 'tag_title'.tr,
+          confirmtitle: 'tag_button_yes'.tr,
+          confirm: () => Get.back(),
+        ),
+      );
+      logI('优惠扫码拒绝: discount=$discount >= cartTotal=$cartTotal');
+      return;
+    }
+    cartDiscountYen.value = discount;
+    update(['shopping_cart']);
+    //showToast('menu_discount_applied'.trParams({'amount': discount.toString()}));
+    logI('优惠扫码生效 name=${data['name']} discount=$discount');
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
@@ -752,7 +832,8 @@ class MenuPageController extends GetxController with StateMixin {
     );
   }
 
-  /// 麻辣烫选其他菜品：扫码 → webBootBarCodeQuery → 直接入车（无规格）。
+  /// 麻辣烫选其他菜品：扫码 → 查询/优惠 → 入车或写入减免。
+  /// 码前缀 smartwe → webBootBarCodeMenuQuery（优惠）；否则 webBootBarCodeQuery。
   /// 称重商品（HUNDRED_GRAM）拒绝。
   /// [barCode] 可传入（用法弹窗内扫码）；[restoreFocus] 为 false 时由调用方自行抢焦点。
   Future<void> doSpicyMenuBarCodeQuery({
@@ -766,6 +847,13 @@ class MenuPageController extends GetxController with StateMixin {
     _spicyBarCodeQueryInFlight = true;
     try {
       _showSpicyScanEasyLoading();
+
+      // 优惠活动码：前缀 smartwe
+      if (_isDiscountBarCode(code)) {
+        await _applyDiscountBarCode(code);
+        return;
+      }
+
       final formData = {
         'language': checkLanguage.value,
         'machineCode': machineInfo.machineCode,
@@ -1295,6 +1383,10 @@ print("加1了");
           spicyTableNo.isNotEmpty) {
         formData['tableNo'] = spicyTableNo;
       }
+      // 扫码优惠（smartwe 前缀）：有减免才传 discount
+      if (cartDiscountYen.value > 0) {
+        formData['discount'] = cartDiscountYen.value;
+      }
       LogUtil.d("webBootOrderformData: $formData");
 
       final val = await request(
@@ -1314,15 +1406,22 @@ print("加1了");
         int tax1 = response['data']["tax1"] ?? 0;
         int tax2 = response['data']["tax2"] ?? 0;
 
-        int localTotal =
-            int.tryParse(orderTotlaPrice.toString()) ?? serverTotal;
-        if (serverTotal > 0 && serverTotal != localTotal) {
-          final ratio = localTotal / serverTotal;
-          tax1 = (tax1 * ratio).round();
-          tax2 = (tax2 * ratio).round();
+        // 本地兜底：税込=含税应付；税别=未税价（需再加税）
+        int localTotal = cartDiscountYen.value > 0
+            ? cartPayableYen
+            : (int.tryParse(orderTotlaPrice.toString()) ?? 0);
+
+        // 税入/税别统一优先用下单返回 data.total（服务端已含税与优惠）
+        int displayTotalYen;
+        if (serverTotal > 0) {
+          displayTotalYen = serverTotal;
+        } else if (!machineInfo.taxSystem && localTotal > 0) {
+          displayTotalYen = localTotal + tax1 + tax2;
+        } else {
+          displayTotalYen = localTotal;
         }
-        final displayTotal =
-            localTotal > 0 ? localTotal.toString() : serverTotal.toString();
+
+        final displayTotal = displayTotalYen.toString();
 
         showSelectMealTypeAndPaymentMethodDialog(displayTotal,
             tax1: tax1, tax2: tax2);
@@ -1516,6 +1615,7 @@ print("加1了");
     await ordersqlcontroller.getCardList();
     //classTag.value = topMenu[0]["categoryCode"];
     menuLackMap.value = {};
+    cartDiscountYen.value = 0;
     await getCartPriceTotal();
 
     if (topMenu.isNotEmpty) {

@@ -226,4 +226,8 @@ const Map<String, String> ja_JP = {
   "spicy_bowl_scan_back":"戻る",
   "spicy_bowl_scan_skip":"秤重をスキップ",
   "spicy_bowl_table_no":"鉢番号：@no",
+
+  "menu_discount_applied":"割引適用 ¥@amount",
+  "menu_discount_minus":"割引 -¥@amount",
+  "menu_discount_invalid":"割引金額が合いません。割引を選び直してください",
 };

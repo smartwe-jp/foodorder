@@ -137,7 +137,7 @@ class HomeController extends GetxController {
 
     //霸屏隐藏状态栏导航栏
     try {
-      //await Appset.hideBullyScreen;
+      await Appset.hideBullyScreen;
     } catch (e) {
       debugPrint('Appset.hideBullyScreen failed: $e');
     }

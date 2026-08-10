@@ -11,6 +11,7 @@ extension Shoppingcar on MenuPageController {
 
   publicCartView() {
     return Obx(() {
+      final discount = cartDiscountYen.value;
       return ListView(
         shrinkWrap: true,
         children: [
@@ -32,6 +33,35 @@ extension Shoppingcar on MenuPageController {
                   : "${d.unitPrice}",
               quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
               showQtyControls: d.itemType != 'spicy',
+            ),
+          if (discount > 0)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ScreenAdapter.width(16),
+                vertical: ScreenAdapter.height(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'settlement_discount'.tr,
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(32),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFE64340),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '-¥$discount',
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(36),
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFE64340),
+                    ),
+                  ),
+                ],
+              ),
             ),
         ],
       );

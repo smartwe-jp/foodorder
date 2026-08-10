@@ -225,4 +225,8 @@ const Map<String, String> zh_CN = {
   "spicy_bowl_scan_skip":"跳过称重",
   "spicy_bowl_table_no":"盆号：@no",
 
+  "menu_discount_applied":"已优惠 ¥@amount",
+  "menu_discount_minus":"优惠 -¥@amount",
+  "menu_discount_invalid":"优惠金额不符，请重新选择优惠",
+
 };

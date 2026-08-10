@@ -72,6 +72,8 @@ const servicePath = {
   'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
 
   'webBootBarCodeQuery': base_url + 'pad/web/boot/bar_code/query', //通过商品条码找商品
+  // 优惠折扣扫码（码前缀 smartwe）；后续若换接口只改此处 key/URL
+  'webBootBarCodeMenuQuery': base_url + 'pad/web/boot/bar_code/discount/query',
 
   //退款相关
   'webBootReimburseQuery': base_url + 'pad/web/boot/reimburse/query', //通过领収书注文番号开始查询

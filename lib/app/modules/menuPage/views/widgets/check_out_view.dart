@@ -128,7 +128,7 @@ extension CheckoutButton on MenuPageView {
                                         fontWeight: FontWeight.w500,
                                         color: Colors.white,
                                       ),),
-                                      TextSpan(text: "${formatMoney(controller.shopCartTotalPrice.value)}",style: TextStyle(
+                                      TextSpan(text: "${formatMoney(controller.displayCartPayable)}",style: TextStyle(
                                         fontFamily: GFont.getFontFamily(),
                                         fontSize: 38,
                                         fontWeight: FontWeight.w500,

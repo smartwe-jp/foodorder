@@ -225,4 +225,8 @@ const Map<String, String> ko_KR = {
   "spicy_bowl_scan_skip":"계량 건너뛰기",
   "spicy_bowl_table_no":"그릇 번호：@no",
 
+  "menu_discount_applied":"할인 적용 ¥@amount",
+  "menu_discount_minus":"할인 -¥@amount",
+  "menu_discount_invalid":"할인 금액이 맞지 않습니다. 할인을 다시 선택해 주세요",
+
 };

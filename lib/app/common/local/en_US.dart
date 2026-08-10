@@ -224,4 +224,8 @@ const Map<String, String> en_US = {
   "spicy_bowl_scan_back":"Back",
   "spicy_bowl_scan_skip":"Skip weighing",
   "spicy_bowl_table_no":"Bowl No.: @no",
+
+  "menu_discount_applied":"Discount applied ¥@amount",
+  "menu_discount_minus":"Discount -¥@amount",
+  "menu_discount_invalid":"Discount amount is invalid. Please select another discount",
 };
