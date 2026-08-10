@@ -12,10 +12,6 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-; Legacy AppId shipped to customers (missing closing brace on purpose).
-#ifndef AppIdOverride
-#define AppIdOverride "{{E254136A-A120-4B9F-B394-F712FCC5D560}"
-#endif
 ; 清理的 AppData 子路径（请按实际路径调整）
 #define AppDataSubPath "com.fanxing\\foodorder"
 
@@ -25,7 +21,9 @@
 #define ExtraSetup RepoRoot + "windows\\Setup"
 
 [Setup]
-AppId={#AppIdOverride}
+; Return the same effective AppId as the installers already shipped to
+; customers, without using the legacy "{{GUID}" syntax rejected by CI.
+AppId={code:GetCanonicalAppId}
 AppName={#AppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -33,6 +31,9 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
+; Required when AppId uses a scripted {code:...} constant. This only disables
+; restoring the previous wizard language; upgrade identity remains unchanged.
+UsePreviousLanguage=no
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
@@ -103,6 +104,11 @@ Type: filesandordirs; Name: "{localappdata}\{#AppDataSubPath}"
 [Code]
 var
   IsUpgrade: Boolean;
+
+function GetCanonicalAppId(Param: String): String;
+begin
+  Result := '{E254136A-A120-4B9F-B394-F712FCC5D560}';
+end;
 
 function InitializeSetup(): Boolean;
 begin
