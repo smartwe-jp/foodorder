@@ -559,14 +559,14 @@ class SettingController extends GetxController with StateMixin {
         Get.back();
       }
     });
-    change(null, status: RxStatus.success());
+    
     if (Platform.isAndroid) {
       await _getChangeState();
     } else {
       await getCashInfo();
       await gloryConfirmSync(showLoading: false);
     }
-
+    change(null, status: RxStatus.success());
     //print(_menuOption);
   }
 
