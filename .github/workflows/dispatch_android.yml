@@ -154,10 +154,20 @@ jobs:
           cat metadata.json
 
           # 上传：把 metadata 作为文件上传，避免引号/转义问题
-          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
+          if ! UPLOAD_RESPONSE=$(curl --fail-with-body -sS -X POST \
+            "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -F "metadata=@metadata.json;type=application/json;charset=UTF-8" \
-            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
+            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"); then
+            echo "ERROR: Google Drive upload request failed"
+            exit 1
+          fi
+
+          FILE_ID=$(printf '%s' "$UPLOAD_RESPONSE" | jq -er '.id') || {
+            echo "ERROR: Google Drive upload response does not contain a file id"
+            exit 1
+          }
+          echo "Uploaded $FILE_NAME to Google Drive (file id: $FILE_ID)"
 
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
