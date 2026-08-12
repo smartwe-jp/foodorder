@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:foodorder/app/services/cash_machine_startup_service.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
@@ -32,6 +33,15 @@ extension ExchangeControllerExtension on SettingController {
 
   getCashInfo({String? cashString}) async {
     String? cash = cashString ?? await getMachineCashInfo(showAlert: false);
+    if (cash == null &&
+        machineInfo.cashMachineDriver == CashMachineDriver.cashChanger) {
+      final recovery = await Get.find<CashMachineStartupService>()
+          .checkForPayment(force: true);
+      machineInfo.update(['selectPayment']);
+      if (recovery.isReady) {
+        cash = await getMachineCashInfo(showAlert: false);
+      }
+    }
     //logI('cashInfo: $cash'); //'1:12,5:5'
 
     if (cash != null) {
