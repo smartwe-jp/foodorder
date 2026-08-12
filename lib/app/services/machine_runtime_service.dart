@@ -26,6 +26,13 @@ class MachineRuntimeService {
   final MachineActivationRepository _activationRepository;
   final MachineCapabilitiesResolver _capabilitiesResolver;
 
+  static const Map<String, bool> defaultMachineModeInfo = {
+    'sell': true,
+    'takeout': false,
+    'checkout': false,
+    'scanbuy': false,
+  };
+
   bool _isHydrated = false;
   String _machineCode = '';
   Map<String, dynamic> _systemSettings = {};
@@ -98,9 +105,15 @@ class MachineRuntimeService {
     final printerList = await Storage.getData('printerListInfo');
     _printerList = printerList is List ? List<dynamic>.from(printerList) : [];
     final machineModeInfo = await Storage.getData('machineModeInfo');
-    _machineModeInfo = machineModeInfo is Map
-        ? Map<String, dynamic>.from(machineModeInfo)
-        : {};
+    if (machineModeInfo is Map && machineModeInfo.isNotEmpty) {
+      _machineModeInfo = Map<String, dynamic>.from(machineModeInfo);
+    } else {
+      _machineModeInfo = Map<String, dynamic>.from(defaultMachineModeInfo);
+      await Storage.setData(
+        'machineModeInfo',
+        json.encode(_machineModeInfo),
+      );
+    }
     _posSettings = _decodeMap(await Storage.getString('smartwe_posSetting'));
     _screenCallSettings =
         _decodeMap(await Storage.getString('smartwe_wlanPanelPrintSetting'));

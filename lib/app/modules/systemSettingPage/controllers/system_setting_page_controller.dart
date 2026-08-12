@@ -231,12 +231,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     //machineModeInfo = await HomeServices.getMachineModeInfo();
     if (machineInfo.machineModeInfo.isEmpty) {
-      await HomeServices.setMachineModeInfo({
-        'sell': true,
-        'takeout': false,
-        'checkout': false,
-        'scanbuy': false,
-      });
+      final defaultModes = Map<String, dynamic>.from(
+        MachineRuntimeService.defaultMachineModeInfo,
+      );
+      machineInfo.machineModeInfo = defaultModes;
+      await HomeServices.setMachineModeInfo(defaultModes);
     }
   }
 

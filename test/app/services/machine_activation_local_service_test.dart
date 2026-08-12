@@ -247,6 +247,12 @@ void main() {
       expect(runtime.machineModelCode, 'SWF1');
       expect(runtime.posSettings['posPort'], '9000');
       expect(runtime.machinePrintWidth, 420.0);
+      expect(runtime.machineModeInfo, {
+        'sell': true,
+        'takeout': false,
+        'checkout': false,
+        'scanbuy': false,
+      });
 
       final preferences = await SharedPreferences.getInstance();
       await preferences.setString('machineInfo', 'changed-on-disk');
