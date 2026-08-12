@@ -20,7 +20,10 @@ class AppBindings extends Bindings {
     Get.put(AppConfig(), permanent: true);
     Get.put(MachineRuntimeService(), permanent: true);
     Get.lazyPut(
-      () => CashMachineStartupService(appConfig: Get.find<AppConfig>()),
+      () => CashMachineStartupService(
+        appConfig: Get.find<AppConfig>(),
+        runtime: Get.find<MachineRuntimeService>(),
+      ),
       fenix: true,
     );
     Get.lazyPut(() => OrderSqlController(), fenix: true);

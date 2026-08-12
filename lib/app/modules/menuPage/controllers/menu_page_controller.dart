@@ -14,7 +14,6 @@ import 'package:foodorder/app/models/ItemModel.dart';
 import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/car_item_view.dart';
-import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';

@@ -8,6 +8,7 @@ import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:logging/logging.dart';
 
 enum CashMachineStartupStep {
@@ -54,14 +55,64 @@ class CashMachineCheckResult {
 typedef CashMachineStepCallback = void Function(CashMachineStartupStep step);
 
 class CashMachineStartupService {
-  CashMachineStartupService({required AppConfig appConfig})
-      : _appConfig = appConfig;
+  CashMachineStartupService({
+    required AppConfig appConfig,
+    required MachineRuntimeService runtime,
+  })  : _appConfig = appConfig,
+        _runtime = runtime;
 
   static const _stepTimeout = Duration(seconds: 60);
   static const _retryDelay = Duration(milliseconds: 500);
 
   final AppConfig _appConfig;
+  final MachineRuntimeService _runtime;
   final Logger _logger = Logger('CashMachineStartupService');
+
+  Future<CashMachineCheckResult> checkForPayment() async {
+    if (!_runtime.shouldCheckCashMachine) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.unsupportedPlatform,
+      );
+    }
+    if (_runtime.cashPaymentAvailable) {
+      return const CashMachineCheckResult.ready();
+    }
+    if (_runtime.cashMachineStatus == CashMachineRuntimeStatus.checking) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.busy,
+      );
+    }
+
+    _runtime.markCashMachineChecking();
+    final result = await check(
+      _runtime.capabilities.cashMachineDriver,
+      machineCode: _runtime.machineCode,
+    );
+    if (!result.isReady) {
+      _runtime.markCashMachineFailed();
+      return result;
+    }
+
+    await _applyPayCubeSettings();
+    _runtime.markCashMachineReady();
+    return result;
+  }
+
+  Future<void> _applyPayCubeSettings() async {
+    final allowOneYen = _runtime.systemSettings['isAllowOneyen'] ??
+        _runtime.systemSettings['isAllowOneYen'] ??
+        '0';
+    if (_runtime.capabilities.cashMachineDriver != CashMachineDriver.payCube ||
+        allowOneYen != '0') {
+      return;
+    }
+    try {
+      await _appConfig.payCube.prohibitOneCash
+          .timeout(const Duration(seconds: 10));
+    } catch (error, stackTrace) {
+      _logger.warning('Failed to apply one-yen setting', error, stackTrace);
+    }
+  }
 
   Future<CashMachineCheckResult> check(
     CashMachineDriver driver, {

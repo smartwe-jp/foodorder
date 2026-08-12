@@ -19,7 +19,6 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
-  bool isChecking = false;
   //base info
   late bool isBackHome;
   late String machineCode;
@@ -120,9 +119,13 @@ class MachineInfoController extends GetxController {
   MachineRuntimeService get _runtime => Get.find<MachineRuntimeService>();
   String get machineModelCode => _runtime.machineModelCode;
   bool get supportsCashMachine => _runtime.capabilities.supportsCashMachine;
+  bool get showCashPayment =>
+      cashMachineEnabled && _runtime.capabilities.supportsCashMachine;
   CashMachineDriver get cashMachineDriver =>
       _runtime.capabilities.cashMachineDriver;
   bool get cashPaymentAvailable => _runtime.cashPaymentAvailable;
+  bool get isChecking =>
+      _runtime.cashMachineStatus == CashMachineRuntimeStatus.checking;
   Map<String, dynamic> get systemSettingInfo => _runtime.systemSettings;
   late Map posSettingInfo;
 
