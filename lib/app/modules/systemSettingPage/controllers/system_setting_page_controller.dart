@@ -26,6 +26,7 @@ import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
 import '../../../services/HomeServices.dart';
+import '../../../services/machine_runtime_service.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
@@ -661,6 +662,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllowReceipt(checkedType) async {
     machineInfo.isAllowReceipt = checkedType;
     _updateSystemSetting("isAllowReceipt", checkedType);
+  }
+
+  Future<void> checkCashMachineEnabled(bool enabled) async {
+    machineInfo.cashMachineEnabled = enabled;
+    await Get.find<MachineRuntimeService>()
+        .updateCashMachineEnabled(enabled);
+    update();
   }
 
   checkIsAllowPrintReceiptOptions(checkedType) async {

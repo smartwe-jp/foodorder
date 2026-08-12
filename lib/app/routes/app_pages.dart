@@ -18,6 +18,8 @@ import '../modules/SelfservicePage/bindings/selfservice_page_binding.dart';
 import '../modules/SelfservicePage/views/selfservice_page_view.dart';
 import '../modules/TransitPage/bindings/transit_page_binding.dart';
 import '../modules/TransitPage/views/transit_page_view.dart';
+import '../modules/CashMachineCheck/bindings/cash_machine_check_binding.dart';
+import '../modules/CashMachineCheck/views/cash_machine_check_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/menuPage/bindings/menu_page_binding.dart';
@@ -62,6 +64,11 @@ class AppPages {
       name: _Paths.TRANSIT_PAGE,
       page: () => TransitPageView(),
       binding: TransitPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.CASH_MACHINE_CHECK,
+      page: () => const CashMachineCheckView(),
+      binding: CashMachineCheckBinding(),
     ),
     GetPage(
       name: _Paths.ACTIVATION,
@@ -193,7 +200,6 @@ class AppPages {
         Get.lazyPut(() => PrinterFailedListController());
       }),
     ),
-
   ];
 }
 

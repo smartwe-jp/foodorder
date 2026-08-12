@@ -1,4 +1,5 @@
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:get/get.dart';
@@ -42,10 +43,9 @@ class MachineInfoController extends GetxController {
   List<SseSubscriptionSetting> get sseSettingList =>
       Get.find<SseSubscriptionManager>().settings;
 
-  late bool isAllowCash;
   late bool isAllowReimburse;
-  late bool cashOn;
   late bool taxSystem;
+  late bool cashMachineEnabled;
 
   late Map machineModeInfo;
   late String isAllowRejishime;
@@ -71,7 +71,6 @@ class MachineInfoController extends GetxController {
   bool is_dark_theme = true;
 
   //payment info
-  late bool showCash;
   late bool showAlipay;
   late bool showWechat;
   late bool showPayPay;
@@ -118,6 +117,13 @@ class MachineInfoController extends GetxController {
   late String pos_port;
   int get posPort => int.tryParse(pos_port) ?? 0;
   bool get allowPos => isAllowPos == '1';
+  MachineRuntimeService get _runtime => Get.find<MachineRuntimeService>();
+  String get machineModelCode => _runtime.machineModelCode;
+  bool get supportsCashMachine => _runtime.capabilities.supportsCashMachine;
+  CashMachineDriver get cashMachineDriver =>
+      _runtime.capabilities.cashMachineDriver;
+  bool get cashPaymentAvailable => _runtime.cashPaymentAvailable;
+  Map<String, dynamic> get systemSettingInfo => _runtime.systemSettings;
   late Map posSettingInfo;
 
   bool get isSellOn => machineModeInfo['sell'] ?? false;
@@ -165,10 +171,6 @@ class MachineInfoController extends GetxController {
 
   // bool get mealType {
   //   return diningType == '2' ? true : false;
-  // }
-
-  // bool get showCash {
-  //   return isAllowCash && cashOn;
   // }
 
   @override
@@ -256,11 +258,9 @@ class MachineInfoController extends GetxController {
 
     actuarial = activation?.actuarial ?? false;
 
-    cashOn = runtime.cashOn;
+    cashMachineEnabled = runtime.cashMachineEnabled;
     logI('loadMachineSettingInfo 1');
     taxSystem = activation?.taxSystem ?? false;
-    isAllowCash = paymentChannels?.cash ?? false;
-    showCash = isAllowCash && cashOn;
 
     showWechat = paymentChannels?.wechat ?? false;
     showAlipay = paymentChannels?.alipay ?? false;

@@ -30,6 +30,7 @@ class MachineActivationResponse {
 
 class MachineActivation {
   const MachineActivation({
+    required this.machineModelCode,
     required this.shopCode,
     required this.paymentChannels,
     required this.languages,
@@ -43,6 +44,7 @@ class MachineActivation {
     required this.cashMachineWithdraw,
   });
 
+  final String machineModelCode;
   final String shopCode;
   final MachinePaymentChannels paymentChannels;
   final List<String> languages;
@@ -57,6 +59,7 @@ class MachineActivation {
 
   factory MachineActivation.fromRemoteJson(Map<String, dynamic> json) {
     return MachineActivation(
+      machineModelCode: _asString(json['machineType']),
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromRemoteJson(
           _asMapOrEmpty(json['linePayChannelMap'])),
@@ -74,6 +77,7 @@ class MachineActivation {
 
   factory MachineActivation.fromJson(Map<String, dynamic> json) {
     return MachineActivation(
+      machineModelCode: _asString(json['machineModelCode']),
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromJson(
           _asMapOrEmpty(json['paymentChannels'])),
@@ -98,8 +102,10 @@ class MachineActivation {
     required String logoImage,
     required String reimburse,
     required String shopCode,
+    String machineModelCode = '',
   }) {
     return MachineActivation(
+      machineModelCode: machineModelCode,
       shopCode: shopCode,
       paymentChannels: MachinePaymentChannels.fromLegacyJson(paymentData),
       languages: _asStringList(languages),
@@ -115,6 +121,7 @@ class MachineActivation {
   }
 
   Map<String, dynamic> toJson() => {
+        'machineModelCode': machineModelCode,
         'shopCode': shopCode,
         'paymentChannels': paymentChannels.toJson(),
         'languages': languages,

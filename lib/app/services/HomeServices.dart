@@ -400,20 +400,6 @@ class HomeServices {
     return attendanceCode;
   }
 
-  //多参数设置
-  static getIsShowCash() async {
-    Map showCashInfo;
-    try {
-      var showCashDatatmp = await Storage.getString('isCashState');
-      Map showCashData = json.decode(showCashDatatmp!);
-      GetxStorage.setData('isCashState', json.encode(showCashData));
-      showCashInfo = showCashData;
-    } catch (e) {
-      showCashInfo = {};
-    }
-    return showCashInfo;
-  }
-
   //多语言
   static getMachineLanguages() async{
     return (await getMachineActivation())?.languages ?? ["JP"];

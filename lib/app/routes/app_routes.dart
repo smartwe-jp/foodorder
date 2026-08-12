@@ -5,6 +5,7 @@ abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
   static const TRANSIT_PAGE = _Paths.TRANSIT_PAGE;
+  static const CASH_MACHINE_CHECK = _Paths.CASH_MACHINE_CHECK;
   static const ACTIVATION = _Paths.ACTIVATION;
   static const ORDER_HOME = _Paths.ORDER_HOME;
   static const ENTRY_HOME = _Paths.ENTRY_HOME;
@@ -28,7 +29,7 @@ abstract class Routes {
   static const RECEIPT_QUERY = _Paths.RECEIPT_QUERY;
   static const SELECT_PAYMENT_PAGE = _Paths.SELECT_PAYMENT_PAGE;
   static const SETTING_EDIT_PAGE = _Paths.SETTING_EDIT_PAGE;
-  static const RESULT_PAGE  = _Paths.RESULT_PAGE;
+  static const RESULT_PAGE = _Paths.RESULT_PAGE;
   static const PRINTER_FAILED_LIST = _Paths.PRINTER_FAILED_LIST;
 }
 
@@ -36,6 +37,7 @@ abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
   static const TRANSIT_PAGE = '/transit-page';
+  static const CASH_MACHINE_CHECK = '/cash-machine-check';
   static const ACTIVATION = '/activation';
   static const ORDER_HOME = '/order-home';
   static const ENTRY_HOME = '/entry-home';

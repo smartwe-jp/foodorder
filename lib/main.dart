@@ -193,7 +193,7 @@ void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
     logI('--forcing return to Checkout 1--');
     Future.microtask(() {
       if (Get.isRegistered<TransitPageController>()) {
-        Get.find<TransitPageController>().getIsShowCashInfo();
+        Get.find<TransitPageController>().startBootstrap();
       } else {
         logI('--TransitPageController not registered--');
         Get.offNamedUntil('/transit-page', (route) => route.isFirst);
@@ -207,7 +207,7 @@ void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
       logI('--forcing return to Checkout 2--');
       Future.microtask(() {
         if (Get.isRegistered<TransitPageController>()) {
-          Get.find<TransitPageController>().getIsShowCashInfo();
+          Get.find<TransitPageController>().startBootstrap();
         } else {
           logI('--TransitPageController not registered--');
           Get.offNamedUntil('/transit-page', (route) => route.isFirst);

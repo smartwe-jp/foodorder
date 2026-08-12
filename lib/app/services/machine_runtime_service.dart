@@ -1,15 +1,30 @@
 import 'dart:convert';
 
 import '../models/machine_activation.dart';
+import '../models/machine_capabilities.dart';
 import '../repositories/machine_activation_repository.dart';
 import 'Storage.dart';
 
+enum CashMachineRuntimeStatus {
+  notChecked,
+  notRequired,
+  checking,
+  ready,
+  failed,
+  ignored,
+}
+
 class MachineRuntimeService {
-  MachineRuntimeService({MachineActivationRepository? activationRepository})
-      : _activationRepository =
+  MachineRuntimeService({
+    MachineActivationRepository? activationRepository,
+    MachineCapabilitiesResolver capabilitiesResolver =
+        const MachineCapabilitiesResolver(),
+  })  : _capabilitiesResolver = capabilitiesResolver,
+        _activationRepository =
             activationRepository ?? MachineActivationRepository();
 
   final MachineActivationRepository _activationRepository;
+  final MachineCapabilitiesResolver _capabilitiesResolver;
 
   bool _isHydrated = false;
   String _machineCode = '';
@@ -17,7 +32,9 @@ class MachineRuntimeService {
   MachineActivation? _activation;
   String _settingPassword = '';
   String _printLogoImageData = '';
-  bool _cashOn = false;
+  bool _cashMachineEnabled = true;
+  CashMachineRuntimeStatus _cashMachineStatus =
+      CashMachineRuntimeStatus.notChecked;
   List<dynamic> _printerList = [];
   Map<String, dynamic> _machineModeInfo = {};
   Map<String, dynamic> _posSettings = {};
@@ -32,7 +49,20 @@ class MachineRuntimeService {
   MachineActivation? get activation => _activation;
   String get settingPassword => _settingPassword;
   String get printLogoImageData => _printLogoImageData;
-  bool get cashOn => _cashOn;
+  String get machineModelCode => _activation?.machineModelCode ?? '';
+  MachineCapabilities get capabilities =>
+      _capabilitiesResolver.resolve(machineModelCode);
+  bool get cashMachineEnabled => _cashMachineEnabled;
+  CashMachineRuntimeStatus get cashMachineStatus => _cashMachineStatus;
+  bool get shouldCheckCashMachine =>
+      _cashMachineEnabled && capabilities.supportsCashMachine;
+  bool get requiresCashMachineStartupCheck =>
+      shouldCheckCashMachine &&
+      _cashMachineStatus != CashMachineRuntimeStatus.ready &&
+      _cashMachineStatus != CashMachineRuntimeStatus.ignored;
+  bool get cashPaymentAvailable =>
+      shouldCheckCashMachine &&
+      _cashMachineStatus == CashMachineRuntimeStatus.ready;
   List<dynamic> get printerList => List<dynamic>.from(_printerList);
   Map<String, dynamic> get machineModeInfo =>
       Map<String, dynamic>.from(_machineModeInfo);
@@ -60,8 +90,11 @@ class MachineRuntimeService {
         await Storage.getString('machineSettingManagePassword') ?? '';
     _printLogoImageData =
         await Storage.getString('smartwe_logoImageData') ?? '';
-    _cashOn =
-        _decodeMap(await Storage.getString('isCashState'))['isCash'] == true;
+    _cashMachineEnabled =
+        _asBool(_systemSettings['cashMachineEnabled'], fallback: true);
+    if (!_cashMachineEnabled) {
+      _cashMachineStatus = CashMachineRuntimeStatus.notRequired;
+    }
     final printerList = await Storage.getData('printerListInfo');
     _printerList = printerList is List ? List<dynamic>.from(printerList) : [];
     final machineModeInfo = await Storage.getData('machineModeInfo');
@@ -95,7 +128,40 @@ class MachineRuntimeService {
 
   Future<void> updateSystemSettings(Map<String, dynamic> settings) async {
     _systemSettings = Map<String, dynamic>.from(settings);
+    _cashMachineEnabled =
+        _asBool(_systemSettings['cashMachineEnabled'], fallback: true);
+    if (!_cashMachineEnabled) {
+      _cashMachineStatus = CashMachineRuntimeStatus.notRequired;
+    } else if (_cashMachineStatus == CashMachineRuntimeStatus.notRequired) {
+      _cashMachineStatus = CashMachineRuntimeStatus.notChecked;
+    }
     await Storage.setString('smartwe_systemSetting', json.encode(settings));
+  }
+
+  Future<void> updateCashMachineEnabled(bool enabled) async {
+    final settings = Map<String, dynamic>.from(_systemSettings)
+      ..['cashMachineEnabled'] = enabled;
+    await updateSystemSettings(settings);
+  }
+
+  void markCashMachineChecking() {
+    _cashMachineStatus = CashMachineRuntimeStatus.checking;
+  }
+
+  void markCashMachineReady() {
+    _cashMachineStatus = CashMachineRuntimeStatus.ready;
+  }
+
+  void markCashMachineFailed() {
+    _cashMachineStatus = CashMachineRuntimeStatus.failed;
+  }
+
+  void markCashMachineIgnored() {
+    _cashMachineStatus = CashMachineRuntimeStatus.ignored;
+  }
+
+  void markCashMachineNotRequired() {
+    _cashMachineStatus = CashMachineRuntimeStatus.notRequired;
   }
 
   Future<void> updateSettingPassword(String password) async {
@@ -142,5 +208,16 @@ class MachineRuntimeService {
     } catch (_) {
       return {};
     }
+  }
+
+  bool _asBool(dynamic value, {required bool fallback}) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == '1') return true;
+      if (normalized == 'false' || normalized == '0') return false;
+    }
+    return fallback;
   }
 }

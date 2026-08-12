@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:io';
-
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 //import 'package:foodorder/app/controllers/machine_info_controller.dart';
@@ -12,8 +9,8 @@ import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/Storage.dart';
 import '../../../services/machine_runtime_service.dart';
@@ -23,12 +20,9 @@ class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
   RxString _machineCode = "".obs;
   //var _machineMode = "1"; //1 券卖机  2 精算机 3 自助收银
-  //RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
   RxBool _loadActiveInfo = false.obs;
-  AppConfig appConfig = Get.find();
-  get payCube => appConfig.payCube;
   final MachineRuntimeService _machineRuntime = Get.find();
 
   String languageCode = "JP";
@@ -41,7 +35,7 @@ class TransitPageController extends GetxController {
   @override
   void onInit() {
     //languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
-    getIsShowCashInfo();
+    startBootstrap();
     super.onInit();
     logger.info('--- TransitPageController onInit ---');
   }
@@ -61,15 +55,14 @@ class TransitPageController extends GetxController {
     logger.info('--- TransitPageController onClose ---');
   }
 
-  getIsShowCashInfo() async {
+  startBootstrap() async {
     if (hasStart) {
       logger.info('-- hasStart true, no need to run again --');
       return;
     }
 
     hasStart = true;
-    logger.info("transit getIsShowCashInfo");
-    //Map systemSettingInfo = await HomeServices.getIsShowCash();
+    logger.info("transit startBootstrap");
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
       _loadActiveInfo.value = Get.arguments['loadActive'] ?? false;
       _machineCode.value = Get.arguments['machineCode'] ?? "";
@@ -78,7 +71,7 @@ class TransitPageController extends GetxController {
     // if (_machineCode.isNotEmpty) {
     //   firstActive();
     // } else {
-      _getMachineInfo(machineCode: _machineCode.value);
+    _getMachineInfo(machineCode: _machineCode.value);
     //}
   }
 
@@ -97,7 +90,6 @@ class TransitPageController extends GetxController {
     await _machineRuntime.hydrate(machineCode: machineCode);
     _machineCode.value = _machineRuntime.machineCode;
     _getPackageInfo();
-
   }
 
   //获取版本号
@@ -108,7 +100,6 @@ class TransitPageController extends GetxController {
 
     _getMachineActivate(isFirst: _loadActiveInfo.value);
   }
-
 
   Future<void> _getMachineActivate({
     bool isFirst = false,
@@ -135,9 +126,9 @@ class TransitPageController extends GetxController {
         return;
       }
 
-      logger
-          .info('-- server cash state = ${activation.paymentChannels.cash} --');
+      logger.info('-- machine model = ${activation.machineModelCode} --');
       _actuarial.value = activation.actuarial;
+      await Storage.setString('activeTimeInfo', DateTime.now().toString());
 
       if (isFirst) {
         await _saveActiveCode(_machineCode.value);
@@ -146,60 +137,61 @@ class TransitPageController extends GetxController {
       }
     } catch (e) {
       logW('getMachineActivate error: $e');
-      if (Platform.isAndroid) {
-        // FirebaseAnalytics.instance.logEvent(
-        //     name: 'machine_activate_error',
-        //     parameters: {'machine_activate_error': '${_machineCode.value}'});
-      }
       if (retryCount < 3) {
-        // 如果失败，重试
-        Future.delayed(const Duration(seconds: 2), () {
-          _getMachineActivate(isFirst: isFirst, retryCount: retryCount + 1);
-        });
-      } else {
-        // 如果重试次数超过3次，显示错误对话框
-        _showErrorDialog(error: e);
+        await Future<void>.delayed(const Duration(seconds: 2));
+        return _getMachineActivate(
+          isFirst: isFirst,
+          retryCount: retryCount + 1,
+        );
       }
+
+      final cachedActivation = _machineRuntime.activation;
+      if (!isFirst && cachedActivation != null) {
+        logger.warning('Remote activation failed; using cached activation');
+        _actuarial.value = cachedActivation.actuarial;
+        await _getSmartweSystemSettingInfo();
+        return;
+      }
+      _showErrorDialog(error: e);
     } finally {
       logI('activation finished');
       //_activating = false;
     }
   }
 
-  _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
-      isActive
-          ? 'activation_error_tips'.tr
-          : 'インターネットが接続していません。ネット環境及び機器の接続状況をご確認の上、券売君アプリを再起動してください。',
-
-      title: "tag_title".tr,
-      confirmtitle: "reboot_app".tr,
-      confirm: () {
+  _showErrorDialog({error, bool isActive = false}) =>
+      Get.dialog(DialogUtils.alertOneButton(
+          isActive
+              ? 'activation_error_tips'.tr
+              : 'インターネットが接続していません。ネット環境及び機器の接続状況をご確認の上、券売君アプリを再起動してください。',
+          title: "tag_title".tr,
+          confirmtitle: "reboot_app".tr, confirm: () {
         Future.delayed(Duration(milliseconds: 200), () async {
-          if (isActive)
-          Storage.clearAll();
+          if (isActive) Storage.clearAll();
           Get.back();
           //_getMachineActivate();
           Appset.restartApp;
           //exit(0);
         });
-      })
-  );
+      }));
 
   Future<bool> _checkShouldActive() async {
+    if ((_machineRuntime.activation?.machineModelCode ?? '').isEmpty) {
+      return true;
+    }
     var now = DateTime.now();
     var lastActiveTime = await HomeServices.getActiveTimeInfo();
     if (lastActiveTime != null && lastActiveTime != "") {
-      var last = DateTime.parse(lastActiveTime);
+      var last = DateTime.tryParse(lastActiveTime);
+      if (last == null) return true;
       var diff = now.difference(last).inDays;
-      if (diff > 1) {//超过一天 重新激活
-        await Storage.setString('activeTimeInfo', now.toString());
+      if (diff > 1) {
+        //超过一天 重新激活
         return true;
       } else {
         return false;
       }
     } else {
-      //存储当前时间
-      await Storage.setString('activeTimeInfo', now.toString());
       return true;
     }
   }
@@ -220,12 +212,10 @@ class TransitPageController extends GetxController {
       await _injectControllers();
     } catch (e) {
       logW("getSmartweSystemSettingInfo error: $e");
-      
     }
   }
 
   Future<void> _injectControllers() async {
-
     if (!Get.isRegistered<MachineInfoController>()) {
       final controller = MachineInfoController();
       await Get.putAsync<MachineInfoController>(() async {
@@ -240,22 +230,8 @@ class TransitPageController extends GetxController {
 
     MachineInfoController machineInfo = Get.find<MachineInfoController>();
     Get.lazyPut(() => PrintService(machineInfo));
-  
 
     await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
-
-    if (machineInfo.is_allow_oneyen == "0") {
-      try {
-        if (Platform.isAndroid) {
-         payCube.prohibitOneCash.timeout(
-              Duration(seconds: 10));
-        }
-      } on TimeoutException catch (e) {
-        print('Timeout: $e');
-      } catch (e) {
-        print('error: $e');
-      }
-    }
 
     final list = machineInfo.homeList;
     if (list.isNotEmpty) {
@@ -264,9 +240,20 @@ class TransitPageController extends GetxController {
       heroImageUrl = null;
     }
     showStartButton.value = true;
-     
 
-     goNext();
+    if (_machineRuntime.requiresCashMachineStartupCheck) {
+      _goCashMachineCheck();
+    } else {
+      if (!_machineRuntime.capabilities.isKnownModel) {
+        logger.warning(
+          'Unknown machine model: ${_machineRuntime.machineModelCode}',
+        );
+      }
+      if (!_machineRuntime.shouldCheckCashMachine) {
+        _machineRuntime.markCashMachineNotRequired();
+      }
+      goNext();
+    }
   }
 
   void startOrder() {
@@ -278,23 +265,18 @@ class TransitPageController extends GetxController {
     _goCheckOut();
   }
 
-  void _goMain() async {
-    debugPrint("transit  goMain");
-    Future.delayed(Duration(milliseconds: 200), () {
-      Get.toNamed("/order-home", arguments: {'initLaunch': _loadActiveInfo.value});
-    });
+  void _goCashMachineCheck() {
+    Get.toNamed(
+      Routes.CASH_MACHINE_CHECK,
+      arguments: {'initLaunch': _loadActiveInfo.value},
+    );
   }
 
   Future _goCheckOut() async {
     //Future.delayed(Duration(milliseconds: 200), () {
     hasStart = false;
-      Get.toNamed("/checkout-page", arguments: {'initLaunch': _loadActiveInfo.value});
+    Get.toNamed("/checkout-page",
+        arguments: {'initLaunch': _loadActiveInfo.value});
     //});
-  }
-
-  Future _goSelfService() async {
-    Future.delayed(Duration(milliseconds: 200), () {
-      Get.toNamed("/selfservice-page", arguments: {'initLaunch': _loadActiveInfo.value});
-    });
   }
 }

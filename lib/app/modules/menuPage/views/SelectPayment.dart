@@ -226,7 +226,7 @@ class SelectPaymentPage extends StatelessWidget {
                               mainAxisAlignment:
                               MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                if (machineInfo.showCash == true)
+                                if (machineInfo.cashPaymentAvailable)
                                   KioskTap(
                                     onTap: () {
                                       //payment_method_num = "1";

@@ -6,6 +6,7 @@ import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
@@ -122,7 +123,11 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               _allowSettlementHome(logic.machineInfo.systemSettingInfo),
               if (Platform.isAndroid)
                 _openRejishime(logic.machineInfo.systemSettingInfo),
-              if (Platform.isAndroid)
+              if (logic.machineInfo.supportsCashMachine)
+                _cashMachineEnabledArea(logic.machineInfo),
+              if (logic.machineInfo.cashMachineDriver ==
+                      CashMachineDriver.payCube &&
+                  logic.machineInfo.cashMachineEnabled)
                 _cashDenominationSettingArea(
                     logic.machineInfo.systemSettingInfo),
               //标题 ‘プリンター設定’
@@ -780,6 +785,51 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             ],
           ),
         ));
+  }
+
+  Widget _cashMachineEnabledArea(MachineInfoController machineInfo) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '現金機を使用する',
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'オフの場合、起動時の現金機確認と現金支払いを無効にします。',
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: machineInfo.cashMachineEnabled,
+              onChanged: controller.checkCashMachineEnabled,
+              activeThumbColor: Colors.blue,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   //Cash Allow Setting card

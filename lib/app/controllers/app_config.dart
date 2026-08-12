@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import '../config/app_variant.dart';
 
 class AppConfig extends GetxController {
-  bool get machineType => AppVariantConfig.isAndroid11;
+  bool get usesAndroid11PayCubePlugin => AppVariantConfig.isAndroid11;
 
-  get payCube => machineType ? Paycube() : PayCube();
-  get isAndroid11 => machineType;
+  get payCube => usesAndroid11PayCubePlugin ? Paycube() : PayCube();
+  get isAndroid11 => usesAndroid11PayCubePlugin;
 
   @override
   void onInit() {

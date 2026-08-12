@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foodorder/app/models/machine_activation.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/repositories/machine_activation_repository.dart';
 import 'package:foodorder/app/services/machine_activation_local_service.dart';
 import 'package:foodorder/app/services/machine_activation_remote_service.dart';
@@ -11,11 +14,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  setUpAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/path_provider'),
+      (_) async => Directory.systemTemp.path,
+    );
+  });
+
   group('MachineActivationResponse', () {
     test('parses remote payload into a typed activation model', () {
       final response = MachineActivationResponse.fromPayload({
         'code': '200',
         'data': {
+          'machineType': 'SWF1',
           'shopCode': 'shop-001',
           'linePayChannelMap': {
             'Cash': true,
@@ -36,6 +48,7 @@ void main() {
       });
 
       expect(response.code, 200);
+      expect(response.activation?.machineModelCode, 'SWF1');
       expect(response.activation?.shopCode, 'shop-001');
       expect(response.activation?.paymentChannels.cash, isTrue);
       expect(response.activation?.paymentChannels.wechat, isTrue);
@@ -113,6 +126,26 @@ void main() {
       expect(activation?.shopCode, 'current-shop');
     });
 
+    test('upgrades a version 1 cache without losing activation data', () async {
+      SharedPreferences.setMockInitialValues({
+        MachineActivationLocalService.cacheKey: json.encode({
+          'schemaVersion': 1,
+          'data': _activation(shopCode: 'version-1-shop').toJson()
+            ..remove('machineModelCode'),
+        }),
+      });
+
+      final activation = await MachineActivationLocalService().load();
+
+      expect(activation?.shopCode, 'version-1-shop');
+      expect(activation?.machineModelCode, isEmpty);
+      final preferences = await SharedPreferences.getInstance();
+      final upgraded = json.decode(
+        preferences.getString(MachineActivationLocalService.cacheKey)!,
+      ) as Map<String, dynamic>;
+      expect(upgraded['schemaVersion'], 2);
+    });
+
     test('falls back to legacy keys when cache schema is unsupported',
         () async {
       SharedPreferences.setMockInitialValues({
@@ -138,6 +171,7 @@ void main() {
       ) as Map<String, dynamic>;
 
       expect(preferences.getString('smartwe_shopCode'), 'shop-002');
+      expect(preferences.getString('smartwe_machineType'), 'SWF1');
       expect(preferences.getString('smartwe_reimburse'), '1');
       expect(legacyPayment['showCash'], isTrue);
       expect(legacyPayment['show_visa'], isTrue);
@@ -192,7 +226,6 @@ void main() {
           'menuDirection': '2',
         }),
         'machineSettingManagePassword': '1234',
-        'isCashState': json.encode({'isCash': true}),
         'smartwe_posSetting': json.encode({
           'posIp': '127.0.0.1',
           'posPort': '9000',
@@ -210,7 +243,8 @@ void main() {
       expect(runtime.systemSettings['isAllowPos'], '1');
       expect(runtime.activation, same(activation));
       expect(runtime.settingPassword, '1234');
-      expect(runtime.cashOn, isTrue);
+      expect(runtime.cashMachineEnabled, isTrue);
+      expect(runtime.machineModelCode, 'SWF1');
       expect(runtime.posSettings['posPort'], '9000');
       expect(runtime.machinePrintWidth, 420.0);
 
@@ -234,11 +268,62 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       expect(preferences.getString('machineInfo'), 'machine-002');
     });
+
+    test('uses the local cash-machine switch instead of legacy health state',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        'smartwe_systemSetting': json.encode({
+          'cashMachineEnabled': false,
+        }),
+        'isCashState': json.encode({'isCash': true}),
+      });
+      final runtime = MachineRuntimeService(
+        activationRepository:
+            _FakeActivationRepository(_activation(shopCode: 'shop')),
+      );
+
+      await runtime.hydrate();
+
+      expect(runtime.cashMachineEnabled, isFalse);
+      expect(runtime.shouldCheckCashMachine, isFalse);
+      expect(runtime.cashMachineStatus, CashMachineRuntimeStatus.notRequired);
+    });
+  });
+
+  group('MachineCapabilitiesResolver', () {
+    const resolver = MachineCapabilitiesResolver();
+
+    test('maps supported machine models to their cash drivers', () {
+      expect(
+        resolver.resolve('SWF1').cashMachineDriver,
+        CashMachineDriver.payCube,
+      );
+      expect(
+        resolver.resolve('swf2').cashMachineDriver,
+        CashMachineDriver.payCube,
+      );
+      expect(
+        resolver.resolve('SWFG').cashMachineDriver,
+        CashMachineDriver.cashChanger,
+      );
+      expect(
+        resolver.resolve('SWFX').cashMachineDriver,
+        CashMachineDriver.none,
+      );
+    });
+
+    test('keeps future machine models safe and non-blocking', () {
+      final capabilities = resolver.resolve('SWF-FUTURE');
+
+      expect(capabilities.isKnownModel, isFalse);
+      expect(capabilities.supportsCashMachine, isFalse);
+    });
   });
 }
 
 MachineActivation _activation({required String shopCode}) {
   return MachineActivation.fromRemoteJson({
+    'machineType': 'SWF1',
     'shopCode': shopCode,
     'linePayChannelMap': {
       'Cash': true,
