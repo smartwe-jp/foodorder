@@ -27,6 +27,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/PosCheckService.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../services/logUtil.dart';
+import '../../../services/machine_runtime_service.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
@@ -42,6 +43,7 @@ class SettlementController extends GetxController with StateMixin {
   final posCheckService = Get.find<PosCheckService>();
 
   MachineInfoController machineInfo = Get.find();
+  final MachineRuntimeService _machineRuntime = Get.find();
   PrintInfoService saveService = Get.find();
 
   PrintService printService = Get.find();
@@ -157,6 +159,7 @@ class SettlementController extends GetxController with StateMixin {
         CashChanger.setEventsListener();
         String result = await startDeposit();
         if (result != 'success') {
+          _markCashMachineUnavailable();
           errorHandleDialog(result, confirm: () {
             Get.back();
             //Get.back();
@@ -1129,8 +1132,14 @@ class SettlementController extends GetxController with StateMixin {
       //   "orderId":orderId.value,
       // });
       showCashTimer?.cancel();
+      _markCashMachineUnavailable();
       Get.toNamed(Routes.ERROR_PAGE);
     }
+  }
+
+  void _markCashMachineUnavailable() {
+    _machineRuntime.markCashMachineFailed();
+    machineInfo.update(['selectPayment']);
   }
 
   _setPayCubeListener() async {
