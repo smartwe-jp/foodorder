@@ -113,7 +113,7 @@ class CashMachineStartupService {
     if (status == 'openError') {
       onStep?.call(CashMachineStartupStep.opening);
       var opened = false;
-      for (var attempt = 0; attempt < 3; attempt++) {
+      for (var attempt = 0; attempt < 2; attempt++) {
         final openStatus = await payCube.openPayCube.timeout(_stepTimeout);
         if (openStatus == 'openSuccess') {
           opened = true;
@@ -124,7 +124,7 @@ class CashMachineStartupService {
       if (!opened) {
         return const CashMachineCheckResult.failed(
           CashMachineCheckFailure.disconnected,
-          detail: 'PayCube open failed after 3 attempts',
+          detail: 'PayCube open failed after 2 attempts',
         );
       }
     } else if (status != 'openSuccess') {
