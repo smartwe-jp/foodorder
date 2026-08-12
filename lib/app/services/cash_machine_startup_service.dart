@@ -74,13 +74,13 @@ class CashMachineStartupService {
   final MachineRuntimeService _runtime;
   final Logger _logger = Logger('CashMachineStartupService');
 
-  Future<CashMachineCheckResult> checkForPayment() async {
+  Future<CashMachineCheckResult> checkForPayment({bool force = false}) async {
     if (!_runtime.shouldCheckCashMachine) {
       return const CashMachineCheckResult.failed(
         CashMachineCheckFailure.unsupportedPlatform,
       );
     }
-    if (_runtime.cashPaymentAvailable) {
+    if (!force && _runtime.cashPaymentAvailable) {
       return const CashMachineCheckResult.ready();
     }
     if (_runtime.cashMachineStatus == CashMachineRuntimeStatus.checking) {

@@ -25,6 +25,7 @@ import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PosCheckService.dart';
+import '../../../services/cash_machine_startup_service.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/machine_runtime_service.dart';
@@ -158,6 +159,12 @@ class SettlementController extends GetxController with StateMixin {
       } else {
         CashChanger.setEventsListener();
         String result = await startDeposit();
+        if (result != 'success') {
+          final recovered = await _recoverCashMachineOnce();
+          if (recovered) {
+            result = await startDeposit();
+          }
+        }
         if (result != 'success') {
           _markCashMachineUnavailable();
           errorHandleDialog(result, confirm: () {
@@ -1132,9 +1139,19 @@ class SettlementController extends GetxController with StateMixin {
       //   "orderId":orderId.value,
       // });
       showCashTimer?.cancel();
+      if (connectCount == 1 && await _recoverCashMachineOnce()) {
+        await Starttoubi(connectCount: 2);
+        return;
+      }
       _markCashMachineUnavailable();
       Get.toNamed(Routes.ERROR_PAGE);
     }
+  }
+
+  Future<bool> _recoverCashMachineOnce() async {
+    final result = await Get.find<CashMachineStartupService>()
+        .checkForPayment(force: true);
+    return result.isReady;
   }
 
   void _markCashMachineUnavailable() {
