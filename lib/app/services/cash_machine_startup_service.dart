@@ -1,11 +1,26 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cash_changer/cash_changer_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
+import 'package:foodorder/app/services/HttpService.dart';
 import 'package:logging/logging.dart';
+
+enum CashMachineStartupStep {
+  checkingStatus,
+  opening,
+  startingDeposit,
+  checkingDepositAmount,
+  endingDeposit,
+  readingBalance,
+  endingTrade,
+  applyingSettings,
+  completed,
+}
 
 enum CashMachineCheckFailure {
   unsupportedPlatform,
@@ -13,6 +28,7 @@ enum CashMachineCheckFailure {
   busy,
   timeout,
   unexpectedResponse,
+  recoveryFailed,
   unknown,
 }
 
@@ -35,26 +51,43 @@ class CashMachineCheckResult {
   final String detail;
 }
 
+typedef CashMachineStepCallback = void Function(CashMachineStartupStep step);
+
 class CashMachineStartupService {
   CashMachineStartupService({required AppConfig appConfig})
       : _appConfig = appConfig;
 
+  static const _stepTimeout = Duration(seconds: 60);
+  static const _retryDelay = Duration(milliseconds: 500);
+
   final AppConfig _appConfig;
   final Logger _logger = Logger('CashMachineStartupService');
 
-  Future<CashMachineCheckResult> check(CashMachineDriver driver) async {
+  Future<CashMachineCheckResult> check(
+    CashMachineDriver driver, {
+    required String machineCode,
+    CashMachineStepCallback? onStep,
+  }) async {
     try {
-      return await switch (driver) {
-        CashMachineDriver.payCube => _checkPayCube(),
-        CashMachineDriver.cashChanger => _checkCashChanger(),
-        CashMachineDriver.none => const CashMachineCheckResult.ready(),
+      final result = await switch (driver) {
+        CashMachineDriver.payCube => _runPayCubeRecovery(onStep),
+        CashMachineDriver.cashChanger => _runCashChangerRecovery(onStep),
+        CashMachineDriver.none =>
+          Future.value(const CashMachineCheckResult.ready()),
       };
-    } on TimeoutException {
+      if (!result.isReady) await _notifyFailure(machineCode);
+      return result;
+    } on TimeoutException catch (error, stackTrace) {
+      _logger.warning(
+          'Cash machine startup recovery timed out', error, stackTrace);
+      await _notifyFailure(machineCode);
       return const CashMachineCheckResult.failed(
         CashMachineCheckFailure.timeout,
       );
     } catch (error, stackTrace) {
-      _logger.warning('Cash machine startup check failed', error, stackTrace);
+      _logger.warning(
+          'Cash machine startup recovery failed', error, stackTrace);
+      await _notifyFailure(machineCode);
       return CashMachineCheckResult.failed(
         CashMachineCheckFailure.unknown,
         detail: error.toString(),
@@ -62,7 +95,11 @@ class CashMachineStartupService {
     }
   }
 
-  Future<CashMachineCheckResult> _checkPayCube() async {
+  /// PayCube startup recovery keeps the established field sequence:
+  /// status -> open (when needed) -> deposit start -> deposit end -> trade end.
+  Future<CashMachineCheckResult> _runPayCubeRecovery(
+    CashMachineStepCallback? onStep,
+  ) async {
     if (!Platform.isAndroid) {
       return const CashMachineCheckResult.failed(
         CashMachineCheckFailure.unsupportedPlatform,
@@ -70,103 +107,261 @@ class CashMachineStartupService {
     }
 
     final payCube = _appConfig.payCube;
-    final status =
-        await payCube.CheckPayCubeStatus.timeout(const Duration(seconds: 10));
-    if (status == 'openSuccess') {
-      return const CashMachineCheckResult.ready();
-    }
-    if (status != 'openError') {
+    onStep?.call(CashMachineStartupStep.checkingStatus);
+    final status = await payCube.CheckPayCubeStatus.timeout(_stepTimeout);
+
+    if (status == 'openError') {
+      onStep?.call(CashMachineStartupStep.opening);
+      var opened = false;
+      for (var attempt = 0; attempt < 3; attempt++) {
+        final openStatus = await payCube.openPayCube.timeout(_stepTimeout);
+        if (openStatus == 'openSuccess') {
+          opened = true;
+          break;
+        }
+        await Future<void>.delayed(_retryDelay);
+      }
+      if (!opened) {
+        return const CashMachineCheckResult.failed(
+          CashMachineCheckFailure.disconnected,
+          detail: 'PayCube open failed after 3 attempts',
+        );
+      }
+    } else if (status != 'openSuccess') {
       return CashMachineCheckResult.failed(
         CashMachineCheckFailure.unexpectedResponse,
         detail: status.toString(),
       );
     }
 
-    for (var attempt = 0; attempt < 3; attempt++) {
-      final openStatus =
-          await payCube.openPayCube.timeout(const Duration(seconds: 10));
-      if (openStatus == 'openSuccess') {
-        return const CashMachineCheckResult.ready();
-      }
+    // Starting and immediately ending a deposit restores a device left in an
+    // unfinished transaction after power loss or an application crash.
+    onStep?.call(CashMachineStartupStep.startingDeposit);
+    await Future<void>.delayed(_retryDelay);
+    final started = await payCube
+        .startPayCube(onSuccess: () {}, catchError: (_) {})
+        .timeout(_stepTimeout);
+    if (started != true) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.recoveryFailed,
+        detail: 'PayCube deposit start failed',
+      );
     }
-    return const CashMachineCheckResult.failed(
-      CashMachineCheckFailure.disconnected,
-    );
+
+    onStep?.call(CashMachineStartupStep.endingDeposit);
+    await Future<void>.delayed(_retryDelay);
+    final ended = await payCube
+        .endPayCube(onSuccess: () {}, catchError: (_) {})
+        .timeout(_stepTimeout);
+    if (ended != true) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.recoveryFailed,
+        detail: 'PayCube deposit end failed',
+      );
+    }
+
+    onStep?.call(CashMachineStartupStep.endingTrade);
+    await Future<void>.delayed(_retryDelay);
+    final tradeEnded = await payCube
+        .endTrade(onSuccess: () {}, catchError: (_) {})
+        .timeout(_stepTimeout);
+    if (tradeEnded != true) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.recoveryFailed,
+        detail: 'PayCube trade end failed',
+      );
+    }
+
+    onStep?.call(CashMachineStartupStep.completed);
+    return const CashMachineCheckResult.ready();
   }
 
-  Future<CashMachineCheckResult> _checkCashChanger() async {
+  /// CashChanger uses its OPOS recovery sequence. It must not be replaced by
+  /// the PayCube flow because the device has separate deposit, repay and
+  /// balance APIs.
+  Future<CashMachineCheckResult> _runCashChangerRecovery(
+    CashMachineStepCallback? onStep,
+  ) async {
     if (!Platform.isWindows) {
       return const CashMachineCheckResult.failed(
         CashMachineCheckFailure.unsupportedPlatform,
       );
     }
 
-    for (var attempt = 0; attempt < 3; attempt++) {
-      var resultCode = await CashChanger.checkChangerStatus
-          .timeout(const Duration(seconds: 10));
-      if (resultCode == null) {
-        return const CashMachineCheckResult.failed(
-          CashMachineCheckFailure.disconnected,
-        );
-      }
-      if (resultCode == 0) resultCode = 100;
-
-      final result = HealthResultCode.values.fromIndex(resultCode - 100);
-      if (result == null) {
-        return CashMachineCheckResult.failed(
-          CashMachineCheckFailure.unexpectedResponse,
-          detail: resultCode.toString(),
-        );
-      }
-
-      switch (result) {
-        case HealthResultCode.OPOS_SUCCESS:
-        case HealthResultCode.OPOS_E_ILLEGAL:
-          return const CashMachineCheckResult.ready();
-        case HealthResultCode.OPOS_E_CLOSED:
-        case HealthResultCode.OPOS_E_NOTCLAIMED:
-        case HealthResultCode.OPOS_E_DISABLED:
-          return _openCashChanger();
-        case HealthResultCode.OPOS_E_BUSY:
-          if (attempt < 2) {
-            await Future<void>.delayed(const Duration(seconds: 2));
-            continue;
-          }
+    onStep?.call(CashMachineStartupStep.checkingStatus);
+    final health = await _waitForCashChangerHealth();
+    switch (health) {
+      case HealthResultCode.OPOS_SUCCESS:
+      case HealthResultCode.OPOS_E_ILLEGAL:
+        // The established flow repays/ends any transaction that was left open.
+        break;
+      case HealthResultCode.OPOS_E_CLOSED:
+      case HealthResultCode.OPOS_E_NOTCLAIMED:
+      case HealthResultCode.OPOS_E_DISABLED:
+        onStep?.call(CashMachineStartupStep.opening);
+        if (!await _openCashChanger()) {
           return const CashMachineCheckResult.failed(
-            CashMachineCheckFailure.busy,
-          );
-        default:
-          return CashMachineCheckResult.failed(
             CashMachineCheckFailure.disconnected,
-            detail: result.name,
+            detail: 'CashChanger open failed',
           );
-      }
+        }
+
+        onStep?.call(CashMachineStartupStep.startingDeposit);
+        if (!await _startCashChangerDeposit()) {
+          return const CashMachineCheckResult.failed(
+            CashMachineCheckFailure.recoveryFailed,
+            detail: 'CashChanger deposit start failed',
+          );
+        }
+
+        onStep?.call(CashMachineStartupStep.checkingDepositAmount);
+        final depositAmountChecked = await _waitForChangerCommand(
+          () => CashChanger.depositAmount,
+        );
+        if (!depositAmountChecked) {
+          _logger.warning(
+            'CashChanger deposit amount failed; continuing with repay',
+          );
+        }
+        break;
+      case HealthResultCode.OPOS_E_BUSY:
+        return const CashMachineCheckResult.failed(
+          CashMachineCheckFailure.busy,
+        );
+      default:
+        return CashMachineCheckResult.failed(
+          CashMachineCheckFailure.disconnected,
+          detail: health.name,
+        );
     }
 
-    return const CashMachineCheckResult.failed(
-      CashMachineCheckFailure.busy,
-    );
+    onStep?.call(CashMachineStartupStep.endingDeposit);
+    if (!await _waitForChangerCommand(
+      () => CashChanger.endDeposit(DepositAction.repay.index),
+    )) {
+      return const CashMachineCheckResult.failed(
+        CashMachineCheckFailure.recoveryFailed,
+        detail: 'CashChanger repay/end deposit failed',
+      );
+    }
+
+    onStep?.call(CashMachineStartupStep.readingBalance);
+    if (!await _readCashChangerBalance()) {
+      // The field-proven flow records the balance error but still completes
+      // bootstrap after the repay/end-deposit operation has succeeded.
+      _logger.warning('CashChanger balance read failed after recovery');
+    }
+
+    // The original startup flow intentionally keeps the OPOS device open for
+    // settlement. "closeCashChanger" only completed bootstrap navigation.
+    onStep?.call(CashMachineStartupStep.completed);
+    return const CashMachineCheckResult.ready();
   }
 
-  Future<CashMachineCheckResult> _openCashChanger() async {
-    var opened = false;
-    await CashChanger.openCashChanger(
-      onSuccess: () {
-        opened = true;
-      },
-      catchError: (retCode, error) {
-        // OPOS 225 means the device is already open.
-        opened = retCode == 225;
-        if (!opened) {
-          _logger.warning('openCashChanger failed: $retCode, $error');
-        }
-      },
-    ).timeout(const Duration(seconds: 15));
+  Future<HealthResultCode> _waitForCashChangerHealth() async {
+    final deadline = DateTime.now().add(_stepTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      var code = await CashChanger.checkChangerStatus
+          .timeout(const Duration(seconds: 10));
+      if (code == null) return HealthResultCode.NONE;
+      if (code == 0) code = 100;
+      final result = HealthResultCode.values.fromIndex(code - 100) ??
+          HealthResultCode.NONE;
+      if (result != HealthResultCode.OPOS_E_BUSY) return result;
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+    return HealthResultCode.OPOS_E_BUSY;
+  }
 
-    return opened
-        ? const CashMachineCheckResult.ready()
-        : const CashMachineCheckResult.failed(
-            CashMachineCheckFailure.disconnected,
-          );
+  Future<bool> _openCashChanger() async {
+    final deadline = DateTime.now().add(_stepTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final result = await CashChangerPlatform.instance
+          .openCashChanger()
+          .timeout(const Duration(seconds: 15));
+      final code = result?['code'];
+      // 0: opened, 301: OPOS already open. 225 is retained for compatibility
+      // with existing field installations that report the legacy value.
+      if (code == 0 || code == 301 || code == 225) return true;
+      await Future<void>.delayed(_retryDelay);
+    }
+    return false;
+  }
+
+  Future<bool> _startCashChangerDeposit() async {
+    final deadline = DateTime.now().add(_stepTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final result = await CashChangerPlatform.instance
+          .startDeposit()
+          .timeout(const Duration(seconds: 15));
+      final oposResult =
+          CashChanger.getOposResult(result?['code']) as OposResult;
+      if (oposResult.resultCode == HealthResultCode.OPOS_SUCCESS) return true;
+      if (!await _recoverInterfaceError(oposResult)) return false;
+      await Future<void>.delayed(_retryDelay);
+    }
+    return false;
+  }
+
+  Future<bool> _waitForChangerCommand(
+    Future<int?> Function() command,
+  ) async {
+    final deadline = DateTime.now().add(_stepTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final code = await command().timeout(const Duration(seconds: 15));
+      final result = CashChanger.getOposResult(code) as OposResult;
+      if (result.resultCode == HealthResultCode.OPOS_SUCCESS) return true;
+      if (!await _recoverInterfaceError(result)) return false;
+      await Future<void>.delayed(_retryDelay);
+    }
+    return false;
+  }
+
+  Future<bool> _recoverInterfaceError(OposResult result) async {
+    if (result.resultCode != HealthResultCode.OPOS_E_EXTENDED ||
+        result.resultCodeExtended != ResultCodeExtended.OPOS_ECHAN_IFERROR) {
+      return false;
+    }
+
+    // This is the recovery prescribed by the existing CashChanger helper:
+    // repay/end the stale deposit first, then retry the interrupted command.
+    final recoveryCode = await CashChanger.endDeposit(DepositAction.repay.index)
+        .timeout(const Duration(seconds: 15));
+    final recoveryResult =
+        CashChanger.getOposResult(recoveryCode) as OposResult;
+    return recoveryResult.resultCode == HealthResultCode.OPOS_SUCCESS;
+  }
+
+  Future<bool> _readCashChangerBalance() async {
+    final deadline = DateTime.now().add(_stepTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final result = await CashChangerPlatform.instance
+          .getCashBalance()
+          .timeout(const Duration(seconds: 15));
+      final oposResult =
+          CashChanger.getOposResult(result?['code']) as OposResult;
+      if (oposResult.resultCode == HealthResultCode.OPOS_SUCCESS) {
+        _logger.info('CashChanger balance: ${result?['value'] ?? ''}');
+        return true;
+      }
+      if (!await _recoverInterfaceError(oposResult)) return false;
+      await Future<void>.delayed(_retryDelay);
+    }
+    return false;
+  }
+
+  Future<void> _notifyFailure(String machineCode) async {
+    if (kDebugMode || machineCode.isEmpty) return;
+    try {
+      final response = await request(
+        'webBootTroubleNotify',
+        method: 'POST',
+        parameters: {'machineCode': machineCode},
+        timeout: const Duration(seconds: 10),
+      );
+      _logger.info('webBootTroubleNotify: $response');
+    } catch (error, stackTrace) {
+      _logger.warning('webBootTroubleNotify failed', error, stackTrace);
+    }
   }
 }

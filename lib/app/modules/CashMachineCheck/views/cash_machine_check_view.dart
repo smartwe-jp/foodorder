@@ -28,7 +28,7 @@ class CashMachineCheckView extends GetView<CashMachineCheckController> {
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    checking ? '現金機を確認しています' : '現金機を確認できませんでした',
+                    checking ? controller.stepTitle : '現金機を確認できませんでした',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 36,

@@ -17,6 +17,8 @@ class CashMachineCheckController extends GetxController {
 
   final RxBool isChecking = false.obs;
   final RxString errorMessage = ''.obs;
+  final Rx<CashMachineStartupStep> currentStep =
+      CashMachineStartupStep.checkingStatus.obs;
   bool _navigated = false;
 
   String get machineModelCode => _runtime.machineModelCode;
@@ -25,6 +27,18 @@ class CashMachineCheckController extends GetxController {
         CashMachineDriver.payCube => 'PayCube',
         CashMachineDriver.cashChanger => 'CashChanger',
         CashMachineDriver.none => '-',
+      };
+
+  String get stepTitle => switch (currentStep.value) {
+        CashMachineStartupStep.checkingStatus => '現金機の状態を確認しています',
+        CashMachineStartupStep.opening => '現金機を開いています',
+        CashMachineStartupStep.startingDeposit => '入金処理を開始しています',
+        CashMachineStartupStep.checkingDepositAmount => '残留現金を確認しています',
+        CashMachineStartupStep.endingDeposit => '残留取引を返金・終了しています',
+        CashMachineStartupStep.readingBalance => '現金機の残高を確認しています',
+        CashMachineStartupStep.endingTrade => '取引を終了しています',
+        CashMachineStartupStep.applyingSettings => '現金機の設定を反映しています',
+        CashMachineStartupStep.completed => '現金機の確認が完了しました',
       };
 
   @override
@@ -42,12 +56,18 @@ class CashMachineCheckController extends GetxController {
 
     final result = await _startupService.check(
       _runtime.capabilities.cashMachineDriver,
+      machineCode: _runtime.machineCode,
+      onStep: (step) {
+        if (!isClosed) currentStep.value = step;
+      },
     );
     if (isClosed || _navigated) return;
 
     if (result.isReady) {
       _runtime.markCashMachineReady();
+      currentStep.value = CashMachineStartupStep.applyingSettings;
       await _applyCashSettings();
+      currentStep.value = CashMachineStartupStep.completed;
       _refreshMachineInfo();
       _goNext();
       return;
@@ -103,6 +123,8 @@ class CashMachineCheckController extends GetxController {
       CashMachineCheckFailure.timeout => '現金機から応答がありません。接続状態を確認してください。',
       CashMachineCheckFailure.disconnected => '現金機に接続できません。電源と接続状態を確認してください。',
       CashMachineCheckFailure.unexpectedResponse => '現金機から予期しない応答が返されました。',
+      CashMachineCheckFailure.recoveryFailed =>
+        '現金機の起動復旧処理を完了できませんでした。機器の状態を確認してください。',
       _ => '現金機の確認に失敗しました。機器の状態を確認してください。',
     };
   }
