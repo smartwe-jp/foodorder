@@ -732,8 +732,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     machineInfo.usbDevice = data;
 
-    Storage.setString('smartwe_usbPrintSetting', json.encode(data));
-    GetxStorage.setData('smartwe_usbPrintSetting', json.encode(data));
+    await HomeServices.updateUsbPrintSettingInfo(data);
 
     update();
   }

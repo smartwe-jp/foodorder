@@ -12,11 +12,11 @@ class Storage{
   static GetStorage getStorage = GetStorage();
   static Future<void> setString(key,value) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
-       sp.setString(key, value);
+       await sp.setString(key, value);
   }
   static Future<void> setDouble(key,value) async{
     SharedPreferences sp=await SharedPreferences.getInstance();
-    sp.setDouble(key, value);
+    await sp.setDouble(key, value);
   }
 
   static Future<void> setInt(key,value) async{
@@ -51,7 +51,7 @@ class Storage{
   }
   static Future<void> setBool(key,value) async{
     SharedPreferences sp=await SharedPreferences.getInstance();
-    sp.setBool(key, value);
+    await sp.setBool(key, value);
   }
   static Future<bool?> getBool(key) async{
     SharedPreferences sp=await SharedPreferences.getInstance();

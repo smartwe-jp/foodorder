@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 //import 'package:firebase_analytics/firebase_analytics.dart';
@@ -9,8 +8,6 @@ import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
-import 'package:foodorder/app/config/http_conf.dart';
-import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -18,10 +15,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/HomeServices.dart';
-import '../../../services/HttpService.dart';
-import '../../../services/logUtil.dart';
-import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
+import '../../../services/machine_runtime_service.dart';
 import '../../../widget/DialogUtils.dart';
 
 class TransitPageController extends GetxController {
@@ -34,6 +29,7 @@ class TransitPageController extends GetxController {
   RxBool _loadActiveInfo = false.obs;
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
+  final MachineRuntimeService _machineRuntime = Get.find();
 
   String languageCode = "JP";
   final logger = Logger('TransitPageController');
@@ -98,9 +94,8 @@ class TransitPageController extends GetxController {
   _getMachineInfo({String machineCode = ""}) async {
     debugPrint("transit  getMachineInfo");
 
-    if (machineCode.isEmpty) {
-      _machineCode.value = await HomeServices.getMachineInfo();
-    }
+    await _machineRuntime.hydrate(machineCode: machineCode);
+    _machineCode.value = _machineRuntime.machineCode;
     _getPackageInfo();
 
   }
@@ -115,204 +110,60 @@ class TransitPageController extends GetxController {
   }
 
 
-  _getMachineActivate({isFirst = false, int retryCount = 0}) async {
+  Future<void> _getMachineActivate({
+    bool isFirst = false,
+    int retryCount = 0,
+  }) async {
     try {
-      bool shouldActive = await _checkShouldActive();
+      final shouldActive = await _checkShouldActive();
       if (_loadActiveInfo.value == false && !shouldActive) {
         logger.info('-- getMachineActivate with loadActive no need --');
-        _actuarial.value = true;
-        _getSmartweSystemSettingInfo();
+        final cachedActivation = _machineRuntime.activation;
+        _actuarial.value = cachedActivation?.actuarial ?? true;
+        await _getSmartweSystemSettingInfo();
         return;
       }
-      
-      final formData = {
-        "machineCode": _machineCode.value,
-        "version": local_version.value
-      };
-      logI('-- getMachineActivate with loadActive -- machineCode: ${_machineCode.value}, version: ${local_version.value} --');
-      final val = await request(
-          'webBootActivatev3',
-          method: 'POST',
-          parameters: formData,
-          timeout: Duration(seconds: 10)
+
+      logI(
+          '-- getMachineActivate with loadActive -- machineCode: ${_machineCode.value}, version: ${local_version.value} --');
+      final activation = await _machineRuntime.activate(
+        machineCode: _machineCode.value,
+        version: local_version.value,
       );
-      final response = json.decode(val.toString());
-
-      logI("getMachineActivate response: $response");
-      
-        if (response != null &&
-            response['code'] == 200 &&
-            response['data'] != null) {
-          var shopData = response['data'];
-          var _shopCode = "";
-          if (shopData["shopCode"] != null) {
-            _shopCode = shopData["shopCode"];
-          }
-          var _showCash = shopData["linePayChannelMap"]["Cash"] != null
-              ? shopData["linePayChannelMap"]["Cash"]
-              : false;
-          debugPrint("showCash: $_showCash");
-          var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
-              ? shopData["linePayChannelMap"]["Wechat"]
-              : false;
-          var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null
-              ? shopData["linePayChannelMap"]["Alipay"]
-              : false;
-          var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null
-              ? shopData["linePayChannelMap"]["PayPay"]
-              : false;
-          var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null
-              ? shopData["linePayChannelMap"]["POS"]
-              : false;
-          var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null
-              ? shopData["linePayChannelMap"]["au_Pay"]
-              : false;
-          var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null
-              ? shopData["linePayChannelMap"]["d_Pay"]
-              : false;
-          var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null
-              ? shopData["linePayChannelMap"]["R_Pay"]
-              : false;
-          var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null
-              ? shopData["linePayChannelMap"]["m_Pay"]
-              : false;
-
-          var _posEdy = shopData["linePayChannelMap"]["Edy"] != null
-              ? shopData["linePayChannelMap"]["Edy"]
-              : false;
-          var _posiD = shopData["linePayChannelMap"]["iD"] != null
-              ? shopData["linePayChannelMap"]["iD"]
-              : false;
-          var _posIC = shopData["linePayChannelMap"]["IC"] != null
-              ? shopData["linePayChannelMap"]["IC"]
-              : false;
-          var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null
-              ? shopData["linePayChannelMap"]["QUICPay"]
-              : false;
-          var _posWAON = shopData["linePayChannelMap"]["WAON"] != null
-              ? shopData["linePayChannelMap"]["WAON"]
-              : false;
-          var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null
-              ? shopData["linePayChannelMap"]["nanaco"]
-              : false;
-          var _visa = shopData["linePayChannelMap"]["VISA"] != null
-              ? shopData["linePayChannelMap"]["VISA"]
-              : false;
-          var _master = shopData["linePayChannelMap"]["MASTER"] != null
-              ? shopData["linePayChannelMap"]["MASTER"]
-              : false;
-          var _jcb = shopData["linePayChannelMap"]["JCB"] != null
-              ? shopData["linePayChannelMap"]["JCB"]
-              : false;
-          var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null
-              ? shopData["linePayChannelMap"]["UnionPay"]
-              : false;
-          var _americanExpress =
-              shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null
-                  ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"]
-                  : false;
-          var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null
-              ? shopData["linePayChannelMap"]["Diners_Club"]
-              : false;
-          var _discover = shopData["linePayChannelMap"]["Discover"] != null
-              ? shopData["linePayChannelMap"]["Discover"]
-              : false;
-          bool taxSystem = shopData["taxSystem"] ?? false;
-          logger.info('-- server cash state = $_showCash --');
-          var machineActivateData = {
-            "showCash": _showCash,
-            "showWechat": _showWechat,
-            "showAlipay": _showAlipay,
-            "showPayPay": _showPayPay,
-            "showCreditCard": _showCreditCard,
-            "au_Pay": _auPay,
-            "d_Pay": _dPay,
-            "R_Pay": _rPay,
-            "m_Pay": _mPay,
-            "pos_Edy": _posEdy,
-            "pos_iD": _posiD,
-            "pos_IC": _posIC,
-            "pos_QUICPay": _posQUICPay,
-            "pos_WAON": _posWAON,
-            "pos_nanaco": _posnanaco,
-            "show_visa": _visa,
-            "show_master": _master,
-            "show_jcb": _jcb,
-            "show_unionPay": _unionPay,
-            "show_americanExpress": _americanExpress,
-            "show_dinersClub": _dinersClub,
-            "show_discover": _discover,
-            "taxSystem": taxSystem,
-            "cashMachineWithdraw": shopData["cashMachineWithdraw"] ?? false,
-          };
-          //是否允许退款 1展示退款按钮 0 不展示
-          var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
-          Storage.setString(
-              'smartwe_machineActivateData', json.encode(machineActivateData));
-          Storage.setString(
-              'smartwe_machineLanguages', json.encode(shopData["languages"]));
-          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-          Storage.setString('smartwe_reimburse', reimburse);
-          Storage.setString('smartwe_shopCode', _shopCode);
-
-          GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
-          GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
-          GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
-          GetxStorage.setData('smartwe_reimburse', reimburse);
-          GetxStorage.setData('smartwe_shopCode', _shopCode);
-
-          var machineSettingBool = {
-            'machineLineup': shopData["lineup"],
-            'machineActuarial': shopData["actuarial"],
-          };
-
-          Storage.setString(
-              'machineSettingData', json.encode(machineSettingBool));
-          GetxStorage.setData(
-              'machineSettingData', json.encode(machineSettingBool));
-
-          _actuarial.value = shopData["actuarial"];
-
-          if (Platform.isAndroid) {
-            // FirebaseAnalytics.instance.logEvent(
-            //     name: 'machine_activate_launch',
-            //     parameters: {'machine_activate': '${_machineCode.value}'});
-          }
-          if (isFirst) {
-             _saveActiveCode(_machineCode.value);
-          } else {
-            //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-            //await downloadAndSaveImage(shopData["logoImage"]);
-             _getSmartweSystemSettingInfo();
-          }
-          return;
-        } 
-        _showErrorDialog(isActive: response['data'] == null);
-      
-      } catch(e) {
-        logW('getMachineActivate error: $e');
-        if (Platform.isAndroid) {
-          // FirebaseAnalytics.instance.logEvent(
-          //     name: 'machine_activate_error',
-          //     parameters: {'machine_activate_error': '${_machineCode.value}'});
-        }
-        if (retryCount < 3) {
-          // 如果失败，重试
-          Future.delayed(Duration(seconds: 2), () {
-            _getMachineActivate(retryCount: retryCount + 1);
-          });
-        } else {
-          // 如果重试次数超过3次，显示错误对话框
-          _showErrorDialog(error: e);
-        }
-      } finally {
-        logI('activation finished');
-        //_activating = false;
+      if (activation == null) {
+        _showErrorDialog(isActive: true);
+        return;
       }
+
+      logger
+          .info('-- server cash state = ${activation.paymentChannels.cash} --');
+      _actuarial.value = activation.actuarial;
+
+      if (isFirst) {
+        await _saveActiveCode(_machineCode.value);
+      } else {
+        await _getSmartweSystemSettingInfo();
+      }
+    } catch (e) {
+      logW('getMachineActivate error: $e');
+      if (Platform.isAndroid) {
+        // FirebaseAnalytics.instance.logEvent(
+        //     name: 'machine_activate_error',
+        //     parameters: {'machine_activate_error': '${_machineCode.value}'});
+      }
+      if (retryCount < 3) {
+        // 如果失败，重试
+        Future.delayed(const Duration(seconds: 2), () {
+          _getMachineActivate(isFirst: isFirst, retryCount: retryCount + 1);
+        });
+      } else {
+        // 如果重试次数超过3次，显示错误对话框
+        _showErrorDialog(error: e);
+      }
+    } finally {
+      logI('activation finished');
+      //_activating = false;
+    }
   }
 
   _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
@@ -341,59 +192,49 @@ class TransitPageController extends GetxController {
       var last = DateTime.parse(lastActiveTime);
       var diff = now.difference(last).inDays;
       if (diff > 1) {//超过一天 重新激活
-        Storage.setString('activeTimeInfo', now.toString());
+        await Storage.setString('activeTimeInfo', now.toString());
         return true;
       } else {
         return false;
       }
     } else {
       //存储当前时间
-      Storage.setString('activeTimeInfo', now.toString());
+      await Storage.setString('activeTimeInfo', now.toString());
       return true;
     }
   }
 
-  _saveActiveCode(String code) async {
+  Future<void> _saveActiveCode(String code) async {
     //保存机器信息
-    Storage.setString('machineInfo', code);
-    Storage.setBool('homeOpen', true);
-
-    GetxStorage.setData('machineInfo', code);
-    GetxStorage.setData('homeOpen', true);
+    await Future.wait([
+      _machineRuntime.updateMachineCode(code),
+      Storage.setBool('homeOpen', true),
+    ]);
 
     await _getSmartweSystemSettingInfo();
   }
 
-  _getSmartweSystemSettingInfo() async {
+  Future<void> _getSmartweSystemSettingInfo() async {
     logI("getSmartweSystemSettingInfo");
     try {
-      Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-    final smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
-
-    if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
-      Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
-      GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
-
-    }
-     await _injectControllers(systemSettingInfo);
+      await _injectControllers();
     } catch (e) {
       logW("getSmartweSystemSettingInfo error: $e");
       
     }
   }
 
-  Future _injectControllers(systemSettingData) async {
+  Future<void> _injectControllers() async {
 
     if (!Get.isRegistered<MachineInfoController>()) {
-      final controller = MachineInfoController(systemSettingData);
+      final controller = MachineInfoController();
       await Get.putAsync<MachineInfoController>(() async {
         await controller.loadMachineSettingInfo(); // 确保初始化完成
         return controller;
       }, permanent: true);
       debugPrint('put MachineInfoController done');
     } else {
-      await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingData);
+      await Get.find<MachineInfoController>().updateMachineSettingInfo();
       debugPrint('update MachineInfoController done');
     }
 
@@ -403,7 +244,7 @@ class TransitPageController extends GetxController {
 
     await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
 
-    if (systemSettingData["isAllowOneYen"] == "0") {
+    if (machineInfo.is_allow_oneyen == "0") {
       try {
         if (Platform.isAndroid) {
          payCube.prohibitOneCash.timeout(

@@ -1,10 +1,24 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../models/machine_activation.dart';
 import 'GetxStorage.dart';
 import 'Storage.dart';
+import 'machine_activation_local_service.dart';
+import 'machine_runtime_service.dart';
 
 class HomeServices {
+  static MachineRuntimeService? get _machineRuntime =>
+      Get.isRegistered<MachineRuntimeService>()
+          ? Get.find<MachineRuntimeService>()
+          : null;
+
+  static Future<MachineActivation?> getMachineActivation() async {
+    final runtime = _machineRuntime;
+    if (runtime?.isHydrated == true) return runtime?.activation;
+    return MachineActivationLocalService().load();
+  }
+
   static getOpenFirstState() async {
     var homeOpen = await Storage.getBool('homeOpen');
     if (homeOpen != null) GetxStorage.setBool('homeOpen', homeOpen);
@@ -16,6 +30,8 @@ class HomeServices {
   }
 
   static getMachineInfo() async {
+    final runtime = _machineRuntime;
+    if (runtime?.isHydrated == true) return runtime?.machineCode ?? "";
     String? machineinfo;
     try {
       String? machineInfoData = await Storage.getString('machineInfo');
@@ -40,14 +56,7 @@ class HomeServices {
   }
 
   static getShopCode() async {
-    String? shopCode;
-    try {
-      String? shopCodeData = await Storage.getString('smartwe_shopCode');
-      shopCode = shopCodeData;
-    } catch (e) {
-      shopCode = "";
-    }
-    return shopCode;
+    return (await getMachineActivation())?.shopCode ?? "";
   }
 
   //菜单方向
@@ -156,7 +165,12 @@ class HomeServices {
   }
 
   static setMachinePrintWidth(double machinePrintWidth) async{
-    Storage.setDouble('machinePrintWidth', machinePrintWidth);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateMachinePrintWidth(machinePrintWidth);
+    } else {
+      await Storage.setDouble('machinePrintWidth', machinePrintWidth);
+    }
   }
 
   static setLabelPrintWidth(double labelPrintWidthData) async{
@@ -177,13 +191,15 @@ class HomeServices {
 
   //多参数设置
   static getSystemSettingInfo() async {
+    final runtime = _machineRuntime;
+    if (runtime?.isHydrated == true) {
+      return Map<String, dynamic>.from(runtime!.systemSettings);
+    }
     Map? systemSettingInfo;
     try {
       var systemSettingDatatmp =
           await Storage.getString('smartwe_systemSetting');
       Map? systemSettingData = json.decode(systemSettingDatatmp!);
-      GetxStorage.setData(
-          'smartwe_systemSetting', json.encode(systemSettingData));
       systemSettingInfo = systemSettingData;
     } catch (e) {
       systemSettingInfo = {};
@@ -192,10 +208,13 @@ class HomeServices {
   }
 
   static updateSystemSettingInfo(Map systemSettingData) async {
-    //GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData(
-        'smartwe_systemSetting', json.encode(systemSettingData));
+    final settings = Map<String, dynamic>.from(systemSettingData);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateSystemSettings(settings);
+    } else {
+      await Storage.setString('smartwe_systemSetting', json.encode(settings));
+    }
   }
 
   //pos机多参数设置
@@ -263,8 +282,13 @@ class HomeServices {
   }
 
   static Future<void> setMachineModeInfo(Map machineModeInfo) async {
-    final data = json.encode(machineModeInfo);
-    await Storage.setData("machineModeInfo", data);
+    final value = Map<String, dynamic>.from(machineModeInfo);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateMachineModeInfo(value);
+    } else {
+      await Storage.setData("machineModeInfo", json.encode(value));
+    }
   }
 
   static Future<List<dynamic>> getSSESettingList() async {
@@ -279,9 +303,12 @@ class HomeServices {
   }
 
   static Future<void> setPrinterListInfo(List printerListInfo) async {
-
-    final data = json.encode(printerListInfo);
-    await Storage.setData("printerListInfo", data);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updatePrinterList(printerListInfo);
+    } else {
+      await Storage.setData("printerListInfo", json.encode(printerListInfo));
+    }
   }
 
   static getWlanPrintSettingTwoInfo() async{
@@ -315,28 +342,48 @@ class HomeServices {
   }
 
   static updateWlanPanelPrintSettingInfo(Map wlanPanelPrintSettingData) async {
-    Storage.setString(
-        'smartwe_wlanPanelPrintSetting', json.encode(wlanPanelPrintSettingData));
+    final settings = Map<String, dynamic>.from(wlanPanelPrintSettingData);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateScreenCallSettings(settings);
+    } else {
+      await Storage.setString(
+          'smartwe_wlanPanelPrintSetting', json.encode(settings));
+    }
   }
 
   static updatePosSettingInfo(Map posSettingData) async {
-    Storage.setString('smartwe_posSetting', json.encode(posSettingData));
+    final settings = Map<String, dynamic>.from(posSettingData);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updatePosSettings(settings);
+    } else {
+      await Storage.setString('smartwe_posSetting', json.encode(settings));
+    }
+  }
+
+  static updateUsbPrintSettingInfo(Map usbDevice) async {
+    final device = Map<String, dynamic>.from(usbDevice);
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateUsbDevice(device);
+    } else {
+      await Storage.setString('smartwe_usbPrintSetting', json.encode(device));
+    }
+  }
+
+  static updateMachineSettingPassword(String password) async {
+    final runtime = _machineRuntime;
+    if (runtime != null) {
+      await runtime.updateSettingPassword(password);
+    } else {
+      await Storage.setString('machineSettingManagePassword', password);
+    }
   }
 
   //是否展示微信支付宝等
   static getMachineActivateData() async {
-    Map machineActivateInfo;
-    try {
-      var machineActivateDatatmp =
-          await Storage.getString('smartwe_machineActivateData');
-      Map machineActivateData = json.decode(machineActivateDatatmp!);
-      GetxStorage.setData(
-          'smartwe_machineActivateData', json.encode(machineActivateData));
-      machineActivateInfo = machineActivateData;
-    } catch (e) {
-      machineActivateInfo = {};
-    }
-    return machineActivateInfo;
+    return (await getMachineActivation())?.toLegacyPaymentJson() ?? {};
   }
 
   //打卡机器码
@@ -369,18 +416,7 @@ class HomeServices {
 
   //多语言
   static getMachineLanguages() async{
-    var machineLanguages = [];
-    try {
-      var machineLanguagesDatatmp =
-          await Storage.getString('smartwe_machineLanguages');
-      var machineLanguagesData = json.decode(machineLanguagesDatatmp!);
-      GetxStorage.setData(
-          'smartwe_machineLanguages', json.encode(machineLanguagesData));
-      machineLanguages = machineLanguagesData;
-    } catch (e) {
-      machineLanguages = ["JP"];
-    }
-    return machineLanguages;
+    return (await getMachineActivation())?.languages ?? ["JP"];
   }
 
   static getSettingLanguage() async {
@@ -404,43 +440,17 @@ class HomeServices {
 
   //首图
   static getSmartweHomeImagesData() async {
-    var smartweHomeImagesInfo;
-    try {
-      var homeImageDatatmp = await Storage.getString('smartwe_homeImages');
-      var homeImageData = json.decode(homeImageDatatmp!);
-      GetxStorage.setData('smartwe_homeImages', json.encode(homeImageData));
-      smartweHomeImagesInfo = homeImageData;
-    } catch (e) {
-      smartweHomeImagesInfo = [];
-    }
-    return smartweHomeImagesInfo;
+    return (await getMachineActivation())?.homeImages ?? [];
   }
 
   //顶图
   static getSmartweHeaderImagesData() async{
-    var smartweHomeImagesInfo;
-    try {
-      var homeImageDatatmp = await Storage.getString('smartwe_headerImages');
-      var homeImageData = json.decode(homeImageDatatmp!);
-      GetxStorage.setData('smartwe_headerImages', json.encode(homeImageData));
-      smartweHomeImagesInfo = homeImageData;
-    } catch (e) {
-      smartweHomeImagesInfo = [];
-    }
-    return smartweHomeImagesInfo;
+    return (await getMachineActivation())?.headerImages ?? [];
   }
 
   //首图
   static getSmartweLogoImagesData() async {
-    var smartweLogoImagesInfo;
-    try {
-      var logoImageData = await Storage.getString('smartwe_logoImage');
-      //GetxStorage.setData('smartwe_logoImage', logoImageData);
-      smartweLogoImagesInfo = logoImageData;
-    } catch (e) {
-      smartweLogoImagesInfo = "";
-    }
-    return smartweLogoImagesInfo;
+    return (await getMachineActivation())?.logoImage ?? "";
   }
 
   static getSmartweLogoImage() async{
@@ -457,15 +467,7 @@ class HomeServices {
 
   //首图
   static getSmartweReimburseData() async {
-    var smartweReimburseInfo;
-    try {
-      var ReimburseData = await Storage.getString('smartwe_reimburse');
-      //GetxStorage.setData('smartwe_logoImage', logoImageData);
-      smartweReimburseInfo = ReimburseData;
-    } catch (e) {
-      smartweReimburseInfo = "0";
-    }
-    return smartweReimburseInfo;
+    return (await getMachineActivation())?.canReimburse == true ? "1" : "0";
   }
 
   //精算 外带按钮
@@ -512,16 +514,7 @@ class HomeServices {
 
   //精算配置
   static getSmartweMachineSettingData() async {
-    var machineSettingInfo;
-    try {
-      var machineSettingDatatemp =
-          await Storage.getString('machineSettingData');
-      var machineSettingData = json.decode(machineSettingDatatemp!);
-      machineSettingInfo = machineSettingData;
-    } catch (e) {
-      machineSettingInfo = {};
-    }
-    return machineSettingInfo;
+    return (await getMachineActivation())?.toLegacyMachineSettingJson() ?? {};
   }
 
   static getMachineSettingManagePasswordInfo() async {

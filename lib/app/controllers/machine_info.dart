@@ -1,6 +1,6 @@
-import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
+import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:get/get.dart';
 
 import '../services/CustomLogerHandler.dart';
@@ -10,9 +10,6 @@ enum MachineType { new_panel, new_panel_max, old_panel }
 enum MachineMode { sell, takeout, checkout, scan }
 
 class MachineInfoController extends GetxController {
-  Map systemSettingInfo;
-  MachineInfoController(this.systemSettingInfo);
-
   MachineType get machineType {
     return panelTypes[panelType] ?? MachineType.new_panel;
   }
@@ -175,24 +172,12 @@ class MachineInfoController extends GetxController {
   // }
 
   @override
-  Future<void> onInit() async {
-    logI('loadMachineSettingInfo onInit');
-    await loadMachineSettingInfo();
-    super.onInit();
-  }
-
-  @override
   void dispose() {
     logI('loadMachineSettingInfo dispose');
     super.dispose();
   }
 
-  Future updateMachineSettingInfo({Map settingInfo = const {}}) async {
-    if (settingInfo.isEmpty) {
-      systemSettingInfo = systemSettingInfo;
-    } else {
-      systemSettingInfo = settingInfo;
-    }
+  Future<void> updateMachineSettingInfo() async {
     try {
       await loadMachineSettingInfo();
     } catch (e) {
@@ -200,12 +185,16 @@ class MachineInfoController extends GetxController {
     }
   }
 
-  Future loadMachineSettingInfo() async {
+  Future<void> loadMachineSettingInfo() async {
     logI('loadMachineSettingInfo');
     //mealType = false;
 
-    machineCode = await HomeServices.getMachineInfo() ?? "";
-    shopCode = await HomeServices.getShopCode() ?? "";
+    final runtime = Get.find<MachineRuntimeService>();
+    final systemSettingInfo = runtime.systemSettings;
+    machineCode = runtime.machineCode;
+    final activation = runtime.activation;
+    final paymentChannels = activation?.paymentChannels;
+    shopCode = activation?.shopCode ?? "";
 
     logI('loadMachineSettingInfo 0');
 
@@ -246,96 +235,78 @@ class MachineInfoController extends GetxController {
     showPrintType =
         int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
-    //await HomeServices.updateSystemSettingInfo(systemSettingInfo);
-
     // is_allow_wlanPrint_continuous =
     //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
     // is_allow_wlanPrint_continuous_two =
     //     systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
 
-    settingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
+    settingPassword = runtime.settingPassword;
 
-    final homeImageList = await HomeServices.getSmartweHomeImagesData();
+    homeList = activation?.homeImages ?? [];
 
-    homeList = homeImageList ?? [];
+    headImageList = activation?.headerImages ?? [];
 
-    headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
+    isAllowReimburse = activation?.canReimburse ?? false;
 
-    isAllowReimburse =
-        await HomeServices.getSmartweReimburseData() == '1' ? true : false;
+    supportLanguages = activation?.languages ?? ["JP"];
 
-    supportLanguages = await HomeServices.getMachineLanguages();
+    printLogoImageData = runtime.printLogoImageData;
 
-    printLogoImageData = await HomeServices.getSmartweLogoImage() ?? "";
+    printLogoImageUrl = activation?.logoImage ?? "";
 
-    printLogoImageUrl = await HomeServices.getSmartweLogoImagesData() ?? "";
+    actuarial = activation?.actuarial ?? false;
 
-    Map smartweMachineSetting =
-        await HomeServices.getSmartweMachineSettingData() ?? {};
-    actuarial = smartweMachineSetting['machineActuarial'] ?? false;
-
-    Map cashInfo = await HomeServices.getIsShowCash();
-    cashOn = cashInfo['isCash'] ?? false;
+    cashOn = runtime.cashOn;
     logI('loadMachineSettingInfo 1');
-    Map machineActivateData = await HomeServices.getMachineActivateData();
-    taxSystem = machineActivateData['taxSystem'] ?? false;
-    isAllowCash = machineActivateData['showCash'] ?? false;
+    taxSystem = activation?.taxSystem ?? false;
+    isAllowCash = paymentChannels?.cash ?? false;
     showCash = isAllowCash && cashOn;
 
-    showWechat = machineActivateData['showWechat'] ?? false;
-    showAlipay = machineActivateData['showAlipay'] ?? false;
-    showPayPay = machineActivateData['showPayPay'] ?? false;
-    showCreditCard = machineActivateData['showCreditCard'] ?? false;
+    showWechat = paymentChannels?.wechat ?? false;
+    showAlipay = paymentChannels?.alipay ?? false;
+    showPayPay = paymentChannels?.payPay ?? false;
+    showCreditCard = paymentChannels?.creditCard ?? false;
     logI('loadMachineSettingInfo 2');
-    showAuPay = machineActivateData['au_Pay'] ?? false;
-    showDPay = machineActivateData['d_Pay'] ?? false;
-    showRPay = machineActivateData['R_Pay'] ?? false;
-    showMPay = machineActivateData['m_Pay'] ?? false;
+    showAuPay = paymentChannels?.auPay ?? false;
+    showDPay = paymentChannels?.dPay ?? false;
+    showRPay = paymentChannels?.rPay ?? false;
+    showMPay = paymentChannels?.mPay ?? false;
     logI('loadMachineSettingInfo 3');
-    showPosEdy = machineActivateData['pos_Edy'] ?? false;
-    showPosiD = machineActivateData['pos_iD'] ?? false;
-    showPosIC = machineActivateData['pos_IC'] ?? false;
-    showPosQUICPay = machineActivateData['pos_QUICPay'] ?? false;
-    showPosWAON = machineActivateData['pos_WAON'] ?? false;
-    showPosnanaco = machineActivateData['pos_nanaco'] ?? false;
+    showPosEdy = paymentChannels?.edy ?? false;
+    showPosiD = paymentChannels?.iD ?? false;
+    showPosIC = paymentChannels?.ic ?? false;
+    showPosQUICPay = paymentChannels?.quicPay ?? false;
+    showPosWAON = paymentChannels?.waon ?? false;
+    showPosnanaco = paymentChannels?.nanaco ?? false;
     logI('loadMachineSettingInfo 4');
-    showVisa = machineActivateData['show_visa'] ?? false;
-    showMaster = machineActivateData['show_master'] ?? false;
-    showJcb = machineActivateData['show_jcb'] ?? false;
-    showUnionPay = machineActivateData['show_unionPay'] ?? false;
-    showAmericanExpress = machineActivateData['show_americanExpress'] ?? false;
-    showDinersClub = machineActivateData['show_dinersClub'] ?? false;
-    showDiscover = machineActivateData['show_discover'] ?? false;
-    showWithdraw = machineActivateData['cashMachineWithdraw'] ?? false;
+    showVisa = paymentChannels?.visa ?? false;
+    showMaster = paymentChannels?.master ?? false;
+    showJcb = paymentChannels?.jcb ?? false;
+    showUnionPay = paymentChannels?.unionPay ?? false;
+    showAmericanExpress = paymentChannels?.americanExpress ?? false;
+    showDinersClub = paymentChannels?.dinersClub ?? false;
+    showDiscover = paymentChannels?.discover ?? false;
+    showWithdraw = activation?.cashMachineWithdraw ?? false;
     logI('loadMachineSettingInfo 5');
 
-    printerList = await HomeServices.getPrinterListInfo();
+    printerList = runtime.printerList;
     await Get.find<SseSubscriptionManager>().initialize(machineCode);
 
-    machineModeInfo = await HomeServices.getMachineModeInfo();
+    machineModeInfo = runtime.machineModeInfo;
     logI('machineModeInfo: $machineModeInfo');
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    Map posSettingInfo = runtime.posSettings;
 
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
 
-    screenCallSetting = await HomeServices.getWlanPanelPrintSettingInfo();
+    screenCallSetting = runtime.screenCallSettings;
     wlan_panel_print_ip = screenCallSetting['wlanPrintIp'] ?? "";
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";
     isAllowScreenCall = screenCallSetting['isAllowScreenCall'] ?? false;
 
-    usbDevice = await HomeServices.getUsbPrintSettingInfo();
+    usbDevice = runtime.usbDevice;
 
-    machinePrintWidth = await HomeServices.getMachinePrintWidth();
-
-    // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    // wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
-    // wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
-
-    // Map wlanPrintSettingTwoInfo =
-    //     await HomeServices.getWlanPrintSettingTwoInfo();
-    // wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
-    // wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
+    machinePrintWidth = runtime.machinePrintWidth;
 
     logI('loadMachineSettingInfo 6');
   }
