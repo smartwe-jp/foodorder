@@ -841,17 +841,11 @@ class SettingView extends GetView<SettingController> {
                             InkWell(
                               onTap: () async {
                                 final result = await Get.toNamed(
-                                  '/system-setting-page',
+                                  Routes.SYSTEM_SETTING_PAGE_NEW,
                                   arguments: {
                                     "machineCode": controller.machineCode
                                   },
                                 );
-                                if (result != null) {
-                                  controller.getSystemSettingInfo();
-                                }
-                              },
-                              onLongPress: () async {
-                                final result = Get.toNamed(Routes.SYSTEM_SETTING_PAGE_NEW);
                                 if (result != null) {
                                   controller.getSystemSettingInfo();
                                 }

@@ -229,7 +229,9 @@ class MachineInfoController extends GetxController {
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
     isAllow10 = systemSettingInfo['isAllow10'] ?? true;
     isAllow5 = systemSettingInfo['isAllow5'] ?? true;
-    is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
+    is_allow_oneyen = systemSettingInfo['isAllowOneYen'] ??
+        systemSettingInfo['isAllowOneyen'] ??
+        '0';
     printReceiptOptions = systemSettingInfo['printReceiptOptions'] ?? false;
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;

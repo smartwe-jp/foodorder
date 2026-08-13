@@ -140,6 +140,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     // wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
+    update();
   }
 
   late Map<String, dynamic> systemSettingData = {
@@ -349,6 +350,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   addCustomPrinter() async {
+    if (machineInfo.printerList.length >= 9 ||
+        notSelectedPrinterMap.isEmpty) {
+      return;
+    }
     Get.dialog(SetPrinterView(
         isAdd: true, notSelectedPrinterMap: notSelectedPrinterMap));
   }
@@ -1039,9 +1044,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllowOneYen(checkedType) async {
     if (checkedType == "0") {
-      var prohibitOneCashStatus = await payCube.prohibitOneCash;
+      await payCube.prohibitOneCash;
     } else {
-      var allowOneCashStatus = await payCube.allowOneCash;
+      await payCube.allowOneCash;
     }
     machineInfo.is_allow_oneyen = checkedType;
 

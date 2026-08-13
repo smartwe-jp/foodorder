@@ -10,9 +10,9 @@ import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/print_failed_service.dart';
 import 'package:get/get.dart';
-
-import '../../../services/PosCheckService.dart';
 
 class SystemSettingPage extends GetView<SystemSettingPageController> {
   const SystemSettingPage({super.key});
@@ -114,12 +114,16 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   const SizedBox(width: 16),
                 ],
               ),
-              _modeArea(logic.machineInfo.machineModeInfo),
+              _modeArea(
+                logic.machineInfo.machineModeInfo,
+                showCheckout: logic.machineInfo.actuarial,
+              ),
               _setMenuDirection(logic.machineInfo.systemSettingInfo),
               _machineTypeArea(logic.machineInfo.systemSettingInfo),
               _allowReceiptArea(logic.machineInfo.systemSettingInfo),
-              //_setPrintPaperTxtSize(logic.machineInfo.systemSettingInfo),
+              _setPrintPaperTxtSize(logic.machineInfo.systemSettingInfo),
               _setIsAllowReceiptMenu(logic.machineInfo.systemSettingInfo),
+              _allowPrintReceiptOptions(logic.machineInfo),
               _allowSettlementHome(logic.machineInfo.systemSettingInfo),
               if (Platform.isAndroid)
                 _openRejishime(logic.machineInfo.systemSettingInfo),
@@ -220,7 +224,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     );
   }
 
-  Widget _modeArea(Map modeInfo) {
+  Widget _modeArea(Map modeInfo, {required bool showCheckout}) {
     bool isSellOn = modeInfo['sell'] ?? false;
     bool isTakeoutOn = modeInfo['takeout'] ?? false;
     bool isCheckoutOn = modeInfo['checkout'] ?? false;
@@ -254,12 +258,13 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       isTakeoutOn,
                           () =>
                           controller.updateMachineMode(takeout: !isTakeoutOn)),
-                  _modeButton(
-                      "精算機",
-                      Icons.qr_code,
-                      isCheckoutOn,
-                          () => controller.updateMachineMode(
-                          checkout: !isCheckoutOn)),
+                  if (showCheckout)
+                    _modeButton(
+                        "精算機",
+                        Icons.qr_code,
+                        isCheckoutOn,
+                        () => controller.updateMachineMode(
+                            checkout: !isCheckoutOn)),
                   _modeButton(
                       "スキャン購入",
                       Icons.barcode_reader,
@@ -508,7 +513,10 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   //setPrintPaperTxtSize
   /// 打印菜单部分文字大小设置
   Widget _setPrintPaperTxtSize(Map systemSettingInfo) {
-    String printPaperTxtSize = systemSettingInfo['printPaperTxtSize'] ?? '1';
+    final rawValue = systemSettingInfo['printPaperTxtSize'];
+    final printPaperTxtSize = rawValue is int
+        ? rawValue
+        : int.tryParse(rawValue?.toString() ?? '') ?? 2;
 
     return Card(
       color: Colors.white,
@@ -523,9 +531,24 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             _settingSubtitle("（セルフレジから）"),
             Spacer(),
             ClipRRect(
-              child: CupertinoSegmentedControl<String>(
+              child: CupertinoSegmentedControl<int>(
                 children: {
-                  '1': Padding(
+                  1: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 10),
+                    child: Text(
+                      '小',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: 20,
+                        color: printPaperTxtSize == 1
+                            ? Colors.white
+                            : Colors.grey,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  2: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 10),
                     child: Text(
@@ -533,14 +556,14 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
-                        color: printPaperTxtSize == '1'
+                        color: printPaperTxtSize == 2
                             ? Colors.white
                             : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  '2': Padding(
+                  3: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 10),
                     child: Text(
@@ -548,14 +571,14 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
-                        color: printPaperTxtSize == '2'
+                        color: printPaperTxtSize == 3
                             ? Colors.white
                             : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  '3': Padding(
+                  4: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 10),
                     child: Text(
@@ -563,7 +586,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
-                        color: printPaperTxtSize == '3'
+                        color: printPaperTxtSize == 4
                             ? Colors.white
                             : Colors.grey,
                         fontWeight: FontWeight.w600,
@@ -580,6 +603,41 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 unselectedColor: Colors.white,
                 padding: const EdgeInsets.all(2),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _allowPrintReceiptOptions(MachineInfoController machineInfo) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _settingTitle('レシートオプション'),
+            CupertinoSegmentedControl<bool>(
+              children: const {
+                false: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  child: Text('印刷しない'),
+                ),
+                true: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  child: Text('印刷する'),
+                ),
+              },
+              groupValue: machineInfo.printReceiptOptions,
+              onValueChanged: controller.checkIsAllowPrintReceiptOptions,
+              borderColor: Colors.blue,
+              selectedColor: Colors.blue,
+              unselectedColor: Colors.white,
+              padding: const EdgeInsets.all(2),
             ),
           ],
         ),
@@ -841,8 +899,11 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       {
         'label': '一円',
         'key': 'isAllow1',
-        'value': settingInfo['isAllowOneYen'] ?? '0',
-        'onChanged': (bool val) => controller.checkIsAllowOneYen(val),
+        'value': settingInfo['isAllowOneYen'] ??
+            settingInfo['isAllowOneyen'] ??
+            '0',
+        'onChanged': (bool val) =>
+            controller.checkIsAllowOneYen(val ? '1' : '0'),
       },
       {
         'label': '五千円',
@@ -1030,42 +1091,47 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 ),
 
 
-                GestureDetector(
-                  onTap: () {
-                    controller.addCustomPrinter();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        '追加',
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                if (printerList.length < 9 &&
+                    controller.notSelectedPrinterMap.isNotEmpty)
+                  GestureDetector(
+                    onTap: controller.addCustomPrinter,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '追加',
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
-                      ),
-                      Icon(Icons.add, color: Colors.blue, size: 40),
-                    ],
+                        Icon(Icons.add, color: Colors.blue, size: 40),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
             const Divider(),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 每行两个
-                childAspectRatio: 1.9,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: printersWithAdd.length,
-              itemBuilder: (context, index) {
-                final printer = printersWithAdd[index];
-                return _printerCard(printer);
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final useTwoColumns = constraints.maxWidth >= 800;
+                final cardWidth = useTwoColumns
+                    ? (constraints.maxWidth - 20) / 2
+                    : constraints.maxWidth;
+                return Wrap(
+                  spacing: 20,
+                  runSpacing: 16,
+                  children: printersWithAdd
+                      .map(
+                        (printer) => SizedBox(
+                          width: cardWidth,
+                          child: _printerCard(printer),
+                        ),
+                      )
+                      .toList(),
+                );
               },
             ),
           ],
@@ -1086,11 +1152,14 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     final printIp = printer['printIp'] ?? ""; // 打印机IP
     final printPort = printer['printPort'] ?? ""; // 打印机端口
     final printDirection = printer['direction'] ?? 0; // 打印方向 0 正 1 逆
-    //bool printOption = printer['option'] ?? false; // 打印选项
+    final printOption = printer['option'] ?? false;
+    final printHead = printer['printHead'] ?? true;
+    final printOptionCode = printer['printOptionCode'] ?? true;
     bool isSingleMode = type == 11 || receipt == 1;
     bool needSetting = printIp.isEmpty || printPort.isEmpty;
     bool isDefaultPrinter = printer['isDefault'] ?? true; // 是否默认打印机
     bool printCategory = printer['printCategory'] ?? false; // 是否打印分类
+    final failedService = Get.find<PrintFailedService>();
 
     return Container(
       decoration: BoxDecoration(
@@ -1112,14 +1181,33 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  fontFamily: 'NotoSansJP',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              Obx(
+                () {
+                  final hasFailed = failedService.records.any(
+                    (record) =>
+                        record.printerType == type && record.status == 'failed',
+                  );
+                  return GestureDetector(
+                    onTap: hasFailed
+                        ? () => Get.toNamed(
+                              Routes.PRINTER_FAILED_LIST,
+                              arguments: {
+                                'printerType': type,
+                                'printerName': name,
+                              },
+                            )
+                        : null,
+                    child: Text(
+                      name,
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: !isOff && hasFailed ? Colors.red : Colors.black,
+                      ),
+                    ),
+                  );
+                },
               ),
               Spacer(),
               if (!needSetting)
@@ -1282,6 +1370,36 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 _setLabelPrintSize(type, receipt, labelSize),
               ],
             ),
+          if (type == 11)
+            _printerSwitchRow(
+              'オプション',
+              printOption,
+              (value) => controller.updatePrinterInfo(
+                type,
+                receipt,
+                option: value,
+              ),
+            ),
+          if (receipt == 1)
+            _printerSwitchRow(
+              'ヘッダー印刷',
+              printHead,
+              (value) => controller.updatePrinterInfo(
+                type,
+                receipt,
+                printHead: value,
+              ),
+            ),
+          if (receipt == 1)
+            _printerSwitchRow(
+              'オプションコード',
+              printOptionCode,
+              (value) => controller.updatePrinterInfo(
+                type,
+                receipt,
+                printOptionCode: value,
+              ),
+            ),
           if (receipt != 1) 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1335,6 +1453,24 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             )
         ],
       ),
+    );
+  }
+
+  Widget _printerSwitchRow(
+    String label,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _settingContent('$label：'),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: Colors.blue,
+        ),
+      ],
     );
   }
 
@@ -1464,7 +1600,6 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
   //pos 机器设置
   Widget _posMachineSettingArea(MachineInfoController machineInfo) {
-    final posCheckService = Get.find<PosCheckService>();
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.all(8),
@@ -1503,6 +1638,19 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     ],
                   ),
                 const SizedBox(width: 20),
+
+                if (machineInfo.pos_ip.isNotEmpty &&
+                    machineInfo.pos_port.isNotEmpty)
+                  OutlinedButton.icon(
+                    onPressed: () => controller.posTest(
+                      machineInfo.pos_ip,
+                      machineInfo.pos_port,
+                    ),
+                    icon: const Icon(Icons.wifi_tethering),
+                    label: const Text('接続テスト'),
+                  ),
+
+                const SizedBox(width: 12),
 
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.blue),
@@ -1706,7 +1854,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
           const SizedBox(height: 8),
 
-          if (isOn == SseSubscriptionType.smartWe)
+          if (isOn && sseItem.type == SseSubscriptionType.smartWe)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
