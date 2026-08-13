@@ -644,7 +644,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               onValueChanged: controller.checkIsAllowPrintReceiptOptions,
               borderColor: Colors.blue,
               selectedColor: Colors.blue,
-              unselectedColor: Colors.white,
+              unselectedColor: Colors.grey,
               padding: const EdgeInsets.all(2),
             ),
           ],
@@ -678,7 +678,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 10),
                         child: Text(
-                          'プリントしない',
+                          '印刷しない',
                           style: TextStyle(
                             fontFamily: 'NotoSansJP',
                             fontSize: 20,
@@ -693,7 +693,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 10),
                         child: Text(
-                          'プリントする',
+                          '印刷する',
                           style: TextStyle(
                             fontFamily: 'NotoSansJP',
                             fontSize: 20,
@@ -711,7 +711,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     },
                     borderColor: Colors.blue,
                     selectedColor: Colors.blue,
-                    unselectedColor: Colors.white,
+                    unselectedColor: Colors.grey,
                     padding: const EdgeInsets.all(2),
                   ),
                 ),
@@ -751,8 +751,6 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
-                        color:
-                        isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -765,8 +763,6 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
-                        color:
-                        !isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
