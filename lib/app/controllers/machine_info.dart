@@ -127,7 +127,7 @@ class MachineInfoController extends GetxController {
   bool get isChecking =>
       _runtime.cashMachineStatus == CashMachineRuntimeStatus.checking;
   Map<String, dynamic> get systemSettingInfo => _runtime.systemSettings;
-  late Map posSettingInfo;
+  Map<String, dynamic> posSettingInfo = {};
 
   bool get isSellOn => machineModeInfo['sell'] ?? false;
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
@@ -299,7 +299,7 @@ class MachineInfoController extends GetxController {
 
     machineModeInfo = runtime.machineModeInfo;
     logI('machineModeInfo: $machineModeInfo');
-    Map posSettingInfo = runtime.posSettings;
+    posSettingInfo = runtime.posSettings;
 
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";

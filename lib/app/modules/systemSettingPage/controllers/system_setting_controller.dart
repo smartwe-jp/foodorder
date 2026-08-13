@@ -48,23 +48,36 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     );
   }
 
-  updatePosSetting({String? posIp, String? posPort, bool? isAllowPos}) async {
+  Future<void> updatePosSetting({
+    String? posIp,
+    String? posPort,
+    bool? isAllowPos,
+  }) async {
+    final posSettings = Map<String, dynamic>.from(machineInfo.posSettingInfo);
+
     if (posIp != null) {
       machineInfo.pos_ip = posIp;
-      machineInfo.posSettingInfo['posIp'] = posIp;
+      posSettings['posIp'] = posIp;
     }
     if (posPort != null) {
       machineInfo.pos_port = posPort;
-      machineInfo.posSettingInfo['posPort'] = posPort;
+      posSettings['posPort'] = posPort;
     }
 
     if (isAllowPos != null) {
       machineInfo.isAllowPos = isAllowPos ? '1' : '0';
-      machineInfo.posSettingInfo['allowPos'] = isAllowPos;
-      await _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
+      posSettings['allowPos'] = isAllowPos;
     }
 
-    await HomeServices.updatePosSettingInfo(machineInfo.posSettingInfo);
+    machineInfo.posSettingInfo = posSettings;
+    // The dialog callback is not awaited, so refresh the displayed values before
+    // the first asynchronous storage operation.
+    update();
+
+    if (isAllowPos != null) {
+      await _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
+    }
+    await HomeServices.updatePosSettingInfo(posSettings);
     await machineInfo.updateMachineSettingInfo();
     update();
   }
