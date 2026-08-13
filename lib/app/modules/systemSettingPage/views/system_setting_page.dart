@@ -625,11 +625,19 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               children: const {
                 false: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  child: Text('印刷しない'),
+                  child: Text('印刷しない',style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),),
                 ),
                 true: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  child: Text('印刷する'),
+                  child: Text('印刷する',style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),),
                 ),
               },
               groupValue: machineInfo.printReceiptOptions,
