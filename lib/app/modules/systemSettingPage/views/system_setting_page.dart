@@ -622,12 +622,13 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
           children: [
             _settingTitle('レシートオプション'),
             CupertinoSegmentedControl<bool>(
-              children: const {
+              children:  {
                 false: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: Text('印刷しない',style: TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontSize: 20,
+                    color: !machineInfo.printReceiptOptions ? Colors.white : Colors.grey,
                     fontWeight: FontWeight.w600,
                   ),),
                 ),
@@ -636,6 +637,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   child: Text('印刷する',style: TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontSize: 20,
+                    color: machineInfo.printReceiptOptions ? Colors.white : Colors.grey,
                     fontWeight: FontWeight.w600,
                   ),),
                 ),
@@ -644,7 +646,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               onValueChanged: controller.checkIsAllowPrintReceiptOptions,
               borderColor: Colors.blue,
               selectedColor: Colors.blue,
-              unselectedColor: Colors.grey,
+              unselectedColor: Colors.white,
               padding: const EdgeInsets.all(2),
             ),
           ],
@@ -678,7 +680,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 10),
                         child: Text(
-                          '印刷しない',
+                          'プリントしない',
                           style: TextStyle(
                             fontFamily: 'NotoSansJP',
                             fontSize: 20,
@@ -693,7 +695,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 10),
                         child: Text(
-                          '印刷する',
+                          'プリントする',
                           style: TextStyle(
                             fontFamily: 'NotoSansJP',
                             fontSize: 20,
@@ -711,7 +713,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     },
                     borderColor: Colors.blue,
                     selectedColor: Colors.blue,
-                    unselectedColor: Colors.grey,
+                    unselectedColor: Colors.white,
                     padding: const EdgeInsets.all(2),
                   ),
                 ),
@@ -751,6 +753,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
+                        color:
+                        isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -763,6 +767,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
+                        color:
+                        !isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
