@@ -40,6 +40,7 @@ void main() {
             {'val': 'CH', 'name': '中文'},
             {'val': 'EN', 'name': 'English'},
             {'val': 'KO', 'name': '한국말'},
+            {'val': 'VN', 'name': 'Tiếng Việt'},
           ],
           'homeImages': ['home.png'],
           'headerImages': ['header.png'],
@@ -62,10 +63,10 @@ void main() {
       expect(response.activation?.canReimburse, isTrue);
       expect(response.activation?.taxSystem, isTrue);
       expect(response.activation?.cashMachineWithdraw, isFalse);
-      expect(response.activation?.languages, ['JP', 'CH', 'EN', 'KO']);
+      expect(response.activation?.languages, ['JP', 'CH', 'EN', 'KO', 'VN']);
       expect(
         response.activation?.languageOptions.map((item) => item.name),
-        ['日本語', '中文', 'English', '한국말'],
+        ['日本語', '中文', 'English', '한국말', 'Tiếng Việt'],
       );
     });
 
@@ -161,7 +162,7 @@ void main() {
 
     test('upgrades a version 2 string-language cache', () async {
       final data = _activation(shopCode: 'version-2-shop').toJson();
-      data['languages'] = ['JP', 'EN'];
+      data['languages'] = ['JP', 'EN', 'VN'];
       SharedPreferences.setMockInitialValues({
         MachineActivationLocalService.cacheKey: json.encode({
           'schemaVersion': 2,
@@ -171,10 +172,10 @@ void main() {
 
       final activation = await MachineActivationLocalService().load();
 
-      expect(activation?.languages, ['JP', 'EN']);
+      expect(activation?.languages, ['JP', 'EN', 'VN']);
       expect(
         activation?.languageOptions.map((item) => item.name),
-        ['日本語', 'English'],
+        ['日本語', 'English', 'Tiếng Việt'],
       );
       final preferences = await SharedPreferences.getInstance();
       final upgraded = json.decode(

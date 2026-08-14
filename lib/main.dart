@@ -120,6 +120,7 @@ void main() {
                       Locale('zh', 'CH'),
                       Locale('en', 'US'),
                       Locale('ko', 'KR'),
+                      Locale('vi', 'VN'),
                       Locale('ja', 'JP'),
                     ],
                     translations: TranslationService(),

@@ -76,6 +76,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     'CH': Locale('zh', 'CN'),
     'EN': Locale('en', 'US'),
     'KO': Locale('ko', 'KR'),
+    'VN': Locale('vi', 'VN'),
   };
 
   List<MachineLanguage> get supportedLanguages => machineInfo.languageOptions

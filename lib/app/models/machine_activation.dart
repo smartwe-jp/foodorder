@@ -409,6 +409,8 @@ String _fallbackLanguageName(String code) {
       return 'English';
     case 'KO':
       return '한국어';
+    case 'VN':
+      return 'Tiếng Việt';
     default:
       return code;
   }
