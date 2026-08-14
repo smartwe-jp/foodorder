@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/modules/setting/printList/logic.dart';
 import 'package:foodorder/app/modules/setting/printList/state.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 
 class PrintListPage extends StatelessWidget {
@@ -10,6 +10,20 @@ class PrintListPage extends StatelessWidget {
 
   final logic = Get.put(PrintListPageLogic());
   final PrintListState state = Get.find<PrintListPageLogic>().state;
+
+  void _showReprintConfirmation(VoidCallback onConfirm) {
+    Get.dialog(
+      DialogUtils.alert(
+        '再印刷しますか？',
+        confirm: () {
+          Get.back();
+          onConfirm();
+        },
+        cancle: Get.back,
+      ),
+      barrierDismissible: false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +125,8 @@ class PrintListPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 onTap: () => logic.changeSelectedCategory(cat),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   child: Row(
                     children: [
                       Icon(
@@ -124,7 +139,8 @@ class PrintListPage extends StatelessWidget {
                         child: Text(
                           logic.getRendererForCategory(cat),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight:
+                                isSelected ? FontWeight.w700 : FontWeight.w500,
                             color: isSelected ? Colors.white : Colors.grey[800],
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -182,7 +198,9 @@ class PrintListPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('店舗', style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey[600])),
+                  Text('店舗',
+                      style: theme.textTheme.labelMedium
+                          ?.copyWith(color: Colors.grey[600])),
                   const SizedBox(height: 4),
                   Text(
                     item.shopName,
@@ -211,22 +229,23 @@ class PrintListPage extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-              
                 ElevatedButton.icon(
-                    onPressed: () => logic.rePrintSummary(item),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 2,
-                    ),
-                    icon: const Icon(Icons.print, size: 22),
-                    label: const Text('再印刷'),
+                  onPressed: () => _showReprintConfirmation(
+                    () => logic.rePrintSummary(item),
                   ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 2,
+                  ),
+                  icon: const Icon(Icons.print, size: 22),
+                  label: const Text('再印刷'),
+                ),
               ],
             )
           ],
@@ -277,7 +296,10 @@ class PrintListPage extends StatelessWidget {
                     _infoRow('オーダーID', item.orderId, theme),
                     _infoRow('注文日時', item.orderTime, theme),
                     _infoRow('支払い方法', item.payMethod, theme),
-                    _infoRow('金額/お釣り', '${item.payPrice} / ${item.change == 'null' ? '0' : item.change}', theme),
+                    _infoRow(
+                        '金額/お釣り',
+                        '${item.payPrice} / ${item.change == 'null' ? '0' : item.change}',
+                        theme),
                   ],
                 ),
               ),
@@ -286,7 +308,9 @@ class PrintListPage extends StatelessWidget {
               Column(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () => logic.reprint(item),
+                    onPressed: () => _showReprintConfirmation(
+                      () => logic.reprint(item),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary,
                       foregroundColor: Colors.white,
@@ -341,8 +365,8 @@ class PrintListPage extends StatelessWidget {
   Widget _buildLoading() => Center(
         child: CircularProgressIndicator(
           strokeWidth: 5,
-          valueColor: AlwaysStoppedAnimation<Color>(
-              ColorsUtil.hexToColor('#80B646')),
+          valueColor:
+              AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor('#80B646')),
         ),
       );
 
