@@ -35,7 +35,12 @@ void main() {
             'POS': '1',
             'Discover': false,
           },
-          'languages': ['JP', 'EN'],
+          'languages': [
+            {'val': 'JP', 'name': '日本語'},
+            {'val': 'CH', 'name': '中文'},
+            {'val': 'EN', 'name': 'English'},
+            {'val': 'KO', 'name': '한국말'},
+          ],
           'homeImages': ['home.png'],
           'headerImages': ['header.png'],
           'logoImage': 'logo.png',
@@ -57,6 +62,11 @@ void main() {
       expect(response.activation?.canReimburse, isTrue);
       expect(response.activation?.taxSystem, isTrue);
       expect(response.activation?.cashMachineWithdraw, isFalse);
+      expect(response.activation?.languages, ['JP', 'CH', 'EN', 'KO']);
+      expect(
+        response.activation?.languageOptions.map((item) => item.name),
+        ['日本語', '中文', 'English', '한국말'],
+      );
     });
 
     test('represents a missing activation without parsing data', () {
@@ -143,7 +153,37 @@ void main() {
       final upgraded = json.decode(
         preferences.getString(MachineActivationLocalService.cacheKey)!,
       ) as Map<String, dynamic>;
-      expect(upgraded['schemaVersion'], 2);
+      expect(
+        upgraded['schemaVersion'],
+        MachineActivationLocalService.schemaVersion,
+      );
+    });
+
+    test('upgrades a version 2 string-language cache', () async {
+      final data = _activation(shopCode: 'version-2-shop').toJson();
+      data['languages'] = ['JP', 'EN'];
+      SharedPreferences.setMockInitialValues({
+        MachineActivationLocalService.cacheKey: json.encode({
+          'schemaVersion': 2,
+          'data': data,
+        }),
+      });
+
+      final activation = await MachineActivationLocalService().load();
+
+      expect(activation?.languages, ['JP', 'EN']);
+      expect(
+        activation?.languageOptions.map((item) => item.name),
+        ['日本語', 'English'],
+      );
+      final preferences = await SharedPreferences.getInstance();
+      final upgraded = json.decode(
+        preferences.getString(MachineActivationLocalService.cacheKey)!,
+      ) as Map<String, dynamic>;
+      expect(
+        upgraded['schemaVersion'],
+        MachineActivationLocalService.schemaVersion,
+      );
     });
 
     test('falls back to legacy keys when cache schema is unsupported',
@@ -176,6 +216,29 @@ void main() {
       expect(legacyPayment['showCash'], isTrue);
       expect(legacyPayment['show_visa'], isTrue);
       expect(legacyPayment['taxSystem'], isTrue);
+      expect(
+        json.decode(preferences.getString('smartwe_machineLanguages')!),
+        ['JP'],
+      );
+    });
+
+    test('round-trips language names in the current cache', () async {
+      final service = MachineActivationLocalService();
+      final activation = MachineActivation.fromRemoteJson({
+        'languages': [
+          {'val': 'JP', 'name': '日本語'},
+          {'val': 'KO', 'name': '한국말'},
+        ],
+      });
+
+      await service.save(activation);
+      final cached = await service.load();
+
+      expect(cached?.languages, ['JP', 'KO']);
+      expect(
+        cached?.languageOptions.map((item) => item.name),
+        ['日本語', '한국말'],
+      );
     });
   });
 

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/machine_activation.dart';
 
 class MachineActivationLocalService {
-  static const int schemaVersion = 2;
+  static const int schemaVersion = 3;
   static const String cacheKey = 'machine_activation_cache';
 
   static const String _legacyPaymentKey = 'smartwe_machineActivateData';
@@ -67,7 +67,8 @@ class MachineActivationLocalService {
     try {
       final envelope = _decodeMap(rawValue);
       final version = envelope['schemaVersion'];
-      if (version != 1 && version != schemaVersion) return null;
+      if (version is! int || version < 1 || version > schemaVersion)
+        return null;
       return MachineActivation.fromJson(_asMap(envelope['data']));
     } catch (_) {
       return null;

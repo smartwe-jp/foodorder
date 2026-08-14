@@ -28,12 +28,44 @@ class MachineActivationResponse {
   }
 }
 
+class MachineLanguage {
+  const MachineLanguage({
+    required this.code,
+    required this.name,
+  });
+
+  static const japanese = MachineLanguage(code: 'JP', name: '日本語');
+
+  final String code;
+  final String name;
+
+  factory MachineLanguage.fromJson(dynamic value) {
+    if (value is String) {
+      final code = value.trim().toUpperCase();
+      return MachineLanguage(code: code, name: _fallbackLanguageName(code));
+    }
+
+    final json = _asMapOrEmpty(value);
+    final code = _asString(json['val']).trim().toUpperCase();
+    final name = _asString(json['name']).trim();
+    return MachineLanguage(
+      code: code,
+      name: name.isEmpty ? _fallbackLanguageName(code) : name,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'val': code,
+        'name': name,
+      };
+}
+
 class MachineActivation {
   const MachineActivation({
     required this.machineModelCode,
     required this.shopCode,
     required this.paymentChannels,
-    required this.languages,
+    required this.languageOptions,
     required this.homeImages,
     required this.headerImages,
     required this.logoImage,
@@ -47,7 +79,9 @@ class MachineActivation {
   final String machineModelCode;
   final String shopCode;
   final MachinePaymentChannels paymentChannels;
-  final List<String> languages;
+  final List<MachineLanguage> languageOptions;
+  List<String> get languages =>
+      languageOptions.map((language) => language.code).toList(growable: false);
   final List<String> homeImages;
   final List<String> headerImages;
   final String logoImage;
@@ -63,7 +97,7 @@ class MachineActivation {
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromRemoteJson(
           _asMapOrEmpty(json['linePayChannelMap'])),
-      languages: _asStringList(json['languages']),
+      languageOptions: _asMachineLanguages(json['languages']),
       homeImages: _asStringList(json['homeImages']),
       headerImages: _asStringList(json['headerImages']),
       logoImage: _asString(json['logoImage']),
@@ -81,7 +115,7 @@ class MachineActivation {
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromJson(
           _asMapOrEmpty(json['paymentChannels'])),
-      languages: _asStringList(json['languages']),
+      languageOptions: _asMachineLanguages(json['languages']),
       homeImages: _asStringList(json['homeImages']),
       headerImages: _asStringList(json['headerImages']),
       logoImage: _asString(json['logoImage']),
@@ -108,7 +142,7 @@ class MachineActivation {
       machineModelCode: machineModelCode,
       shopCode: shopCode,
       paymentChannels: MachinePaymentChannels.fromLegacyJson(paymentData),
-      languages: _asStringList(languages),
+      languageOptions: _asMachineLanguages(languages),
       homeImages: _asStringList(homeImages),
       headerImages: _asStringList(headerImages),
       logoImage: logoImage,
@@ -124,7 +158,9 @@ class MachineActivation {
         'machineModelCode': machineModelCode,
         'shopCode': shopCode,
         'paymentChannels': paymentChannels.toJson(),
-        'languages': languages,
+        'languages': languageOptions
+            .map((language) => language.toJson())
+            .toList(growable: false),
         'homeImages': homeImages,
         'headerImages': headerImages,
         'logoImage': logoImage,
@@ -348,6 +384,34 @@ Map<String, dynamic> _asMapOrEmpty(dynamic value) {
 List<String> _asStringList(dynamic value) {
   if (value is! List) return const [];
   return value.whereType<String>().toList(growable: false);
+}
+
+List<MachineLanguage> _asMachineLanguages(dynamic value) {
+  if (value is! List) return const [];
+
+  final languages = <MachineLanguage>[];
+  final seenCodes = <String>{};
+  for (final item in value) {
+    final language = MachineLanguage.fromJson(item);
+    if (language.code.isEmpty || !seenCodes.add(language.code)) continue;
+    languages.add(language);
+  }
+  return List.unmodifiable(languages);
+}
+
+String _fallbackLanguageName(String code) {
+  switch (code) {
+    case 'JP':
+      return '日本語';
+    case 'CH':
+      return '中文';
+    case 'EN':
+      return 'English';
+    case 'KO':
+      return '한국어';
+    default:
+      return code;
+  }
 }
 
 String _asString(dynamic value) => value is String ? value : '';

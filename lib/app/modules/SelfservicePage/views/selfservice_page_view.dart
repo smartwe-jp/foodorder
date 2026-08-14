@@ -24,7 +24,6 @@ class SelfservicePageView extends GetView {
         "language": "JP",
         "text": "日本語",
         "selected": controller.machineLanguages_JP,
-        "icon": AssetImage("assets/images/public/language_Japanese.png"),
       });
 
     if (controller.machineLanguages_CH == true)
@@ -32,7 +31,6 @@ class SelfservicePageView extends GetView {
         "language": "CH",
         "text": "中文",
         "selected": controller.machineLanguages_CH,
-        "icon": AssetImage("assets/images/public/language_Chinese.png"),
       });
 
     if (controller.machineLanguages_EN == true)
@@ -40,7 +38,6 @@ class SelfservicePageView extends GetView {
         "language": "EN",
         "text": "English",
         "selected": controller.machineLanguages_EN,
-        "icon": AssetImage("assets/images/public/language_English.png"),
       });
 
     if (controller.machineLanguages_KO == true)
@@ -48,12 +45,10 @@ class SelfservicePageView extends GetView {
         "language": "KO",
         "text": "한국어",
         "selected": controller.machineLanguages_KO,
-        "icon": AssetImage("assets/images/public/language_Korean.png"),
       });
 
     final buttonList = languages.map((e) {
       return LanguageButton(
-        icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
         selected: false,//e["language"] == controller.checkLanguage.value,
         onTap: () {

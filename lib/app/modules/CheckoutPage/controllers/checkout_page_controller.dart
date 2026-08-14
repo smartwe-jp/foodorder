@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/models/machine_activation.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/PosCheckService.dart';
@@ -54,10 +55,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxInt discount = 0.obs;
   RxInt itemCount = 0.obs;
 
-  bool machineLanguages_JP = false;
-  bool machineLanguages_CH = false;
-  bool machineLanguages_EN = false;
-  bool machineLanguages_KO = false;
   String selectLanguage = 'JP';
   bool startShake = false;
   bool isAnimating = false;
@@ -74,12 +71,24 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   final RxInt posCheckStatus = 0.obs;
 
+  static const Map<String, Locale> _locales = {
+    'JP': Locale('ja', 'JP'),
+    'CH': Locale('zh', 'CN'),
+    'EN': Locale('en', 'US'),
+    'KO': Locale('ko', 'KR'),
+  };
+
+  List<MachineLanguage> get supportedLanguages => machineInfo.languageOptions
+      .where((language) => _locales.containsKey(language.code))
+      .toList(growable: false);
+
   String get defaultLanguage {
-    final languages = machineInfo.supportLanguages;
-    if (languages.length == 1) {
-      return languages[0] ?? 'JP';
+    final languages = supportedLanguages;
+    if (languages.isEmpty) return 'JP';
+    for (final language in languages) {
+      if (language.code == 'JP') return language.code;
     }
-    return 'JP';
+    return languages.first.code;
   }
 
   Color get themeColor {
@@ -87,7 +96,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   Color get themeTextColor {
-    return machineInfo.is_dark_theme ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    return machineInfo.is_dark_theme
+        ? const Color(0xFFFFFFFF)
+        : const Color(0xFF000000);
   }
 
   Color preThemeColor = Colors.green.shade900;
@@ -97,7 +108,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     logI("CheckoutPageController init");
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
-    _getMachineLanguages();
+    change(null, status: RxStatus.success());
     if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
       firstLoad = Get.arguments['initLaunch'] ?? false;
     }
@@ -127,9 +138,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         _showPosCheck();
       }
     }
-    Future.delayed(const Duration(milliseconds: 500), () {
-      updateSettingLanguage(defaultLanguage);
-    });
+    updateSettingLanguage(defaultLanguage);
   }
 
   @override
@@ -218,17 +227,6 @@ class CheckoutPageController extends GetxController with StateMixin {
       //}
       update();
     });
-  }
-
-  _getMachineLanguages() async {
-    debugPrint("获取机器语言");
-    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
-    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
-    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
-    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
-    debugPrint("获取机器语言结束");
-    update();
-    change(null, status: RxStatus.success());
   }
 
   void startRepeatingAnimation() {
@@ -334,11 +332,11 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     logI('formData: $formData');
 
-    request('webBootCalculateV2', 
-            method: 'POST', 
+    request('webBootCalculateV2',
+            method: 'POST',
             parameters: formData,
-            timeout: const Duration(seconds: 15)
-            ).then((val) {
+            timeout: const Duration(seconds: 15))
+        .then((val) {
       logI('webBootCalculateV2:$val');
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
@@ -361,8 +359,10 @@ class CheckoutPageController extends GetxController with StateMixin {
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
           orderLines.value = response["data"]["orderLines"] ?? [];
           //orderInfoMap: {牛すじドテ焼大根日8: 1}
-          itemCount.value = orderInfoMap.map((key, value) => MapEntry(key, value as int)).values.fold(0, (previousValue, element) => previousValue + element);
-          
+          itemCount.value = orderInfoMap
+              .map((key, value) => MapEntry(key, value as int))
+              .values
+              .fold(0, (previousValue, element) => previousValue + element);
 
           if (goDetail) {
             debugPrint('/scan-detail');
@@ -410,7 +410,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       () => SelectPaymentPage(
           checkLanguage: selectLanguage,
           menuCount: itemCount.value,
-          shopCartTotalPrice: (totalPrice.value + discount.value - voucherAmount.value).toString(),
+          shopCartTotalPrice:
+              (totalPrice.value + discount.value - voucherAmount.value)
+                  .toString(),
           tableNum: tableNum.value,
           tableName: tableNumText.value,
           tax10: tax10.value,
@@ -474,7 +476,8 @@ class CheckoutPageController extends GetxController with StateMixin {
       "checkLanguage": selectLanguage,
       "machineCode": machineInfo.machineCode,
       "orderId": orderId.value,
-      "totalPrice": (totalPrice.value + discount.value - voucherAmount.value).toString(),
+      "totalPrice":
+          (totalPrice.value + discount.value - voucherAmount.value).toString(),
       "machineMode": "2",
       "showOpenPayment": showOpenPayment.value,
       "isScanCheckOut": true,
@@ -556,8 +559,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     //   }
     // }
 
-    Get.toNamed(jumpUrl,
-        arguments: {"checkLanguage": lan});
+    Get.toNamed(jumpUrl, arguments: {"checkLanguage": lan});
   }
 
   // goSelfCheckout() {
@@ -567,20 +569,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   //   });
   // }
 
-  updateSettingLanguage(String language) async {
+  void updateSettingLanguage(String language) {
     selectLanguage = language;
-
-    var locale = const Locale('ja', 'JP');
-    if (language == "CH") {
-      locale = const Locale('zh', 'CN');
-    } else if (language == "EN") {
-      locale = const Locale('en', 'US');
-    } else if (language == "KO") {
-      locale = const Locale('ko', 'KR');
-    }
-    Get.updateLocale(locale);
-
-    //var locale = Locale('${language.toLowerCase()}', '$language');
-    //Get.updateLocale(locale);
+    Get.updateLocale(_locales[language] ?? _locales['JP']!);
+    update();
   }
 }

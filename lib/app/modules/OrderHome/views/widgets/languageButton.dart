@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/color_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
-import '../../../menuPage/views/widgets/car_item_view.dart';
-
 class LanguageButton extends StatefulWidget {
-  final ImageProvider icon;
   final String title;
   final bool selected;
   final Function? onTap;
@@ -18,7 +15,6 @@ class LanguageButton extends StatefulWidget {
     required this.title,
     this.selected = false,
     this.onTap,
-    required this.icon,
     this.startColor = Colors.green,
     this.textColor = Colors.white,
   }) : super(key: key);

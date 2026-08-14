@@ -1,5 +1,6 @@
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/models/machine_capabilities.dart';
+import 'package:foodorder/app/models/machine_activation.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:get/get.dart';
@@ -32,7 +33,9 @@ class MachineInfoController extends GetxController {
   late List homeList;
   late List headImageList;
   late String menu_direction;
-  late List supportLanguages;
+  late List<MachineLanguage> languageOptions;
+  List<String> get supportLanguages =>
+      languageOptions.map((language) => language.code).toList(growable: false);
   //bool isReceiptPageShow = false;
   late String printLogoImageData;
   late String printLogoImageUrl;
@@ -255,7 +258,10 @@ class MachineInfoController extends GetxController {
 
     isAllowReimburse = activation?.canReimburse ?? false;
 
-    supportLanguages = activation?.languages ?? ["JP"];
+    final configuredLanguages = activation?.languageOptions ?? const [];
+    languageOptions = configuredLanguages.isEmpty
+        ? const [MachineLanguage.japanese]
+        : configuredLanguages;
 
     printLogoImageData = runtime.printLogoImageData;
 
