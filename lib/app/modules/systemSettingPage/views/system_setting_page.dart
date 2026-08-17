@@ -918,11 +918,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       {
         'label': '五円',
         'key': 'isAllow5',
-        'value': settingInfo['isAllowFiveYen'] ??
-            settingInfo['isAllowFiveyen'] ??
-            '0',
-        'onChanged': (bool val) =>
-            controller.checkIsAllow5Yen(val ? '1' : '0'),
+        'value': settingInfo['isAllow5'] ?? '0',
+        'onChanged': (bool val) => controller.checkIsAllow5Yen(val),
       },
       {
         'label': '五千円',
