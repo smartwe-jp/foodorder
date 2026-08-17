@@ -12,8 +12,8 @@ import 'package:http/http.dart' as http;
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 180;
-  int _timeoutSeconds = 180; // 3分钟
+  final int timeSeconds = 18;
+  int _timeoutSeconds = 18; // 3分钟
 
   void startTimer() {
     cancelTimer();
@@ -49,7 +49,6 @@ class ResetToHomeTimer {
                 Get.find<MenuPageController>().clearOrderList();
                 Get.find<MenuPageController>().resetToFirstPage();
               }
-                
             }
             return;
           }
@@ -80,27 +79,31 @@ class ResetToHomeTimer {
             Get.find<SettlementController>().commonCancel();
             Get.back();
           } else {
-            //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-            Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+            _returnToExistingCheckout();
           }
         } else {
           logI('--offNamedUntil--');
-          //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-          Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+          _returnToExistingCheckout();
         }
       }
     });
   }
 
+  void _returnToExistingCheckout() {
+    cancelTimer();
+    Get.until(
+      (route) => route.settings.name == Routes.CHECKOUT_PAGE,
+    );
+  }
+
   void resetTimer() {
-    
     if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
       logI("event startTimer");
       startTimer();
     } else {
       if (_timer != null) {
         logI("event resetTimer");
-      _timeoutSeconds = timeSeconds;
+        _timeoutSeconds = timeSeconds;
       }
     }
   }
