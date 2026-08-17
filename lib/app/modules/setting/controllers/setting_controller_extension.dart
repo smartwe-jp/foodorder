@@ -11,6 +11,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller.dar
 import 'package:android_usb_printer/android_usb_printer.dart';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
@@ -457,7 +458,7 @@ extension SettingControllerExtension on SettingController {
       method: 'POST',
       parameters: formData,
     ).then((value) {
-      debugPrint("gloryEmptyReport value: $value");
+      logI("gloryEmptyReport value: $value");
       final response = json.decode(value.toString());
       logger.info("response: $response");
       if (response["code"] == 200) {
@@ -467,13 +468,14 @@ extension SettingControllerExtension on SettingController {
         success = false;
       }
     }).catchError((error) {
-      debugPrint("gloryEmptyReport error: $error");
+      logE("gloryEmptyReport error: $error");
 
       if (error.toString().contains("Http status error")) {
         //全回收功能需要在执行レジ締め后才可以执行。
         errorHandleDialog("この機能はレジ締め後に実行する必要があります。");
       } else {
-        errorHandleDialog("gloryEmptyReport error: ${error.tr}");
+        logE("gloryEmptyReport error: $error");
+        errorHandleDialog("gloryEmptyReport error: ${error}");
       }
       //showToast('回收失败!');
 
