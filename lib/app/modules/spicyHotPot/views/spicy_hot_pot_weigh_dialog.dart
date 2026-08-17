@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/formatMoney.dart';
 import '../../../services/scale_serial_service.dart';
 import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
@@ -360,7 +361,7 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                _hasWeight ? '¥ $_price' : '¥ ---',
+                _hasWeight ? '¥ ${formatMoney(_price)}' : '¥ ---',
                 style: TextStyle(
                   color: _hasWeight ? _kRed : _kGrey,
                   fontSize: ScreenAdapter.fontSize(44),

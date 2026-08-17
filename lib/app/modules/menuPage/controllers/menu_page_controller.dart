@@ -25,6 +25,7 @@ import '../../../config/imageData.dart';
 import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
+import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
@@ -1639,6 +1640,13 @@ print("加1了");
     // 麻辣烫模式返回首页时重置 currentMode，避免遗留脏状态
     if (machineInfo.currentMode == MachineMode.spicyHotPot) {
       machineInfo.currentMode = MachineMode.sell;
+    }
+    // 返回言语选择页时，无论之前选了什么语言都还原为日语
+    checkLanguage.value = 'JP';
+    if (Get.isRegistered<CheckoutPageController>()) {
+      Get.find<CheckoutPageController>().updateSettingLanguage('JP');
+    } else {
+      Get.updateLocale(const Locale('ja', 'JP'));
     }
     Get.back();
   }

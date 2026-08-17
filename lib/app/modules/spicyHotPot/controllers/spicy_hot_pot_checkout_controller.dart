@@ -11,7 +11,7 @@ import '../../../controllers/order_sql_controller.dart';
 import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/showImage.dart';
-import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../views/spicy_bowl_scan_dialog.dart';
 import '../views/spicy_hot_pot_category_page.dart';
 import '../views/spicy_hot_pot_weigh_dialog.dart';
@@ -47,6 +47,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   RxList freeGiftMenuList = [].obs;
   RxString selectedCategoryName = ''.obs;
   bool _giftDialogShowing = false;
+  /// 赠品确认「处理中」半透明遮罩是否已打开
+  bool _processingOverlayShowing = false;
 
   // 普通注文模式步骤：0=选择并称重，1=选择选项并确认
   RxInt normalStep = 0.obs;
@@ -82,6 +84,20 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   bool get isScannedItemEmpty => scannedItem.isEmpty;
   Map get scannedItemData => scannedItem;
   List get categoryMenuData => categoryMenuList;
+
+  /// 客人可见提示：单按钮确认弹窗（替代底部 Toast）
+  void _showCustomerAlert(String message) {
+    if (message.trim().isEmpty) return;
+    Get.dialog(
+      DialogUtils.alertOneButton(
+        message,
+        title: 'tag_title'.tr,
+        confirmtitle: 'tag_button_yes'.tr,
+        confirm: () => Get.back(),
+      ),
+      barrierDismissible: false,
+    );
+  }
 
   // ==================== 生命周期 ====================
 
@@ -149,7 +165,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       });
     } catch (e) {
       logE('查询商品失败: $e');
-      showToast('查询失败: $e');
+      _showCustomerAlert('spicy_query_failed'.tr);
     }
   }
 
@@ -162,7 +178,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     } else if (categoryMenuList.length == 1) {
       showScaleDialogForItem(categoryMenuList.first as Map);
     } else {
-      showToast('暂无称重商品');
+      _showCustomerAlert('spicy_no_weigh_item'.tr);
     }
   }
 
@@ -535,10 +551,10 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   /// 校验失败时返回提示文案；通过返回 null
   String? get normalOrderValidationMessage {
     final selectedCode = selectedOptionMenuCode.value;
-    if (selectedCode.isEmpty) return '请先选择汤底';
+    if (selectedCode.isEmpty) return 'spicy_select_soup_first'.tr;
 
     final selectedItem = selectedOptionMenuItem;
-    if (selectedItem == null) return '请先选择汤底';
+    if (selectedItem == null) return 'spicy_select_soup_first'.tr;
 
     if (_soupHasChoosableOptions(selectedItem) &&
         !soupOptionsConfirmed.value) {
@@ -556,13 +572,13 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     if (normalWeighResult.isEmpty) return;
     final validationMsg = normalOrderValidationMessage;
     if (validationMsg != null) {
-      showToast(validationMsg);
+      _showCustomerAlert(validationMsg);
       return;
     }
 
     final itemData = normalWeighResult['itemData'];
     if (itemData is! Map) {
-      showToast('称重数据异常，请重新称重');
+      _showCustomerAlert('spicy_weigh_data_error'.tr);
       return;
     }
     final weight = (normalWeighResult['weight'] is num)
@@ -575,7 +591,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         ? (normalWeighResult['unitPricePer100g'] as num).toInt()
         : int.tryParse('${normalWeighResult['unitPricePer100g']}') ?? 0;
     if (weight <= 0 || price <= 0) {
-      showToast('重量无效，请重新称重');
+      _showCustomerAlert('spicy_weight_invalid'.tr);
       return;
     }
 
@@ -680,20 +696,25 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         subtitle: _giftSubtitle(gift),
         preparedState: prepared,
         addToCartCallback: (price, options, optionTitle) async {
-          // 有可选规格却未选时，不入车、不关弹窗
-          if (!_giftOptionsSelected(gift, options)) {
-            showToast('spicy_gift_select_option'.tr);
+          final hasSelection = options.isNotEmpty;
+          if (!hasSelection) {
+            // 有必选规格组：必须先选
+            if (_giftOptionsRequired(gift)) {
+              _showCustomerAlert('spicy_gift_select_option'.tr);
+              return;
+            }
+            // 规格组均可不选：弹窗内处理完再关窗跳菜单（方案 A）
+            await _commitCartFromGiftDialog(baseCartItems);
             return;
           }
           final optionsString =
               options.map((e) => e.toString()).toList().join(',');
-          Get.back();
           final items = List<Map<String, dynamic>>.from(baseCartItems);
           items.insert(
             0,
             _buildGiftCartItem(gift, price, optionsString, optionTitle),
           );
-          await _finishNormalOrder(items);
+          await _commitCartFromGiftDialog(items);
         },
       ),
       barrierDismissible: false,
@@ -711,19 +732,17 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     return const [];
   }
 
-  /// 赠品有可选项时，必须至少选中一个 option 才允许入车
-  bool _giftOptionsSelected(Map gift, List options) {
+  /// 赠品是否存在必选规格组（smallest > 0 且组内有选项）
+  bool _giftOptionsRequired(Map gift) {
     final groups =
         (gift['optionGroupVoList'] as List?)?.whereType<Map>().toList() ?? [];
-    if (groups.isEmpty) return true;
-
-    final hasChoosable = groups.any((g) {
+    for (final g in groups) {
       final opts = g['optionVoList'];
-      return opts is List && opts.isNotEmpty;
-    });
-    if (!hasChoosable) return true;
-
-    return options.isNotEmpty;
+      if (opts is! List || opts.isEmpty) continue;
+      final minNum = int.tryParse('${g['smallest'] ?? 0}') ?? 0;
+      if (minNum > 0) return true;
+    }
+    return false;
   }
 
   Map<String, dynamic> _buildGiftCartItem(
@@ -747,24 +766,103 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     };
   }
 
-  /// 写入购物车并进入菜单页选其他菜
-  Future<void> _finishNormalOrder(List<Map<String, dynamic>> cartItems) async {
+  /// 赠品弹窗确认：弹窗上显示「处理中」，写库后关窗并跳菜单
+  Future<void> _commitCartFromGiftDialog(
+    List<Map<String, dynamic>> cartItems,
+  ) async {
+    await _finishNormalOrder(cartItems, closeGiftDialog: true);
+  }
+
+  /// 半透明遮罩 + 居中白底方卡「处理中」（不用 EasyLoading）
+  void _showTransparentProcessingOverlay() {
+    if (_processingOverlayShowing) return;
+    _processingOverlayShowing = true;
+    final box = 480.0;
+    Get.dialog(
+      PopScope(
+        canPop: false,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Center(
+            child: Container(
+              width: box,
+              height: box,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 24,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    color: Color(0xFF2E9E8F),
+                    strokeWidth: 4,
+                  ),
+                  const SizedBox(height: 28),
+                  Text(
+                    'spicy_processing'.tr,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF333333),
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+      barrierColor: const Color(0x99000000),
+      useSafeArea: false,
+    );
+  }
+
+  void _dismissTransparentProcessingOverlay() {
+    if (!_processingOverlayShowing) return;
+    _processingOverlayShowing = false;
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+  }
+
+  /// 写入购物车并进入菜单页（无赠品下一步 / 有赠品确认 共用）
+  /// [closeGiftDialog] 为 true 时，写库成功后先关赠品弹窗再跳转
+  Future<void> _finishNormalOrder(
+    List<Map<String, dynamic>> cartItems, {
+    bool closeGiftDialog = false,
+  }) async {
     if (normalOrderSubmitting.value) return;
     normalOrderSubmitting.value = true;
+    _showTransparentProcessingOverlay();
     try {
       await orderSqlController.addCartItemsAtomically(cartItems);
       await orderSqlController.getCardList();
       await updateTotalPrice();
     } catch (e, st) {
       logE('麻辣烫组合商品入购物车失败: $e\n$st');
-      showToast('加入购物车失败，请重试');
+      _dismissTransparentProcessingOverlay();
+      normalOrderSubmitting.value = false;
+      _showCustomerAlert('spicy_add_cart_failed'.tr);
       return;
     } finally {
       normalOrderSubmitting.value = false;
     }
 
-    // offNamed 替换 ModeView（ModeView 出栈，controller 销毁，无需手动清状态）
-    // 用 toNamed 的话 ModeView 留在栈中，后续 normalStep=0 的 Obx 重建会触发称重页被压入 MenuPage 上方
+    // 先关「处理中」，必要时再关赠品弹窗，立刻进菜单
+    _dismissTransparentProcessingOverlay();
+    if (closeGiftDialog) {
+      Get.back();
+    }
     Get.offNamed('/menu-page', arguments: menuPageArguments());
   }
 

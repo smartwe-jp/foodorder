@@ -120,52 +120,53 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(
-                        ScreenAdapter.width(40),
-                        ScreenAdapter.height(44),
-                        ScreenAdapter.width(40),
-                        ScreenAdapter.height(32),
+                        ScreenAdapter.width(44),
+                        ScreenAdapter.height(48),
+                        ScreenAdapter.width(44),
+                        ScreenAdapter.height(40),
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // 扫码引导图标加大，便于远距离辨认
                           Container(
-                            width: ScreenAdapter.width(96),
-                            height: ScreenAdapter.width(96),
+                            width: ScreenAdapter.width(168),
+                            height: ScreenAdapter.width(168),
                             decoration: BoxDecoration(
                               color: const Color(0xFFE8F7F4),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(24),
                             ),
                             child: Icon(
                               Icons.qr_code_scanner,
                               color: _accent,
-                              size: ScreenAdapter.fontSize(56),
+                              size: ScreenAdapter.fontSize(108),
                             ),
                           ),
-                          SizedBox(height: ScreenAdapter.height(24)),
+                          SizedBox(height: ScreenAdapter.height(28)),
                           Text(
                             'spicy_bowl_scan_title'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: _title,
-                              fontSize: ScreenAdapter.fontSize(36),
+                              fontSize: ScreenAdapter.fontSize(38),
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w700,
                               height: 1.3,
                             ),
                           ),
-                          SizedBox(height: ScreenAdapter.height(12)),
+                          SizedBox(height: ScreenAdapter.height(14)),
                           Text(
                             'spicy_bowl_scan_subtitle'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: _sub,
-                              fontSize: ScreenAdapter.fontSize(22),
+                              fontSize: ScreenAdapter.fontSize(24),
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w500,
                               height: 1.4,
                             ),
                           ),
-                          SizedBox(height: ScreenAdapter.height(36)),
+                          SizedBox(height: ScreenAdapter.height(40)),
                           Row(
                             children: [
                               Expanded(
@@ -175,16 +176,16 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                                   ),
                                   child: Container(
                                     alignment: Alignment.center,
-                                    height: ScreenAdapter.height(80),
+                                    height: ScreenAdapter.height(108),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFF2F2F2),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       'spicy_bowl_scan_back'.tr,
                                       style: TextStyle(
                                         color: _title,
-                                        fontSize: ScreenAdapter.fontSize(26),
+                                        fontSize: ScreenAdapter.fontSize(30),
                                         fontFamily: GFont.getFontFamily(),
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -192,7 +193,7 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: ScreenAdapter.width(16)),
+                              SizedBox(width: ScreenAdapter.width(20)),
                               Expanded(
                                 child: KioskTap(
                                   onTap: () => Get.back(
@@ -200,17 +201,17 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                                   ),
                                   child: Container(
                                     alignment: Alignment.center,
-                                    height: ScreenAdapter.height(80),
+                                    height: ScreenAdapter.height(108),
                                     decoration: BoxDecoration(
                                       color: _accent,
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       'spicy_bowl_scan_skip'.tr,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: ScreenAdapter.fontSize(26),
+                                        fontSize: ScreenAdapter.fontSize(30),
                                         fontFamily: GFont.getFontFamily(),
                                         fontWeight: FontWeight.w700,
                                       ),

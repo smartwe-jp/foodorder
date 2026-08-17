@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/formatMoney.dart';
 import '../../../services/scale_serial_service.dart';
 import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/KioskTap.dart';
@@ -235,7 +236,6 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           Column(
             children: [
               const SpicyHotPotStepHeader(currentStep: 2),
-              const SpicyTableNoBanner(),
               Expanded(child: _buildContent()),
               SpicyHotPotBottomBar(
                 onBack: _cancel,
@@ -285,11 +285,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
             ),
           ),*/
           SizedBox(height: ScreenAdapter.height(42)),
-          _buildUnitPriceBadge(),
-          if (_minAmountYen > 0) ...[
-            SizedBox(height: ScreenAdapter.height(16)),
-            _buildMinAmountTip(),
-          ],
+          _buildTableNoAndUnitPriceRow(),
+
           SizedBox(height: ScreenAdapter.height(_minAmountYen > 0 ? 50 : 78)),
           _buildScaleVisual(),
           SizedBox(height: ScreenAdapter.height(14)),
@@ -301,7 +298,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           if (_hasWeight) ...[
             SizedBox(height: ScreenAdapter.height(15)),
             Text(
-              '¥ $_price',
+              '¥ ${formatMoney(_price)}',
               style: TextStyle(
                 color: const Color(0xFFE64340),
                 fontSize: ScreenAdapter.fontSize(86),
@@ -312,7 +309,12 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
             ),
           ],
           SizedBox(height: ScreenAdapter.height(48)),
-          _buildInfoTip(),
+          //_buildInfoTip(),
+          SizedBox(height: ScreenAdapter.height(16)),
+          if (_minAmountYen > 0) ...[
+            SizedBox(height: ScreenAdapter.height(16)),
+            _buildMinAmountTip(),
+          ],
           SizedBox(height: ScreenAdapter.height(16)),
           KioskTap(
             onTap: _resetWeight,
@@ -360,24 +362,93 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     );
   }
 
-  Widget _buildUnitPriceBadge() {
+  /// 盆号 / 单价共用同一背景高度
+  double get _badgeRowHeight => ScreenAdapter.height(72);
+
+  Widget _buildTableNoAndUnitPriceRow() {
+    return Obx(() {
+      String tableNo = '';
+      if (Get.isRegistered<SpicyHotPotCheckoutController>()) {
+        tableNo =
+            Get.find<SpicyHotPotCheckoutController>().tableNo.value.trim();
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (tableNo.isNotEmpty) _buildTableNoBadge(tableNo),
+          const Spacer(),
+          _buildUnitPriceBadge(),
+        ],
+      );
+    });
+  }
+
+  Widget _buildTableNoBadge(String tableNo) {
     return Container(
+      height: _badgeRowHeight,
+      constraints: BoxConstraints(maxWidth: ScreenAdapter.width(260)),
       padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(45),
-        vertical: ScreenAdapter.height(18),
+        horizontal: ScreenAdapter.width(28),
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFE6FAEF),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE6FAEF), width: 2),
+        color: const Color(0xFFFF9800),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: Color(0x22000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
           ),
         ],
       ),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.qr_code_2,
+            color: Colors.white,
+            size: ScreenAdapter.fontSize(36),
+          ),
+          SizedBox(width: ScreenAdapter.width(10)),
+          Flexible(
+            child: Text(
+              tableNo,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: ScreenAdapter.fontSize(36),
+                fontFamily: GFont.getFontFamily(),
+                fontWeight: FontWeight.w800,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUnitPriceBadge() {
+    return Container(
+      height: _badgeRowHeight,
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenAdapter.width(28),
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6FAEF),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFC8EED9), width: 1.5),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      alignment: Alignment.center,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -388,30 +459,30 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               color: const Color(0xFF9A5B12),
               fontSize: ScreenAdapter.fontSize(22),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(width: ScreenAdapter.width(14)),
+          SizedBox(width: ScreenAdapter.width(12)),
           Text(
             '¥${widget.unitPricePer100g}',
             style: TextStyle(
-              color: const Color(0xF9553918),
-              fontSize: ScreenAdapter.fontSize(45),
+              color: const Color(0xFF553918),
+              fontSize: ScreenAdapter.fontSize(36),
               fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w700,
               height: 1,
             ),
           ),
-          SizedBox(width: ScreenAdapter.width(6)),
+          SizedBox(width: ScreenAdapter.width(4)),
           Padding(
-            padding: EdgeInsets.only(bottom: ScreenAdapter.height(4)),
+            padding: EdgeInsets.only(bottom: ScreenAdapter.height(2)),
             child: Text(
               '/100g',
               style: TextStyle(
                 color: const Color(0xFF9A5B12),
-                fontSize: ScreenAdapter.fontSize(24),
+                fontSize: ScreenAdapter.fontSize(22),
                 fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

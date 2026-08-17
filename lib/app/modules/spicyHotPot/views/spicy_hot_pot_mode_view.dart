@@ -452,8 +452,8 @@ class SpicyHotPotModeView extends StatelessWidget {
           final runSpacing = ScreenAdapter.height(8);
           final cardWidth =
               (constraints.maxWidth - spacing * (columns - 1)) / columns;
-          // 内容区宽度去掉边框，避免图宽=卡片宽导致溢出
-          final contentW = (cardWidth - borderW * 2).clamp(80.0, 320.0);
+          // 图片左右贴齐卡片（无左右空隙），正方形
+          final imageSize = cardWidth;
           final midGap = ScreenAdapter.height(8);
           // 字号对齐菜单页 GridItemView：标题 28 / 价格 28
           final titleH = ScreenAdapter.fontSize(28) * 1.2 * 2;
@@ -461,7 +461,7 @@ class SpicyHotPotModeView extends StatelessWidget {
           final infoPadV = ScreenAdapter.height(8);
           final infoH =
               midGap + titleH + ScreenAdapter.height(6) + priceH + infoPadV;
-          final cardHeight = borderW * 2 + contentW + infoH;
+          final cardHeight = imageSize + infoH;
 
           return Wrap(
             spacing: spacing,
@@ -504,22 +504,22 @@ class SpicyHotPotModeView extends StatelessWidget {
                       Column(
                         children: [
                           SizedBox(
-                            width: contentW,
-                            height: contentW,
+                            width: double.infinity,
+                            height: imageSize,
                             child: img.isNotEmpty
                                 ? CachedNetworkImage(
                                     key: ValueKey(img),
                                     imageUrl: img,
                                     cacheManager: menuImageCacheManager,
                                     fit: BoxFit.cover,
-                                    width: contentW,
-                                    height: contentW,
+                                    width: double.infinity,
+                                    height: imageSize,
                                     fadeInDuration: Duration.zero,
                                     fadeOutDuration: Duration.zero,
-                                    memCacheWidth: (contentW * 2)
+                                    memCacheWidth: (imageSize * 2)
                                         .round()
                                         .clamp(1, 1400),
-                                    memCacheHeight: (contentW * 2)
+                                    memCacheHeight: (imageSize * 2)
                                         .round()
                                         .clamp(1, 1400),
                                     placeholder: (_, __) =>
@@ -574,6 +574,23 @@ class SpicyHotPotModeView extends StatelessWidget {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.end,
                                               children: [
+                                                if (showOriginal) ...[
+                                                  Text(
+                                                    '$originalNum'.formatSum(),
+                                                    style: TextStyle(
+                                                      color: const Color(0xFFA9A9A9),
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontFamily: GFont.getFontFamily(),
+                                                      fontWeight: FontWeight.w500,
+                                                      height: 1,
+                                                      decoration: TextDecoration.lineThrough,
+                                                      decorationColor:
+                                                          const Color(0xFFA9A9A9),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                      width: ScreenAdapter.width(5)),
+                                                ],
                                                 if (priceNum > 0) ...[
                                                   Text(
                                                     '¥',
@@ -599,23 +616,6 @@ class SpicyHotPotModeView extends StatelessWidget {
                                                     ),
                                                   ),
                                                 ],
-                                                if (showOriginal) ...[
-                                                  SizedBox(
-                                                      width: ScreenAdapter.width(5)),
-                                                  Text(
-                                                    '$originalNum'.formatSum(),
-                                                    style: TextStyle(
-                                                      color: const Color(0xFFA9A9A9),
-                                                      fontSize: ScreenAdapter.fontSize(22),
-                                                      fontFamily: GFont.getFontFamily(),
-                                                      fontWeight: FontWeight.w500,
-                                                      height: 1,
-                                                      decoration: TextDecoration.lineThrough,
-                                                      decorationColor:
-                                                          const Color(0xFFA9A9A9),
-                                                    ),
-                                                  ),
-                                                ],
                                               ],
                                             )
                                           : const SizedBox.shrink(),
@@ -627,7 +627,7 @@ class SpicyHotPotModeView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (isRecommend)
+                      /*if (isRecommend)
                         Positioned(
                           left: 0,
                           top: 0,
@@ -650,7 +650,7 @@ class SpicyHotPotModeView extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
                     ],
                   ),
                 ),
@@ -876,7 +876,7 @@ class SpicyHotPotModeView extends StatelessWidget {
           ),
           SizedBox(width: ScreenAdapter.width(4)),
           Text(
-            '$price',
+            '$price'.formatSum(),
             style: TextStyle(
               color: _kPrice,
               fontSize: ScreenAdapter.fontSize(44),
