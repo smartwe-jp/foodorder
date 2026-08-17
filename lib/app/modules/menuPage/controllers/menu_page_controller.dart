@@ -27,6 +27,7 @@ import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/order_sql_controller.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
@@ -451,7 +452,12 @@ class MenuPageController extends GetxController with StateMixin {
   // }
   backToNewHome() async {
     //Get.delete<MenuPageController>(); // 手动删除控制器实例
+    if (!_isCurrentMenuRoute) return;
     Get.back();
+  }
+
+  bool get _isCurrentMenuRoute {
+    return Get.currentRoute == Routes.MENU_PAGE;
   }
 
   //公共设置菜单Title
@@ -1435,6 +1441,8 @@ print("加1了");
   }
 
   gotoLanguageHome() {
+    if (!_isCurrentMenuRoute) return;
+
     //clearCartList();
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
