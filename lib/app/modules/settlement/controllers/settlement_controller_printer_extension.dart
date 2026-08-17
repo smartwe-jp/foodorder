@@ -1467,7 +1467,7 @@ class PrintService extends GetxService {
       bool needOption = true,
       bool isContinuous = false,
       String? categoryName}) {
-    final optionQtyString = qty == 1 ? "" : "x $qty";
+    final itemQtyString = "x $qty";
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
@@ -1499,7 +1499,7 @@ class PrintService extends GetxService {
                 ),
               ),
               Text(
-                optionQtyString,
+                itemQtyString,
                 style: TextStyle(
                   fontSize: 40,
                   color: ColorsUtil.hexToColor("#000000"),
