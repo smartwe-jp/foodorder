@@ -1077,14 +1077,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
         EasyLoading.dismiss();
         handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
           Get.back();
-          checkIsAllow10Yen(checkedType);
+          settingAllowCash(checkedType, keyString, cashValue);
         });
       });
     } catch (e) {
       EasyLoading.dismiss();
       handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
         Get.back();
-        checkIsAllow10Yen(checkedType);
+        settingAllowCash(checkedType, keyString, cashValue);
       });
     } 
     
