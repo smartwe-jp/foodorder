@@ -20,7 +20,9 @@ class MachineActivationResponse {
     return MachineActivationResponse(
       code: code,
       hasData: data != null,
-      message: _asString(json['message']),
+      message: _asString(json['msg']).isNotEmpty
+          ? _asString(json['msg'])
+          : _asString(json['message']),
       activation: data == null || code != 200
           ? null
           : MachineActivation.fromRemoteJson(_asMap(data)),
@@ -63,6 +65,8 @@ class MachineLanguage {
 class MachineActivation {
   const MachineActivation({
     required this.machineModelCode,
+    required this.machineCode,
+    required this.tableNo,
     required this.shopCode,
     required this.paymentChannels,
     required this.languageOptions,
@@ -74,9 +78,14 @@ class MachineActivation {
     required this.actuarial,
     required this.taxSystem,
     required this.cashMachineWithdraw,
+    required this.dynamicCode,
+    required this.receiptRemark,
+    required this.spicyHotPot,
   });
 
   final String machineModelCode;
+  final String machineCode;
+  final String tableNo;
   final String shopCode;
   final MachinePaymentChannels paymentChannels;
   final List<MachineLanguage> languageOptions;
@@ -90,10 +99,15 @@ class MachineActivation {
   final bool actuarial;
   final bool taxSystem;
   final bool cashMachineWithdraw;
+  final bool dynamicCode;
+  final String? receiptRemark;
+  final bool spicyHotPot;
 
   factory MachineActivation.fromRemoteJson(Map<String, dynamic> json) {
     return MachineActivation(
       machineModelCode: _asString(json['machineType']),
+      machineCode: _asString(json['machineCode']),
+      tableNo: _asString(json['tableNo']),
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromRemoteJson(
           _asMapOrEmpty(json['linePayChannelMap'])),
@@ -106,12 +120,17 @@ class MachineActivation {
       actuarial: _asBool(json['actuarial']),
       taxSystem: _asBool(json['taxSystem']),
       cashMachineWithdraw: _asBool(json['cashMachineWithdraw']),
+      dynamicCode: _asBool(json['dynamicCode']),
+      receiptRemark: _asNullableString(json['receiptRemark']),
+      spicyHotPot: _asBool(json['spicyHotPot']),
     );
   }
 
   factory MachineActivation.fromJson(Map<String, dynamic> json) {
     return MachineActivation(
       machineModelCode: _asString(json['machineModelCode']),
+      machineCode: _asString(json['machineCode']),
+      tableNo: _asString(json['tableNo']),
       shopCode: _asString(json['shopCode']),
       paymentChannels: MachinePaymentChannels.fromJson(
           _asMapOrEmpty(json['paymentChannels'])),
@@ -124,6 +143,9 @@ class MachineActivation {
       actuarial: _asBool(json['actuarial']),
       taxSystem: _asBool(json['taxSystem']),
       cashMachineWithdraw: _asBool(json['cashMachineWithdraw']),
+      dynamicCode: _asBool(json['dynamicCode']),
+      receiptRemark: _asNullableString(json['receiptRemark']),
+      spicyHotPot: _asBool(json['spicyHotPot']),
     );
   }
 
@@ -140,6 +162,8 @@ class MachineActivation {
   }) {
     return MachineActivation(
       machineModelCode: machineModelCode,
+      machineCode: '',
+      tableNo: '',
       shopCode: shopCode,
       paymentChannels: MachinePaymentChannels.fromLegacyJson(paymentData),
       languageOptions: _asMachineLanguages(languages),
@@ -151,11 +175,16 @@ class MachineActivation {
       actuarial: _asBool(machineSettingData['machineActuarial']),
       taxSystem: _asBool(paymentData['taxSystem']),
       cashMachineWithdraw: _asBool(paymentData['cashMachineWithdraw']),
+      dynamicCode: false,
+      receiptRemark: null,
+      spicyHotPot: false,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'machineModelCode': machineModelCode,
+        'machineCode': machineCode,
+        'tableNo': tableNo,
         'shopCode': shopCode,
         'paymentChannels': paymentChannels.toJson(),
         'languages': languageOptions
@@ -169,6 +198,9 @@ class MachineActivation {
         'actuarial': actuarial,
         'taxSystem': taxSystem,
         'cashMachineWithdraw': cashMachineWithdraw,
+        'dynamicCode': dynamicCode,
+        'receiptRemark': receiptRemark,
+        'spicyHotPot': spicyHotPot,
       };
 
   Map<String, dynamic> toLegacyPaymentJson() => {
@@ -417,6 +449,8 @@ String _fallbackLanguageName(String code) {
 }
 
 String _asString(dynamic value) => value is String ? value : '';
+
+String? _asNullableString(dynamic value) => value is String ? value : null;
 
 int _asInt(dynamic value) {
   if (value is int) return value;

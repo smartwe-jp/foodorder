@@ -25,9 +25,12 @@ void main() {
   group('MachineActivationResponse', () {
     test('parses remote payload into a typed activation model', () {
       final response = MachineActivationResponse.fromPayload({
+        'msg': 'success',
         'code': '200',
         'data': {
           'machineType': 'SWF1',
+          'machineCode': 'machine-001',
+          'tableNo': '',
           'shopCode': 'shop-001',
           'linePayChannelMap': {
             'Cash': true,
@@ -50,11 +53,17 @@ void main() {
           'actuarial': false,
           'taxSystem': 'true',
           'cashMachineWithdraw': 0,
+          'dynamicCode': true,
+          'receiptRemark': null,
+          'spicyHotPot': true,
         },
       });
 
       expect(response.code, 200);
+      expect(response.message, 'success');
       expect(response.activation?.machineModelCode, 'SWF1');
+      expect(response.activation?.machineCode, 'machine-001');
+      expect(response.activation?.tableNo, isEmpty);
       expect(response.activation?.shopCode, 'shop-001');
       expect(response.activation?.paymentChannels.cash, isTrue);
       expect(response.activation?.paymentChannels.wechat, isTrue);
@@ -63,6 +72,9 @@ void main() {
       expect(response.activation?.canReimburse, isTrue);
       expect(response.activation?.taxSystem, isTrue);
       expect(response.activation?.cashMachineWithdraw, isFalse);
+      expect(response.activation?.dynamicCode, isTrue);
+      expect(response.activation?.receiptRemark, isNull);
+      expect(response.activation?.spicyHotPot, isTrue);
       expect(response.activation?.languages, ['JP', 'CH', 'EN', 'KO', 'VN']);
       expect(
         response.activation?.languageOptions.map((item) => item.name),
@@ -240,6 +252,56 @@ void main() {
         cached?.languageOptions.map((item) => item.name),
         ['日本語', '한국말'],
       );
+    });
+
+    test('round-trips all currently provided activation fields', () async {
+      final service = MachineActivationLocalService();
+      final activation = MachineActivation.fromRemoteJson({
+        'machineType': 'SWF1',
+        'machineCode': 'X3V9YPJABVZGAELIZ9',
+        'tableNo': 'A-01',
+        'shopCode': 'UGE4RRQR',
+        'linePayChannelMap': {
+          'Cash': true,
+          'Wechat': true,
+          'Alipay': true,
+          'PayPay': true,
+          'POS': true,
+          'au_Pay': true,
+          'd_Pay': true,
+          'R_Pay': true,
+          'm_Pay': true,
+          'VISA': true,
+          'JCB': true,
+          'Discover': true,
+          'MASTER': true,
+          'UnionPay': false,
+          'Diners_Club': false,
+          'AMERICAN_EXPRESS': true,
+        },
+        'languages': ['JP', 'CH', 'EN', 'KO'],
+        'logoImage': 'logo.png',
+        'homeImages': ['home.png'],
+        'headerImages': ['header.png'],
+        'lineup': false,
+        'taxSystem': true,
+        'dynamicCode': true,
+        'cashMachineWithdraw': true,
+        'receiptRemark': 'thank you',
+        'spicyHotPot': true,
+        'actuarial': false,
+        'reimburse': true,
+      });
+
+      await service.save(activation);
+      final cached = await service.load();
+
+      expect(cached?.toJson(), activation.toJson());
+      expect(cached?.machineCode, 'X3V9YPJABVZGAELIZ9');
+      expect(cached?.tableNo, 'A-01');
+      expect(cached?.dynamicCode, isTrue);
+      expect(cached?.receiptRemark, 'thank you');
+      expect(cached?.spicyHotPot, isTrue);
     });
   });
 

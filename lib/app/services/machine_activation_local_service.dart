@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/machine_activation.dart';
 
 class MachineActivationLocalService {
-  static const int schemaVersion = 3;
+  static const int schemaVersion = 4;
   static const String cacheKey = 'machine_activation_cache';
 
   static const String _legacyPaymentKey = 'smartwe_machineActivateData';
