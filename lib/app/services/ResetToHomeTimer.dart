@@ -12,8 +12,8 @@ import 'package:http/http.dart' as http;
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 18;
-  int _timeoutSeconds = 18; // 3分钟
+  final int timeSeconds = 180;
+  int _timeoutSeconds = 180; // 3分钟
 
   void startTimer() {
     cancelTimer();
