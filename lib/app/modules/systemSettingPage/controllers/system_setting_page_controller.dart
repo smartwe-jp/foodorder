@@ -1053,6 +1053,44 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _updateSystemSetting("isAllowOneYen", checkedType);
   }
 
+  settingAllowCash(checkedType, keyString, cashValue) async {
+    _showEasyLoading();
+    try {
+      await payCube.setAcceptCash(checkedType, cashValue, onSuccess: (){
+        switch (cashValue) {
+          case 5:
+            machineInfo.isAllow5 = checkedType;
+            break;
+          case 10:
+            machineInfo.isAllow10 = checkedType;
+            break;
+          case 5000:
+            machineInfo.isAllow5000 = checkedType;
+            break;
+          case 10000:
+            machineInfo.isAllow10000 = checkedType;
+            break;
+        }
+        _updateSystemSetting(keyString, checkedType);
+        EasyLoading.dismiss();
+      }, catchError: (error){
+        EasyLoading.dismiss();
+        handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+          Get.back();
+          checkIsAllow10Yen(checkedType);
+        });
+      });
+    } catch (e) {
+      EasyLoading.dismiss();
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow10Yen(checkedType);
+      });
+    } 
+    
+  }
+
+
   checkIsAllow5Yen(checkedType) async {
     _showEasyLoading();
     await payCube.setAcceptCash(checkedType, 5, onSuccess: (){

@@ -919,19 +919,19 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
         'label': '五円',
         'key': 'isAllow5',
         'value': settingInfo['isAllow5'] ?? '0',
-        'onChanged': (bool val) => controller.checkIsAllow5Yen(val),
+        'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow5', 5),
       },
       {
         'label': '五千円',
         'key': 'isAllow5000',
         'value': settingInfo['isAllow5000'] ?? '0',
-        'onChanged': (bool val) => controller.checkIsAllow5000Yen(val),
+        'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow5000', 5000),
       },
       {
         'label': '一万円',
         'key': 'isAllow10000',
         'value': settingInfo['isAllow10000'] ?? '0',
-        'onChanged': (bool val) => controller.checkIsAllow10000Yen(val),
+        'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow10000', 10000),
       },
     ];
 
