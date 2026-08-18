@@ -211,7 +211,7 @@ const Map<String, String> zh_CN = {
   "spicy_weigh_manual_input_title":"输入重量（g）",
   "spicy_weigh_manual_ready":"已手动输入（可进入下一步）",
   "spicy_weigh_below_min":"未达最低金额",
-  "spicy_weigh_below_min_tip":"计量金额未达最低 @amount 円，请继续加菜或跳过称重",
+  "spicy_weigh_below_min_tip":"计量金额未达最低 @amount 日元，请继续加菜或跳过称重",
   "spicy_weigh_min_amount_hint":"计量金额需达到 ¥@amount 以上才能进入下一步",
   "spicy_weigh_tare_hint":"已扣除容器皮重 @tare g，屏幕重量会比电子秤显示更轻",
   "spicy_mode_preparing":"正在准备称重…",

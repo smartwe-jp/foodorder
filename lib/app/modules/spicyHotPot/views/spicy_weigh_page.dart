@@ -606,22 +606,18 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
                   : kSpicyGrey;
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: ScreenAdapter.width(12),
-            height: ScreenAdapter.width(12),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-          ),
-          SizedBox(width: ScreenAdapter.width(8)),
+
           Flexible(
             child: Text(
               tip,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: color,
-                fontSize: ScreenAdapter.fontSize(32),
+                fontSize: ScreenAdapter.fontSize(30),
                 fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
