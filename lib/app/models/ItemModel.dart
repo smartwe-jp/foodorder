@@ -13,6 +13,8 @@ class ShopItemModel {
   int? id;
   /// 条目类型标识：'spicy' = 麻辣烫条目（购物车不显示数量加减），'' = 普通条目
   String itemType;
+  /// 麻辣烫称重克数；>0 表示称重行（用于十位取整优惠），汤底/赠品为 0
+  int spicyGrams;
 
   ShopItemModel(
       {this.menuCode,
@@ -25,9 +27,14 @@ class ShopItemModel {
         this.optionGroupVoList,
         this.optionVoListMsg,
         required this.goodsNum,
-        this.itemType = ''});
+        this.itemType = '',
+        this.spicyGrams = 0});
 
   factory ShopItemModel.fromJson(Map<String, dynamic> json) {
+    final rawGrams = json['spicyGrams'];
+    final grams = rawGrams is int
+        ? rawGrams
+        : int.tryParse('$rawGrams') ?? 0;
     return ShopItemModel(
       id: json['id'],
       menuCode: json['menuCode'],
@@ -40,6 +47,7 @@ class ShopItemModel {
       optionVoListMsg: json['optionVoListMsg'],
       goodsNum: json['goodsNum'],
       itemType: json['itemType'] ?? '',
+      spicyGrams: grams,
     );
   }
 }

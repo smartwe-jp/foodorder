@@ -348,7 +348,10 @@ class MenuPageView extends GetView<MenuPageController> {
 
                   //controller.shoppingCar(),
 
-                  Obx(() => AnimatedPositioned(
+                  Obx(() {
+                          // 订阅优惠（取整+扫码），底部应付金额同步刷新
+                          final _ = controller.totalCartDiscountYen;
+                          return AnimatedPositioned(
                           duration: const Duration(milliseconds: 200),
                           height: controller.showCartTotalGoodsNum.value > 0
                               ? ScreenAdapter.height(200)
@@ -361,7 +364,8 @@ class MenuPageView extends GetView<MenuPageController> {
                           child: controller.machineInfo.menu_direction != '1'
                               ? checkOutButton()
                               : publicShowCartView(),
-                        )),
+                        );
+                        }),
                 ],
               ),
               ),

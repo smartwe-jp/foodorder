@@ -35,6 +35,7 @@ import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
+import '../../../services/spicy_weigh_settings.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
 import '../views/option_widgets/option_view.dart';
@@ -57,7 +58,11 @@ class MenuPageController extends GetxController with StateMixin {
 
   /// 扫码优惠金额（正数＝减免多少円）；码前缀 smartwe 时由优惠接口写入
   /// 接口 key：webBootBarCodeMenuQuery（后续换接口只改 http_conf）
+  /// 注意：二次扫码覆盖，不与取整优惠混在同一字段
   final RxInt cartDiscountYen = 0.obs;
+
+  /// 麻辣烫称重金额十位向下取整产生的优惠（个位差额）；与扫码优惠累加
+  final RxInt spicyFloorDiscountYen = 0.obs;
 
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
@@ -323,6 +328,7 @@ class MenuPageController extends GetxController with StateMixin {
   getCartPriceTotal() async {
     await ordersqlcontroller.getCardList();
     _syncCartSummaryToUi();
+    await _refreshSpicyFloorDiscount();
   }
 
   /// 点击加购时先乐观更新购物车数字，避免等 SQLite 才有反馈
@@ -358,17 +364,47 @@ class MenuPageController extends GetxController with StateMixin {
       showShopCart = false;
       // 购物车清空后优惠作废
       cartDiscountYen.value = 0;
+      spicyFloorDiscountYen.value = 0;
     }
     // 购物车弹层、推荐页等仍依赖 GetBuilder 刷新
     update(['shopping_cart']);
   }
 
+  /// 按开关与称重行金额，刷新十位取整优惠（称重/汤底页展示与门槛仍用原价）
+  Future<void> _refreshSpicyFloorDiscount() async {
+    if (machineInfo.currentMode != MachineMode.spicyHotPot) {
+      spicyFloorDiscountYen.value = 0;
+      return;
+    }
+    final enabled = await SpicyWeighSettings.loadFloorToTensEnabled();
+    if (!enabled) {
+      spicyFloorDiscountYen.value = 0;
+      return;
+    }
+    var floor = 0;
+    for (final raw in ordersqlcontroller.cartItems) {
+      final item = raw as ShopItemModel;
+      // 仅称重行（spicyGrams>0）；汤底/赠品不参与取整
+      if (item.itemType == 'spicy' && item.spicyGrams > 0) {
+        floor += (item.currentPrice ?? 0) % 10;
+      }
+    }
+    spicyFloorDiscountYen.value = floor;
+    if (floor > 0) {
+      logI('麻辣烫十位取整优惠: $floor');
+    }
+  }
+
   /// 购物车商品合计（未减优惠）
   int get cartItemsTotalYen => int.tryParse(shopCartTotalPrice.value) ?? 0;
 
-  /// 应付合计 = 商品合计 − 优惠（不低于 0）
+  /// 总优惠 = 取整差额 + 扫码优惠
+  int get totalCartDiscountYen =>
+      spicyFloorDiscountYen.value + cartDiscountYen.value;
+
+  /// 应付合计 = 商品合计 − 总优惠（不低于 0）
   int get cartPayableYen {
-    final p = cartItemsTotalYen - cartDiscountYen.value;
+    final p = cartItemsTotalYen - totalCartDiscountYen;
     return p < 0 ? 0 : p;
   }
 
@@ -416,10 +452,11 @@ class MenuPageController extends GetxController with StateMixin {
       showToast('spicy_menu_scan_not_found'.tr);
       return;
     }
-    // 优惠必须小于购物车商品合计，否则不可用
+    // 扫码优惠 + 取整优惠须小于商品合计，否则不可用
     await getCartPriceTotal();
     final cartTotal = cartItemsTotalYen;
-    if (discount >= cartTotal) {
+    final combined = discount + spicyFloorDiscountYen.value;
+    if (combined >= cartTotal) {
       Get.dialog(
         DialogUtils.alertOneButton(
           'menu_discount_invalid'.tr,
@@ -428,13 +465,15 @@ class MenuPageController extends GetxController with StateMixin {
           confirm: () => Get.back(),
         ),
       );
-      logI('优惠扫码拒绝: discount=$discount >= cartTotal=$cartTotal');
+      logI(
+          '优惠扫码拒绝: scan=$discount floor=${spicyFloorDiscountYen.value} >= cartTotal=$cartTotal');
       return;
     }
+    // 二次扫码覆盖扫码优惠，取整优惠保留
     cartDiscountYen.value = discount;
     update(['shopping_cart']);
     //showToast('menu_discount_applied'.trParams({'amount': discount.toString()}));
-    logI('优惠扫码生效 name=${data['name']} discount=$discount');
+    logI('优惠扫码生效 name=${data['name']} discount=$discount floor=${spicyFloorDiscountYen.value}');
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
@@ -1384,9 +1423,9 @@ print("加1了");
           spicyTableNo.isNotEmpty) {
         formData['tableNo'] = spicyTableNo;
       }
-      // 扫码优惠（smartwe 前缀）：有减免才传 discount
-      if (cartDiscountYen.value > 0) {
-        formData['discount'] = cartDiscountYen.value;
+      // 总优惠 = 十位取整 + 扫码优惠；有减免才传 discount
+      if (totalCartDiscountYen > 0) {
+        formData['discount'] = totalCartDiscountYen;
       }
       LogUtil.d("webBootOrderformData: $formData");
 
@@ -1408,7 +1447,7 @@ print("加1了");
         int tax2 = response['data']["tax2"] ?? 0;
 
         // 本地兜底：税込=含税应付；税别=未税价（需再加税）
-        int localTotal = cartDiscountYen.value > 0
+        int localTotal = totalCartDiscountYen > 0
             ? cartPayableYen
             : (int.tryParse(orderTotlaPrice.toString()) ?? 0);
 
@@ -1617,6 +1656,7 @@ print("加1了");
     //classTag.value = topMenu[0]["categoryCode"];
     menuLackMap.value = {};
     cartDiscountYen.value = 0;
+    spicyFloorDiscountYen.value = 0;
     await getCartPriceTotal();
 
     if (topMenu.isNotEmpty) {

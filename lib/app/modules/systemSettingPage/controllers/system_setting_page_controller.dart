@@ -96,6 +96,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   /// 麻辣烫：称重页是否先扫盆边二维码/条码（下单带 tableNo）
   RxBool spicyBowlScanEnabled = false.obs;
 
+  /// 麻辣烫：进菜单后称重金额是否向下取整到十位（个位作 discount）
+  RxBool spicyFloorToTensEnabled = false.obs;
+
   /// 麻辣烫：皮重（克），称重显示/计价时扣除，默认 0
   RxDouble spicyTareGrams = 0.0.obs;
 
@@ -275,6 +278,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     isspicyHotPot.value = await HomeServices.getSmartweSpicyHotPotData();
     spicyManualInputAllowed.value = await SpicyWeighSettings.loadManualAllowed();
     spicyBowlScanEnabled.value = await SpicyWeighSettings.loadBowlScanEnabled();
+    spicyFloorToTensEnabled.value =
+        await SpicyWeighSettings.loadFloorToTensEnabled();
     spicyTareGrams.value = await SpicyWeighSettings.loadTareGrams();
     spicyGiftThresholdYen.value =
         await SpicyWeighSettings.loadGiftThresholdYen();
@@ -775,6 +780,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
   Future<void> updateSpicyBowlScanEnabled(bool enabled) async {
     spicyBowlScanEnabled.value = enabled;
     await SpicyWeighSettings.saveBowlScanEnabled(enabled);
+    update();
+  }
+
+  /// 麻辣烫：十位向下取整开关（仅进菜单后生效，称重/汤底展示与门槛仍按原价）
+  Future<void> updateSpicyFloorToTensEnabled(bool enabled) async {
+    spicyFloorToTensEnabled.value = enabled;
+    await SpicyWeighSettings.saveFloorToTensEnabled(enabled);
     update();
   }
 

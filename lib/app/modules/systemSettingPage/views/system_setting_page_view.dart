@@ -1024,6 +1024,93 @@ class SystemSettingPageView extends GetView {
     });
   }
 
+  /// 麻辣烫：进菜单后称重金额十位向下取整（个位差额作优惠）
+  Widget setSpicyFloorToTens() {
+    return Obx(() {
+      final on = controller.spicyFloorToTensEnabled.value;
+      return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(
+          left: ScreenAdapter.width(20),
+          top: ScreenAdapter.height(3),
+          bottom: ScreenAdapter.height(3),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyFloorToTensEnabled(true),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '許可',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: ScreenAdapter.width(16)),
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => controller.updateSpicyFloorToTensEnabled(false),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    decoration: BoxDecoration(
+                      color: !on
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '停止',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        color: !on
+                            ? Colors.white
+                            : ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: ScreenAdapter.height(6)),
+            Text(
+              '※ 許可するとメニュー画面で計量金額を十円単位に切捨て、端数を割引に加算します（計量/スープ表示と最低・満額判定は原価のまま）。',
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(15),
+                color: ColorsUtil.hexToColor("#999999"),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   /// 麻辣烫：皮重（软键盘录入，默认 0；无加减，后缀 g）
   Widget setSpicyWeighTare() {
     return Obx(() {
@@ -2677,6 +2764,23 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                           setSpicyMinAmount(),
+                                        ]
+                                    ),
+                                  if(controller.isspicyHotPot.value == "1")
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "十円切捨",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setSpicyFloorToTens(),
                                         ]
                                     ),
                                   if(controller.lineup.value == true)

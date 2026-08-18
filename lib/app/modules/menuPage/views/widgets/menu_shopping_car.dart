@@ -11,7 +11,7 @@ extension Shoppingcar on MenuPageController {
 
   publicCartView() {
     return Obx(() {
-      final discount = cartDiscountYen.value;
+      final discount = totalCartDiscountYen;
       return ListView(
         shrinkWrap: true,
         children: [

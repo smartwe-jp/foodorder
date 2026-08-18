@@ -1,12 +1,13 @@
 import 'Storage.dart';
 
-/// 麻辣烫称重相关本地设置（手动输入、皮重、满额赠送、最低额度、盆号扫码）
+/// 麻辣烫称重相关本地设置（手动输入、皮重、满额赠送、最低额度、盆号扫码、十位取整）
 class SpicyWeighSettings {
   static const String manualInputKey = 'spicy_weigh_manual_input';
   static const String tareGramsKey = 'spicy_weigh_tare_g';
   static const String giftThresholdYenKey = 'spicy_weigh_gift_threshold_yen';
   static const String minAmountYenKey = 'spicy_weigh_min_amount_yen';
   static const String bowlScanKey = 'spicy_weigh_bowl_scan';
+  static const String floorToTensKey = 'spicy_weigh_floor_to_tens';
 
   /// 是否在称重页显示「手动输入」按钮
   static Future<bool> loadManualAllowed() async {
@@ -26,6 +27,16 @@ class SpicyWeighSettings {
 
   static Future<void> saveBowlScanEnabled(bool enabled) async {
     await Storage.setString(bowlScanKey, enabled ? '1' : '0');
+  }
+
+  /// 是否开启「十位向下取整」：进菜单后称重金额个位作 discount（与扫码优惠累加）
+  static Future<bool> loadFloorToTensEnabled() async {
+    final v = await Storage.getString(floorToTensKey);
+    return v == '1';
+  }
+
+  static Future<void> saveFloorToTensEnabled(bool enabled) async {
+    await Storage.setString(floorToTensKey, enabled ? '1' : '0');
   }
 
   /// 皮重（克），默认 0
