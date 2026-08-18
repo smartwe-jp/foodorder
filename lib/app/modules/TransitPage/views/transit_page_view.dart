@@ -11,12 +11,11 @@ class TransitPageView extends GetView<TransitPageController> {
 
   @override
   Widget build(BuildContext context) {
-    return
+    return //Obx(() {
       GetBuilder<TransitPageController>(
-      //init: controller,
+        //init: controller,
         builder: (controller) {
-
-          // 未加载完：保留原有 UI（加载 GIF）
+      // 未加载完：保留原有 UI（加载 GIF）
       if (!controller.showStartButton.value) {
         return Scaffold(
           body: Container(
@@ -49,37 +48,37 @@ class TransitPageView extends GetView<TransitPageController> {
           children: [
             Positioned.fill(
               child: (controller.heroImageUrl != null &&
-                  controller.heroImageUrl!.isNotEmpty)
+                      controller.heroImageUrl!.isNotEmpty)
                   ? Image.network(
-                controller.heroImageUrl!,
-                fit: BoxFit.fitWidth,
-              )
+                      controller.heroImageUrl!,
+                      fit: BoxFit.fitWidth,
+                    )
                   : Container(color: Colors.white),
             ),
             Align(
-                alignment: Alignment.bottomCenter,
+              alignment: Alignment.bottomCenter,
                 child: Column(
                   spacing: 60,
                   children: [
                     Spacer(),
                     Text(
-                      'menu_dingtype_title'.tr,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                        fontSize: 80,
-                        fontFamily: GFont.getFontFamily(),
-                        fontWeight: FontWeight.w600,
-                        shadows: [
-                          Shadow(
-                            color: Colors.white,
-                            offset: Offset(3.0, -4.0),
-                            blurRadius: 1.0,
+                          'menu_dingtype_title'.tr,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                            fontSize: 80,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.white,
+                                offset: Offset(3.0, -4.0),
+                                blurRadius: 1.0,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
                     SizedBox(
                       width: 420,
                       height: 200,
@@ -95,13 +94,13 @@ class TransitPageView extends GetView<TransitPageController> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text(
-                                "ご注文",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 80,
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontWeight: FontWeight.bold,
-                                )
+                              "ご注文",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 80,
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.bold,
+                              )
                             ),
                             Icon(
                               Icons.touch_app,
@@ -120,5 +119,6 @@ class TransitPageView extends GetView<TransitPageController> {
         ),
       );
     });
+    //});
   }
 }

@@ -1,10 +1,15 @@
+import 'app_environment.dart';
+
 //const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
 const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
 const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
 const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = true; //是否生产环境
+const isProduction = AppEnvironmentConfig.isProduction; //是否生产环境
 
-const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
+
+const file_url = "https://app.smartwe.co.jp/";
+
+const oa_base_url = "https://oa.gutingjun.com/api/"; //刷脸正式环境地址
 
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
@@ -33,9 +38,11 @@ const servicePath = {
   //'webBootToPrintV2': base_url + 'pad/web/boot/v2/print', //打印小票请求地址 58mm
   //'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
   //'webBootToPrintV4': base_url + 'pad/web/boot/v4/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
-  'webBootToPrintV5': base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
+  'webBootToPrintV5':
+      base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
-  'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToPrintV7':
+      base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootToPrintV8': base_url + 'pad/web/boot/v8/print',
   'webBootToPrintV9': base_url + 'pad/web/boot/v9/print',
   'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
@@ -45,28 +52,32 @@ const servicePath = {
   'webBootChangeInfo': base_url + 'pad/web/boot/information', //机器零钱状态
   'webBootChangeReset': base_url + 'pad/web/boot/reset', //重置机器零钱状态
   'webBootChangeSet': base_url + 'pad/web/boot/change/add', //设置机器零钱状态
-  'webBootLinePayConfirm': base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
+  'webBootLinePayConfirm':
+      base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
 
   'webBootCreditCard': base_url + 'pad/web/boot/creditCard', //请求刷卡返回的字符串
-  'webBootCreditCardCancel': base_url + 'pad/web/boot/creditCard/back', //请求刷卡取消的字符串
+  'webBootCreditCardCancel':
+      base_url + 'pad/web/boot/creditCard/back', //请求刷卡取消的字符串
 
   'webBootLogUpload': base_url + 'pad/web/boot/log/upload', //上传现金机日志文件
 
+  'oldrecognitionSearch':
+      oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
 
-  'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
-
-'recognitionRegister': oa_base_url + 'oa/face/recognition/register', //考勤激活码
+  'recognitionRegister': oa_base_url + 'oa/face/recognition/register', //考勤激活码
 
   //点餐机激活
   'webBootActivate': base_url + 'pad/web/boot/activate', //点餐机激活
   'webBootActivatev2': base_url + 'pad/web/boot/activate/v2', //点餐机激活
   'webBootActivatev3': base_url + 'pad/web/boot/activate/v3', //点餐机激活 发送版本号
+  'webBootActivatev4': base_url + 'pad/web/boot/activate/v4', //点餐机激活 发送版本号
 
   //精算机使用接口
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
   'webBootCalculate': base_url + 'pad/web/boot/calculate', //扫桌号二维码下单
   'webBootCalculateV2': base_url + 'web/boot/calculate/v2', //扫桌号二维码下单
-  'checkOutOrderDetails': base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
+  'checkOutOrderDetails':
+      base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
 
   'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队
   'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
@@ -74,15 +85,21 @@ const servicePath = {
   'webBootBarCodeQuery': base_url + 'pad/web/boot/bar_code/query', //通过商品条码找商品
 
   //退款相关
-  'webBootReimburseQuery': base_url + 'pad/web/boot/reimburse/query', //通过领収书注文番号开始查询
-  'webBootReimburseExecute': base_url + 'pad/web/boot/reimburse/execute', //扫码支付的退款开始执行
+  'webBootReimburseQuery':
+      base_url + 'pad/web/boot/reimburse/query', //通过领収书注文番号开始查询
+  'webBootReimburseExecute':
+      base_url + 'pad/web/boot/reimburse/execute', //扫码支付的退款开始执行
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
 
   //领收书相关
-  'webBootReceiptQuery': base_url + 'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
-  'webBootReceiptQueryV2': base_url + 'pad/web/boot/retry/printByQuery/v2', //通过领収书注文番号开始查询/retry/printByQuery v2
+  'webBootReceiptQuery': base_url +
+      'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
+  'webBootReceiptQueryV2': base_url +
+      'pad/web/boot/retry/printByQuery/v2', //通过领収书注文番号开始查询/retry/printByQuery v2
   //レジ締め
-  'webBootRejishimeiPrintInfo': base_url + 'pad/web/boot/query/printInfo/v2', //レジ締め 获取打印信息 //query/printInfo
+  'webBootRejishimeiPrintInfo':
+      base_url + 'pad/web/boot/query/printInfo/v2', //レジ締め 获取打印信息
+  'webGloryRejishimeiPrintInfo': base_url + 'pad/web/glory/query/printInfo',
   'webBootEmailList': base_url + 'pad/web/boot/emails', //レジ締め 获取邮件列表
   'webBootAdminVerify': base_url + 'pad/web/boot/sendVerifyCode', //レジ締め 发送验证码
   'webBootRejishimeiConfirm': base_url + 'pad/web/boot/confirm/close', //レジ締め 确认
@@ -90,9 +107,32 @@ const servicePath = {
   //Pos测试接口
   'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
 
-  'webBootTroubleNotify': base_url + 'pad/web/boot/notice',
+  'webBootTroubleNotify': base_url + 'pad/web/boot/notice', //Pos测试接口
+
+  //Glory supplement
+  'webBootGlorySupplement': base_url + 'web/glory/supplement', //Glory补充
+
+  //Groly sync
+  'webGloryConfirmSync': base_url + 'web/glory/confirm/sync',
+
+  //Glory exchange
+  'webBootGloryExchange': base_url + 'web/glory/exchange', //Glory兑换
+
+  //Glory confirm close
+  'webBootGloryConfirmClose': base_url + 'web/glory/confirm/close', //Glory确认关闭
+
+  //Glory empty
+  'webBootGloryEmpty': base_url + 'web/glory/empty', //Glory清空
+
+  //Glory information
+  'webBootGloryInformation': base_url + 'web/glory/information', //Glory信息
 
   'webBootCalculateConfirm': base_url + 'web/boot/calculate/confirm',
+
+  //full notify
+  'webMachineNearFull': base_url + 'web/glory/full/notice',
+
+  'webMachineFull': base_url + 'web/glory/stop/notice',
 
   'webBootStartSelling': base_url + 'web/boot/start/selling',
 
@@ -100,9 +140,13 @@ const servicePath = {
 
   'localOrderPost': 'http://172.50.10.84:3000/api/add/order',
 
-  'sseSubscribePanda': (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') + 'web/subscribe/panda/', //SSE订阅地址
+  'sseSubscribePanda':
+      (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') +
+          'web/subscribe/panda/', //SSE订阅地址
 
-  'sseSubscribeSmartWe': (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') + 'web/subscribe/smartWe/', //SSE
+  'sseSubscribeSmartWe':
+      (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') +
+          'web/subscribe/smartWe/', //SSE
 
   'sseCallback': base_url + 'web/sse/received/callback'
 };

@@ -83,7 +83,7 @@ class DialogUtils {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                KioskTap(
+                InkWell(
                   child: Container(
                     //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
@@ -112,7 +112,7 @@ class DialogUtils {
                     decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
-                KioskTap(
+                InkWell(
                   child: Container(
                     //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
@@ -137,7 +137,6 @@ class DialogUtils {
           ]),
     );
   }
-
 
     static cashActionAlert(
       Widget content, {
@@ -190,7 +189,7 @@ class DialogUtils {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                KioskTap(
+                InkWell(
                   child: Container(
                     //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
@@ -219,7 +218,7 @@ class DialogUtils {
                     decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
-                KioskTap(
+                InkWell(
                   child: Container(
                     //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
@@ -244,6 +243,7 @@ class DialogUtils {
           ]),
     );
   }
+
   /// 显示普通消息
   static alertOneButton(
       String content, {
@@ -328,7 +328,7 @@ class DialogUtils {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                KioskTap(
+                InkWell(
                   onTap: () {
                     confirm();
                   },

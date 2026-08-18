@@ -1,14 +1,10 @@
 
 
-import 'dart:convert';
-
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/SetPassword.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/SetPosIp.dart';
-import 'package:foodorder/app/services/GetxStorage.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
-import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart';
 
 extension SystemSettingPageControllerExtension on SystemSettingPageController {
@@ -52,43 +48,50 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     );
   }
 
-  updatePosSetting({String? posIp, String? posPort, bool? isAllowPos}) {
+  Future<void> updatePosSetting({
+    String? posIp,
+    String? posPort,
+    bool? isAllowPos,
+  }) async {
+    final posSettings = Map<String, dynamic>.from(machineInfo.posSettingInfo);
+
     if (posIp != null) {
       machineInfo.pos_ip = posIp;
-      machineInfo.posSettingInfo['posIp'] = posIp;
+      posSettings['posIp'] = posIp;
     }
     if (posPort != null) {
       machineInfo.pos_port = posPort;
-      machineInfo.posSettingInfo['posPort'] = posPort;
+      posSettings['posPort'] = posPort;
     }
 
     if (isAllowPos != null) {
       machineInfo.isAllowPos = isAllowPos ? '1' : '0';
-      machineInfo.posSettingInfo['allowPos'] = isAllowPos;
-      _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
+      posSettings['allowPos'] = isAllowPos;
     }
 
-    HomeServices.updatePosSettingInfo(machineInfo.posSettingInfo);
-    machineInfo.updateMachineSettingInfo();
+    machineInfo.posSettingInfo = posSettings;
+    // The dialog callback is not awaited, so refresh the displayed values before
+    // the first asynchronous storage operation.
+    update();
+
+    if (isAllowPos != null) {
+      await _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
+    }
+    await HomeServices.updatePosSettingInfo(posSettings);
+    await machineInfo.updateMachineSettingInfo();
     update();
   }
 
-
-  void _updateSystemSetting(String key, dynamic value) {
+  Future<void> _updateSystemSetting(String key, dynamic value) async {
     if (systemSettingData.containsKey(key)) {
       systemSettingData[key] = value;
-      Storage.setString(
-          'smartwe_systemSetting', json.encode(systemSettingData));
-      GetxStorage.setData(
-          'smartwe_systemSetting', json.encode(systemSettingData));
+      await HomeServices.updateSystemSettingInfo(systemSettingData);
     } else {
       print('Key $key does not exist in systemSettingData.');
     }
-    machineInfo.updateMachineSettingInfo(settingInfo: systemSettingData);
-    update();
   }
 
-  updateScreenCallSetting({String? posIp, String? posPort, bool? isAllowScreenCall}) {
+  updateScreenCallSetting({String? posIp, String? posPort, bool? isAllowScreenCall}) async {
 
 
     if (posIp != null) {
@@ -104,8 +107,8 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
       machineInfo.screenCallSetting['isAllowScreenCall'] = isAllowScreenCall;
     }
 
-    HomeServices.updateWlanPanelPrintSettingInfo(machineInfo.screenCallSetting);
-    machineInfo.updateMachineSettingInfo();
+    await HomeServices.updateWlanPanelPrintSettingInfo(machineInfo.screenCallSetting);
+    await machineInfo.updateMachineSettingInfo();
     update();
 
   }

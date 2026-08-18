@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
 
 import '../config/index.dart';
@@ -35,7 +36,7 @@ Future request(
         handler.next(response);
       },
       onError: (DioException e, handler) {
-        logI("Error: ${e.message}");
+        logE("Error: ${e.message}");
         handler.next(e);
       },
     ));
@@ -61,6 +62,12 @@ Future request(
     if ((link_parameters?.isNotEmpty ?? true)) {
       request_url = "${request_url}${link_parameters}";
     }
+
+    // Future.delayed(Duration(milliseconds: 1000)).then((e) {
+    //   throw Exception('異常が生じてます。お近くのスタッフにお声かけください。...');
+    // });
+
+    // return;
 
     if (method == 'GET') {
       if (parameters != null) {
@@ -100,6 +107,7 @@ Future request(
       throw Exception('異常が生じてます。お近くのスタッフにお声かけください。...');
     }
   } catch (e) {
+
     if (e is DioException && didTimeout) {
       throw TimeoutException('Request timeout: $url', timeout);
     }

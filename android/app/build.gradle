@@ -41,7 +41,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 34
+    compileSdkVersion rootProject.ext.foodorderCompileSdkVersion
 
     lintOptions {
         disable 'InvalidPackage'

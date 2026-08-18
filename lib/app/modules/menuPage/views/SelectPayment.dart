@@ -10,6 +10,7 @@ import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/cash_machine_startup_service.dart';
 import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
@@ -42,7 +43,7 @@ class SelectPaymentPage extends StatelessWidget {
   }
 
   String get taxOutPrice {
-    return (int.parse(shopCartTotalPrice) - tax10 - tax8).toString();
+    return (int.parse(shopCartTotalPrice) - tax8 - tax10).toString();
   }
 
   String get taxText {
@@ -226,12 +227,27 @@ class SelectPaymentPage extends StatelessWidget {
                               mainAxisAlignment:
                               MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                if (machineInfo.showCash == true)
+                                if (machineInfo.showCashPayment)
                                   KioskTap(
-                                    onTap: () {
-                                      //payment_method_num = "1";
+                                    onTap: () async {
+                                      if (machineInfo.isChecking) return;
+                                      if (!machineInfo.cashPaymentAvailable) {
+                                        final check = Get.find<
+                                                CashMachineStartupService>()
+                                            .checkForPayment();
+                                        machineInfo.update(['selectPayment']);
+                                        final result = await check;
+                                        machineInfo.update(['selectPayment']);
+                                        if (!result.isReady) {
+                                          Get.snackbar(
+                                            '現金機を利用できません',
+                                            '現金機の状態を確認して、もう一度お試しください。',
+                                            snackPosition: SnackPosition.BOTTOM,
+                                          );
+                                          return;
+                                        }
+                                      }
                                       machineInfo.paymentMethod = '1';
-                                      //Navigator.pop(pcontext);
                                       onConfrimClick();
                                     },
                                     child: Container(
@@ -247,8 +263,9 @@ class SelectPaymentPage extends StatelessWidget {
                                                 "#9e9e9e"),
                                             width: 2.0),
                                         //背景颜色
-                                        color:
-                                        ColorsUtil.hexToColor("#F3F3F3"),
+                                        color: machineInfo.cashPaymentAvailable
+                                            ? ColorsUtil.hexToColor("#F3F3F3")
+                                            : Colors.grey.shade300,
                                         //设置圆角
                                         //borderRadius: new BorderRadius.circular((5.0)),
                                         borderRadius:
@@ -317,7 +334,39 @@ class SelectPaymentPage extends StatelessWidget {
                                                         .fontSize(34.0)),
                                               ),
                                             ),
-                                          )
+                                          ),
+                                          if (!machineInfo.cashPaymentAvailable)
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.68),
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: machineInfo.isChecking
+                                                    ? const CircularProgressIndicator()
+                                                    : Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          const Icon(
+                                                            Icons.refresh,
+                                                            size: 54,
+                                                            color: Colors.orange,
+                                                          ),
+                                                          Text(
+                                                            '利用不可\nタップして再確認',
+                                                            textAlign: TextAlign.center,
+                                                            style: TextStyle(
+                                                              fontFamily: GFont.getFontFamily(),
+                                                              color: Colors.orange.shade900,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: ScreenAdapter.fontSize(22),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                     ),

@@ -1,19 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
 import 'package:foodorder/app/config/font.dart';
 
 
 import '../../../config/colorsUtil.dart';
-import '../../../services/GetxStorage.dart';
-import '../../../services/Storage.dart';
+import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
@@ -106,7 +98,7 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                             _myPassWordController.text = _myPassWordController.text.substring(0, _myPassWordController.text.length - 1);
                           },
                           // do something with the input numbers
-                          onSubmit: () {
+                          onSubmit: () async {
                             if(_myPassWordController.text.length <4){
                               showToast("正しいパスワードを入力してください");
                               return;
@@ -117,8 +109,8 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                               return;
                             }
 
-                            Storage.setString('machineSettingManagePassword', _myPassWordController.text);
-                            GetxStorage.setData('machineSettingManagePassword', _myPassWordController.text);
+                            await HomeServices.updateMachineSettingPassword(
+                                _myPassWordController.text);
                             showToast("設定に成功しました");
 
                             Future.delayed(Duration(milliseconds: 300),() async {

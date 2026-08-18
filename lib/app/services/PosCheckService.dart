@@ -180,7 +180,7 @@ class PosCheckService extends GetxService {
       _startResponseTimer();
 
       socket.listen(
-            (List<int> event) {
+        (List<int> event) {
           debugPrint("POS机返回数据: ${utf8.decode(event)}");
           isPosChecking.value = false;
           checkingResult = true;

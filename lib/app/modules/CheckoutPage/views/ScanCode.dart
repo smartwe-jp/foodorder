@@ -109,7 +109,7 @@ class ScanCodeView extends GetView {
                           ),
                           Text("checkoutScanTitle".tr,
                             style: TextStyle(
-                                //color: ColorsUtil.hexToColor("#FFFFFF"),
+                              //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
                                 fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(34.0)),

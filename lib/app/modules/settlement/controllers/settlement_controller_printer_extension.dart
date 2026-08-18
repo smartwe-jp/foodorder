@@ -48,7 +48,7 @@ enum OrderType { shopin, takeout, pickup, delivery }
 class PrintService extends GetxService {
   final MachineInfoController _machineInfo;
   final PrintFailedService _service = Get.find<PrintFailedService>();
-  final LinkedHashSet<String> _processingUuids = LinkedHashSet<String>();
+  final LinkedHashSet<String> _processingUuids = LinkedHashSet<String>(); // 最近处理的 UUID，最多保留 100 条
 
   PrintService(this._machineInfo);
 
@@ -62,6 +62,7 @@ class PrintService extends GetxService {
     return null;
   }
 
+
   void _addProcessingUuid(String uuid) {
     _processingUuids.add(uuid);
     if (_processingUuids.length > 100) {
@@ -70,7 +71,6 @@ class PrintService extends GetxService {
   }
 
   //Label打印先存在在一个队列中
-  //final Queue<Widget> labelPrintQueue = Queue<Widget>()
 
   // 全局队列 + 是否正在排队
   //定义个类型 包含Widget 和 [Map]
@@ -133,9 +133,9 @@ class PrintService extends GetxService {
   }
 
   _sendToDisplayPanel(data) async {
-    logI("_sendToDisplayPanel data: $data");
+    logI("_sendToDisplayPanel");
 
-    if (_machineInfo.wlan_panel_print_ip.isEmpty||
+    if (_machineInfo.wlan_panel_print_ip.isEmpty ||
         _machineInfo.wlan_panel_print_port.isEmpty) {
       logI("_sendToDisplayPanel: Panel IP or Port is not set.");
       return;
@@ -144,7 +144,7 @@ class PrintService extends GetxService {
         'http://${_machineInfo.wlan_panel_print_ip}:${_machineInfo.wlan_panel_print_port}/api/add/order';
     try {
       final response =
-      await request(panelAddress, method: 'POST', parameters: data);
+          await request(panelAddress, method: 'POST', parameters: data);
       final responseValue = json.decode(response.toString());
       logI('_sendToDisplayPanel:$responseValue');
     } catch (error) {
@@ -170,7 +170,7 @@ class PrintService extends GetxService {
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid},
-          timeout: Duration(seconds: 15)
+          timeout: const Duration(seconds: 15)
       );
       var response = json.decode(val.toString());
       if (response != null &&
@@ -228,7 +228,7 @@ class PrintService extends GetxService {
       logI("PrintData: uuid $uuid already received, skipping print.");
       return;
     }
-
+    
     _sendToDisplayPanel(data);
     //获取UUID 如果不存在怎本地生成
     data['uuid'] = uuid;
@@ -251,12 +251,16 @@ class PrintService extends GetxService {
     );
     final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
 
-    bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
+    bool isCenterPrintOn = centerPrinter != null &&
+        !centerPrinter["isOff"] &&
+        centerPrinter["printIp"] != null &&
+        centerPrinter["printIp"].isNotEmpty;
+
     bool smartWeCenterOn = smartWeSSE != null && smartWeSSE.centerOn && isCenterPrintOn;
+
     List orderLineItems = [];
 
     for (var key in orderLinesMap.keys) {
-
       final items = orderLinesMap[key];
       orderLineItems = orderLineItems + items;
 
@@ -277,24 +281,22 @@ class PrintService extends GetxService {
       bool isLabelPrint = printer['receipt'] == 1; // Label printing
       bool isContinuous = printer['continuous'] == 1; // Continuous printing
 
-
       final rotate = printer["direction"] == 1; // Rotate if direction is 1
       bool printCategory =
           printer['printCategory'] ?? false; // Print category name
       int printerType = printer['type'] ?? 11;
-
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
         final Queue<PrintTask> labelPrintQueue = Queue<PrintTask>();
         final printSize = printer['labelSize'] ?? '300x225';
-        final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
-        final printHeight = int.tryParse(printSize.split('x')[1]) ?? 225; // 获取标签高度
         final printHead = printer['printHead'] ?? true;
         final printOptionCode = printer['printOptionCode'] ?? true;
+        final printWidth = int.parse(printSize.split('x')[0]); // 获取标签宽度
+        final printHeight = int.parse(printSize.split('x')[1]); // 获取标签高度
         // Add the head receipt widget to the print queue
-        debugPrint("Label Print Width: $printWidth, Height: $printHeight, printHead: $printHead, printOptionCode: $printOptionCode");
+        debugPrint("Label Print Width: $printWidth, Height: $printHeight");
         final time = await DateTime.now().toString().substring(5, 16);
         final orderIdTime = orderId + "#" + time;
         var totalQty = 0;
@@ -314,9 +316,8 @@ class PrintService extends GetxService {
             // Generate the receipt widget
             itemCount += 1;
             Widget receiptWidget;
-          
-            if (printOptionCode && printWidth >= 375 && printHeight >= 450) {
-              debugPrint("Using large label for item: $name with options: $options");
+
+            if (printOptionCode && printHeight >= 450 && printWidth >= 375) {
               receiptWidget = largeLabelItem(
                   name,
                   orderSnCode,
@@ -332,7 +333,6 @@ class PrintService extends GetxService {
                   orderId,
                   shopName);
             } else {
-              debugPrint("Using standard label for item: $name with options: $options");
               receiptWidget = labelItem(
                   name,
                   orderSnCode,
@@ -381,6 +381,7 @@ class PrintService extends GetxService {
 
           labelPrintQueue.addFirst(PrintTask(widget: headReceipt, printerIp: printerIp, printerType: printerType, printInfo: printInfo));
         }
+
         _processLabelPrintQueueNew(printerIp, labelPrintQueue);
         continue;
       }
@@ -396,17 +397,10 @@ class PrintService extends GetxService {
             isContinuous, rotate, items, printCategory, remark, parsedOrderType,
             printerType: printerType, payload: data);
       }
-      // If center printing is enabled, print the same data to the center printer
-      // if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
-      //   final printIp = centerPrinter["printIp"];
-      //   final rotate = centerPrinter["direction"] == 1;
-      //
-      //   printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-      //       printIp, true, rotate, items, remark, isCenterPrint: true);
-      // }
     }
 
-    if ((isCenterPrintOn && isTakeOut) || (fromSSE && smartWeCenterOn && isInShop)) {
+    if ((isCenterPrintOn && isTakeOut) ||
+        (fromSSE && smartWeCenterOn && isInShop)) {
       final printIp = centerPrinter["printIp"];
       final rotate = centerPrinter["direction"] == 1;
       bool option = centerPrinter['option'] ?? false; // 是否打印选项
@@ -419,8 +413,6 @@ class PrintService extends GetxService {
           true, rotate, orderLineItems, parsedOrderType, remark,
           isCenterPrint: true, printOption: option, printQrCode: payment_code, payload: data);
     }
-
-
   }
 
   _labelMaxLine(int height) {
@@ -428,15 +420,6 @@ class PrintService extends GetxService {
     //假设每行高度为 50
     return (height / (225 * 0.25)).floor();
   }
-  // shopCode=UGE4RRQR,
-  // number=MAT009,
-  // name=オレンジスライス,
-  // saveMethod=冷蔵庫内＋蓋付き,
-  // expiredNumber=0,
-  // efficientType=CURRENT_DATE,
-  // expiredTimeStr=2025-11-21  店じまい廃棄,
-  // printTimeStr=2025-11-21 16:30:31,
-  // operatorName=倪圣
 
   //_printEfficientLabel
   _printEfficientLabel(Map data) async {
@@ -456,51 +439,15 @@ class PrintService extends GetxService {
     final printSize = printer['labelSize'] ?? '300x225';
     final printWidth = double.parse(printSize.split('x')[0]); // 获取标签宽度
     final printHeight = double.parse(printSize.split('x')[1]); // 获取标签高度
-    debugPrint(
-        "Print size: $printSize, Width: $printWidth, Height: $printHeight");
 
-    //final number = data["number"] ?? "";
     final name = data["name"] ?? "";
     final saveMethod = data["saveMethod"] ?? "";
-    //final expexpiredNumber = data["expiredNumber"] ?? "";
-    //final efficientType = data["efficientType"] ?? "";
     final expiredTimeStr = data["expiredTimeStr"] ?? "";
     final printTimeStr = data["printTimeStr"] ?? "";
     final operatorName = data["operatorName"] ?? "";
-    //String expiredTime = "当日廃棄";
-    // if (efficientType.isEmpty) {
-    //   logI("efficientType is empty");
-    //   return;
-    // }
-    // if (efficientType == "HOURS") {
-    //   expiredTime = "+ $expexpiredNumber 時間";
-    // } else if (efficientType == "DAYS") {
-    //   expiredTime = "+ $expexpiredNumber 日";
-    // }
 
     final imageWidget = await _efficientLabel(name, saveMethod, expiredTimeStr,
         printTimeStr, operatorName, printWidth, printHeight, rotate);
-
-    //show print preview
-    // Get.dialog(
-    //   AlertDialog(
-    //     title: Text('Print Preview'),
-    //     content: Container(
-    //       width: printWidth,
-    //       height: printHeight,
-    //       child: imageWidget,
-    //     ),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Get.back();
-
-    //         },
-    //         child: Text('Close'),
-    //       ),
-    //     ],
-    //   ),
-    // );
 
     //生成打印图层任务，指定任务类型为标签
     PictureGeneratorProvider.instance.addPicGeneratorTask(
@@ -588,48 +535,49 @@ class PrintService extends GetxService {
   printTableSeatInfo(Map data) async {
     logI("---printTableSeatInfo---");
     final smartWeSSE = _findSseSetting(SseSubscriptionType.smartWe);
-    
+    debugPrint("SmartWeSSE: $smartWeSSE");
 
     if (smartWeSSE == null || !smartWeSSE.printSeat) {
       debugPrint("SmartWe SSE printSeat is off");
       return;
     }
 
-      //find pinter with type 11
-      final printer = printerList.firstWhere(
-        (p) => p["type"] == 11 && !p["isOff"],
-        orElse: () => null,
-      );
-      if (printer == null) {
-        print("Printer IP not configured for type 11");
-        return;
-      }
+    //find pinter with type 11
+    final printer = printerList.firstWhere(
+      (p) => p["type"] == 11 && !p["isOff"],
+      orElse: () => null,
+    );
+    if (printer == null) {
+      debugPrint("Printer IP not configured for type 11");
+      return;
+    }
 
-      double rotate = printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
+    double rotate =
+        printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
 
-      //final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
-      final description = data["description"] ?? "";
-      final qrCode = data["qrCode"] ?? "";
-      final seatNumber = data["line1"] ?? "";
-      final line2 = data["line2"] ?? "";
+    //final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
+    final description = data["description"] ?? "";
+    final qrCode = data["qrCode"] ?? "";
+    final seatNumber = data["line1"] ?? "";
+    final line2 = data["line2"] ?? "";
 
-      final imageWidget = await _tableSeat(seatNumber, line2, description, qrCode, rotate);
+    final imageWidget =
+        await _tableSeat(seatNumber, line2, description, qrCode, rotate);
 
-      // 生成打印图层任务，指定任务类型为标签
-      //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-          PicGenerateTask<PrinterInfo>(
-            tempWidget: imageWidget as ATempWidget,
-            printTypeEnum: PrintTypeEnum.receipt,
-            params: PrinterInfo(ip: printer["printIp"]),
-          ),
-      );
-      //});
-
-
+    // 生成打印图层任务，指定任务类型为标签
+    //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: imageWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(ip: printer["printIp"]),
+      ),
+    );
+    //});
   }
 
-  _tableSeat(String line1, String line2, String description, String qrCode, rotate) async {
+  _tableSeat(String line1, String line2, String description, String qrCode,
+      rotate) async {
     List<Widget> printMenus = [];
     printMenus.add(
       Column(
@@ -657,55 +605,51 @@ class PrintService extends GetxService {
                     ))),
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 4),
-            width: 270.w,
-            height: 280.h,
-            child: BarcodeWidget(
-              height: 280,
-              barcode: Barcode.qrCode(),
-              data: qrCode,
-            )
+              margin: EdgeInsets.only(bottom: 4),
+              width: 270.w,
+              height: 280.h,
+              child: BarcodeWidget(
+                height: 280,
+                barcode: Barcode.qrCode(),
+                data: qrCode,
+              )
 
-            // QrImage(
-            //   size: 380,
-            //   data: orderKey,
-            // ),
-          ),
+              // QrImage(
+              //   size: 380,
+              //   data: orderKey,
+              // ),
+              ),
           Container(
             margin: EdgeInsets.only(bottom: 5),
             child: Directionality(
                 textDirection: ui.TextDirection.ltr,
-                child: Text(
-                    description,
+                child: Text(description,
                     style: TextStyle(
                       fontSize: 32.sp,
                       fontWeight: FontWeight.w400,
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ),
-
         ],
       ),
     );
 
-    return ReceiptConstrainedBox(
-        Transform(
-            transform: Matrix4.rotationZ(rotate),
-            alignment: Alignment.center,
-            child:Container(
-              //width: 560,
-              //height: 720,
-              padding: EdgeInsets.only(left: 0.5, right: 0.5),
-              color: Colors.white,
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: printMenus,
-              ),
-            )));
+    return ReceiptConstrainedBox(Transform(
+        transform: Matrix4.rotationZ(rotate),
+        alignment: Alignment.center,
+        child: Container(
+          //width: 560,
+          //height: 720,
+          padding: EdgeInsets.only(left: 0.5, right: 0.5),
+          color: Colors.white,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: printMenus,
+          ),
+        )));
   }
-
 
   Widget labelItem(
     String name,
@@ -719,7 +663,6 @@ class PrintService extends GetxService {
     String time,
     {OrderType orderType = OrderType.shopin}
   ) {
-
     return LabelConstrainedBox(
       Transform(
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
@@ -789,6 +732,7 @@ class PrintService extends GetxService {
                 ],
               ),
             ),
+
               
               Divider(
                 color: Colors.black,
@@ -805,19 +749,20 @@ class PrintService extends GetxService {
                         child: optionList(options, maxLines),
                       ),
                     ),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      margin: EdgeInsets.only(top: 5),
-                      child: Text(
-                        time,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                   Container(
+                    alignment: Alignment.centerRight,
+                    margin: EdgeInsets.only(top: 5),
+                    child: Text(
+                      time,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                    
                   ],
                 ),
               ),
@@ -874,7 +819,7 @@ class PrintService extends GetxService {
                     textAlign: TextAlign.right,
                     maxLines: 1,
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 44,
                       color: const ui.Color.fromARGB(255, 42, 29, 29),
                       fontWeight: FontWeight.bold,
                     ),
@@ -1122,35 +1067,31 @@ class PrintService extends GetxService {
   Widget optionItem1(String optionName, List optionValues) {
     return Container(
       child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "$optionName：",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black
-                  ),
-                ),
-                ...optionValues.map((option) {
-                  final optionDetail = option["name"] ?? "";
-                  final optionQty = option["qty"] ?? 1;
-                  final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
-                  return Text(
-                    " $optionDetail $optionQtyString ",
-                    style: TextStyle(
-                      fontSize: 20,
-                        color: Colors.black,
-                    ),
-                  );
-                }).toList(),
-              ],
-            ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$optionName：",
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          ...optionValues.map((option) {
+            final optionDetail = option["name"] ?? "";
+            final optionQty = option["qty"] ?? 1;
+            final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
+            return Text(
+              " $optionDetail $optionQtyString ",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 
   String optionItem(String optionName, List optionValues) {
-
     //返回Option字符串组合 格式 optionName: optionDetail1, optionDetail2 x qty2;
     return "$optionName: " +
         optionValues.map((option) {
@@ -1184,7 +1125,6 @@ class PrintService extends GetxService {
       overflow: TextOverflow.ellipsis, // 超出部分显示省略号
     );
   }
-
 
   //打印逻辑为 连票打印时 只有一个标题receiptTitle 中间为菜品menuItem，最后右下角为下单时间
   //使用 printData 的同样参数实现这个需求
@@ -1241,18 +1181,14 @@ class PrintService extends GetxService {
                 ),
               ),
             ),
-
-            if (isCenterPrint && remark.isNotEmpty)
-            remarkTitle(remark),
-
+            if (isCenterPrint && remark.isNotEmpty) remarkTitle(remark),
             if (printQrCode != null && printQrCode.isNotEmpty)
               Row(
                 spacing: 20,
                 children: [
                   Expanded(
                     flex: 3,
-                    child:
-                    Container(
+                    child: Container(
                       //margin: EdgeInsets.all(20),
                       child: Text(
                         "お会計について、QRコードを精算機にかざしていただき、お支払いくださいますようお願い申し上げます。\nご不明な点がございましたら、恐れ入りますがスタッフまでお声がけくださいませ。",
@@ -1264,25 +1200,21 @@ class PrintService extends GetxService {
                       ),
                     ),
                   ),
-
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                            //margin: EdgeInsets.all(20),
-                            // width: 200.w,
-                            // height: 200.h,
-                            child: BarcodeWidget(
-                              height: 200,
-                              width: 200,
-                              barcode: Barcode.qrCode(),
-                              data: printQrCode,
-                          )
-                      ),
-                    ),
-
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                        //margin: EdgeInsets.all(20),
+                        // width: 200.w,
+                        // height: 200.h,
+                        child: BarcodeWidget(
+                      height: 200,
+                      width: 200,
+                      barcode: Barcode.qrCode(),
+                      data: printQrCode,
+                    )),
+                  ),
                 ],
               ),
-
           ],
         ),
       ),
@@ -1415,14 +1347,14 @@ class PrintService extends GetxService {
                       color: Colors.black,
                     ),
                   if (isTakeOut && isCenterPrint)
-                  Text(
-                    fromPlate + ' # ',
-                    style: TextStyle(
-                      fontSize: 50,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      fromPlate + ' # ',
+                      style: TextStyle(
+                        fontSize: 50,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
                   Text(
                     title,
                     style: TextStyle(
@@ -1536,7 +1468,7 @@ class PrintService extends GetxService {
                               final optionQtyString =
                                   optionQty == 1 ? "" : "x $optionQty";
                               return Text(
-                                      maxLines: 3,
+                                maxLines: 3,
                                 "    $optionDetail $optionQtyString",
                                 style: TextStyle(
                                   fontSize: 36,
@@ -1606,12 +1538,8 @@ class PrintService extends GetxService {
     final wlan_print_ip_two = printer12?["printIp"] ?? "";
     final wlan_print_port_two = printer12?["printPort"] ?? "9100";
     final rotate12 = printer12?["direction"] ?? 0;
-    final is_allow_wlanPrint_continuous =
-        printer10?["continuous"] ?? 0;
-    final is_allow_wlanPrint_Two_continuous =
-        printer12?["continuous"] ?? 0;
-
-
+    final is_allow_wlanPrint_continuous = printer10?["continuous"] ?? 0;
+    final is_allow_wlanPrint_Two_continuous = printer12?["continuous"] ?? 0;
 
     //判断是否有打印机ip
     Map printerIpInfo = {
@@ -1638,8 +1566,7 @@ class PrintService extends GetxService {
       }
     } else if (printType == "12") {
       if (wlan_print_ip_two != null && wlan_print_ip_two != "") {
-        final rotate =
-            rotate12 == 1 ? pi : 0.0;
+        final rotate = rotate12 == 1 ? pi : 0.0;
         printerIpInfo = {
           "printer_ip": wlan_print_ip_two,
           "printer_port": wlan_print_port_two,
@@ -1952,6 +1879,18 @@ class PrintService extends GetxService {
     var optionNum = 0;
     int addRowHight = 0;
 
+    // categoryMenus.add(
+    //   Container(
+    //     margin: EdgeInsets.only(
+    //               bottom: ScreenAdapter.height(50)),
+    //     child: BarcodeWidget(
+    //             height: ScreenAdapter.height(200),
+    //             barcode: Barcode.qrCode(),
+    //             data: orderId.value,
+    //           )
+    //   ),
+    // );
+
     categoryMenus.add(
       Container(
         margin: EdgeInsets.only(bottom: 5),
@@ -2219,18 +2158,18 @@ class PrintService extends GetxService {
       totalHight += 15;
     }
 
-    /*return Container(
-      width: 550,
-      height: totalHight.toDouble(),
-      padding: EdgeInsets.only(left: 0.5, right: 0.5),
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: categoryMenus,
-      ),
-    );*/
+    // return Container(
+    //   width: 550,
+    //   height: totalHight.toDouble(),
+    //   padding: EdgeInsets.only(left: 0.5, right: 0.5),
+    //   color: Colors.white,
+    //   alignment: Alignment.topCenter,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     children: categoryMenus,
+    //   ),
+    // );
     final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
     return ReceiptConstrainedBox(Transform(
         transform: Matrix4.rotationZ(rotate),
@@ -2245,7 +2184,7 @@ class PrintService extends GetxService {
   //打印label
   wifiNetworkLabelPrintData(extendPrintVo) async {
     final printer10 = _machineInfo.printerList.firstWhere(
-          (p) => p["type"] == 10,
+      (p) => p["type"] == 10,
       orElse: () => null,
     );
     final wlan_print_ip = printer10?["printIp"] ?? "";
@@ -2267,7 +2206,7 @@ class PrintService extends GetxService {
 
   wifiNetPrintLabelnew(orderprintData) async {
     final printer10 = _machineInfo.printerList.firstWhere(
-          (p) => p["type"] == 10,
+      (p) => p["type"] == 10,
       orElse: () => null,
     );
     final wlan_print_ip = printer10?["printIp"] ?? "";

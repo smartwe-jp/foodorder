@@ -5,7 +5,7 @@ import 'checkout_page_controller.dart';
 
 class checkStatusCopyView extends GetView<CheckoutPageController> {
 
-  final Function? onEnd;
+   final Function? onEnd;
 
   const checkStatusCopyView({
     Key? key,

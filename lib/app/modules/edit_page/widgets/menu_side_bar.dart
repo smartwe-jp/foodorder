@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
@@ -8,8 +7,6 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
-import '../../../services/ScreenAdapter.dart';
 import '../logic.dart';
 
 typedef ParamSingleCallback<D> = dynamic Function(D data);

@@ -39,8 +39,7 @@ class _PressScaleButtonState extends State<PressScaleButton> {
   void _setPressed(bool v) {
     if (_pressed == v) return;
     setState(() => _pressed = v);
-    if (!v)
-      widget.onTap?.call();
+    if (!v) widget.onTap?.call();
   }
 
   void _handleTapUp() {
@@ -62,9 +61,9 @@ class _PressScaleButtonState extends State<PressScaleButton> {
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-              color: widget.color,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              border: Border.all(color: widget.borderColor, width: widget.borderWidth)
+            color: widget.color,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            border: Border.all(color: widget.borderColor, width: widget.borderWidth)
           ),
           alignment: Alignment.center,
           child: widget.child,

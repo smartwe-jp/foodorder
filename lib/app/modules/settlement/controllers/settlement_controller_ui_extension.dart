@@ -183,7 +183,7 @@ extension SettlementControllerUIExtension on SettlementController {
             _showTag,
             InkWell(
               onLongPress: () {
-                ScanCodeConfirmTimer?.cancel();
+                //ScanCodeConfirmTimer?.cancel();
                 doScanCodeTimeOutLastQuery();
               },
               child: Container(
@@ -252,7 +252,7 @@ extension SettlementControllerUIExtension on SettlementController {
     //var _showTag;
     var _showTagContent = "";
     if (resultString =="L06") {
-      showToast("pos_cancel_wait_tips".tr);
+      showToast("pos_cancel_wait_tips".tr, duration: 10);
       return;
     }
 
@@ -319,7 +319,7 @@ extension SettlementControllerUIExtension on SettlementController {
 
   }
 
-  showEasyLoading() {
+  showEasyLoading({message}) {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
@@ -340,7 +340,7 @@ extension SettlementControllerUIExtension on SettlementController {
           ));
     }
     EasyLoading.show(
-      //status: 'loading...',
+      status: message,
       indicator: Container(
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
@@ -351,6 +351,8 @@ extension SettlementControllerUIExtension on SettlementController {
             _showTag,
             InkWell(
               onLongPress: () {
+                // allowClick.value = true;
+                // isPrintClick.value = false;
                 EasyLoading.dismiss();
               },
               child: Container(

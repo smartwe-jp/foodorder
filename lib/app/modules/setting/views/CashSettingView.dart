@@ -1,27 +1,14 @@
-
 import 'dart:developer';
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart';
-import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/AdjustModalView.dart';
-import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
-import 'package:foodorder/app/modules/setting/views/NumberListView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
-import 'package:foodorder/app/modules/setting/views/SegmentControl.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../systemSettingPage/views/SetPassword.dart';
-
 
 class CashSettingView extends StatefulWidget {
-
   final Map? cashInfoList;
   final bool isAllowRejishime;
   final Function() recycleCash;
@@ -32,19 +19,21 @@ class CashSettingView extends StatefulWidget {
   final String? allDepositSum;
   final String? outSetSum;
   final String? remainingSum;
-  final String  machineCode;
-  CashSettingView({Key? key,
-    required this.cashInfoList,
-    required this.isAllowRejishime,
-    required this.recycleCash,
-    required this.adjustCash,
-    required this.setOutset,
-    this.allDepositSum,
-    this.outSetSum,
-    this.remainingSum,
-    required this.adjustCashFromDeposit,
-    required this.resetCash,
-    required this.machineCode}) : super(key: key);
+  final String machineCode;
+  CashSettingView(
+      {Key? key,
+      required this.cashInfoList,
+      required this.isAllowRejishime,
+      required this.recycleCash,
+      required this.adjustCash,
+      required this.setOutset,
+      this.allDepositSum,
+      this.outSetSum,
+      this.remainingSum,
+      required this.adjustCashFromDeposit,
+      required this.resetCash,
+      required this.machineCode})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -53,7 +42,6 @@ class CashSettingView extends StatefulWidget {
 }
 
 class CashSettingViewState extends State<CashSettingView> {
-
   Map _cashInfoList = {};
   String _allDepositSum = "";
   String _outSetSum = "";
@@ -98,8 +86,8 @@ class CashSettingViewState extends State<CashSettingView> {
   _getOusetSum() {
     int sum = 0;
     _cashInfoList.entries.forEach((element) {
-      sum += (int.tryParse(element.value['outset']) ?? 0)*(_getMeasureUnit(element.key));
-
+      sum += (int.tryParse(element.value['outset']) ?? 0) *
+          (_getMeasureUnit(element.key));
     });
 
     _outSetSum = formatSum(sum);
@@ -108,20 +96,20 @@ class CashSettingViewState extends State<CashSettingView> {
   _getRemainingSum() {
     int sum = 0;
     _cashInfoList.entries.forEach((element) {
-      sum += (int.tryParse(element.value['remaining']) ?? 0)*(_getMeasureUnit(element.key));
+      sum += (int.tryParse(element.value['remaining']) ?? 0) *
+          (_getMeasureUnit(element.key));
     });
 
     _remainingSum = formatSum(sum);
   }
 
   _showAdjustModal(map) {
-    if(map['outset'] == "" && map['remaining'] == "" && map['limit'] == "") {
+    if (map['outset'] == "" && map['remaining'] == "" && map['limit'] == "") {
       return false;
     } else {
       return true;
     }
   }
-
 
   int _getMeasureUnit(String name) {
     switch (name) {
@@ -166,9 +154,6 @@ class CashSettingViewState extends State<CashSettingView> {
                   color: ColorsUtil.hexToColor("#000000"),
                 )),
           ),
-
-
-
           Table(
               border: TableBorder.all(
                 color: Colors.grey.shade400,
@@ -179,9 +164,8 @@ class CashSettingViewState extends State<CashSettingView> {
                 1: FlexColumnWidth(300),
                 2: FlexColumnWidth(500),
               },
-            children: [
-              TableRow(
-                children: [
+              children: [
+                TableRow(children: [
                   Container(
                     height: 60,
                     //color: Colors.green,
@@ -208,11 +192,8 @@ class CashSettingViewState extends State<CashSettingView> {
                           color: ColorsUtil.hexToColor("#000000"),
                         )),
                   ),
-
-                ]
-              ),
-            ]
-          ),
+                ]),
+              ]),
           Table(
             border: TableBorder.all(
               color: Colors.grey.shade400,
@@ -228,74 +209,69 @@ class CashSettingViewState extends State<CashSettingView> {
               6: FlexColumnWidth(200),
             },
             children: [
-              TableRow(
-                children: [
-                  Container(
-                    height: 80,
-
-                  ),
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("枚",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("合計",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("最初",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("最小",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("残り",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-                  Container(
-                    height: 80,
-                  ),
-                ]
-              ),
-
+              TableRow(children: [
+                Container(
+                  height: 80,
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("枚",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("合計",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("最初",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("最小",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("残り",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                ),
+              ]),
             ],
           ),
           Table(
@@ -312,202 +288,187 @@ class CashSettingViewState extends State<CashSettingView> {
               5: FlexColumnWidth(100),
               6: FlexColumnWidth(200),
             },
-            children:_cashInfoList.entries.map((element) {
-              return TableRow(
-                  children: [
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${element.key}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${element.value['deposit']}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${formatSum(element.value['depositSum'])}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${element.value['outset']}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${element.value['limit']}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: Text("${element.value['remaining']}",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      child:
-                    _showAdjustModal(element.value) ?
-                      InkWell(
-                        highlightColor: Colors.transparent, // 透明色
-                        splashColor: Colors.transparent, // 透明色
-                        onTap: (){
-                          // controller.showCashDetail(_detail);
-                          _adjustModal(element.key, element.value['outset']);
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10),left: ScreenAdapter.width(40),right: ScreenAdapter.width(40)),
-                          alignment: Alignment.center,
-                          height: ScreenAdapter.height(40),
-                          //边框设置
-                          decoration: new BoxDecoration(
-                            //背景
-                            color: ColorsUtil.hexToColor("#05ba6d"),
-                            //设置四周圆角 角度
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                            //设置四周边框
-                            //border: new Border.all(width: 1, color: Colors.red),
+            children: _cashInfoList.entries.map((element) {
+              return TableRow(children: [
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${element.key}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${element.value['deposit']}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${formatSum(element.value['depositSum'])}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${element.value['outset']}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${element.value['limit']}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${element.value['remaining']}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  height: 80,
+                  child: _showAdjustModal(element.value)
+                      ? InkWell(
+                          highlightColor: Colors.transparent, // 透明色
+                          splashColor: Colors.transparent, // 透明色
+                          onTap: () {
+                            // controller.showCashDetail(_detail);
+                            _adjustModal(element.key, element.value['outset']);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                top: ScreenAdapter.height(10),
+                                bottom: ScreenAdapter.height(10),
+                                left: ScreenAdapter.width(40),
+                                right: ScreenAdapter.width(40)),
+                            alignment: Alignment.center,
+                            height: ScreenAdapter.height(40),
+                            //边框设置
+                            decoration: new BoxDecoration(
+                              //背景
+                              color: ColorsUtil.hexToColor("#05ba6d"),
+                              //设置四周圆角 角度
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40)),
+                              //设置四周边框
+                              //border: new Border.all(width: 1, color: Colors.red),
+                            ),
+                            child: Text("補充/削减",
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
                           ),
-                          child: Text(
-                              "補充/削减",
-                              style: TextStyle(
-                                fontFamily: 'NotoSansJP',
-                                fontSize: ScreenAdapter.fontSize(22),
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )
-                          ),
+                        )
+                      : Container(
+                          height: 80,
+                          color: Colors.grey[400],
                         ),
-                      ):Container(
-                        height: 80,
-                        color: Colors.grey[400],
-                    ),
-                    )
-                  ]
-              );
+                )
+              ]);
             }).toList(),
           ),
           Table(
-            border: TableBorder.all(
-              color: Colors.grey.shade400,
-              width: 1.0,
-            ),
-            columnWidths: const <int, TableColumnWidth>{
-              0: FixedColumnWidth(100),
-              1: FlexColumnWidth(100),
-              2: FlexColumnWidth(200),
-              3: FlexColumnWidth(100),
-              4: FlexColumnWidth(100),
-              5: FlexColumnWidth(100),
-              6: FlexColumnWidth(200),
-            },
-            children:[
-            TableRow(
-                  children: [
-                    Container(
-                      height: 80,
-                    ),
-
-                    Container(
-                      height: 80,
-                      color: Colors.grey[400],
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      color: Colors.grey[300],
-                      child: Text("$_allDepositSum",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      color: Colors.grey[300],
-                      child: Text("$_outSetSum",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      color: Colors.grey[400],
-                    ),
-
-                    Container(
-                      height: 80,
-                      alignment: Alignment.center,
-                      color: Colors.grey[300],
-                      child: Text("$_remainingSum",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(20),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    ),
-
-                    Container(
-                      height: 80,
-                      color: Colors.grey[400],
-                    )
-                  ]
+              border: TableBorder.all(
+                color: Colors.grey.shade400,
+                width: 1.0,
               ),
-        ]
-
-          ),
+              columnWidths: const <int, TableColumnWidth>{
+                0: FixedColumnWidth(100),
+                1: FlexColumnWidth(100),
+                2: FlexColumnWidth(200),
+                3: FlexColumnWidth(100),
+                4: FlexColumnWidth(100),
+                5: FlexColumnWidth(100),
+                6: FlexColumnWidth(200),
+              },
+              children: [
+                TableRow(children: [
+                  Container(
+                    height: 80,
+                  ),
+                  Container(
+                    height: 80,
+                    color: Colors.grey[400],
+                  ),
+                  Container(
+                    height: 80,
+                    alignment: Alignment.center,
+                    color: Colors.grey[300],
+                    child: Text("$_allDepositSum",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(20),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor("#000000"),
+                        )),
+                  ),
+                  Container(
+                    height: 80,
+                    alignment: Alignment.center,
+                    color: Colors.grey[300],
+                    child: Text("$_outSetSum",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(20),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor("#000000"),
+                        )),
+                  ),
+                  Container(
+                    height: 80,
+                    color: Colors.grey[400],
+                  ),
+                  Container(
+                    height: 80,
+                    alignment: Alignment.center,
+                    color: Colors.grey[300],
+                    child: Text("$_remainingSum",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(20),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor("#000000"),
+                        )),
+                  ),
+                  Container(
+                    height: 80,
+                    color: Colors.grey[400],
+                  )
+                ]),
+              ]),
           Table(
               border: TableBorder.all(
                 color: Colors.grey.shade400,
@@ -519,24 +480,27 @@ class CashSettingViewState extends State<CashSettingView> {
                 2: FlexColumnWidth(500),
               },
               children: [
-                TableRow(
-                    children: [
-                      Container(
-                        height: 80,
-                        //color: Colors.green,
-                      ),
-                      widget.isAllowRejishime ? Container(height: 80,) : recycleButton(),
-                      widget.isAllowRejishime ? rejishimeButton() : Container(height: 80,),
-
-                    ]
-                ),
-              ]
-          ),
+                TableRow(children: [
+                  Container(
+                    height: 80,
+                    //color: Colors.green,
+                  ),
+                  widget.isAllowRejishime
+                      ? Container(
+                          height: 80,
+                        )
+                      : recycleButton(),
+                  widget.isAllowRejishime
+                      ? rejishimeButton()
+                      : Container(
+                          height: 80,
+                        ),
+                ]),
+              ]),
         ],
       ),
     );
   }
-
 
   recycleButton() {
     return Container(
@@ -545,7 +509,7 @@ class CashSettingViewState extends State<CashSettingView> {
       child: InkWell(
         highlightColor: Colors.transparent, // 透明色
         splashColor: Colors.transparent, // 透明色
-        onTap: (){
+        onTap: () {
           // controller.showCashDetail(_detail);
           log("預り金回収");
           _recycleAlert();
@@ -564,14 +528,12 @@ class CashSettingViewState extends State<CashSettingView> {
             //设置四周边框
             //border: new Border.all(width: 1, color: Colors.red),
           ),
-          child: Text(
-              "預り金回収",
+          child: Text("預り金回収",
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(22),
                 color: ColorsUtil.hexToColor("#FFFFFF"),
-              )
-          ),
+              )),
         ),
       ),
     );
@@ -584,7 +546,7 @@ class CashSettingViewState extends State<CashSettingView> {
       child: InkWell(
         highlightColor: Colors.transparent, // 透明色
         splashColor: Colors.transparent, // 透明色
-        onTap: (){
+        onTap: () {
           // controller.showCashDetail(_detail);
           log("レジ締め");
           showRejishimeView();
@@ -603,143 +565,130 @@ class CashSettingViewState extends State<CashSettingView> {
             //设置四周边框
             //border: new Border.all(width: 1, color: Colors.red),
           ),
-          child: Text(
-              "レジ締め",
+          child: Text("レジ締め",
               style: TextStyle(
                 fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(22),
                 color: ColorsUtil.hexToColor("#FFFFFF"),
-              )
-          ),
+              )),
         ),
       ),
     );
   }
 
-
-
   showRejishimeView() async {
-    Get.dialog(
-        RejishiMeRequestView(machineCode: _machineCode)
-    );
+    Get.dialog(RejishiMeRequestView(
+        machineCode: _machineCode,
+        resetCash: (lenght, data) => {widget.resetCash()}));
   }
 
   _recycleAlert() async {
     Get.dialog(
       SimpleDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          children: [
-            Container(
-              padding: EdgeInsets.all(ScreenAdapter.width(20)),
-              width: ScreenAdapter.width(500),
-              height: ScreenAdapter.height(200),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                    alignment: Alignment.topLeft,
-                    child: Text("ご注意",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(22),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                    alignment: Alignment.centerLeft,
-                    child: Text("預り金回収してもよろしいですか？",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(22),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-
-                    children: [
-                      Spacer(),
-                      Container(
-                        height: 50,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorsUtil.hexToColor("#888888")),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child:
-                          TextButton(
-                            child: Text("キャンセル",
-                            style: TextStyle(
-                              fontFamily:'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(18),
-                            fontWeight: FontWeight.w400,
-                            color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                            onPressed: () {
-                              Get.back();
-                            },
-                          ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 20),
-                        height: 50,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#dca550"),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child:
-                        TextButton(
-                          child: Text("確認",
-                                  style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
-                                  fontSize: ScreenAdapter.fontSize(18),
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
-                          onPressed: () {
-                            widget.resetCash();
-                            Get.back();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
         ),
+        children: [
+          Container(
+            padding: EdgeInsets.all(ScreenAdapter.width(20)),
+            width: ScreenAdapter.width(500),
+            height: ScreenAdapter.height(200),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  alignment: Alignment.topLeft,
+                  child: Text("ご注意",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  alignment: Alignment.centerLeft,
+                  child: Text("預り金回収してもよろしいですか？",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Spacer(),
+                    Container(
+                      height: 50,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(color: ColorsUtil.hexToColor("#888888")),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: TextButton(
+                        child: Text("キャンセル",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(18),
+                              fontWeight: FontWeight.w400,
+                              color: ColorsUtil.hexToColor("#000000"),
+                            )),
+                        onPressed: () {
+                          Get.back();
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 20),
+                      height: 50,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: ColorsUtil.hexToColor("#dca550"),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: TextButton(
+                        child: Text("確認",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(18),
+                              fontWeight: FontWeight.w400,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                        onPressed: () {
+                          widget.resetCash();
+                          Get.back();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-
-
-
-
-  _adjustModal(field,value) async {
-    Get.dialog(
-        AdjustModalView(
-          field: field, value: value, onOutsetNumberChanged: (outset) {
-            widget.setOutset(field, outset);
-        }, onDepositNumberChanged: (measure, number, deposit, qty) {
-            widget.adjustCashFromDeposit(measure, number, deposit, qty);
-        }, onAdjustNumberChanged: (type , number ) {
-            widget.adjustCash(field, number);
-        }, cashInfo: _cashInfoList,)
-    );
+  _adjustModal(field, value) async {
+    Get.dialog(AdjustModalView(
+      field: field,
+      value: value,
+      onOutsetNumberChanged: (outset) {
+        widget.setOutset(field, outset);
+      },
+      onDepositNumberChanged: (measure, number, deposit, qty) {
+        widget.adjustCashFromDeposit(measure, number, deposit, qty);
+      },
+      onAdjustNumberChanged: (type, number) {
+        widget.adjustCash(field, number);
+      },
+      cashInfo: _cashInfoList,
+    ));
   }
-
-
-
-
-
 }

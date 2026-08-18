@@ -1099,8 +1099,9 @@ extension MenuPageCategory on MenuPageController {
         subtitle += item["subtitle"][i];
       }
     }
-    return
-    GetBuilder<MenuPageController>(
+
+    return 
+     GetBuilder<MenuPageController>(
         id: 'option_view',
         builder: (controller) {
     return Container(
@@ -1392,7 +1393,7 @@ extension MenuPageCategory on MenuPageController {
         ),
       ),
     );
-    } );
+  });
   }
 
   getThreeOptionWidget(menuCode, setFirstState, qtyBounds) {
@@ -1907,7 +1908,8 @@ extension MenuPageCategory on MenuPageController {
         subtitle += item["subtitle"][i];
       }
     }
-  return
+
+    return  
     GetBuilder<MenuPageController>(
         id: 'option_view',
         builder: (controller) {
@@ -2198,7 +2200,7 @@ extension MenuPageCategory on MenuPageController {
         ),
       ),
     );
-  });
+    });
   }
 
   getFiveOptionWidget(menuCode, setFirstState, qtyBounds) {

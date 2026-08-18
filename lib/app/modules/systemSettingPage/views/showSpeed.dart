@@ -30,7 +30,7 @@ class showSpeedView extends GetView {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text("アップデート中……",
+                  Text("ダウンロード中……",
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(25),

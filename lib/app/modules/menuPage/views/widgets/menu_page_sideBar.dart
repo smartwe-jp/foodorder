@@ -77,7 +77,7 @@ extension MenuPageSideBar on MenuPageView {
                                           ? Colors.white
                                           : Color.fromARGB(255, 144, 147, 153),
                                       //ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                      fontWeight: FontWeight.w400),
+                                      fontWeight: FontWeight.w600),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,

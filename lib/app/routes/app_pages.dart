@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
+import 'package:foodorder/app/modules/scan_detail_page/view.dart';
 import 'package:get/get.dart';
 
 import '../modules/Activation/bindings/activation_binding.dart';
@@ -15,7 +18,8 @@ import '../modules/SelfservicePage/bindings/selfservice_page_binding.dart';
 import '../modules/SelfservicePage/views/selfservice_page_view.dart';
 import '../modules/TransitPage/bindings/transit_page_binding.dart';
 import '../modules/TransitPage/views/transit_page_view.dart';
-import '../modules/edit_page/view.dart';
+import '../modules/CashMachineCheck/bindings/cash_machine_check_binding.dart';
+import '../modules/CashMachineCheck/views/cash_machine_check_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/menuPage/bindings/menu_page_binding.dart';
@@ -37,8 +41,8 @@ import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
 import '../modules/systemSettingPage/views/system_setting_page.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
-// import '../modules/OrderHome/views/opos_apg.dart';
-// import '../modules/WATextPage/views/windows_test_view.dart';
+import '../modules/OrderHome/views/opos_apg.dart';
+import '../modules/WATextPage/views/windows_test_view.dart';
 import '../modules/edit_page/view.dart' deferred as edit_page;
 import '../modules/printerFailedList/controllers/printer_failed_list_controller.dart';
 import '../modules/printerFailedList/views/printer_failed_list_page.dart';
@@ -62,6 +66,11 @@ class AppPages {
       binding: TransitPageBinding(),
     ),
     GetPage(
+      name: _Paths.CASH_MACHINE_CHECK,
+      page: () => const CashMachineCheckView(),
+      binding: CashMachineCheckBinding(),
+    ),
+    GetPage(
       name: _Paths.ACTIVATION,
       page: () => const ActivationView(),
       binding: ActivationBinding(),
@@ -70,6 +79,26 @@ class AppPages {
       name: _Paths.ORDER_HOME,
       page: () => OrderHomeView(),
       binding: OrderHomeBinding(),
+    ),
+    // GetPage(
+    //   name: _Paths.ENTRY_HOME,
+    //   page: () => EntryHomeView(),
+    //   binding: OrderHomeBinding(),
+    // ),
+    GetPage(
+      name: _Paths.SCAN_DETAIL,
+      page: () => ScanDetailPagePage(),
+      binding: CheckoutPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.OPOS_APG,
+      page: () => OPOSAPGView(),
+      binding: OrderHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.MW_TEST,
+      page: () => WindewsTestView(),
+      binding: WindowsTestBinding(),
     ),
     GetPage(
       name: _Paths.SELFSERVICE_PAGE,
@@ -150,14 +179,20 @@ class AppPages {
       page: () => ReceiptQueryView(),
       binding: ReceiptQueryBinding(),
     ),
+
     GetPage(
       name: _Paths.SETTING_EDIT_PAGE,
-      page: () => EditPage(),
+      page: () => DeferredRouter(
+        future: edit_page.loadLibrary(),
+        builder: (_) => edit_page.EditPage(),
+      ),
     ),
+
     GetPage(
       name: _Paths.RESULT_PAGE,
       page: () => ResultPage(),
     ),
+
     GetPage(
       name: _Paths.PRINTER_FAILED_LIST,
       page: () => const PrinterFailedListPage(),
@@ -165,6 +200,34 @@ class AppPages {
         Get.lazyPut(() => PrinterFailedListController());
       }),
     ),
-
   ];
+}
+
+class DeferredRouter extends StatelessWidget {
+  const DeferredRouter({
+    Key? key,
+    required this.future,
+    required this.builder,
+  }) : super(key: key);
+
+  final Future future;
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: future,
+      builder: (context, snapshot) {
+        // web scene
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return builder(context);
+      },
+    );
+  }
 }

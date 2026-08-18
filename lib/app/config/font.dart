@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 class GFont {
   static String getFontFamily() {
     var locale = Get.locale;
-    switch (locale?.languageCode) {
+    switch (locale?.languageCode.toLowerCase()) {
       case 'zh':
         return 'NotoSansCN';
       case 'ko':

@@ -1,16 +1,14 @@
-
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import '../modules/menuPage/controllers/menu_page_controller.dart';
-import 'CustomLogerHandler.dart';
-import 'HomeServices.dart';
 
 class ResetToHomeTimer {
   Timer? _timer;
@@ -40,23 +38,31 @@ class ResetToHomeTimer {
         } else if (Get.routing.current == Routes.MENU_PAGE) {
           Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
           final isBackHome = systemSettingInfo['isBackHome'] ?? true;
+          logI("timer isBackHome:$isBackHome");
           if (isBackHome != true) {
             cancelTimer();
+            if (Get.isRegistered<OrderSqlController>()) {
+              final orderSqlController = Get.find<OrderSqlController>();
+              orderSqlController.removeAllFromCart();
 
-            if (Get.isRegistered<MenuPageController>()) {
-              Get.find<MenuPageController>().clearOrderList();
-              Get.find<MenuPageController>().resetToFirstPage();
+              if (Get.isRegistered<MenuPageController>()) {
+                Get.find<MenuPageController>().clearOrderList();
+                Get.find<MenuPageController>().resetToFirstPage();
+              }
             }
-
             return;
           }
-        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
-          Get.back();
+        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE ||
+            Get.routing.current == Routes.SCAN_DETAIL) {
+          // if (Get.isRegistered<MachineInfoController>()) {
+          //   Get.find<MachineInfoController>().showReceiptPage = true;
+          // }
+
           if (Get.isRegistered<MenuPageController>()) {
             Get.find<MenuPageController>().paymentIsShow = false;
-            Get.find<MenuPageController>().clearOrderList();
-            Get.find<MenuPageController>().resetToFirstPage();
           }
+
+          Get.back();
           return;
         }
 
@@ -73,20 +79,24 @@ class ResetToHomeTimer {
             Get.find<SettlementController>().commonCancel();
             Get.back();
           } else {
-            //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-            Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+            _returnToExistingCheckout();
           }
         } else {
           logI('--offNamedUntil--');
-          //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-          Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+          _returnToExistingCheckout();
         }
       }
     });
   }
 
-  void resetTimer() {
+  void _returnToExistingCheckout() {
+    cancelTimer();
+    Get.until(
+      (route) => route.settings.name == Routes.CHECKOUT_PAGE,
+    );
+  }
 
+  void resetTimer() {
     if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
       logI("event startTimer");
       startTimer();
@@ -99,16 +109,16 @@ class ResetToHomeTimer {
   }
 
   getPing() async {
-    logI("--getPing--");
+    print("--getPing--");
     try {
       final response = await http.get(Uri.parse('https://www.google.com'));
       if (response.statusCode == 200) {
-        print('Network Ping successful');
+        logI('Network Ping successful');
       } else {
-        print('Network Ping failed');
+        logI('Network Ping failed');
       }
     } catch (e) {
-      print('Network Ping failed: $e');
+      logI('Network Ping failed: $e');
     }
   }
 

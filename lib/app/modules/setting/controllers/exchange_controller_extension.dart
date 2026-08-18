@@ -1,0 +1,821 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
+import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:foodorder/app/services/cash_machine_startup_service.dart';
+import 'package:foodorder/app/services/showToast.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
+import 'package:get/get.dart';
+
+extension ExchangeControllerExtension on SettingController {
+  //get cashinfo
+
+  startPutExchangeMoney() async {
+    taskTouch = false;
+    ignoreNotify.value = false;
+    isStartPutMoney.value = true;
+    hasExchangeCash = false;
+    getPutMoney.value = 0;
+    getPutMoneyCurrency.value = "";
+    logger.info(
+        '-- startPutExchangeMoney -- getPutMoney: ${getPutMoney.value} getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+    update();
+    await beginDepositOutside();
+  }
+
+  getCashInfo({String? cashString}) async {
+    String? cash = cashString ?? await getMachineCashInfo(showAlert: false);
+    if (cash == null &&
+        machineInfo.cashMachineDriver == CashMachineDriver.cashChanger) {
+      final recovery = await Get.find<CashMachineStartupService>()
+          .checkForPayment(force: true);
+      machineInfo.update(['selectPayment']);
+      if (recovery.isReady) {
+        cash = await getMachineCashInfo(showAlert: false);
+      }
+    }
+    //logI('cashInfo: $cash'); //'1:12,5:5'
+
+    if (cash != null) {
+      Map result = await cash.split(',').asMap().map((key, value) {
+        final cash = value.split(':');
+        return MapEntry(getCashName(cash[0]), int.tryParse(cash[1]));
+      });
+
+      cashInfoList.value = result;
+      //logI('cashInfoList: $cashInfoList');
+      cashInfo.value = await _changeMapKey(result, getCatVal);
+      int totalCash = getTotalCashCount();
+
+      logI('cashInfo: $cashInfo; totalCash: $totalCash');
+      update();
+    } else {
+      //获取失败 是否重试
+      errorHandleDialogTwo('現金情報の取得に失敗しました。再試行しますか?', () {
+        getCashInfo();
+      });
+    }
+  }
+
+  int getTotalCashCount() {
+    int totalCount = 0;
+    cashInfo.forEach((key, value) {
+      if (value > 0) {
+        totalCount += (int.parse(key) * value).toInt();
+      }
+    });
+    return totalCount;
+  }
+
+  getServerCashInfo() async {
+    debugPrint('---getServerCashInfo---');
+    var formData = {
+      'machineCode': machineCode, //'PAZK8N7KKE8evkXks4',
+    };
+    debugPrint('formData: $formData');
+    await request(
+      'webBootGloryInformation',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      //debugPrint('value: $value');
+      final response = json.decode(value.toString());
+      debugPrint("getServerCashInfo response: $response");
+      // ignore: invalid_use_of_protected_member
+      if (response["code"] == 200 && response['data'] != null) {
+        cashInfoList.value = response['data'];
+        debugPrint('cashInfoList: ${cashInfoList}');
+        cashInfo.value = _changeMapKey(response['data'], getCatVal);
+        debugPrint('cashInfo: $cashInfo');
+        update();
+      }
+    }).catchError((error) {
+      debugPrint('error: $error');
+    });
+  }
+
+  _changeMapKey(Map<dynamic, dynamic> map, Function(String) keyFunc) {
+    Map<String, int> newCashInfoList = {};
+    map.forEach((key, value) {
+      String newKey = keyFunc(key);
+      newCashInfoList[newKey] = value;
+    });
+
+    return newCashInfoList;
+  }
+
+  Future<String?> getMachineCashInfo(
+      {Function? retry, bool showAlert = true}) async {
+    //debugPrint("getMachineCashInfo 0");
+    var result = null;
+    logger.info('-- getMachineCashInfo --');
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        //debugPrint("getMachineCashInfo 1");
+        logger.info('-- getMachineCashInfo : $value --');
+        result = value;
+      },
+      catchError: (error) {
+        //debugPrint("getMachineCashInfo error: $error");
+        logger.info('-- getMachineCashInfo error: $error --');
+        if (showAlert) {
+          if (retry == null) {
+            errorHandleDialog(error.tr);
+          } else {
+            errorHandleDialogTwo(error.tr, retry);
+          }
+        }
+      },
+    );
+    return result;
+  }
+
+  Future<Map?> getMachineCashInfos() async {
+    var resultMap = null;
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        logI("getMachineCashInfo 1");
+        getCashInfo(cashString: value);
+        resultMap = value.split(',').asMap().map((key, value) {
+          final cash = value.split(':');
+          return MapEntry(catValFromInt(cash[0]), cash[1]);
+        });
+      },
+      catchError: (error) {
+        logI("getMachineCashInfo error: $error");
+        errorHandleDialog(error.tr);
+      },
+    );
+
+    // print('result: $result');
+    // if (result == null) {
+    //   return {};
+    // }
+
+    // //以逗号为分割获取每个数据，再以冒号分割获取key和value, 再赋值给一个Map
+    // final resultMap = result.split(',').asMap().map((key, value) {
+    //   final cash = value.split(':');
+    //   return MapEntry(catValFromInt(cash[0]), cash[1]);
+    // });
+    // debugPrint('resultMap: ${resultMap}');
+    logI('resultMap: ${resultMap}');
+    return resultMap;
+  }
+
+  //投币BEGINDEPOSITOUTSIDE
+  beginDepositOutside() async {
+    logger.info('-- beginDepositOutside --');
+    final result = await CashChanger.beginDepositOutside;
+    debugPrint('beginDepositOutside: $result');
+    await CashChanger.changerResultNext(
+        resultCode: result,
+        onSuccess: () {
+          logger.info('-- beginDepositOutside success--');
+          debugPrint("beginDepositOutside 1");
+          _getOutsideInputMoney();
+        },
+        onRetry: () {
+          debugPrint("beginDepositOutside 2");
+          beginDepositOutside();
+        },
+        showError: (String error) {
+          debugPrint("beginDepositOutside error: $error");
+          logger.info('-- beginDepositOutside error: ${error.tr} --');
+          errorHandleDialog(error.tr);
+        });
+  }
+
+  _getOutsideInputMoney() async {
+    debugPrint("_getOutsideInputMoney");
+    await CashChanger.setEventsListener();
+    CashChanger.onGetPutMoneyStringChange = (int result) {
+      debugPrint("onGetPutMoneyStringChange _getOutsideInputMoney");
+      logger.info('-- onGetPutMoneyStringChange: $result --');
+      if (ignoreNotify.value) {
+        return;
+      }
+      if (result > 0) {
+        debugPrint(
+            "_getOutsideInputMoney getPutMoney.value==${result.toString()}");
+        getPutMoney.value = result;
+        showCashTimer?.cancel();
+        if (taskTouch) {
+          taskTouch = false;
+          //if(!isExchange)
+          EasyLoading.dismiss();
+        }
+        getInputMoneyInfo();
+      }
+    };
+
+    CashChanger.onStatusUpdateEventChange = (String result) async {
+      debugPrint("onStatusUpdateEventChange : $result");
+      logger.info('-- onStatusUpdateEventChange: $result --');
+      if (result == 'OK') {
+        return;
+      }
+      if (result == 'FULL' || result == 'NEARFULL') {
+        //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
+        String? machineChangeInfo = await getMachineCashInfo();
+        if (machineChangeInfo == null) {
+          return;
+        }
+
+        String cashList = machineChangeInfo.findMaxCash();
+
+        errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
+          Get.back();
+          cancelTimer(shouldBack: false);
+        });
+        return;
+      }
+      errorHandleDialog(result);
+    };
+  }
+
+  Map<String, int> parseCoinCount(String input) {
+    return Map.fromEntries(input.split(',').map((item) {
+      List<String> parts = item.split(':');
+      return MapEntry(parts[0], int.parse(parts[1]));
+    }).where((entry) => entry.value > 0));
+  }
+
+  Map<String, int> parseCoinCounts(String input, String local, String out) {
+    Map<String, int> result = {};
+
+    void processInput(String str) {
+      str.split(',').forEach((item) {
+        List<String> parts = item.split(':');
+        String key = parts[0];
+        int value = int.parse(parts[1]);
+        result[key] = (result[key] ?? 0) + value;
+      });
+    }
+
+    void processOutput(String str) {
+      str.split(',').forEach((item) {
+        List<String> parts = item.split(':');
+        String key = parts[0];
+        int value = int.parse(parts[1]);
+        int count = (result[key] ?? 0);
+        if (count >= value) {
+          result[key] = count - value;
+        }
+      });
+    }
+
+    processInput(input);
+    processInput(local);
+    processOutput(out);
+
+    return Map.fromEntries(result.entries.where((entry) => entry.value > 0));
+  }
+
+  List<MapEntry<String, int>>? findChange(
+      List<String> coins, Map<String, int> coinCounts, int target) {
+    if (target == 0) return [];
+    if (target < 0 || coins.isEmpty) return null;
+
+    String coin = coins.first;
+    int coinValue = int.parse(coin);
+    int count = coinCounts[coin] ?? 0;
+
+    for (int i = 0; i <= count; i++) {
+      var result =
+          findChange(coins.sublist(1), coinCounts, target - coinValue * i);
+      if (result != null) {
+        final resultMap = i > 0 ? [MapEntry(coin, i), ...result] : result;
+        return resultMap;
+      }
+    }
+
+    return null;
+  }
+
+  List<MapEntry<String, int>>? findOptimalChange(
+      List<String> coins, Map<String, int> coinCounts, int target) {
+    if (target == 0) return [];
+    if (target < 0 || coins.isEmpty) return null;
+    logI("findOptimalChange");
+    List<MapEntry<String, int>>? bestResult;
+    int minCoins = 9223372036854775807;
+    logI("minCoins:$minCoins");
+    String coin = coins.first;
+    int coinValue = int.parse(coin);
+    int count = coinCounts[coin] ?? 0;
+    logI("coin:$coin, coinValue:$coinValue, count:$count");
+
+    for (int i = 0; i <= count; i++) {
+      var result = findOptimalChange(
+          coins.sublist(1), coinCounts, target - coinValue * i);
+      if (result != null) {
+        final currentResult = i > 0 ? [MapEntry(coin, i), ...result] : result;
+        int totalCoins =
+            currentResult.fold(0, (sum, entry) => sum + entry.value);
+        if (totalCoins < minCoins) {
+          minCoins = totalCoins;
+          bestResult = currentResult;
+        }
+      }
+    }
+
+    return bestResult;
+  }
+
+  String formatChange(List<MapEntry<String, int>> change, type, int count) {
+    Map<String, int> changeMap = Map.fromEntries(change);
+
+    changeMap.update(type, (existingCount) => existingCount + count,
+        ifAbsent: () => count);
+
+    return changeMap.entries
+        .map((entry) => '${entry.key}:${entry.value}')
+        .join(',');
+  }
+
+  Map<String, int> formatRemainingCoins(
+      Map<String, int> coinCounts, List<MapEntry<String, int>> change) {
+    Map<String, int> remainingCoins = Map.from(coinCounts);
+    for (var entry in change) {
+      remainingCoins[entry.key] =
+          (remainingCoins[entry.key] ?? 0) - entry.value;
+    }
+    return Map.fromEntries(
+        remainingCoins.entries.where((entry) => entry.value > 0));
+  }
+
+  String mapToString(Map<String, String> map) {
+    return map.entries.map((entry) => '${entry.key}:${entry.value}').join(',');
+  }
+
+  void askBeforeExchange() {
+    var confirmationHandled = false;
+    EasyLoading.dismiss();
+    Get.dialog(
+      GetBuilder<SettingController>(
+        // init: this,        // 关键：绑定到当前这个实例
+        // global: false,
+        builder: (ctl) {
+          List exchangeList = ctl.getExchange();
+          if (exchangeList.isEmpty) {
+            return DialogUtils.alertOneButton(
+              '両替情報がありません。お金を入れてください。',
+              title: "tag_title".tr,
+              confirmtitle: "OK",
+              confirm: () => Get.back(),
+            );
+          }
+
+          final type = exchangeList[0].toString();
+          final count = exchangeList[1];
+          final discount = exchangeList[2];
+          final message =
+              '両替種類: ${getCashName(type)}　両替枚数: $count　お釣り: $discount';
+
+          Widget content = Container(
+            padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
+            child: Column(
+              spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('入金は完了しましたか？今両替を実行しますか？',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(28))),
+                Container(
+                  padding: EdgeInsets.only(left: 50),
+                  alignment: Alignment.centerLeft,
+                  child: Text('入金情報:',
+                      style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(24))),
+                ),
+                ...ctl.uploadMoneyInfo.entries.map((entry) {
+                  return Container(
+                    padding: EdgeInsets.only(
+                        left: 100, right: 100, top: 10, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${getDepositHexVal(entry.key)}',
+                            style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(24))),
+                        Text('枚数: ${entry.value}',
+                            style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(24))),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                Divider(
+                  color: Colors.grey,
+                  thickness: 1.0,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 50, top: 10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(message,
+                      style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(26))),
+                ),
+              ],
+            ),
+          );
+
+          return DialogUtils.cashActionAlert(
+            content,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
+            confirm: () {
+              if (confirmationHandled) {
+                logger.warning(
+                    '-- exchange confirmation ignored: already handled --');
+                return;
+              }
+              confirmationHandled = true;
+              if (ExchangeFlowGuard.isRunning) {
+                logger.warning(
+                    '-- exchange confirmation ignored: flow already running --');
+                Get.back();
+                return;
+              }
+              ctl.exchangeFlow(type, count, discount);
+              Get.back();
+            },
+            cancle: () {
+              taskTouch = false;
+              ignoreNotify.value = false;
+              Get.back();
+            },
+          );
+        },
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  //exchangeFlow
+  Future<void> exchangeFlow(type, count, disconut) async {
+    final started = await ExchangeFlowGuard.run(
+      () => _runExchangeFlow(type, count, disconut),
+    );
+    if (!started) {
+      logger.warning(
+          '-- exchangeFlow ignored: another exchange is already running --');
+    }
+  }
+
+  Future<void> _runExchangeFlow(type, count, disconut) async {
+    await CashChanger.removeEventsListener();
+    //isExchange = true;
+    logI('exChangeFlow: $type, $count, $disconut');
+
+    logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+
+    showEasyLoading();
+    await CashChanger.fixDeposit;
+
+    String? localCashInfo = await getMachineCashInfo();
+    if (localCashInfo == null) return;
+    Map<String, int> coinCounts = parseCoinCounts(
+        getPutMoneyCurrency.value, localCashInfo, '$type:$count');
+
+    logI('coinCounts : $coinCounts');
+    List<String> availableCoins = coinCounts.keys.toList(); //..sort();
+    logI('availableCoins : $availableCoins');
+
+    List<MapEntry<String, int>>? change =
+        findChange(availableCoins, coinCounts, disconut);
+    logI('change : $change');
+
+    if (change == null) {
+      EasyLoading.dismiss();
+      errorHandleDialog(
+          "現在の組み合わせは両替できません、キャンセルしてやり直してください。"); //localized needed
+      return;
+    }
+
+    String changeString = formatChange(change, type, count);
+    logI('changeString : $changeString');
+
+    String outInfo = getNoneZeroInfo(changeString);
+    logI('outInfo: $outInfo');
+
+    Map<String, int> putCoinCounts = parseCoinCount(getPutMoneyCurrency.value);
+    //Map remainingCoins = formatRemainingCoins(putCoinCounts, change);
+
+    final puts = putCoinCounts.entries.map((e) {
+      return {
+        'catVal': catValFromInt(e.key),
+        'val': e.value,
+      };
+    }).toList();
+
+    logI('puts: $puts');
+
+    final pops = [
+      {
+        'catVal': catValFromInt(type),
+        'val': count,
+      },
+      ...change.map((item) => {
+            'catVal': catValFromInt(item.key),
+            'val': item.value,
+          })
+    ];
+
+    logI('pops: $pops');
+
+    var outMoneySuccess = false;
+    if (!hasExchangeCash) outMoneySuccess = await gloryOutputMoney(outInfo);
+
+    if (!outMoneySuccess) {
+      //isExchange = false;
+      EasyLoading.dismiss();
+    } else {
+      getPutMoneyCurrency.value = '';
+      getPutMoney.value = 0;
+    }
+
+    if (outMoneySuccess || hasExchangeCash) {
+      //isExchange = false;
+      hasExchangeCash = true;
+      final result =
+          await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+      if (result) {
+        clearTask();
+        Get.back();
+      }
+    }
+  }
+
+  Future<bool> exportCashFlow(type, int count) async {
+    logI('exportCashFlow: $type, $count');
+    showEasyLoading();
+
+    List<Map> puts = [
+      {
+        'catVal': getDepositCatVal(type),
+        'val': 0,
+      }
+    ];
+    List<Map> pops = [
+      {
+        'catVal': getDepositCatVal(type),
+        'val': count,
+      }
+    ];
+    int moneyValue = int.parse(getCatVal(type));
+    String outInfo =
+        moneyValue > 500 ? ';$moneyValue:$count' : '$moneyValue:$count';
+    logI('outInfo: $outInfo');
+
+    int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
+    EasyLoading.dismiss();
+    if (resultCode == null || resultCode != 0) {
+      errorHandleDialogTwo(
+          '出金に失敗しました。再度お試しください。', () => exportCashFlow(type, count),
+          cancel: () => Get.back());
+      return false;
+    }
+
+    await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+    clearTask();
+    Get.back();
+
+    return true;
+  }
+
+  //日文提示
+  tipsTitle() {
+    int exChangeType = int.parse(getCatVal(exchangeFromInfo.keys.first));
+    int count = exchangeFromInfo.values.first;
+    int totalExchange = exChangeType * count;
+    if (getPutMoney.value == 0) {
+      return 'お金を入れてください';
+    }  else if (getExchange().isNotEmpty &&
+        (getExchange().length > 1) && (totalExchange < getPutMoney.value)) {
+      //超出兑换金额，请取消再重试。
+      return '両替金額を超えています。キャンセルして再試行してください。';
+    } else if (getExchange().isNotEmpty &&
+        getExchange().length == 3 &&
+        getExchange()[2] > 0) {
+      //未找到兑换组合，请继续投钱，或者取消。
+      return '両替できる組み合わせが見つかりません。引き続き入金するか、キャンセルしてください。';
+    } else if (getPutMoney.value > 0 && (getExchangeList().isEmpty)) {
+      //请继续投钱
+      return 'お金を入れ続けてください';
+    } else {
+      //请选择要兑换的金种
+      return '両替の種類を選んでください';
+    }
+  }
+
+  gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
+    //debugPrint("startOutPutMoney");
+    //print("outMoney: $outMoney");
+    logger.info('-- gloryOutputMoney: $outMoney --');
+    await CashChanger.removeEventsListener();
+    bool success = false;
+    final resultCode = await CashChanger.dispenseCashOutside(outMoney);
+    await CashChanger.changerResultNext(
+        resultCode: resultCode,
+        onSuccess: () {
+          logger.info('-- gloryOutputMoney: success --');
+          debugPrint("startOutPutMoney 1");
+          success = true;
+          if (fromeError != null && fromeError) {
+            successTask?.call(true);
+          }
+        },
+        onRetry: () {
+          debugPrint("startOutPutMoney 2");
+          gloryOutputMoney(outMoney);
+        },
+        showError: (String error) {
+          debugPrint("startOutPutMoney error: $error");
+          logger.info('-- gloryOutputMoney error: $error --');
+          success = false;
+          errorHandleDialog(error.tr, confirm: () {
+            cancelReplanish(shouldBack: false);
+
+            //Get.back();
+            // gloryOutputMoney(outMoney,
+            //     successTask: successTask, fromeError: true);
+          });
+        });
+    return success;
+  }
+
+  //添加重试3次逻辑 和最后失败弹框提示。
+  reportExchange(puts, pops) async {
+    var success = false;
+    logI('reportExchange');
+    var formData = {
+      'machineCode': machineCode, //'PAZK8N7KKE8evkXks4',
+      'puts': puts,
+      'pops': pops,
+      'shopCode': shopCode,
+    };
+
+    logI('formData: $formData');
+
+    await request(
+      'webBootGloryExchange',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      final response = json.decode(value.toString());
+      logI("response: $response");
+      EasyLoading.dismiss();
+      if (response["code"] == 200) {
+        success = true;
+        //showToast('完了しました', context: Get.context);
+      } else {
+        success = false;
+        logI('---reportExchange failed: ${response["message"]}');
+        showToast('report 失败!', context: Get.context);
+      }
+    }).catchError((error) {
+      logI('---reportExchange error: $error');
+      success = false;
+      EasyLoading.dismiss();
+      showToast('report 失败!', context: Get.context);
+    });
+    return success;
+  }
+
+  bool canExchange() {
+    var canExchange = false;
+    //debugPrint('cashInfo: ${cashInfo.value}');
+    cashInfo.forEach((key, value) {
+      if (value != '0' && (key == '1000' || key == '5000' || key == '10000')) {
+        canExchange = true;
+      }
+    });
+    return canExchange;
+  }
+
+  bool canExchangeMoney() {
+    bool canExchange = false;
+    getExchangeList().forEach((element) {
+      debugPrint('element: $element');
+      if (element[2] == 0) {
+        canExchange = true;
+      }
+    });
+    return canExchange;
+  }
+
+  List<int> getExchange() {
+    int exChangeType = int.parse(getCatVal(exchangeFromInfo.keys.first));
+    int count = exchangeFromInfo.values.first;
+
+    if (count > 0 && getPutMoney.value >= exChangeType && exChangeType > 0) {
+      //预计要换多少个
+      var exchange = getPutMoney.value ~/ exChangeType;
+      //debugPrint('exchange1000: $exchange');
+      //获取剩余的钱
+      var remainMoney = getPutMoney.value % exChangeType;
+      //debugPrint('remainMoney: $remainMoney');
+      if (count < exchange) {
+        //不够换
+        exchange = count;
+        //debugPrint('exchange1000 e: $exchange');
+        remainMoney = getPutMoney.value - count * exChangeType;
+        //debugPrint('remainMoney e: $remainMoney');
+      }
+
+      return [exChangeType, exchange, remainMoney];
+    }
+
+    return [];
+  }
+
+  List<List<int>> getExchangeList() {
+    final exchangeList = <List<int>>[];
+    int cash1000 = cashInfo['1000'];
+    int cash5000 = cashInfo['5000'];
+    int cash10000 = cashInfo['10000'];
+
+    if (cash1000 > 0 && getPutMoney.value >= 1000) {
+      //预计要换多少个1000
+      var exchange1000 = getPutMoney.value ~/ 1000;
+      debugPrint('exchange1000: $exchange1000');
+      //获取剩余的钱
+      var remainMoney = getPutMoney.value % 1000;
+      debugPrint('remainMoney: $remainMoney');
+      if (cash1000 < exchange1000) {
+        //不够换
+        exchange1000 = cash1000;
+        debugPrint('exchange1000 e: $exchange1000');
+        remainMoney = getPutMoney.value - cash1000 * 1000;
+        debugPrint('remainMoney e: $remainMoney');
+      }
+
+      exchangeList.add([1000, exchange1000, remainMoney]);
+    }
+
+    if (cash5000 > 0 && getPutMoney.value >= 5000) {
+      var exchange5000 = getPutMoney.value ~/ 5000;
+      var remainMoney = getPutMoney.value % 5000;
+      if (cash5000 < exchange5000) {
+        exchange5000 = cash5000;
+        remainMoney = getPutMoney.value - cash5000 * 5000;
+      }
+
+      exchangeList.add([5000, exchange5000, remainMoney]);
+    }
+
+    if (cash10000 > 0 && getPutMoney.value >= 10000) {
+      var exchange10000 = getPutMoney.value ~/ 10000;
+      var remainMoney = getPutMoney.value % 10000;
+
+      if (cash10000 < exchange10000) {
+        exchange10000 = cash10000;
+        remainMoney = getPutMoney.value - cash10000 * 10000;
+      }
+
+      exchangeList.add([10000, exchange10000, remainMoney]);
+    }
+    return exchangeList;
+  }
+
+  exchangeMoney() async {
+    debugPrint('exchangeMoney');
+  }
+}
+
+class ExchangeFlowGuard {
+  static bool _running = false;
+
+  static bool get isRunning => _running;
+
+  static Future<bool> run(Future<void> Function() operation) async {
+    if (_running) {
+      return false;
+    }
+    _running = true;
+    try {
+      await operation();
+      return true;
+    } finally {
+      _running = false;
+    }
+  }
+}

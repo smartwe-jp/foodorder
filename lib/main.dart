@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,23 +9,17 @@ import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
+import 'package:logging/logging.dart';
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
+import 'app/config/app_environment.dart';
+import 'app/config/app_variant.dart';
 import 'app/config/color.dart';
 import 'app/controllers/app_config.dart';
-import 'app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'app/routes/app_pages.dart';
-import 'app/print_task/print_task_models.dart';
 import 'app/print_failed/print_failed_models.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'app/services/CustomLogerHandler.dart';
-import 'app/services/ResetToHomeTimer.dart';
-import 'firebase_options.dart';
 
 class _NavBounceTrack {
   static String? lastRoute;
@@ -73,40 +64,27 @@ class RouteDebugObserver extends NavigatorObserver {
 }
 
 void main() {
+  AppEnvironmentConfig.ensureValid();
+  AppVariantConfig.ensureValid();
+
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+
     await GetStorage.init();
     await Hive.initFlutter();
-    // if (!Hive.isAdapterRegistered(61)) {
-    //   Hive.registerAdapter(PrintJobAdapter());
-    // }
-    // if (!Hive.isAdapterRegistered(62)) {
-    //   Hive.registerAdapter(PrintTaskAdapter());
-    // }
+
     if (!Hive.isAdapterRegistered(63)) {
       Hive.registerAdapter(PrintRecordAdapter());
     }
-    // await Hive.openBox<PrintJob>('print_jobs');
-    // await Hive.openBox<PrintTask>('print_tasks');
+
     await Hive.openBox<PrintRecord>('print_records');
-    // if (Platform.isAndroid) {
-    //   //Firebase is not full supported on windows
-    //   await Firebase.initializeApp(
-    //     options: DefaultFirebaseOptions.currentPlatform,
-    //   );
-    //   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    // }
 
     Get.putAsync<AppConfig>(() async {
       final config = AppConfig();
-      await config.onInit(); // Assume init() is an async method
+      config.onInit(); // Assume init() is an async method
       return config;
     });
 
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
@@ -142,6 +120,7 @@ void main() {
                       Locale('zh', 'CH'),
                       Locale('en', 'US'),
                       Locale('ko', 'KR'),
+                      Locale('vi', 'VN'),
                       Locale('ja', 'JP'),
                     ],
                     translations: TranslationService(),
@@ -164,16 +143,6 @@ void main() {
                     },
                   ));
         },
-        // child: Scaffold(
-        //   body: PrintImageGenerateWidget(
-        //     contentBuilder: (context) {
-        //       return HomeView();
-        //       //return WindewsTestView();
-
-        //     },
-        //     onPictureGenerated: _onPictureGenerated,
-        //   ),
-        // ),
       ));
       //HttpOverrides.global = MyHttpOverrides();flutter
     });
@@ -181,9 +150,22 @@ void main() {
     //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
-    print('runZonedGuarded: Caught error in my root zone.:$error');
-    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    //debugPrint('runZonedGuarded: Caught error in my root zone.:: $error');
+    //final logger = Logger('main');
+    Logger('main').info('-- Caught error in my root zone.:: $error --');
+    // if (Platform.isAndroid) {
+    //   FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    // }
   });
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
@@ -212,7 +194,7 @@ void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
     logI('--forcing return to Checkout 1--');
     Future.microtask(() {
       if (Get.isRegistered<TransitPageController>()) {
-        Get.find<TransitPageController>().getIsShowCashInfo();
+        Get.find<TransitPageController>().startBootstrap();
       } else {
         logI('--TransitPageController not registered--');
         Get.offNamedUntil('/transit-page', (route) => route.isFirst);
@@ -226,7 +208,7 @@ void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
       logI('--forcing return to Checkout 2--');
       Future.microtask(() {
         if (Get.isRegistered<TransitPageController>()) {
-          Get.find<TransitPageController>().getIsShowCashInfo();
+          Get.find<TransitPageController>().startBootstrap();
         } else {
           logI('--TransitPageController not registered--');
           Get.offNamedUntil('/transit-page', (route) => route.isFirst);

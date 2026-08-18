@@ -8,6 +8,14 @@
 .buildlog/
 .history
 .svn/
+# 忽略特定文件
+lib/app/plugins/cash_changer/windows/グローリー.zip
+
+# 忽略所有 .db 文件
+*.db
+
+# 忽略整个目录
+windows/out/
 
 # IntelliJ related
 *.iml
@@ -30,6 +38,8 @@
 .pub-cache/
 .pub/
 /build/
+**/flutter/ephemeral/
+**/Flutter/ephemeral/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -39,3 +49,6 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# FVM Version Cache
+.fvm/

@@ -5,7 +5,9 @@ import 'package:foodorder/app/services/sse_service.dart';
 import 'package:get/get.dart';
 
 class SseSubscriptionManager extends GetxService {
+
   SseService get _sseService => Get.find<SseService>();
+
   final RxList<SseSubscriptionSetting> settings =
       <SseSubscriptionSetting>[].obs;
 

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../services/HomeServices.dart';
@@ -10,8 +11,9 @@ class MiddlewareSettingPageController extends GetxController {
 
   @override
   void onInit() {
+    debugPrint("MiddlewareSettingPageController onInit");
     machineCode.value = Get.arguments['machineCode'];
-
+    debugPrint("MiddlewareSettingPageController machineCode.value = ${machineCode.value}");
     jumpSetting();
     super.onInit();
   }
@@ -28,6 +30,7 @@ class MiddlewareSettingPageController extends GetxController {
 
   jumpSetting() async {
     var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
+    debugPrint("MiddlewareSettingPageController smartweMachineSettingPassword = ${smartweMachineSettingPassword}");
     if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
       showSettingPassword();
     }else{

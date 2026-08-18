@@ -56,11 +56,11 @@ class OrderHomeController extends GetxController with StateMixin {
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
-          Get.dialog(
-            checkStatusView(),
-            barrierDismissible: false,
-          );
-          checkPrinterStatus();
+        Get.dialog(
+          checkStatusView(),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
         //});
       }
     }
@@ -110,7 +110,7 @@ class OrderHomeController extends GetxController with StateMixin {
     }).toList();
 
     allAreReady.value = false;
-    
+
     await Future.delayed(const Duration(milliseconds: 3000));
 
     await printerCheckService.checkPrinters(checkList, (printer) {
@@ -123,8 +123,8 @@ class OrderHomeController extends GetxController with StateMixin {
       }
       allAreReady.value = checkList.every((item) => item['checked']);
       //if (allAreReady.value) {
-        //EasyLoading.showToast('All printers are ready');
-        //Get.back(); // Close the dialog
+      //EasyLoading.showToast('All printers are ready');
+      //Get.back(); // Close the dialog
       //}
       //update();
     });

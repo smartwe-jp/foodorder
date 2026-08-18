@@ -1,22 +1,31 @@
-
 import 'package:foodorder/app/controllers/app_config.dart';
+import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
 import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
 import 'package:foodorder/app/services/print_task_service.dart';
+import 'package:foodorder/app/services/machine_runtime_service.dart';
+import 'package:foodorder/app/services/cash_machine_startup_service.dart';
 import 'package:foodorder/app/controllers/print_task_controller.dart';
 import 'package:get/get.dart';
 
-import '../controllers/create_printImage_controller.dart';
 import '../controllers/order_sql_controller.dart';
 import '../services/PosCheckService.dart';
 
 class AppBindings extends Bindings {
   @override
   void dependencies() {
-    //Get.lazyPut(() => AppConfig());
+    Get.put(AppConfig(), permanent: true);
+    Get.put(MachineRuntimeService(), permanent: true);
+    Get.lazyPut(
+      () => CashMachineStartupService(
+        appConfig: Get.find<AppConfig>(),
+        runtime: Get.find<MachineRuntimeService>(),
+      ),
+      fenix: true,
+    );
     Get.lazyPut(() => OrderSqlController(), fenix: true);
     Get.lazyPut(() => SseService(), fenix: true);
     Get.lazyPut(() => SseSubscriptionManager(), fenix: true);

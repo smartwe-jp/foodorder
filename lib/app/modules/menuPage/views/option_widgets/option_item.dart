@@ -49,6 +49,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
 
 
   String get showPrice => _currentPrice.formatIntSum();
+  String get showMinusPrice => (-_currentPrice).formatIntSum();
 
   @override
   void initState() {
@@ -254,7 +255,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           ),
                           child: Text(
-                              (_currentPrice > 0) ?"¥$showPrice":"-¥$showPrice",
+                              (_currentPrice > 0) ?"¥$showPrice":"-¥$showMinusPrice",
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontFamily: GFont.getFontFamily(),
@@ -319,7 +320,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
               child: badges.Badge(
                 showBadge: (_currentPrice != 0) ? true : false,
                 badgeContent: Text(
-                    (_currentPrice > 0) ?"¥$showPrice":"-¥$showPrice",
+                    (_currentPrice > 0) ?"¥$showPrice":"-¥$showMinusPrice",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(20),
                       fontFamily: GFont.getFontFamily(),

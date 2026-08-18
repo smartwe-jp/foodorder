@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
 
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
@@ -14,8 +17,8 @@ import '../controllers/system_setting_page_controller.dart';
 import 'SetPassword.dart';
 import 'SetPosIp.dart';
 
-class SystemSettingPageView extends GetView {
-  final SystemSettingPageController controller = Get.put(SystemSettingPageController());
+class SystemSettingPageView extends GetView<SystemSettingPageController> {
+  //final SystemSettingPageController controller = Get.put(SystemSettingPageController());
   SystemSettingPageView({Key? key}) : super(key: key);
 
 
@@ -97,50 +100,50 @@ class SystemSettingPageView extends GetView {
 
   setMachineType() {
     return Container(
-        margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-        padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
-        child:
-        Container(
-          alignment: Alignment.centerLeft,
-          child: Container(
-            width: 200,
-            child: DropdownButtonFormField<String>(
-              value: controller.machineInfo.panelType,
-              onChanged: (String? newValue) {
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child:
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 200,
+              child: DropdownButtonFormField<String>(
+                value: controller.machineInfo.panelType,
+                onChanged: (String? newValue) {
 
-                controller.checkPanelType(newValue ?? 'Mini');
+                  controller.checkPanelType(newValue ?? 'Mini');
 
-              },
-              items: controller.panelTypes.map<DropdownMenuItem<String>>((String key) {
-                return DropdownMenuItem<String>(
-                  value: key,
-                  child: Text(key, style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(18.0),
-                  ),),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                },
+                items: controller.panelTypes.map<DropdownMenuItem<String>>((String key) {
+                  return DropdownMenuItem<String>(
+                    value: key,
+                    child: Text(key, style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(18.0),
+                    ),),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                ),
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                isExpanded: true,
               ),
-              icon: Icon(Icons.arrow_drop_down),
-              iconSize: 24,
-              isExpanded: true,
             ),
-          ),
-        )
+          )
 
 
 
@@ -764,7 +767,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: !(controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (!controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -775,7 +778,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: !(controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (!controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -818,7 +821,6 @@ class SystemSettingPageView extends GetView {
               InkWell(
                 highlightColor: Colors.transparent, // 透明色
                 splashColor: Colors.transparent, // 透明色
-
                 child: Container(
                   margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                   //设置 child 居中
@@ -870,6 +872,7 @@ class SystemSettingPageView extends GetView {
       ),
     );
   }
+
   //设置是否开启pos刷卡
   setIsAllowPos() {
     final posCheckService = Get.find<PosCheckService>();
@@ -942,85 +945,69 @@ class SystemSettingPageView extends GetView {
             ),
           ),
           if (controller.machineInfo.pos_ip != "" && controller.machineInfo.pos_port != "")
-            Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-              child:
-              InkWell(
-                highlightColor: Colors.transparent, // 透明色
-                splashColor: Colors.transparent, // 透明色
-                onTap: (){
-                  controller.posTest(controller.machineInfo.pos_ip, controller.machineInfo.pos_port);
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                  //设置 child 居中
-                  alignment: Alignment(0, 0),
-                  height: ScreenAdapter.height(60),
-                  width: ScreenAdapter.width(220),
-                  //边框设置
-                  decoration: new BoxDecoration(
-                    //背景
-                    color: ColorsUtil.hexToColor("#409eff"),
-                    //设置四周圆角 角度
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    //设置四周边框
-                    //border: new Border.all(width: 1, color: Colors.red),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                              "${controller.machineInfo.pos_ip}:",
-                              style: TextStyle(
-                                fontFamily: 'NotoSansJP',
-                                fontSize: ScreenAdapter.fontSize(22),
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )
-                          ),
-                          Text(
-                              "${controller.machineInfo.pos_port}",
-                              style: TextStyle(
-                                fontFamily: 'NotoSansJP',
-                                fontSize: ScreenAdapter.fontSize(22),
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )
-                          )
-                        ],
-                      ),
-                      Text("テスト Pos",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(18.0),
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )
-                      ),
-                    ],
-                  ),
+          Container(
+            margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+            child:
+            InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.posTest(controller.machineInfo.pos_ip,controller.machineInfo.pos_port);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.machineInfo.pos_ip}:",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                        Text(
+                            "${controller.machineInfo.pos_port}",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        )
+                      ],
+                    ),
+                    Text("テスト Pos",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(18.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
                 ),
               ),
-              // Row(
-              //   children: [
-              //     Text(
-              //         "${controller.pos_ip.value}:",
-              //         style: TextStyle(
-              //           fontSize: ScreenAdapter.fontSize(22),
-              //         )
-              //     ),
-              //     Text(
-              //         "${controller.pos_port.value}",
-              //         style: TextStyle(
-              //           fontSize: ScreenAdapter.fontSize(22),
-              //         )
-              //     )
-              //   ],
-              // ),
             ),
-          // if (controller.pos_ip.value != "")
+          ),
+          // if (controller.pos_ip.value != "") 
           // SizedBox(width: ScreenAdapter.width(20)),
           // if (controller.pos_ip.value != "")
           // Switch(value: posCheckService.isActive, onChanged: (value) {
@@ -1045,7 +1032,6 @@ class SystemSettingPageView extends GetView {
               controller.machineInfo.wlan_panel_print_ip = posIp;
               controller.machineInfo.wlan_panel_print_port = posPort;
 
-
               controller.checkIsAllowWlanPanelPrint("1");
             }
 
@@ -1064,8 +1050,8 @@ class SystemSettingPageView extends GetView {
           onConfrimClick: (String posIp, String posPort) {
             if(posIp != ""){
 
-              controller.machineInfo.pos_ip = posIp;
-              controller.machineInfo.pos_port = posPort;
+                controller.machineInfo.pos_ip = posIp;
+                controller.machineInfo.pos_port = posPort;
 
 
               controller.checkIsAllowPos("1");
@@ -1076,9 +1062,116 @@ class SystemSettingPageView extends GetView {
     );
   }
 
-  //设置USB打印机
 
-  setIsAllowPrintOptions() {
+  //设置USB打印机
+  
+
+  setUSBPrint() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+            InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              //controller.checkIsAllowWlanPrint("0");
+              Get.dialog(
+                PrinterListPage(
+                  searchType:SearchType.usb, 
+                  currentPrinter: controller.curUsbPrinter?.id,
+                  onPrinterSelected: (device) => {
+                  controller.setUsbPrinter(usbPrinter:device.usbDevice)
+                },)
+              );
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: ColorsUtil.hexToColor("#409eff"),
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("スキャン",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                  )
+              ),
+            ),
+          ),
+
+           SizedBox(width: ScreenAdapter.width(20)),
+           controller.usbDevice.isEmpty ? Container() :
+
+           InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                //controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+                controller.printTest(SearchType.usb ,controller.usbDevice["productName"] ?? "productName", controller.usbDevice["sId"] ?? "sId");
+              },
+              child: Container(
+                padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                //width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.usbDevice["sId"]}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                    
+                      ],
+                    ),
+                    Text("テスト印刷",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ]
+      )
+    );
+  }
+
+    setIsAllowPrintOptions() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
@@ -1152,6 +1245,7 @@ class SystemSettingPageView extends GetView {
       ),
     );
   }
+
 
   //设置是否允许使用一元
   setIsAllowOneYen() {
@@ -1379,156 +1473,6 @@ class SystemSettingPageView extends GetView {
     );
   }
 
-  setIsAllow5Yen() {
-    return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllow5Yen(false);
-            },
-            child: Container(
-              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: controller.machineInfo.isAllow5 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("使えない",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.machineInfo.isAllow5 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllow5Yen(true);
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: controller.machineInfo.isAllow5 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("使える",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.machineInfo.isAllow5 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-
-  setIsAllow10Yen() {
-    return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllow10Yen(false);
-            },
-            child: Container(
-              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: controller.machineInfo.isAllow10 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("使えない",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.machineInfo.isAllow10 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllow10Yen(true);
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: controller.machineInfo.isAllow10 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("使える",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.machineInfo.isAllow10 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-
   setOpenRejishime() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -1567,6 +1511,8 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
+          
+          SizedBox(width: ScreenAdapter.width(20)),
           InkWell(
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
@@ -1647,6 +1593,7 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
+              //controller.checkIsAllowBackHome("1");
               controller.checkIsAllowBackHome(false);
             },
             child: Container(
@@ -1680,6 +1627,7 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+
   showSettingPassword() async {
     Get.dialog(
         SetPasswordPage()
@@ -1690,215 +1638,226 @@ class SystemSettingPageView extends GetView {
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: Text("システム設定")),
-      body: GetBuilder<SystemSettingPageController>(builder: (controller){
-        return controller.obx((state) => ListView(
-          children: <Widget>[
-
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              width: ScreenAdapter.width(820.0),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(30.0),
-              ),
-              alignment: Alignment.center,
-              padding: EdgeInsets.only(
-                top: ScreenAdapter.height(5.0),
-                left: ScreenAdapter.width(20.0),
-                right: ScreenAdapter.width(20.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      /*Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return new HomePage();
-                          },
+      body: ExcludeSemantics(
+        child: GetBuilder<SystemSettingPageController>(builder: (controller){
+          return controller.obx((state) => 
+        
+          Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child:
+          
+          ListView(
+            children: <Widget>[
+        
+              Container(
+                decoration: new BoxDecoration(color: Colors.white),
+                width: ScreenAdapter.width(820.0),
+                margin: EdgeInsets.only(
+                  top: ScreenAdapter.height(30.0),
+                ),
+                alignment: Alignment.center,
+                padding: EdgeInsets.only(
+                  top: ScreenAdapter.height(5.0),
+                  left: ScreenAdapter.width(20.0),
+                  right: ScreenAdapter.width(20.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        /*Navigator.of(context).pushAndRemoveUntil(
+                          new MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return new HomePage();
+                            },
+                          ),
+                          (Route route) => false,
+                        );*/
+                        Get.back(result: "setting-back");
+                        /*Future.delayed(Duration(milliseconds: 100), () {
+                          Navigator.pushNamed(context, '/home');
+                        });*/
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#67c23a"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
                         ),
-                        (Route route) => false,
-                      );*/
-                      Get.back(result: "setting-back");
-                      /*Future.delayed(Duration(milliseconds: 100), () {
-                        Navigator.pushNamed(context, '/home');
-                      });*/
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)),
-                      width: ScreenAdapter.width(120),
-                      height: ScreenAdapter.height(65),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: ColorsUtil.hexToColor("#67c23a"),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
+                        child: Text("戻る",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
                       ),
-                      child: Text("戻る",
-                          style: TextStyle(
-                            fontFamily: 'NotoSansJP',
-                            fontSize: ScreenAdapter.fontSize(24),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )),
                     ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          showSettingPassword();
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(10)),
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(65),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor("#409eff"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: Text("パスワード",
-                              style: TextStyle(
-                                fontFamily: 'NotoSansJP',
-                                fontSize: ScreenAdapter.fontSize(24),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )),
-                        ),
-                      ),
-                      SizedBox(width: 30,),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              controller.showDownloadingAlert();
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(180),
-                              height: ScreenAdapter.height(65),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#409eff"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              child: Text("アップデート",
-                                  style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
-                                    fontSize: ScreenAdapter.fontSize(24),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            showSettingPassword();
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#409eff"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              controller.uploadErrorLog();
-                            },
-                            child: Container(
-                              padding:
-                              EdgeInsets.only(right: ScreenAdapter.width(18)),
-                              child: Text(
-                                "バージョン：${controller.local_version.value}",
+                            child: Text("パスワード",
                                 style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
-                                    color: Colors.grey[500],
-                                    fontSize: ScreenAdapter.fontSize(20.0)),
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                        ),
+                        SizedBox(width: 30,),
+        
+                        //if(Platform.isAndroid)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                controller.showDownloadingAlert();
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(
+                                    left: ScreenAdapter.width(10),
+                                    right: ScreenAdapter.width(10)),
+                                width: ScreenAdapter.width(180),
+                                height: ScreenAdapter.height(65),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: ColorsUtil.hexToColor("#409eff"),
+                                  //设置圆角
+                                  borderRadius: new BorderRadius.circular((16.0)),
+                                ),
+                                child: Text("アップデート",
+                                    style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      fontSize: ScreenAdapter.fontSize(24),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                                    )),
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-
-                ],
+                            GestureDetector(
+                              onTap: (){
+                                //controller.uploadErrorLog();//windows 暂时不支持
+                              },
+                              child: Container(
+                                padding:
+                                EdgeInsets.only(right: ScreenAdapter.width(18)),
+                                child: Text(
+                                  "バージョン：${controller.local_version.value}",
+                                  style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      color: Colors.grey[500],
+                                      fontSize: ScreenAdapter.fontSize(20.0)),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+        
+                  ],
+                ),
               ),
-            ),
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(10.0),
-              ),
-              padding: EdgeInsets.only(
+              Container(
+                decoration: new BoxDecoration(color: Colors.white),
+                margin: EdgeInsets.only(
+                  top: ScreenAdapter.height(10.0),
+                ),
+                padding: EdgeInsets.only(
                   top: ScreenAdapter.height(5.0),
                   left: ScreenAdapter.width(14.0),
                   right: ScreenAdapter.width(14.0),
                   bottom: ScreenAdapter.height(30)
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "セルフレジを設置",
-                      style: TextStyle(
-                        fontFamily: 'NotoSansJP',
-                        fontSize: ScreenAdapter.fontSize(26),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor("#000000"),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "セルフレジを設置",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: ScreenAdapter.fontSize(26),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ),
                       ),
                     ),
-                  ),
-                  Table(
-                    border: TableBorder.all(),
-                    columnWidths: const <int, TableColumnWidth>{
-                      //0: IntrinsicColumnWidth(),
-                      0: FixedColumnWidth(40),
-                      1: FlexColumnWidth(970),
-                    },
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: <TableRow>[
-                      TableRow(
-                        children: <Widget>[
-                          Container(
-                            //color: Colors.blue,
-                            //height: ScreenAdapter.height(65),
-                            width: ScreenAdapter.width(35),
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: ScreenAdapter.width(35),
-                                  child: Text(
-                                    "一般設定",
-                                    style: TextStyle(
-                                        fontFamily: 'NotoSansJP',
-                                        fontSize: ScreenAdapter.fontSize(24),
-                                        fontWeight: FontWeight.w500
+                    Table(
+                      border: TableBorder.all(),
+                      columnWidths: const <int, TableColumnWidth>{
+                        //0: IntrinsicColumnWidth(),
+                        0: FixedColumnWidth(40),
+                        1: FlexColumnWidth(970),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      children: <TableRow>[
+                        TableRow(
+                          children: <Widget>[
+                            Container(
+                              //color: Colors.blue,
+                              //height: ScreenAdapter.height(65),
+                              width: ScreenAdapter.width(35),
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: ScreenAdapter.width(35),
+                                    child: Text(
+                                      "一般設定",
+                                      style: TextStyle(
+                                          fontFamily: 'NotoSansJP',
+                                          fontSize: ScreenAdapter.fontSize(24),
+                                          fontWeight: FontWeight.w500
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            //height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            child: Table(
+                            Container(
+                              //height: ScreenAdapter.height(65),
+                              alignment: Alignment.center,
+                              child: Table(
                                 border: TableBorder.all(),
                                 columnWidths: const <int, TableColumnWidth>{
                                   //0: IntrinsicColumnWidth(),
                                   0:FlexColumnWidth(200),
                                   1: FlexColumnWidth(750),
                                 },
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                children: <TableRow>[
-                                  //if(controller.actuarial.value == true)
+                                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                  children: <TableRow>[
+                                    //if(controller.actuarial.value == true)
                                     TableRow(
                                         children: <Widget>[
                                           Container(
@@ -1916,7 +1875,7 @@ class SystemSettingPageView extends GetView {
                                           setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                         ]
                                     ), //设置机器类型
-                                  if(controller.lineup.value == true)
+                                    if(controller.lineup.value == true)
                                     TableRow(
                                         children: <Widget>[
                                           Container(
@@ -1934,164 +1893,31 @@ class SystemSettingPageView extends GetView {
                                           setIsReservation(),//设置机器类型
                                         ]
                                     ), //设置机器类型
-                                  // TableRow(
-                                  //     children: <Widget>[
-                                  //       Container(
-                                  //         //height: ScreenAdapter.height(65),
-                                  //         alignment: Alignment.center,
-                                  //         child: Text(
-                                  //           "店内・テイクアウト",
-                                  //           style: TextStyle(
-                                  //               fontFamily: 'NotoSansJP',
-                                  //               fontSize: ScreenAdapter.fontSize(22),
-                                  //               fontWeight: FontWeight.w500
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //       setDiningtype(),//食事のタイプ
-                                  //     ]
-                                  // ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "カテゴリ様式",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setMenuDirection(),//菜单方向
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "マシンタイプ",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setMachineType(),//菜单方向
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "領収書",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllowReceipt(),//设置是否允强制必须打印领収书
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "レシート字体",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                              // Text(
-                                              //   "（セルフレジから）",
-                                              //   style: TextStyle(
-                                              //     fontFamily: 'NotoSansJP',
-                                              //       fontSize: ScreenAdapter.fontSize(18),
-                                              //       fontWeight: FontWeight.w500,
-                                              //     color: ColorsUtil.hexToColor("#d90000"),
-                                              //   ),
-                                              // ),
-                                            ],
-                                          ),
-                                        ),
-                                        setPrintPaperTxtSize(),//打印菜单文字大小
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "オーダーシート",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          height: ScreenAdapter.height(90),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "レシートオプション",
-                                            style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllowPrintOptions(),//usb打印机
-
-                                      ]
-                                  ),
-                                  if (!controller.appConfig.isFx)
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "一円",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllowOneYen(),//是否允许一元
-                                      ]
-                                  ),
-                                  if (!controller.appConfig.isFx)
+                                    // TableRow(
+                                    //     children: <Widget>[
+                                    //       Container(
+                                    //         //height: ScreenAdapter.height(65),
+                                    //         alignment: Alignment.center,
+                                    //         child: Text(
+                                    //           "店内・テイクアウト",
+                                    //           style: TextStyle(
+                                    //               fontFamily: 'NotoSansJP',
+                                    //               fontSize: ScreenAdapter.fontSize(22),
+                                    //               fontWeight: FontWeight.w500
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //       setDiningtype(),//食事のタイプ
+                                    //     ]
+                                    // ),
+                                    //if(Platform.isAndroid)
                                     TableRow(
                                         children: <Widget>[
                                           Container(
                                             //height: ScreenAdapter.height(65),
                                             alignment: Alignment.center,
                                             child: Text(
-                                              "五円",
+                                              "カテゴリ様式",
                                               style: TextStyle(
                                                   fontFamily: 'NotoSansJP',
                                                   fontSize: ScreenAdapter.fontSize(22),
@@ -2099,17 +1925,16 @@ class SystemSettingPageView extends GetView {
                                               ),
                                             ),
                                           ),
-                                          setIsAllow5Yen(),//是否允许一元
+                                          setMenuDirection(),//菜单方向
                                         ]
                                     ),
-                                  if (!controller.appConfig.isFx)
                                     TableRow(
                                         children: <Widget>[
                                           Container(
                                             //height: ScreenAdapter.height(65),
                                             alignment: Alignment.center,
                                             child: Text(
-                                              "十円",
+                                              "マシンタイプ",
                                               style: TextStyle(
                                                   fontFamily: 'NotoSansJP',
                                                   fontSize: ScreenAdapter.fontSize(22),
@@ -2117,174 +1942,289 @@ class SystemSettingPageView extends GetView {
                                               ),
                                             ),
                                           ),
-                                          setIsAllow10Yen(),//是否允许一元
+                                          setMachineType(),//菜单方向
                                         ]
                                     ),
-                                  if (!controller.appConfig.isFx)
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "五千円",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "領収書",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        setIsAllow5000Yen(),//是否允许一元
-                                      ]
-                                  ),
-                                  if (!controller.appConfig.isFx)
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "一万円",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllow10000Yen(),//是否允许一元
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "会計完了",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsAllowSettlementHome(),//是否结算完后回到首页
-                                      ]
-                                  ),
-                                  if (!controller.appConfig.isFx)
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "レジ締め",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setOpenRejishime(),//是否结算完后回到首页
-                                      ]
-                                  )
-                                ]
-                            ),
-                          ),
-                        ],
-                      ),
-                      TableRow(
-                        children: <Widget>[
-                          Container(
-                            //color: Colors.blue,
-                            //height: ScreenAdapter.height(65),
-                            width: ScreenAdapter.width(35),
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: ScreenAdapter.width(35),
-                                  child: Text(
-                                    "プリンタ│",
-                                    style: TextStyle(
-                                        fontFamily: 'NotoSansJP',
-                                        fontSize: ScreenAdapter.fontSize(24),
-                                        fontWeight: FontWeight.w500
+                                          setIsAllowReceipt(),//设置是否允强制必须打印领収书
+                                        ]
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            //height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.zero,
-                            child: Column(
-                              children: [
-
-                                Table(
-                                    border: TableBorder.all(),
-                                    columnWidths: const <int, TableColumnWidth>{
-                                      //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(1050),
-                                    },
-                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                    children: <TableRow>[
-
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(50),
-                                              padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                                              alignment: Alignment.centerLeft,
-                                              child: Text("注：「キッチンプリンター」か「キッチン（ラベル）プリンター」かどちらか１台のご利用となります。",
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  "レシート字体",
                                                   style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(17),
-                                                    fontWeight: FontWeight.w400,
-                                                    color: ColorsUtil.hexToColor("#d90000"),
-                                                  )),
-                                            ),
-
-                                          ]
-                                      ),
-                                    ]
-                                ),
-                                Table(
-                                    border: TableBorder.all(),
-                                    columnWidths: const <int, TableColumnWidth>{
-                                      //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(200),
-                                      1: FlexColumnWidth(750),
-                                    },
-                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                    children: <TableRow>[
-                                      
-
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "マシンプリンター",
-                                                style: TextStyle(
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
+                                                      fontFamily: 'NotoSansJP',
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontWeight: FontWeight.w500
+                                                  ),
                                                 ),
+                                                // Text(
+                                                //   "（セルフレジから）",
+                                                //   style: TextStyle(
+                                                //     fontFamily: 'NotoSansJP',
+                                                //       fontSize: ScreenAdapter.fontSize(18),
+                                                //       fontWeight: FontWeight.w500,
+                                                //     color: ColorsUtil.hexToColor("#d90000"),
+                                                //   ),
+                                                // ),
+                                              ],
+                                            ),
+                                          ),
+                                          setPrintPaperTxtSize(),//打印菜单文字大小
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "オーダーシート",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
                                               ),
                                             ),
-                                            //setUSBPrint(),//usb打印机
-                                            setMachinePrintSize(controller.machineInfo.machinePrintWidth)
-
-                                          ]
+                                          ),
+                                          setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
+                                        ]
+                                    ),
+                                    TableRow(
+                                            children: <Widget>[
+                                              Container(
+                                                height: ScreenAdapter.height(90),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  "レシートオプション",
+                                                  style: TextStyle(
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontWeight: FontWeight.w500
+                                                  ),
+                                                ),
+                                              ),
+                                              setIsAllowPrintOptions(),//usb打印机
+        
+                                            ]
+                                        ),
+                                    if (Platform.isAndroid)
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "一円",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setIsAllowOneYen(),//是否允许一元
+                                        ]
+                                    ),
+                                    if (Platform.isAndroid)
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "五千円",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setIsAllow5000Yen(),//是否允许一元
+                                        ]
+                                    ),
+                                    if (Platform.isAndroid)
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "一万円",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setIsAllow10000Yen(),//是否允许一元
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "会計完了",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setIsAllowSettlementHome(),//是否结算完后回到首页
+                                        ]
+                                    ),
+                                    // TableRow(
+                                    //     children: <Widget>[
+                                    //       Container(
+                                    //         //height: ScreenAdapter.height(65),
+                                    //         alignment: Alignment.center,
+                                    //         child: Text(
+                                    //           "編集モデ",
+                                    //           style: TextStyle(
+                                    //               fontFamily: 'NotoSansJP',
+                                    //               fontSize: ScreenAdapter.fontSize(22),
+                                    //               fontWeight: FontWeight.w500
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //       setIsEditMode(),//是否结算完后回到首页
+                                    //     ]
+                                    // ),
+                                    if (Platform.isAndroid)
+                                    TableRow(
+                                        children: <Widget>[
+                                          Container(
+                                            //height: ScreenAdapter.height(65),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "レジ締め",
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
+                                              ),
+                                            ),
+                                          ),
+                                          setOpenRejishime(),//是否结算完后回到首页
+                                        ]
+                                    )
+                                  ]
+                              ),
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: <Widget>[
+                            Container(
+                              //color: Colors.blue,
+                              //height: ScreenAdapter.height(65),
+                              width: ScreenAdapter.width(35),
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: ScreenAdapter.width(35),
+                                    child: Text(
+                                      "プリンタ│",
+                                      style: TextStyle(
+                                          fontFamily: 'NotoSansJP',
+                                          fontSize: ScreenAdapter.fontSize(24),
+                                          fontWeight: FontWeight.w500
                                       ),
-                                      ...controller.machineInfo.printerList.map((printer) => printerSettingWidget(printer)).toList(),
-                                      if (controller.machineInfo.printerList.length < 9)
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              //height: ScreenAdapter.height(65),
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.zero,
+                              child: Column(
+                                children: [
+                                  Table(
+                                      border: TableBorder.all(),
+                                      columnWidths: const <int, TableColumnWidth>{
+                                        //0: IntrinsicColumnWidth(),
+                                        0:FlexColumnWidth(1050),
+                                      },
+                                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                      children: <TableRow>[
+                    
+        
+                                        TableRow(
+                                            children: <Widget>[
+                                              Container(
+                                                height: ScreenAdapter.height(50),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                                alignment: Alignment.centerLeft,
+                                                child: Text("注：「キッチンプリンター」か「キッチン（ラベル）プリンター」かどちらか１台のご利用となります。",
+                                                    style: TextStyle(
+                                                      fontFamily: 'NotoSansJP',
+                                                      fontSize: ScreenAdapter.fontSize(17),
+                                                      fontWeight: FontWeight.w400,
+                                                      color: ColorsUtil.hexToColor("#d90000"),
+                                                    )),
+                                              ),
+        
+                                            ]
+                                        ),
+                                      ]
+                                  ),
+                                  Table(
+                                      border: TableBorder.all(),
+                                      columnWidths: const <int, TableColumnWidth>{
+                                        //0: IntrinsicColumnWidth(),
+                                        0:FlexColumnWidth(200),
+                                        1: FlexColumnWidth(750),
+                                      },
+                                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                      children: <TableRow>[
+                                        
+        
+                                        TableRow(
+                                            children: <Widget>[
+                                              Container(
+                                                height: ScreenAdapter.height(90),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  "USBプリンター",
+                                                  style: TextStyle(
+                                                      fontSize: ScreenAdapter.fontSize(22),
+                                                      fontWeight: FontWeight.w500
+                                                  ),
+                                                ),
+                                              ),
+                                              setUSBPrint(),//usb打印机
+        
+                                            ]
+                                        ),
+                                        ...controller.machineInfo.printerList.map((printer) => printerSettingWidget(printer)).toList(),
+                                        if (controller.machineInfo.printerList.length < 9)
                                         TableRow(
                                             children: <Widget>[
                                               Text(
@@ -2299,114 +2239,102 @@ class SystemSettingPageView extends GetView {
                                               addButton()
                                             ]
                                         )
-
-                                    ]
-                                ),
-                              ],
+        
+                                      ]
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Table(
-                      border: TableBorder.all(),
-                      columnWidths: const <int, TableColumnWidth>{
-                        //0: IntrinsicColumnWidth(),
-                        0: FlexColumnWidth(258),
-                        1: FlexColumnWidth(750),
-                      },
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                      children: <TableRow>[
-
-                        TableRow(
-                            children: <Widget>[
-                              Container(
-                                //height: ScreenAdapter.height(65),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "番号パネルIP",
-                                  style: TextStyle(
-                                      fontFamily: 'NotoSansJP',
-                                      fontSize: ScreenAdapter.fontSize(22),
-                                      fontWeight: FontWeight.w500
-                                  ),
-                                ),
-                              ),
-                              setIsAllowPanelDisplay(),//是否开启pos机刷卡
-                            ]
+                          ],
                         ),
-                      ]
-                  ),
-                  Table(
-                      border: TableBorder.all(),
-                      columnWidths: const <int, TableColumnWidth>{
-                        //0: IntrinsicColumnWidth(),
-                        0: FlexColumnWidth(258),
-                        1: FlexColumnWidth(750),
-                      },
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                      children: <TableRow>[
-
-                        TableRow(
-                            children: <Widget>[
-                              Container(
-                                //height: ScreenAdapter.height(65),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "キャッシュレス端末",
-                                  style: TextStyle(
-                                      fontFamily: 'NotoSansJP',
-                                      fontSize: ScreenAdapter.fontSize(22),
-                                      fontWeight: FontWeight.w500
-                                  ),
-                                ),
-                              ),
-                              setIsAllowPos(),//是否开启pos机刷卡
-                            ]
-                        ),
-                      ]
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: OutlinedButton.icon(
-                      onPressed: controller.showAddSseSubscriptionDialog,
-                      icon: Icon(Icons.add),
-                      label: Text('SSE購読を追加'),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...controller.machineInfo.sseSettingList.map((sseItem) =>
+                    Table(
+                        border: TableBorder.all(),
+                        columnWidths: const <int, TableColumnWidth>{
+                          //0: IntrinsicColumnWidth(),
+                          0: FlexColumnWidth(258),
+                          1: FlexColumnWidth(750),
+                        },
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        children: <TableRow>[
+        
+                          TableRow(
+                              children: <Widget>[
+                                Container(
+                                  //height: ScreenAdapter.height(65),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "番号パネルIP",
+                                    style: TextStyle(
+                                        fontFamily: 'NotoSansJP',
+                                        fontSize: ScreenAdapter.fontSize(22),
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                                setIsAllowPanelDisplay(),//是否开启pos机刷卡
+                              ]
+                          ),
+                        ]
+                    ),
+                    Table(
+                        border: TableBorder.all(),
+                        columnWidths: const <int, TableColumnWidth>{
+                          //0: IntrinsicColumnWidth(),
+                          0: FlexColumnWidth(258),
+                          1: FlexColumnWidth(750),
+                        },
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        children: <TableRow>[
+        
+                          TableRow(
+                              children: <Widget>[
+                                Container(
+                                  //height: ScreenAdapter.height(65),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "キャッシュレス端末",
+                                    style: TextStyle(
+                                        fontFamily: 'NotoSansJP',
+                                        fontSize: ScreenAdapter.fontSize(22),
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                                setIsAllowPos(),//是否开启pos机刷卡
+                              ]
+                          ),
+                        ]
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: OutlinedButton.icon(
+                        onPressed: controller.showAddSseSubscriptionDialog,
+                        icon: Icon(Icons.add),
+                        label: Text('SSE購読を追加'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...controller.machineInfo.sseSettingList.map((sseItem) =>
                       editSSETable(sseItem)
-                  ).toList(),
-
-                  /*setDiningtype(),//食事のタイプ
-                  setMenuDirection(),//菜单方向
-                  setPrintPaperTxtSize(),//打印菜单文字大小
-                  setIsAllowReceipt(),//设置是否允强制必须打印领収书
-                  setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
-                  (controller.actuarial.value == true) ? setMachineMode() : Container(height: 0,), //设置机器类型
-                  (controller.lineup.value == true) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
-                  //setIsAllowAttendance(),//是否开启签到
-                  setIsAllowPos(),//是否开启pos机刷卡
-                  setIsAllowWlanPrint(),//是否开启网络打印机
-                  setIsAllowWlanPrintTwo(),//第二台打印机
-                  setIsAllowOneYen(),//是否允许一元
-                  setIsAllowSettlementHome(),//是否结算完后回到首页*/
-                ],
+                    ).toList(),
+      
+                  ],
+                ),
+              ),
+            ],
+          )),
+            onLoading: Center(
+              child: CircularProgressIndicator(
+                strokeWidth:6,
+                valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
               ),
             ),
-          ],
-        ),
-          onLoading: Center(
-            child: CircularProgressIndicator(
-              strokeWidth:6,
-              valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
-            ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

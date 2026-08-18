@@ -36,7 +36,7 @@ extension Shoppingcar on MenuPageController {
           id: 'shopping_cart',
           builder: (logic) {
         return Visibility(
-            visible: showShopCart,
+            visible: showShopCart.value,
             //duration: Duration(milliseconds: 300),
             child: Container(
               width: ScreenAdapter.getScreenWidth(),
@@ -46,7 +46,7 @@ extension Shoppingcar on MenuPageController {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      showShopCart = false;
+                      showShopCart.value = false;
                       update(['shopping_cart']);
                     },
                     child: Container(

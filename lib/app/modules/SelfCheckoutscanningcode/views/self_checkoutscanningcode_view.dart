@@ -481,7 +481,7 @@ class SelfCheckoutscanningcodeView
                                               ),
                                               TextSpan(
                                                 text:
-                                                "(${"show_price_front".tr})", //" 円",
+                                                "(${controller.containTax ? "show_price_front".tr : "tax_out".tr})", //" 円",
                                                 style: TextStyle(
                                                   fontFamily: GFont.getFontFamily(),
                                                   fontSize: ScreenAdapter.fontSize(

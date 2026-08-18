@@ -1,6 +1,8 @@
-import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
+import 'package:foodorder/app/models/machine_activation.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
+import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:get/get.dart';
 
 import '../services/CustomLogerHandler.dart';
@@ -10,10 +12,7 @@ enum MachineType { new_panel, new_panel_max, old_panel }
 enum MachineMode { sell, takeout, checkout, scan }
 
 class MachineInfoController extends GetxController {
-  Map systemSettingInfo;
-  MachineInfoController(this.systemSettingInfo);
-
-  MachineType get  machineType {
+  MachineType get machineType {
     return panelTypes[panelType] ?? MachineType.new_panel;
   }
 
@@ -21,7 +20,6 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
-  bool isChecking = false;
   //base info
   late bool isBackHome;
   late String machineCode;
@@ -32,23 +30,24 @@ class MachineInfoController extends GetxController {
   late String isAllowReceipt;
   late String isPrintReceipt;
   String receiptPrintType = '1';
-
   late List homeList;
   late List headImageList;
   late String menu_direction;
-  late List supportLanguages;
+  late List<MachineLanguage> languageOptions;
+  List<String> get supportLanguages =>
+      languageOptions.map((language) => language.code).toList(growable: false);
   //bool isReceiptPageShow = false;
   late String printLogoImageData;
   late String printLogoImageUrl;
   //String machineMode = '1'; //1 券卖机  2 精算机 3 自助收银
   late List printerList;
+  Map usbDevice = {};
   List<SseSubscriptionSetting> get sseSettingList =>
       Get.find<SseSubscriptionManager>().settings;
 
-  late bool isAllowCash;
   late bool isAllowReimburse;
-  late bool cashOn;
   late bool taxSystem;
+  late bool cashMachineEnabled;
 
   late Map machineModeInfo;
   late String isAllowRejishime;
@@ -67,13 +66,13 @@ class MachineInfoController extends GetxController {
   String is_allow_oneyen = "0";
   bool showReceiptPage = false;
   bool printReceiptOptions = false;
+  String settingPassword = '';
 
   //theme info
   int themeColor = 0xFF1B5E20;
   bool is_dark_theme = true;
 
   //payment info
-  //late bool showCash;
   late bool showAlipay;
   late bool showWechat;
   late bool showPayPay;
@@ -104,10 +103,10 @@ class MachineInfoController extends GetxController {
 
   // late String wlan_print_ip;
   // late String wlan_print_port;
-  //
+
   // late String wlan_print_ip_two;
   // late String wlan_print_port_two;
-  //
+
   // late String is_allow_wlanPrint_continuous;
   // late String is_allow_wlanPrint_continuous_two;
 
@@ -120,7 +119,18 @@ class MachineInfoController extends GetxController {
   late String pos_port;
   int get posPort => int.tryParse(pos_port) ?? 0;
   bool get allowPos => isAllowPos == '1';
-  late Map posSettingInfo;
+  MachineRuntimeService get _runtime => Get.find<MachineRuntimeService>();
+  String get machineModelCode => _runtime.machineModelCode;
+  bool get supportsCashMachine => _runtime.capabilities.supportsCashMachine;
+  bool get showCashPayment =>
+      cashMachineEnabled && _runtime.capabilities.supportsCashMachine;
+  CashMachineDriver get cashMachineDriver =>
+      _runtime.capabilities.cashMachineDriver;
+  bool get cashPaymentAvailable => _runtime.cashPaymentAvailable;
+  bool get isChecking =>
+      _runtime.cashMachineStatus == CashMachineRuntimeStatus.checking;
+  Map<String, dynamic> get systemSettingInfo => _runtime.systemSettings;
+  Map<String, dynamic> posSettingInfo = {};
 
   bool get isSellOn => machineModeInfo['sell'] ?? false;
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
@@ -137,13 +147,17 @@ class MachineInfoController extends GetxController {
   }
 
   bool get isTakeoutMode {
-    return currentMode == MachineMode.takeout || currentMode == MachineMode.scan;
+    return currentMode == MachineMode.takeout ||
+        currentMode == MachineMode.scan;
   }
 
   String get printType {
     String type = "";
     final labelPrinter = printerList.firstWhere(
-        (printer) => printer['type'] == 10 && printer['receipt'] == 1 && !printer['isOff'],
+        (printer) =>
+            printer['type'] == 10 &&
+            printer['receipt'] == 1 &&
+            !printer['isOff'],
         orElse: () => null);
 
     if (labelPrinter != null) {
@@ -165,30 +179,13 @@ class MachineInfoController extends GetxController {
   //   return diningType == '2' ? true : false;
   // }
 
-  bool get showCash {
-    return isAllowCash && cashOn;
-  }
-
-  @override
-  Future<void> onInit() async {
-    logI('loadMachineSettingInfo onInit');
-    await loadMachineSettingInfo();
-    super.onInit();
-  }
-
   @override
   void dispose() {
-    // TODO: implement dispose
     logI('loadMachineSettingInfo dispose');
     super.dispose();
   }
 
-  Future updateMachineSettingInfo({Map settingInfo = const {}}) async {
-    if (settingInfo.isEmpty) {
-      systemSettingInfo = systemSettingInfo;
-    } else {
-      systemSettingInfo = settingInfo;
-    }
+  Future<void> updateMachineSettingInfo() async {
     try {
       await loadMachineSettingInfo();
     } catch (e) {
@@ -196,21 +193,23 @@ class MachineInfoController extends GetxController {
     }
   }
 
-  Future loadMachineSettingInfo() async {
+  Future<void> loadMachineSettingInfo() async {
     logI('loadMachineSettingInfo');
     //mealType = false;
 
-    machineCode = await HomeServices.getMachineInfo() ?? "";
-    shopCode = await HomeServices.getShopCode() ?? "";
+    final runtime = Get.find<MachineRuntimeService>();
+    final systemSettingInfo = runtime.systemSettings;
+    machineCode = runtime.machineCode;
+    final activation = runtime.activation;
+    final paymentChannels = activation?.paymentChannels;
+    shopCode = activation?.shopCode ?? "";
 
     logI('loadMachineSettingInfo 0');
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
-    logI('--isBackHome: $isBackHome');
-    //diningType = systemSettingInfo['diningType'] ?? '1';
-    //logI('loadMachineSettingInfo diningType : $diningType');
-    //mealType = diningType == '2' ? true : false;
-
+    // diningType = systemSettingInfo['diningType'] ?? '1';
+    // logI('loadMachineSettingInfo diningType : $diningType');
+    // mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '1';
     isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '1';
@@ -228,14 +227,14 @@ class MachineInfoController extends GetxController {
     } else {
       print_paper_txt_size = 2; // default value
     }
-
-    //print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? 2;
     isReservation = systemSettingInfo['isReservation'] ?? '0';
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
     isAllow10 = systemSettingInfo['isAllow10'] ?? true;
     isAllow5 = systemSettingInfo['isAllow5'] ?? true;
-    is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
+    is_allow_oneyen = systemSettingInfo['isAllowOneYen'] ??
+        systemSettingInfo['isAllowOneyen'] ??
+        '0';
     printReceiptOptions = systemSettingInfo['printReceiptOptions'] ?? false;
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
@@ -243,97 +242,83 @@ class MachineInfoController extends GetxController {
 
     menu_direction = systemSettingInfo['menuDirection'] ?? '1';
 
-    showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
-
-    //await HomeServices.updateSystemSettingInfo(systemSettingInfo);
+    showPrintType =
+        int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
     // is_allow_wlanPrint_continuous =
     //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
     // is_allow_wlanPrint_continuous_two =
     //     systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
 
-    final homeImageList = await HomeServices.getSmartweHomeImagesData();
+    settingPassword = runtime.settingPassword;
 
-    homeList = homeImageList ?? [];
+    homeList = activation?.homeImages ?? [];
 
-    headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
+    headImageList = activation?.headerImages ?? [];
 
-    isAllowReimburse = await HomeServices.getSmartweReimburseData() == '1' ? true : false;
-    logI('--isAllowReimburse: $isAllowReimburse');
+    isAllowReimburse = activation?.canReimburse ?? false;
 
-    supportLanguages = await HomeServices.getMachineLanguages();
+    final configuredLanguages = activation?.languageOptions ?? const [];
+    languageOptions = configuredLanguages.isEmpty
+        ? const [MachineLanguage.japanese]
+        : configuredLanguages;
 
-    printLogoImageData = await HomeServices.getSmartweLogoImage() ?? "";
+    printLogoImageData = runtime.printLogoImageData;
 
-    printLogoImageUrl = await HomeServices.getSmartweLogoImagesData() ?? "";
+    printLogoImageUrl = activation?.logoImage ?? "";
 
-    Map smartweMachineSetting =
-        await HomeServices.getSmartweMachineSettingData() ?? {};
-    actuarial = smartweMachineSetting['machineActuarial'] ?? false;
+    actuarial = activation?.actuarial ?? false;
 
-    Map cashInfo = await HomeServices.getIsShowCash();
-    cashOn = cashInfo['isCash'] ?? false;
+    cashMachineEnabled = runtime.cashMachineEnabled;
     logI('loadMachineSettingInfo 1');
-    Map machineActivateData = await HomeServices.getMachineActivateData();
-    taxSystem = machineActivateData['taxSystem'] ?? false;
-    isAllowCash = machineActivateData['showCash'] ?? false;
-    //showCash = isAllowCash && cashOn;
+    taxSystem = activation?.taxSystem ?? false;
 
-    showWechat = machineActivateData['showWechat'] ?? false;
-    showAlipay = machineActivateData['showAlipay'] ?? false;
-    showPayPay = machineActivateData['showPayPay'] ?? false;
-    showCreditCard = machineActivateData['showCreditCard'] ?? false;
+    showWechat = paymentChannels?.wechat ?? false;
+    showAlipay = paymentChannels?.alipay ?? false;
+    showPayPay = paymentChannels?.payPay ?? false;
+    showCreditCard = paymentChannels?.creditCard ?? false;
     logI('loadMachineSettingInfo 2');
-    showAuPay = machineActivateData['au_Pay'] ?? false;
-    showDPay = machineActivateData['d_Pay'] ?? false;
-    showRPay = machineActivateData['R_Pay'] ?? false;
-    showMPay = machineActivateData['m_Pay'] ?? false;
+    showAuPay = paymentChannels?.auPay ?? false;
+    showDPay = paymentChannels?.dPay ?? false;
+    showRPay = paymentChannels?.rPay ?? false;
+    showMPay = paymentChannels?.mPay ?? false;
     logI('loadMachineSettingInfo 3');
-    showPosEdy = machineActivateData['pos_Edy'] ?? false;
-    showPosiD = machineActivateData['pos_iD'] ?? false;
-    showPosIC = machineActivateData['pos_IC'] ?? false;
-    showPosQUICPay = machineActivateData['pos_QUICPay'] ?? false;
-    showPosWAON = machineActivateData['pos_WAON'] ?? false;
-    showPosnanaco = machineActivateData['pos_nanaco'] ?? false;
+    showPosEdy = paymentChannels?.edy ?? false;
+    showPosiD = paymentChannels?.iD ?? false;
+    showPosIC = paymentChannels?.ic ?? false;
+    showPosQUICPay = paymentChannels?.quicPay ?? false;
+    showPosWAON = paymentChannels?.waon ?? false;
+    showPosnanaco = paymentChannels?.nanaco ?? false;
     logI('loadMachineSettingInfo 4');
-    showVisa = machineActivateData['show_visa'] ?? false;
-    showMaster = machineActivateData['show_master'] ?? false;
-    showJcb = machineActivateData['show_jcb'] ?? false;
-    showUnionPay = machineActivateData['show_unionPay'] ?? false;
-    showAmericanExpress = machineActivateData['show_americanExpress'] ?? false;
-    showDinersClub = machineActivateData['show_dinersClub'] ?? false;
-    showDiscover = machineActivateData['show_discover'] ?? false;
-    showWithdraw = machineActivateData['cashMachineWithdraw'] ?? false;
+    showVisa = paymentChannels?.visa ?? false;
+    showMaster = paymentChannels?.master ?? false;
+    showJcb = paymentChannels?.jcb ?? false;
+    showUnionPay = paymentChannels?.unionPay ?? false;
+    showAmericanExpress = paymentChannels?.americanExpress ?? false;
+    showDinersClub = paymentChannels?.dinersClub ?? false;
+    showDiscover = paymentChannels?.discover ?? false;
+    showWithdraw = activation?.cashMachineWithdraw ?? false;
     logI('loadMachineSettingInfo 5');
 
-    printerList = await HomeServices.getPrinterListInfo();
+    printerList = runtime.printerList;
     await Get.find<SseSubscriptionManager>().initialize(machineCode);
 
-    machineModeInfo = await HomeServices.getMachineModeInfo();
+    machineModeInfo = runtime.machineModeInfo;
     logI('machineModeInfo: $machineModeInfo');
-
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    posSettingInfo = runtime.posSettings;
 
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
-    //allowPos = posSettingInfo['allowPos'] ?? false;
-    //isAllowPos = allowPos ? '1' : '0';
-    screenCallSetting = await HomeServices.getWlanPanelPrintSettingInfo();
+
+    screenCallSetting = runtime.screenCallSettings;
     wlan_panel_print_ip = screenCallSetting['wlanPrintIp'] ?? "";
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";
     isAllowScreenCall = screenCallSetting['isAllowScreenCall'] ?? false;
 
-    machinePrintWidth = await HomeServices.getMachinePrintWidth();
+    usbDevice = runtime.usbDevice;
 
-    // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    // wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
-    // wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
-    //
-    // Map wlanPrintSettingTwoInfo =
-    //     await HomeServices.getWlanPrintSettingTwoInfo();
-    // wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
-    // wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
+    machinePrintWidth = runtime.machinePrintWidth;
 
-    print('loadMachineSettingInfo 6');
+    logI('loadMachineSettingInfo 6');
   }
 }

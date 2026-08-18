@@ -33,7 +33,6 @@ class OrderHomeView extends GetView<OrderHomeController> {
         "language": "JP",
         "text": "日本語",
         "selected": controller.machineLanguages_JP,
-        "icon": AssetImage("assets/images/public/language_Japanese.png"),
       });
 
     if (controller.machineLanguages_CH == true)
@@ -41,7 +40,6 @@ class OrderHomeView extends GetView<OrderHomeController> {
         "language": "CH",
         "text": "中文",
         "selected": controller.machineLanguages_CH,
-        "icon": AssetImage("assets/images/public/language_Chinese.png"),
       });
 
     if (controller.machineLanguages_EN == true)
@@ -49,7 +47,6 @@ class OrderHomeView extends GetView<OrderHomeController> {
         "language": "EN",
         "text": "English",
         "selected": controller.machineLanguages_EN,
-        "icon": AssetImage("assets/images/public/language_English.png"),
       });
 
     if (controller.machineLanguages_KO == true)
@@ -57,12 +54,10 @@ class OrderHomeView extends GetView<OrderHomeController> {
         "language": "KO",
         "text": "한국어",
         "selected": controller.machineLanguages_KO,
-        "icon": AssetImage("assets/images/public/language_Korean.png"),
       });
 
     final buttonList = languages.map((e) {
       return LanguageButton(
-        icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
         selected: false,//e["language"] == controller.selectLanguage,
         onTap: () {
@@ -224,51 +219,51 @@ class OrderHomeView extends GetView<OrderHomeController> {
               ),
 
               Positioned(
-                bottom: ScreenAdapter.height(720),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-                  child: Column(
-                    children: [
-                      Text(
-                        'menu_dingtype_title'.tr,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          fontSize: 80,
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.white,
-                              offset: Offset(3.0, -4.0),
-                              blurRadius: 1.0,
-                            ),
-                          ],
+                  bottom: ScreenAdapter.height(720),
+                  child: Container(
+                    width: ScreenAdapter.width(1080),
+                    child: Column(
+                      children: [
+                        Text(
+                          'menu_dingtype_title'.tr,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                            fontSize: 80,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.white,
+                                offset: Offset(3.0, -4.0),
+                                blurRadius: 1.0,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      // if (controller.machineInfo.diningType == "3")
-                      // Text(
-                      //   'menu_ding_type_tips'.tr,
-                      //   maxLines: 2,
-                      //   overflow: TextOverflow.ellipsis,
-                      //   style: TextStyle(
-                      //     color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                      //     fontSize: 40,
-                      //     fontFamily: GFont.getFontFamily(),
-                      //     fontWeight: FontWeight.w600,
-                      //     shadows: [
-                      //       Shadow(
-                      //         color: Colors.white,
-                      //         offset: Offset(2.0, -2.0),
-                      //         blurRadius: 2.0,
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                )
+                        // if (controller.machineInfo.diningType == "3")
+                        //   Text(
+                        //     'menu_ding_type_tips'.tr,
+                        //     maxLines: 2,
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(
+                        //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                        //       fontSize: 40,
+                        //       fontFamily: GFont.getFontFamily(),
+                        //       fontWeight: FontWeight.w600,
+                        //       shadows: [
+                        //         Shadow(
+                        //           color: Colors.white,
+                        //           offset: Offset(2.0, -2.0),
+                        //           blurRadius: 2.0,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                      ],
+                    ),
+                  )
               ),
 
 
@@ -276,10 +271,10 @@ class OrderHomeView extends GetView<OrderHomeController> {
               //   bottom: ScreenAdapter.height(400),
               //   width: ScreenAdapter.width(1080),
               //   child: Center(
-              //     child:
+              //       child:
               //       controller.machineInfo.diningType == "3" ?
-              //         _diningSelectArea()
-              //       : _startButton()
+              //       _diningSelectArea()
+              //           : _startButton()
               //
               //   ),
               // ),
@@ -288,9 +283,9 @@ class OrderHomeView extends GetView<OrderHomeController> {
               Positioned(
                 bottom: ScreenAdapter.height(150),
                 child: Container(
-                  width: ScreenAdapter.width(1080),
-                  height: ScreenAdapter.height(200),
-                  child: languageSelectView()
+                    width: ScreenAdapter.width(1080),
+                    height: ScreenAdapter.height(200),
+                    child: languageSelectView()
                 ),
               ),
 

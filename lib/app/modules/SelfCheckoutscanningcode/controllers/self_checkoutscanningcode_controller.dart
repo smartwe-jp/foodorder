@@ -1,16 +1,15 @@
 import 'dart:convert';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+
 import 'package:get/get.dart';
 
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
-import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
@@ -28,16 +27,22 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
-
+  RxBool mealType = false.obs;//用于判断下单
 
   RxList showCartItems = [].obs;
   RxList showScanCartItems = [].obs;
   RxMap showItem = {}.obs;
   RxString shopCartTotalPrice = "0".obs;
   RxInt showCartTotalGoodsNum = 0.obs;
+
   RxBool showOpenPayment = false.obs;
 
+
   RxString doSubmitOrderId = "".obs;
+
+  final player = AudioPlayer();
+
+  bool get containTax => machineInfo.taxSystem;
 
   @override
   void onInit() {
@@ -60,6 +65,57 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     await ordersqlcontroller.removeAllFromCart();
     getCartPriceTotal();
 
+  }
+
+  //获取机器信息
+  _getMachineInfo() async {
+    // var machineCodeString = await HomeServices.getMachineInfo();
+    // if (machineCodeString != "") {
+    //   machineCode.value = machineCodeString;
+
+    //   _getSystemSettingInfo();
+    // }
+    _getSystemSettingInfo();
+  }
+
+  _getSystemSettingInfo() async {
+    // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    // isAllowPos.value = systemSettingInfo['isAllowPos'];
+    // isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
+    _getMachineActivateInfo();
+
+  }
+
+  //获取展示支付方式
+  _getMachineActivateInfo() async {
+    // Map systemSettingInfo = await HomeServices.getMachineActivateData();
+    // showCash.value = systemSettingInfo['showCash'];
+    // showWechat.value = systemSettingInfo['showWechat'];
+    // showAlipay.value = systemSettingInfo['showAlipay'];
+    // showPayPay.value = systemSettingInfo['showPayPay'];
+    // showCreditCard.value = systemSettingInfo['showCreditCard'];
+
+    // showauPay.value = systemSettingInfo['au_Pay'];
+    // showdPay.value = systemSettingInfo['d_Pay'];
+    // showrPay.value = systemSettingInfo['R_Pay'];
+    // showmPay.value = systemSettingInfo['m_Pay'];
+
+    // showPosEdy.value = systemSettingInfo['pos_Edy'];
+    // showPosiD.value = systemSettingInfo['pos_iD'];
+    // showPosIC.value = systemSettingInfo['pos_IC'];
+    // showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
+    // showPosWAON.value = systemSettingInfo['pos_WAON'];
+    // showPosnanaco.value = systemSettingInfo['pos_nanaco'];
+
+    // showVisa.value = systemSettingInfo['show_visa'];
+    // showMaster.value = systemSettingInfo['show_master'];
+    // showJcb.value = systemSettingInfo['show_jcb'];
+    // showUnionPay.value = systemSettingInfo['show_unionPay'];
+    // showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
+    // showDinersClub.value = systemSettingInfo['show_dinersClub'];
+    // showDiscover.value = systemSettingInfo['show_discover'];
+
+    getCartPriceTotal(); //新版新获取分类
   }
 
   getCartPriceTotal({hideLoading = true}) async {
@@ -317,7 +373,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   //提交订单
-  doSubmitOrder({int times= 0}){
+  doSubmitOrder({int times= 0}) async {
     if(machineInfo.machineCode !=""){
       showOrderEasyLoading();
 
@@ -397,9 +453,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
               confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
-                FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                  "machineCode": machineInfo.machineCode,
-                });
+                // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                //   "machineCode": machineInfo.machineCode,
+                // });
               })
       );
       return;
@@ -416,9 +472,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             cancle: () {
               Get.back();
               //clearCartList();
-              FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                "machineCode": machineInfo.machineCode,
-              });
+              // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+              //   "machineCode": machineInfo.machineCode,
+              // });
             }
         )
     );
@@ -449,9 +505,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
               }
             }
         ),
-      transition: Transition.fadeIn,
-      fullscreenDialog: true,
-      opaque: false,
+        transition: Transition.fadeIn,
+        fullscreenDialog: true,
+        opaque: false,
     );
   }
 

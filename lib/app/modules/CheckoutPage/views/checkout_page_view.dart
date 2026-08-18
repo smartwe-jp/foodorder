@@ -1,4 +1,3 @@
-import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -8,69 +7,31 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
-import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../OrderHome/views/widgets/BookingTypeButton.dart';
 import '../../OrderHome/views/widgets/languageButton.dart';
 import '../controllers/checkout_page_controller.dart';
-import 'Appointment.dart';
-import 'ScanCode.dart';
 
-class CheckoutPageView extends GetView {
-
-  final CheckoutPageController controller = Get.find();
+class CheckoutPageView extends GetView<CheckoutPageController> {
   CheckoutPageView({Key? key}) : super(key: key);
-  languageSelectView() {
-    List languages = [];
-    if (controller.machineLanguages_JP == true)
-      languages.add({
-        "language": "JP",
-        "text": "日本語",
-        "selected": controller.machineLanguages_JP,
-        "icon": AssetImage("assets/images/public/language_Japanese.png"),
-      });
 
-    if (controller.machineLanguages_CH == true)
-      languages.add({
-        "language": "CH",
-        "text": "中文",
-        "selected": controller.machineLanguages_CH,
-        "icon": AssetImage("assets/images/public/language_Chinese.png"),
-      });
+  Widget _buildLanguageSelector() {
+    final languages = controller.supportedLanguages;
 
-    if (controller.machineLanguages_EN == true)
-      languages.add({
-        "language": "EN",
-        "text": "English",
-        "selected": controller.machineLanguages_EN,
-        "icon": AssetImage("assets/images/public/language_English.png"),
-      });
-
-    if (controller.machineLanguages_KO == true)
-      languages.add({
-        "language": "KO",
-        "text": "한국어",
-        "selected": controller.machineLanguages_KO,
-        "icon": AssetImage("assets/images/public/language_Korean.png"),
-      });
-
-    if (languages.length == 1) {
-      return SizedBox.shrink();
+    if (languages.length <= 1) {
+      return const SizedBox.shrink();
     }
 
-    final buttonList = languages.map((e) {
+    final buttonList = languages.map((language) {
       return LanguageButton(
-        icon: e["icon"] as ImageProvider,
-        title: e["text"] as String,
+        title: language.name,
+        selected: language.code == controller.selectLanguage,
         startColor: controller.themeColor,
-        textColor: controller.themeTextColor, //e["language"] == controller.checkLanguage.value,
-        onTap: () {
-          controller.updateSettingLanguage(e["language"] as String);
-        },
+        textColor: controller.themeTextColor,
+        onTap: () => controller.updateSettingLanguage(language.code),
       );
     }).toList();
 
@@ -87,15 +48,12 @@ class CheckoutPageView extends GetView {
           right: ScreenAdapter.width(30),
           bottom: ScreenAdapter.height(20),
         ),
-        child: 
-        Row(
+        child: Row(
           spacing: 20,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         ));
   }
-
-
 
   int get buttonCount => controller.machineInfo.machineModeInfo.entries
       .map((e) {
@@ -121,7 +79,6 @@ class CheckoutPageView extends GetView {
       spacing: 50.w,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-
         if (controller.machineInfo.isSellOn)
           BookingTypeButton(
             width: _getItemWidth(),
@@ -132,14 +89,14 @@ class CheckoutPageView extends GetView {
               color: controller.themeTextColor,
               size: 120,
             ),
-            title:  buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_eatin'.tr,
+            title:
+                buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_eatin'.tr,
             selected: true,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.sell;
               controller.goMenu(controller.selectLanguage);
             },
           ),
-
         if (controller.machineInfo.isScanbuyOn)
           BookingTypeButton(
             width: _getItemWidth(),
@@ -157,9 +114,8 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
-
-        if (controller.machineInfo.isCheckOn && controller.machineInfo.actuarial)
-        
+        if (controller.machineInfo.isCheckOn &&
+            controller.machineInfo.actuarial)
           BookingTypeButton(
             width: _getItemWidth(),
             bgColor: controller.themeColor,
@@ -176,8 +132,6 @@ class CheckoutPageView extends GetView {
               controller.goMenu(controller.selectLanguage);
             },
           ),
-        
-
         if (controller.machineInfo.isTakeoutOn)
           BookingTypeButton(
             width: _getItemWidth(),
@@ -188,51 +142,16 @@ class CheckoutPageView extends GetView {
               color: controller.themeTextColor,
               size: 120,
             ),
-            title: buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_takeout'.tr,
+            title: buttonCount == 1
+                ? 'order_start'.tr
+                : 'menu_dingtype_takeout'.tr,
             selected: buttonCount == 1,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.takeout;
               controller.goMenu(controller.selectLanguage);
             },
           ),
-        ],
-      
-    );
-  }
-
-  _startButton() {
-    return
-        // ScaleAnimatedWidget.tween(
-        // enabled: controller.startShake,
-        // duration: Duration(milliseconds: 500),
-        // scaleDisabled: 0.9,
-        // scaleEnabled: 1.0,
-        // child:
-        InkWell(
-      onTap: () => controller.goMenu(controller.selectLanguage),
-      child: Container(
-        padding: EdgeInsets.all(10),
-        height: ScreenAdapter.height(260),
-        width: ScreenAdapter.width(600),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: controller.themeColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          'order_start'.tr, //'settlement_button'.tr
-          maxLines: 2,
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: controller.themeTextColor,
-            fontSize: 80,
-            fontFamily: GFont.getFontFamily(),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      //),
+      ],
     );
   }
 
@@ -309,10 +228,11 @@ class CheckoutPageView extends GetView {
                                   ),
                                   portraitOnly: true,
                                 ),
-                                
+
                                 //confirm button
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {
@@ -323,14 +243,14 @@ class CheckoutPageView extends GetView {
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
-                                        controller.confirmColorSetting(controller.themeColor);
+                                        controller.confirmColorSetting(
+                                            controller.themeColor);
                                         Navigator.of(context).pop();
                                       },
                                       child: Text('確認'.tr),
                                     ),
                                   ],
                                 ),
-                                
                               ],
                             ),
                           );
@@ -417,26 +337,26 @@ class CheckoutPageView extends GetView {
                             ),
                           ),
                           if (buttonCount > 1)
-                          Text(
-                            'menu_ding_type_tips'.tr,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: controller
-                                  .themeColor, //const Color.fromARGB(255, 53,59,80),
-                              fontSize: 60,
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  color: controller.themeTextColor,
-                                  offset: Offset(3.0, -4.0),
-                                  blurRadius: 1.0,
-                                ),
-                              ],
-                            ),
-                          )
+                            Text(
+                              'menu_ding_type_tips'.tr,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: controller
+                                    .themeColor, //const Color.fromARGB(255, 53,59,80),
+                                fontSize: 60,
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w600,
+                                shadows: [
+                                  Shadow(
+                                    color: controller.themeTextColor,
+                                    offset: Offset(3.0, -4.0),
+                                    blurRadius: 1.0,
+                                  ),
+                                ],
+                              ),
+                            )
                         ],
                       ),
                     )),
@@ -456,7 +376,7 @@ class CheckoutPageView extends GetView {
                   child: Container(
                       width: ScreenAdapter.width(1080),
                       height: ScreenAdapter.height(200),
-                      child: languageSelectView()),
+                      child: _buildLanguageSelector()),
                 ),
                 // Positioned(
                 //   bottom: ScreenAdapter.height(120),

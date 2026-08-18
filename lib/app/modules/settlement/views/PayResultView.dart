@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';

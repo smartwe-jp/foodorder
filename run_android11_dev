@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fvm dart run tool/variant.dart run android11 --env dev "$@"

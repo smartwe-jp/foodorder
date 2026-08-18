@@ -38,7 +38,6 @@ class publicShowMenuImage  extends StatelessWidget{
           ),
         child: Container(
           padding: EdgeInsets.only(left:ScreenAdapter.width(5),top:ScreenAdapter.height(5),right:ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
-
           child: Row(
             children: [
               Expanded(
@@ -73,6 +72,7 @@ class publicShowMenuImage  extends StatelessWidget{
           //height: ScreenAdapter.width(imgWidth),
           decoration: new BoxDecoration(
             color: ColorsUtil.hexToColor("#FFFFFF"),
+            borderRadius: BorderRadius.circular(15),
           ),
           child:
           // Stack(

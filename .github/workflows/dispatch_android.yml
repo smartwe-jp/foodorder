@@ -15,7 +15,16 @@ on:
 
 jobs:
   build_and_release:
+    name: Build ${{ matrix.package_suffix }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: android7
+            package_suffix: Android7
+          - variant: android11
+            package_suffix: Android11
 
     steps:
       # 步骤 1: 检出代码
@@ -28,6 +37,27 @@ jobs:
         run: |
           git fetch --tags
           git checkout tags/${{ github.event.inputs.tag }}
+
+      # GitHub hosted runners only have limited free disk space. Flutter,
+      # Gradle, Android SDK and native build outputs can otherwise fill it.
+      - name: Free disk space for Android build
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Disk usage before cleanup:"
+          df -h /
+
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android/sdk/system-images
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          docker image prune --all --force || true
+          sudo apt-get clean
+
+          echo "Disk usage after cleanup:"
+          df -h /
 
       # 新增步骤: 配置 SSH 以访问私有依赖库
       - name: Configure SSH for Private Dependencies
@@ -42,27 +72,16 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # 步骤 3: 缓存 Flutter 依赖
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: /opt/hostedtoolcache/flutter
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-
-      # 步骤 4: 设置 Flutter 环境
+      # 步骤 3: 设置 Flutter 环境并使用 action 自带缓存
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.7'
+          flutter-version: '3.35.1'
           channel: 'stable'
+          cache: true
+          pub-cache: true
 
-      # 步骤 5: 获取 Flutter 依赖包 (现在可以成功访问私有库)
-      - name: Get Flutter dependencies
-        run: flutter pub get
-
-      # 步骤 6: 解码并配置签名文件
+      # 步骤 4: 解码并配置签名文件
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_JKS }}" | base64 --decode > android/app/upload-keystore.jks
@@ -72,13 +91,24 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/keystore.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/keystore.properties
 
-      # 步骤 7: 构建 Flutter APK 和 App Bundle
-      - name: Build Flutter (APK & App Bundle)
+      # 步骤 5: 使用对应 YAML 和锁文件构建 Android 7 / Android 11 APK
+      - name: Build Flutter APK (${{ matrix.package_suffix }})
+        env:
+          VARIANT_USE_SYSTEM_FLUTTER: 'true'
         run: |
-          flutter build apk --release
-      #    flutter build appbundle --release
+          echo "Disk usage before Flutter build:"
+          df -h /
+          dart run tool/variant.dart build-apk "${{ matrix.variant }}" --env prod --release
+
+      - name: Report disk usage after build
+        if: always()
+        shell: bash
+        run: |
+          df -h /
+          du -sh /home/runner/.gradle /home/runner/.pub-cache \
+            "$ANDROID_SDK_ROOT" "$GITHUB_WORKSPACE/build" 2>/dev/null || true
       
-      # 步骤 7.1: 生成版本信息文件
+      # 步骤 5.1: 生成版本信息文件
       - id: generate_version_info
         name: Generate Version Info
         run: |
@@ -87,21 +117,25 @@ jobs:
           if [ -z "$APP_NAME" ]; then
             APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
           fi
-          FILE_NAME="${APP_NAME}_${VERSION}.apk"
+          FILE_NAME="${APP_NAME}_${VERSION}_${{ matrix.package_suffix }}.apk"
           mkdir -p build/app/outputs/flutter-apk
           mv build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/${FILE_NAME}"
           # export as step output
           echo "file_name=${FILE_NAME}" >> "$GITHUB_OUTPUT"
 
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.generate_version_info.outputs.file_name }}
+          path: build/app/outputs/flutter-apk/${{ steps.generate_version_info.outputs.file_name }}
+          if-no-files-found: error
+
       # 步骤 8: 上传已签名的 APK 到 Google Drive
-      - name: Upload APK to Google Drive
+      - name: Upload APK to Google Drive (${{ matrix.package_suffix }})
         run: |
           sudo apt-get update && sudo apt-get install -y jq openssl
           printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
-          echo "----- gdrive_creds.json (show invisible chars) -----"
-          cat -A gdrive_creds.json | sed -n '1,200p'
-          echo "----- jq parse result -----"
-          jq . gdrive_creds.json
+          jq -e . gdrive_creds.json > /dev/null
           CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
           PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
@@ -116,8 +150,6 @@ jobs:
           TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
-          echo "Token response preview:"
-          echo "$TOKEN_RESPONSE" | sed -n '1,200p'
           ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
           if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
             echo "ERROR: failed to get access token"
@@ -142,10 +174,20 @@ jobs:
           cat metadata.json
 
           # 上传：把 metadata 作为文件上传，避免引号/转义问题
-          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
+          if ! UPLOAD_RESPONSE=$(curl --fail-with-body -sS -X POST \
+            "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -F "metadata=@metadata.json;type=application/json;charset=UTF-8" \
-            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
+            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"); then
+            echo "ERROR: Google Drive upload request failed"
+            exit 1
+          fi
+
+          FILE_ID=$(printf '%s' "$UPLOAD_RESPONSE" | jq -er '.id') || {
+            echo "ERROR: Google Drive upload response does not contain a file id"
+            exit 1
+          }
+          echo "Uploaded $FILE_NAME to Google Drive (file id: $FILE_ID)"
 
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive

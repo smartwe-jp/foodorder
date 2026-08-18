@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
@@ -122,8 +125,8 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                 ),
             
 
-              //switchButton ios type
-              if (identify.isNotEmpty)
+
+              if (!needInput || identify.isNotEmpty)
               Row(
                 children: [
                   Text(
@@ -176,6 +179,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   ),
                 ],
               ),
+
 
               if (isOn && setting.type == SseSubscriptionType.smartWe)
                 Row(
@@ -686,7 +690,9 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: () {
-              controller.printTest(printIp,
+              controller.printTest(
+                  SearchType.net,
+                  printIp,
                   printPort,
                   printType: receipt, labelWidth: labelWidth.toDouble());
             },
@@ -878,7 +884,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.printTest(printIp,printPort);
+              controller.printTest(SearchType.net,printIp,printPort);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -939,8 +945,8 @@ extension SystemSettingPageExtension on SystemSettingPageView {
   _setLabelPrintSize(int type, int receipt, String size) {
 
     final _labelPrintSize = { "60x30":"450x225", "50x30":"375x225", "40x30":"300x225",
-                              "60x40":"450x300", "50x40":"375x300", "40x40":"300x300",
-                              "60x50":"450x375", "60x60":"450x450", "50x60":"375x450", "50x50":"375x375", "40x50":"300x375"
+                              "60x40":"450x300", "50x40":"375x300", "40x40":"300x300", "50x60":"375x450",
+                              "60x50":"450x375", "60x60":"450x450", "50x50":"375x375", "40x50":"300x375"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
@@ -1001,7 +1007,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
   setMachinePrintSize(double width) {
 
-    final _labelPrintSize = {"58":385, "80":580};
+    final _labelPrintSize = {"58":385, "80":530};
 
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),

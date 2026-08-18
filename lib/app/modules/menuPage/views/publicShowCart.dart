@@ -25,8 +25,8 @@ class publicShowCartView extends GetView {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<MenuPageController>(
-          id: 'shopping_cart',
-          builder: (controller){
+        id: 'shopping_cart',
+        builder: (controller){
         return Obx(() => RepaintBoundary(
           child: Container(
             child: Container(
@@ -160,6 +160,7 @@ class publicShowCartView extends GetView {
                     width: ScreenAdapter.width(340),
                     child:
                         KioskTap(
+                          
                           onTap: () {
                             if (int.parse(controller.shopCartTotalPrice.value) < 0) {
                               return;
@@ -167,7 +168,7 @@ class publicShowCartView extends GetView {
                             if (controller.recommendFoods.isNotEmpty) {
                               controller.showRecommendView();
                             } else {
-                              controller.doSubmitOrder();
+                              controller.submitOrderFlow();
                             }
                           },
                           child: Container(

@@ -135,6 +135,61 @@ class RectangleImageView extends StatelessWidget {
   }
 }
 
+
+class RectangleImageViews extends StatelessWidget {
+  final ImageProvider image;
+  final double radius;
+  final bool onlyTopRadius;
+  final Function? onTap;
+  final double aspectRatio;
+
+  RectangleImageViews({
+    Key? key,
+    required this.image,
+    this.radius = 10.0,
+    this.onlyTopRadius = false,
+    this.onTap,
+    this.aspectRatio = 1.0,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+
+    return RepaintBoundary(
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // 目标解码尺寸：按实际显示尺寸 * dpr
+            final targetW = (constraints.maxWidth * dpr).round().clamp(1, 4096);
+            final targetH = (constraints.maxHeight * dpr).round().clamp(1, 4096);
+
+            final resizedProvider =
+                ResizeImage.resizeIfNeeded(targetW, targetH, image);
+
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: resizedProvider,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.low, // 降低采样成本，滚动更稳
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(radius),
+                  topRight: Radius.circular(radius),
+                  bottomLeft: Radius.circular(onlyTopRadius ? 0 : radius),
+                  bottomRight: Radius.circular(onlyTopRadius ? 0 : radius),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class ItemInfoArea extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -314,8 +369,9 @@ class GridMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child:
+    return 
+    Center(
+     child: 
       GridView.builder(
         padding: EdgeInsets.only(
             left:ScreenAdapter.width(15),
@@ -335,7 +391,7 @@ class GridMenuView extends StatelessWidget {
           return children[index];
         },
         itemCount: children.length,
-      ),
+      )
     );
   }
 }

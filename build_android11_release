@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fvm dart run tool/variant.dart build-apk android11 --env prod --release "$@"

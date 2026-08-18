@@ -295,7 +295,7 @@ Widget buildKitchenTicketWidget(
           const SizedBox(height: 6),
           PrintOneColumnText(parsed.orderDate,
               style: PrintTextStyles.small(fontSize), align: TextAlign.right),
-          const SizedBox(height: 16),
+          const SizedBox(height: 16),   
           if (parsed.receiptRemark.isNotEmpty)
             PrintOneColumnText(parsed.receiptRemark,
                 style: PrintTextStyles.menuBold(fontSize), align: TextAlign.right),

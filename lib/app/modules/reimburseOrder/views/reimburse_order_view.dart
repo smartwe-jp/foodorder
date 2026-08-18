@@ -304,9 +304,12 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
       //appBar: AppBar(title: Text("システム設定")),
       body: GetBuilder<ReimburseOrderController>(builder: (controller){
         return controller.obx((state) =>
-            ListView(
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: ListView(
               children: <Widget>[
-
                   Container(
                     decoration: new BoxDecoration(color: Colors.white),
                     width: ScreenAdapter.width(820.0),
@@ -333,7 +336,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                               ),
                               (Route route) => false,
                             );*/
-                            Get.back();
+                            Get.back(result: true);
                             /*Future.delayed(Duration(milliseconds: 100), () {
                               Navigator.pushNamed(context, '/home');
                             });*/
@@ -429,12 +432,13 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                               },
                               // do something with the input numbers
                               onSubmit: () {
+                                print("---------onSubmit---------");
                                 if(controller.orderIdController.text.length <6){
-                                  showToast("注文番号の後ろ六桁を入力してください");
+                                  showToast("注文番号の後ろ六桁を入力してください", context: context);
                                   return;
                                 }
                                 if(controller.orderIdController.text.length >6){
-                                  showToast("最大6位");
+                                  showToast("最大6位", context: context);
                                   controller.orderIdController.text = controller.orderIdController.text.substring(0, 5);
                                   return;
                                 }
@@ -460,6 +464,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                       ),
                     ),
                 ],
+              ),
             ),
             onLoading: Center(
               child: CircularProgressIndicator(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class GImage{
   static String getImageString(String shopInfo, String stringTag) {
     // 图片data包
@@ -59,7 +61,8 @@ class GImage{
         "settlement_rpay":"assets/images/public/settlement_rpay.png",
         "settlement_mpay":"assets/images/public/settlement_mpay.png",
         "settlement_wechat":"assets/images/public/settlement_wechat.png",
-        "jingsuantag":"assets/images/public/jingsuantag.png",
+        "jingsuantag":Platform.isAndroid ? "assets/images/public/jingsuantag.png" : "assets/images/glory/self.checkout.png",
+        "scan_camera":"assets/images/public/scan_camera.jpg",
         "error_public":"assets/images/public/error_public.jpg",
         "payment_cash":"assets/images/public/payment_cash.png",
         "payment_qr":"assets/images/public/payment_qr.png",
@@ -71,20 +74,20 @@ class GImage{
         "settlement_top_qr":"assets/images/public/settlement_top_qr.png",
         "settlement_top_card":"assets/images/public/settlement_top_card.png",
         "settlement_top_nfc":"assets/images/public/settlement_top_nfc.png",
-        "settlement_top_lead_qr":"assets/images/public/settlement_top_lead_qr.jpg",
-        "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
+        "settlement_top_lead_qr":Platform.isAndroid ? "assets/images/public/settlement_top_lead_qr.jpg" : "assets/images/glory/qrcode.charge.png",
+        "settlement_top_lead_cash_JP": Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_JP.png" : "assets/images/glory/settlement_top_lead_cash_JP.png" ,
         "settlement_bottom_lead_cash_JP":"assets/images/public/settlement_bottom_lead_cash_JP.png",
         "settlement_top_lead_card_JP":"assets/images/public/settlement_top_lead_card_JP.png",
         "settlement_top_lead_nfc_JP":"assets/images/public/settlement_top_lead_nfc_JP.png",
-        "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",
+        "settlement_top_lead_cash_CH":Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_CH.png" : "assets/images/glory/settlement_top_lead_cash_CH.png" ,
         "settlement_bottom_lead_cash_CH":"assets/images/public/settlement_bottom_lead_cash_CH.png",
         "settlement_top_lead_card_CH":"assets/images/public/settlement_top_lead_card_CH.png",
         "settlement_top_lead_nfc_CH":"assets/images/public/settlement_top_lead_nfc_CH.png",
-        "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
+        "settlement_top_lead_cash_EN":Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_EN.png" : "assets/images/glory/settlement_top_lead_cash_EN.png" ,
         "settlement_bottom_lead_cash_EN":"assets/images/public/settlement_bottom_lead_cash_EN.png",
         "settlement_top_lead_card_EN":"assets/images/public/settlement_top_lead_card_EN.png",
         "settlement_top_lead_nfc_EN":"assets/images/public/settlement_top_lead_nfc_EN.png",
-        "settlement_top_lead_cash_KO":"assets/images/public/settlement_top_lead_cash_KO.png",
+        "settlement_top_lead_cash_KO":Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_KO.png" : "assets/images/glory/settlement_top_lead_cash_KO.png" ,
         "settlement_bottom_lead_cash_KO":"assets/images/public/settlement_bottom_lead_cash_KO.png",
         "settlement_top_lead_card_KO":"assets/images/public/settlement_top_lead_card_KO.png",
         "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
@@ -111,10 +114,10 @@ class GImage{
         "card_discover":"assets/images/public/card_discover.png",
         "card_touchpay":"assets/images/public/card_touchpay.jpg",
 
-        "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
-        "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",
-        "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
-        "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
+        // "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
+        // "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",
+        // "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
+        // "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
 
         "settlement_top_lead_posEdy_JP":"assets/images/public/settlement_top_lead_posEdy_JP.png",
         "settlement_top_lead_posEdy_CH":"assets/images/public/settlement_top_lead_posEdy_CH.png",

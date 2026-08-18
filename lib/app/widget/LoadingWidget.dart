@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
-import '../config/imageData.dart';
-import '../services/ScreenAdapter.dart';
+import 'package:foodorder/app/config/imageData.dart';
+import 'package:foodorder/app/services/ScreenAdapter.dart';
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({Key? key}) : super(key: key);
 
@@ -30,7 +29,7 @@ class LoadingWidget extends StatelessWidget {
 
 class LoadingUtil {
   static showEasyLoading() {
-    EasyLoading.show(
+     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
