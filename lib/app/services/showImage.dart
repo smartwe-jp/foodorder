@@ -105,10 +105,13 @@ class publicShowMenuImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = imgPath.trim();
-    final memCacheWidth =
-        _capMemCachePixel(_memCachePixel(context, imgWidth));
-    final memCacheHeight =
+    // ResizeImage 默认 policy=exact：同时指定宽高会强制拉到该尺寸（类似 BoxFit.fill）。
+    // 只限制较长边，另一边按原图比例缩放，避免背景/菜图被拉伸变形。
+    final memW = _capMemCachePixel(_memCachePixel(context, imgWidth));
+    final memH =
         _capMemCachePixel(_memCachePixel(context, imgHeight, useHeight: true));
+    final int? memCacheWidth = memW >= memH ? memW : null;
+    final int? memCacheHeight = memW >= memH ? null : memH;
 
     return Stack(
       children: [
