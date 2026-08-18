@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../config/font.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/KioskTap.dart';
 
@@ -74,6 +75,7 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
       _scanFocus.requestFocus();
       return;
     }
+    logI('[麻辣烫] 扫盆码成功 tableNo=$code');
     Get.back(result: SpicyBowlScanResult.proceed(code));
   }
 
@@ -171,9 +173,12 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                             children: [
                               Expanded(
                                 child: KioskTap(
-                                  onTap: () => Get.back(
-                                    result: const SpicyBowlScanResult.back(),
-                                  ),
+                                  onTap: () {
+                                    logI('[麻辣烫] 扫盆码弹窗点击返回');
+                                    Get.back(
+                                      result: const SpicyBowlScanResult.back(),
+                                    );
+                                  },
                                   child: Container(
                                     alignment: Alignment.center,
                                     height: ScreenAdapter.height(108),
@@ -196,9 +201,12 @@ class _SpicyBowlScanDialogState extends State<SpicyBowlScanDialog> {
                               SizedBox(width: ScreenAdapter.width(20)),
                               Expanded(
                                 child: KioskTap(
-                                  onTap: () => Get.back(
-                                    result: const SpicyBowlScanResult.skip(),
-                                  ),
+                                  onTap: () {
+                                    logI('[麻辣烫] 扫盆码弹窗点击跳过');
+                                    Get.back(
+                                      result: const SpicyBowlScanResult.skip(),
+                                    );
+                                  },
                                   child: Container(
                                     alignment: Alignment.center,
                                     height: ScreenAdapter.height(108),

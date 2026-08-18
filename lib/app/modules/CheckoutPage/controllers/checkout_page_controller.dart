@@ -547,10 +547,12 @@ class CheckoutPageController extends GetxController with StateMixin {
     if (machineInfo.isShopSpicyHotPot) {
       machineInfo.currentMode = MachineMode.spicyHotPot;
       machineInfo.spicyHotPotTakeout = takeout;
+      logI('[麻辣烫] 首页点单入口 takeout=$takeout language=$selectLanguage → spicyHotPot');
     } else {
       machineInfo.spicyHotPotTakeout = false;
       machineInfo.currentMode =
           takeout ? MachineMode.takeout : MachineMode.sell;
+      logI('[点单] 首页入口 takeout=$takeout mode=${machineInfo.currentMode}');
     }
     goMenu(selectLanguage);
   }
@@ -576,6 +578,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       case MachineMode.spicyHotPot:
         jumpUrl = '/spicyHotPot-mode';
         break;
+    }
+    if (machineInfo.currentMode == MachineMode.spicyHotPot) {
+      logI('[麻辣烫] 跳转 $jumpUrl language=$lan');
     }
 
     // if (mealType) {

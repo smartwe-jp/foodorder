@@ -105,6 +105,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   void onInit() {
     super.onInit();
     checkLanguage.value = Get.arguments?['checkLanguage'] ?? 'JP';
+    logI(
+        '[麻辣烫] 流程开始 language=${checkLanguage.value} takeout=${machineInfo.isTakeoutMode} machine=${machineInfo.machineCode}');
     // 延后到帧结束后再切 locale，避免 build 中 updateLocale → forceAppUpdate 崩溃
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _applyLanguageLocale(checkLanguage.value);
@@ -171,13 +173,16 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   /// 扫码模式下一步：进入称重商品选择（单品直接弹称重，多品列表选择）
   Future<void> goNextWeighStep() async {
+    logI('[麻辣烫] 点击下一步进入称重 称重商品数=${categoryMenuList.length}');
     if (categoryMenuList.isEmpty) await selectShopCategory();
 
     if (categoryMenuList.length > 1) {
+      logI('[麻辣烫] 打开称重商品选择页');
       Get.to(() => SpicyHotPotCategoryPage());
     } else if (categoryMenuList.length == 1) {
       showScaleDialogForItem(categoryMenuList.first as Map);
     } else {
+      logI('[麻辣烫] 无称重商品，无法进入称重');
       _showCustomerAlert('spicy_no_weigh_item'.tr);
     }
   }
@@ -191,8 +196,13 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
             ? rawUnitPrice
             : int.tryParse(rawUnitPrice.toString()) ?? 0)
         : 0;
+    final title = itemData['mainTitle'] ?? '';
+    final useFullPage = categoryMenuList.length == 1;
+    logI(
+        '[麻辣烫] 进入称重 title=$title unitPricePer100g=$unitPricePer100g mode=${useFullPage ? "全屏页" : "弹窗"}');
 
     void onConfirm(double weight, int price) {
+      logI('[麻辣烫] 称重确认回调 title=$title weight=${weight}g price=¥$price');
       if (isNormalMode) {
         _onWeighConfirmedNormal(itemData, weight, price, unitPricePer100g);
       } else {
@@ -200,8 +210,11 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       }
     }
 
-    if (categoryMenuList.length == 1) {
-      if (_isSingleWeighPageOpen) return;
+    if (useFullPage) {
+      if (_isSingleWeighPageOpen) {
+        logI('[麻辣烫] 称重页已打开，忽略重复进入');
+        return;
+      }
       _isSingleWeighPageOpen = true;
       Get.to(
         () => SpicyWeighPage(
@@ -230,7 +243,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   /// 跳过称重：直接进入配菜菜单（保留 spicyHotPot mode，菜单页扫码仍可用）
   /// 清掉麻辣烫相关页面，保留结账首页，使菜单返回回到首页而非麻辣烫页
   void skipWeighToSellMode() {
-    logI('跳过称重，进入配菜菜单（mode 保持 spicyHotPot）');
+    logI('[麻辣烫] 点击跳过称重 → 菜单页 tableNo=${tableNo.value}');
     // 不改 currentMode：保留 spicyHotPot，菜单页扫码入车才能正常工作
     Get.offNamedUntil(
       '/menu-page',
@@ -243,7 +256,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   Future<void> _onWeighConfirmedScan(
       Map itemData, double weight, int price, int unitPricePer100g) async {
-    logI('扫码模式称重确认: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
+    logI(
+        '[麻辣烫] 扫码模式称重确认: ${itemData["mainTitle"]}, ${weight}g, ¥$price → 入车并跳菜单');
 
     // 扫码商品（带已选选项）入购物车
     final currentScanned = Map.from(scannedItem);
@@ -269,6 +283,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     await updateTotalPrice();
     scannedItem.clear();
 
+    logI('[麻辣烫] 扫码模式跳转菜单页 tableNo=${tableNo.value}');
     if (categoryMenuList.length == 1) {
       // 单商品时用 Get.off() 替换了中间页，此处用 offNamed 替换 SpicyWeighPage
       Get.offNamed('/menu-page', arguments: menuPageArguments());
@@ -283,7 +298,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   /// 普通注文：称重完成后保存结果，清空选项，进入选项选择步骤
   void _onWeighConfirmedNormal(
       Map itemData, double weight, int price, int unitPricePer100g) {
-    logI('普通模式称重确认: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
+    logI(
+        '[麻辣烫] 普通模式称重确认: ${itemData["mainTitle"]}, ${weight}g, ¥$price → 进入汤底页 soupCount=${optionMenuList.length}');
     normalWeighResult.assignAll({
       'itemData': Map.from(itemData),
       'weight': weight,
@@ -302,6 +318,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     // 仅 1 个汤底时：无规格直接选中；有规格延后弹窗（等页面出来）
     if (optionMenuList.length == 1) {
       final code = (optionMenuList.first as Map)['menuCode']?.toString() ?? '';
+      logI('[麻辣烫] 仅1个汤底，自动选中 menuCode=$code');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (normalStep.value == 1) {
           selectOptionMenuItem(code);
@@ -324,13 +341,19 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         break;
       }
     }
-    if (item == null) return;
+    if (item == null) {
+      logI('[麻辣烫] 点击汤底未找到 menuCode=$menuCode');
+      return;
+    }
 
+    final title = item['mainTitle'] ?? '';
     if (_soupHasChoosableOptions(item)) {
+      logI('[麻辣烫] 点击汤底 title=$title menuCode=$menuCode → 打开规格弹窗');
       _showSoupOptionDialog(item);
       return;
     }
 
+    logI('[麻辣烫] 点击汤底 title=$title menuCode=$menuCode → 无规格直接选中');
     _applySoupSelection(
       menuCode,
       totalPrice: item['currentPrice'] ?? 0,
@@ -368,6 +391,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         : int.tryParse('$totalPrice') ?? 0;
     selectedSoupTotalPrice.value = p;
     soupOptionsConfirmed.value = true;
+    logI(
+        '[麻辣烫] 汤底已选中 menuCode=$menuCode price=¥$p options=$optionTitle codes=$optionCodes');
   }
 
   void _clearSoupSelectionExtras() {
@@ -393,6 +418,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   void _showSoupOptionDialog(Map item) {
     if (_soupOptionDialogShowing) return;
     _soupOptionDialogShowing = true;
+    logI('[麻辣烫] 打开汤底规格弹窗 title=${item['mainTitle']}');
 
     final optionInfo =
         List<dynamic>.from(item['optionGroupVoList'] ?? const []);
@@ -434,6 +460,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           final codes = options.map((e) => e.toString()).toList();
           // OptionView 用全角空格拼各组，空组也会占位；只保留有选中的，顿号分隔
           final title = _formatSoupOptionDisplayTitle('$optionTitle');
+          logI(
+              '[麻辣烫] 汤底规格确认 price=¥$price options=$title codes=$codes');
           _applySoupSelection(
             item['menuCode']?.toString() ?? '',
             totalPrice: price,
@@ -568,10 +596,20 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   ///   2. 称重商品（HUNDRED_GRAM）→ 独立商品，无选项
   ///   3. 称重金额达到満額贈呈门槛时，弹窗选择 freeGift 赠品（OptionView）
   Future<void> confirmNormalOrder() async {
-    if (normalOrderSubmitting.value || _giftDialogShowing) return;
-    if (normalWeighResult.isEmpty) return;
+    logI(
+        '[麻辣烫] 点击汤底下一步 soup=${selectedOptionMenuCode.value} weighPrice=${normalWeighResult['price']}');
+    if (normalOrderSubmitting.value || _giftDialogShowing) {
+      logI(
+          '[麻辣烫] 下一步忽略: submitting=${normalOrderSubmitting.value} giftShowing=$_giftDialogShowing');
+      return;
+    }
+    if (normalWeighResult.isEmpty) {
+      logI('[麻辣烫] 下一步失败: 无称重结果');
+      return;
+    }
     final validationMsg = normalOrderValidationMessage;
     if (validationMsg != null) {
+      logI('[麻辣烫] 下一步校验未通过: $validationMsg');
       _showCustomerAlert(validationMsg);
       return;
     }
@@ -630,6 +668,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     if (await _shouldOfferFreeGift(price)) {
       final gift = Map<String, dynamic>.from(freeGiftMenuList.first as Map);
       final groups = gift['optionGroupVoList'];
+      logI(
+          '[麻辣烫] 满额赠送触发 gift=${gift['mainTitle']} hasOptions=${groups is List && groups.isNotEmpty}');
       if (groups is List && groups.isNotEmpty) {
         _showFreeGiftOptionDialog(gift, cartItems);
         return;
@@ -643,6 +683,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           '',
         ),
       );
+    } else {
+      logI('[麻辣烫] 未触发满额赠送 weighPrice=¥$price');
     }
 
     await _finishNormalOrder(cartItems);
@@ -663,6 +705,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   ) {
     if (_giftDialogShowing) return;
     _giftDialogShowing = true;
+    logI('[麻辣烫] 打开赠品规格弹窗 gift=${gift['mainTitle']}');
 
     final optionInfo =
         List<dynamic>.from(gift['optionGroupVoList'] ?? const []);
@@ -700,13 +743,17 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           if (!hasSelection) {
             // 有必选规格组：必须先选
             if (_giftOptionsRequired(gift)) {
+              logI('[麻辣烫] 赠品确认失败: 必选规格未选');
               _showCustomerAlert('spicy_gift_select_option'.tr);
               return;
             }
             // 规格组均可不选：弹窗内处理完再关窗跳菜单（方案 A）
+            logI('[麻辣烫] 赠品确认: 无可选规格，跳过赠品直接入车');
             await _commitCartFromGiftDialog(baseCartItems);
             return;
           }
+          logI(
+              '[麻辣烫] 赠品确认 gift=${gift['mainTitle']} price=¥$price options=$optionTitle');
           final optionsString =
               options.map((e) => e.toString()).toList().join(',');
           final items = List<Map<String, dynamic>>.from(baseCartItems);
@@ -842,6 +889,12 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     bool closeGiftDialog = false,
   }) async {
     if (normalOrderSubmitting.value) return;
+    logI(
+        '[麻辣烫] 写入购物车并跳菜单 lines=${cartItems.length} closeGift=$closeGiftDialog tableNo=${tableNo.value}');
+    for (final item in cartItems) {
+      logI(
+          '[麻辣烫] 入车明细 title=${item['mainTitle']} price=${item['currentPrice']} grams=${item['spicyGrams'] ?? 0} options=${item['optionVoListMsg']}');
+    }
     normalOrderSubmitting.value = true;
     _showTransparentProcessingOverlay();
     try {
@@ -849,7 +902,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       await orderSqlController.getCardList();
       await updateTotalPrice();
     } catch (e, st) {
-      logE('麻辣烫组合商品入购物车失败: $e\n$st');
+      logE('[麻辣烫] 组合商品入购物车失败: $e\n$st');
       _dismissTransparentProcessingOverlay();
       normalOrderSubmitting.value = false;
       _showCustomerAlert('spicy_add_cart_failed'.tr);
@@ -863,6 +916,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     if (closeGiftDialog) {
       Get.back();
     }
+    logI('[麻辣烫] 跳转菜单页 /menu-page');
     Get.offNamed('/menu-page', arguments: menuPageArguments());
   }
 
@@ -874,6 +928,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   /// 普通注文：取消选项，重新称重
   void cancelNormalWeigh() {
+    logI('[麻辣烫] 汤底页点击返回 → 重新称重');
     if (isNormalMode && categoryMenuList.length == 1) {
       // 单商品：清空数据后直接重新打开称重页（不改 normalStep 避免多余 loading 中间页）
       normalWeighResult.clear();
@@ -979,7 +1034,8 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         ),
         checkItem: false);
     orderSqlController.getCardList();
-    logI('称重商品入购物车: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
+    logI(
+        '[麻辣烫] 称重商品入购物车: ${itemData["mainTitle"]}, ${weight}g, ¥$price');
   }
 
   Map<String, dynamic> _buildWeighCartItem(
@@ -1011,6 +1067,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   Future<void> selectShopCategory() async {
     //change(null, status: RxStatus.loading());
+    logI('[麻辣烫] 请求分类列表 language=${checkLanguage.value}');
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
@@ -1024,7 +1081,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
       final categoryVoList = (response['data']['categoryVoList'] ?? []) as List;
       logI(
-          '全部分类: ${categoryVoList.map((c) => "${c['categoryName']}/${c['businessType']}/${c['categoryCode']}").toList()}');
+          '[麻辣烫] 全部分类: ${categoryVoList.map((c) => "${c['categoryName']}/${c['businessType']}/${c['categoryCode']}").toList()}');
       if (categoryVoList.isNotEmpty) {
         // 优先取 businessType == SPICY_HOT_POT 的分类；否则取第一个
         final target = categoryVoList.firstWhere(
@@ -1032,20 +1089,26 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           orElse: () => categoryVoList[0],
         ) as Map;
         selectedCategoryName.value = target['categoryName'] ?? '';
+        logI(
+            '[麻辣烫] 选用分类 name=${selectedCategoryName.value} code=${target['categoryCode']}');
         await getShopCategoryMenu(target['categoryCode'] ?? '');
         change(null, status: RxStatus.success());
         // 普通注文单称重商品：success 后再进称重，底层显示准备页而非空白
         if (isNormalMode && categoryMenuList.length == 1) {
           final item = Map<String, dynamic>.from(categoryMenuList.first as Map);
+          logI('[麻辣烫] 单称重商品，自动进入称重页 title=${item['mainTitle']}');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             showScaleDialogForItem(item);
           });
+        } else if (isNormalMode) {
+          logI(
+              '[麻辣烫] 多称重商品列表页 weigh=${categoryMenuList.length} soup=${optionMenuList.length}');
         }
       } else {
         change(null, status: RxStatus.error('暂无可用分类'));
       }
     } catch (e) {
-      logE('获取分类失败: $e');
+      logE('[麻辣烫] 获取分类失败: $e');
       change(null, status: RxStatus.error('获取分类失败'));
     }
   }
@@ -1076,7 +1139,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
         for (var item in items) {
           LogUtil.d(item);
           logI(
-              '菜品: ${item['mainTitle']} priceType=${item['priceType']} freeGift=${item['freeGift']}');
+              '[麻辣烫] 菜品: ${item['mainTitle']} priceType=${item['priceType']} freeGift=${item['freeGift']}');
           // 赠品不进称重列表、不进汤底列表，满额后单独弹窗
           if (_isFreeGiftItem(item)) {
             freeGiftMenuList.add(item);
@@ -1089,16 +1152,16 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
           }
         }
         logI(
-            '称重商品: ${categoryMenuList.length}, 选项商品: ${optionMenuList.length}, 赠品: ${freeGiftMenuList.length}');
+            '[麻辣烫] 菜单加载完成 称重=${categoryMenuList.length} 汤底=${optionMenuList.length} 赠品=${freeGiftMenuList.length}');
         // 菜单到手后后台预缓存汤底图
         _precacheOptionImages();
       }
 
       //change(null, status: RxStatus.success());
     } on TimeoutException catch (_) {
-      logE('获取菜品超时');
+      logE('[麻辣烫] 获取菜品超时');
     } catch (e) {
-      logE('获取菜品失败: $e');
+      logE('[麻辣烫] 获取菜品失败: $e');
     }
   }
 
@@ -1129,25 +1192,32 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
   void setTableNo(String code) {
     tableNo.value = code.trim();
-    logI('麻辣烫盆号 tableNo=${tableNo.value}');
+    logI('[麻辣烫] 盆号已设置 tableNo=${tableNo.value}');
   }
 
   /// 称重页/弹窗：若开启扫盆码且尚无盆号，先弹窗扫码
   Future<SpicyBowlScanResult> ensureBowlScanned() async {
     final enabled = await SpicyWeighSettings.loadBowlScanEnabled();
-    if (!enabled) return const SpicyBowlScanResult.proceed();
+    if (!enabled) {
+      logI('[麻辣烫] 扫盆码未开启，直接进入称重');
+      return const SpicyBowlScanResult.proceed();
+    }
     if (tableNo.value.isNotEmpty) {
+      logI('[麻辣烫] 已有盆号 tableNo=${tableNo.value}，跳过扫盆码');
       return SpicyBowlScanResult.proceed(tableNo.value);
     }
 
+    logI('[麻辣烫] 打开扫盆码弹窗');
     final result = await Get.dialog<SpicyBowlScanResult>(
       const SpicyBowlScanDialog(),
       barrierDismissible: false,
     );
     if (result == null) {
+      logI('[麻辣烫] 扫盆码弹窗异常关闭 → 视为返回');
       // 异常关闭：视为返回
       return const SpicyBowlScanResult.back();
     }
+    logI('[麻辣烫] 扫盆码结果 action=${result.action} tableNo=${result.tableNo}');
     if (result.action == SpicyBowlScanAction.proceed &&
         (result.tableNo?.trim().isNotEmpty ?? false)) {
       setTableNo(result.tableNo!);
@@ -1156,6 +1226,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   }
 
   void goHome() {
+    logI('[麻辣烫] 点击返回首页 /checkout-page');
     // Get.lazyPut 下 controller 随路由销毁，无需手动重置状态
     Get.offAllNamed('/checkout-page');
   }

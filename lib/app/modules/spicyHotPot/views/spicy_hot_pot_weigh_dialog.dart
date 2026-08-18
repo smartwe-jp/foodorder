@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/font.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../services/scale_serial_service.dart';
@@ -150,7 +151,11 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   }
 
   void _confirm() {
-    if (!_canConfirm) return;
+    if (!_canConfirm) {
+      logI('[麻辣烫] 称重弹窗确认不可用 weight=$_weight price=$_price');
+      return;
+    }
+    logI('[麻辣烫] 称重弹窗点击确认 weight=${_weight}g price=¥$_price');
     Get.back();
     // 传向下取整后的克重与价格，入车/下单与显示一致
     widget.onConfirm(_weight, _price);
@@ -441,7 +446,10 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
           SizedBox(
             width: ScreenAdapter.width(200),
             child: KioskTap(
-              onTap: () => Get.back(),
+              onTap: () {
+                logI('[麻辣烫] 称重弹窗点击取消');
+                Get.back();
+              },
               child: Container(
                 height: ScreenAdapter.height(92),
                 alignment: Alignment.center,

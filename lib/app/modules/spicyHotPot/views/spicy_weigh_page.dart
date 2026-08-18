@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/font.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../services/scale_serial_service.dart';
@@ -181,11 +182,22 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     super.dispose();
   }
 
-  void _cancel() => widget.onCancel != null ? widget.onCancel!() : Get.back();
+  void _cancel() {
+    logI('[麻辣烫] 称重页点击返回');
+    if (widget.onCancel != null) {
+      widget.onCancel!();
+    } else {
+      Get.back();
+    }
+  }
 
-  void _skip() => widget.onSkip?.call();
+  void _skip() {
+    logI('[麻辣烫] 称重页点击跳过');
+    widget.onSkip?.call();
+  }
 
   void _resetWeight() {
+    logI('[麻辣烫] 称重页点击重新称重');
     _scale.clearReading();
     setState(() {
       _input = '0';
@@ -195,13 +207,18 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   }
 
   void _confirm() {
-    if (!_canConfirm) return;
+    if (!_canConfirm) {
+      logI('[麻辣烫] 称重页下一步不可用 weight=$_weight price=$_price');
+      return;
+    }
+    logI('[麻辣烫] 称重页点击下一步 weight=${_weight}g price=¥$_price');
     Get.back();
     // 传向下取整后的克重与价格，入车/下单与显示一致
     widget.onConfirm(_weight, _price);
   }
 
   void _openManualInputKeyboard() {
+    logI('[麻辣烫] 称重页打开手动输入');
     Get.dialog(
       NumberKeyboardDialog(
         title: 'spicy_weigh_manual_input_title'.tr,
@@ -214,6 +231,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           if (value.isEmpty) return;
           final grams = double.tryParse(value);
           if (grams == null || grams <= 0) return;
+          logI('[麻辣烫] 手动输入重量 ${grams}g');
           setState(() {
             _useManualWeight = true;
             _stable = true;

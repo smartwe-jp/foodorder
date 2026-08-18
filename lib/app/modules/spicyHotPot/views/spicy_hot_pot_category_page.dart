@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../../widget/KioskTap.dart';
@@ -134,7 +135,9 @@ class SpicyHotPotCategoryPage extends StatelessWidget {
     final homeImage = item['homeImage'] ?? '';
 
     return KioskTap(
-      onTap: () {LogUtil.d(item);
+      onTap: () {
+        LogUtil.d(item);
+        logI('[麻辣烫] 称重商品列表点击 title=$title priceType=${item['priceType']}');
         // 安全解析 qtyBounds，兼容 String/int/null
         final rawPriceType = item['priceType'];
 
