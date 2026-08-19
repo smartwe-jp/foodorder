@@ -173,6 +173,7 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
 
   Widget _statusRow() {
     final connected = scale.connectedRx.value;
+    final busy = scale.connectingRx.value || scale.disconnectingRx.value;
     final error = scale.lastErrorRx.value;
     return Row(
       children: [
@@ -187,18 +188,20 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
           ),
         ),
         OutlinedButton(
-          onPressed: () async {
-            if (connected) {
-              await scale.disconnect();
-            } else {
-              await scale.connect(
-                portName: selectedPort,
-                params: selectedParams,
-                autoProbe: false,
-              );
-            }
-          },
-          child: Text(connected ? '切断' : '接続'),
+          onPressed: busy
+              ? null
+              : () async {
+                  if (connected) {
+                    await scale.disconnect();
+                  } else {
+                    await scale.connect(
+                      portName: selectedPort,
+                      params: selectedParams,
+                      autoProbe: false,
+                    );
+                  }
+                },
+          child: Text(busy ? '処理中…' : (connected ? '切断' : '接続')),
         ),
       ],
     );

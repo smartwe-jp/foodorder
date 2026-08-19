@@ -416,9 +416,11 @@ class AndroidUsbScaleBackend implements ScalePortBackend {
 
 /// Windows：仅 COMx
 class LibSerialScaleBackend implements ScalePortBackend {
+  static const Duration _readInterval = Duration(milliseconds: 30);
+  static const int _maxReadBytes = 4096;
+
   SerialPort? _port;
-  SerialPortReader? _reader;
-  StreamSubscription<Uint8List>? _sub;
+  Timer? _readTimer;
   final _controller = StreamController<Uint8List>.broadcast();
 
   @override
@@ -497,8 +499,9 @@ class LibSerialScaleBackend implements ScalePortBackend {
         try {
           config.setFlowControl(SerialPortFlowControl.none);
         } catch (_) {}
+        // SerialPort 会保存并在自身 dispose 时释放 config；这里不能提前释放，
+        // 否则切断时会对同一原生指针执行第二次 free，触发 Windows CRT heap assert。
         port.config = config;
-        config.dispose();
         logI('电子秤串口参数: ${params.label}');
       } catch (e) {
         logI('配置失败: $e');
@@ -506,16 +509,7 @@ class LibSerialScaleBackend implements ScalePortBackend {
 
       _port = port;
       port = null;
-      _reader = SerialPortReader(_port!);
-      _sub = _reader!.stream.listen(
-        (data) {
-          if (!_controller.isClosed) _controller.add(data);
-        },
-        onError: (e) {
-          logI('COM 读错误: $e');
-        },
-        cancelOnError: false,
-      );
+      _startReading();
       return const ScaleOpenResult.ok();
     } catch (e, st) {
       logI('libserialport open 异常: $e\n$st');
@@ -535,14 +529,41 @@ class LibSerialScaleBackend implements ScalePortBackend {
     } catch (_) {}
   }
 
-  @override
-  Future<void> close() async {
+  /// 使用同一 isolate 非阻塞读取，确保 close 与原生读操作不会并发访问端口。
+  ///
+  /// libserialport 0.3.x 的 SerialPortReader 在独立 isolate 中只持有原生地址，
+  /// 快速切断时可能尚未结束读取就释放该地址，形成 use-after-free。
+  void _startReading() {
+    _readTimer?.cancel();
+    _readTimer = Timer.periodic(_readInterval, (_) => _readAvailable());
+  }
+
+  void _readAvailable() {
+    final port = _port;
+    if (port == null) return;
     try {
-      await _sub?.cancel();
-    } catch (_) {}
-    _sub = null;
-    _reader = null;
-    _safeDispose(_port);
+      if (!port.isOpen) return;
+      final available = port.bytesAvailable;
+      if (available <= 0) return;
+      final length = available > _maxReadBytes ? _maxReadBytes : available;
+      final data = port.read(length);
+      if (data.isNotEmpty && !_controller.isClosed) {
+        _controller.add(data);
+      }
+    } catch (e) {
+      logI('COM 读错误: $e');
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _readTimer?.cancel();
+    _readTimer = null;
+
+    // 先摘除共享引用，后续 timer/write 即使被调度也不会再访问待释放指针。
+    final port = _port;
     _port = null;
+    _safeDispose(port);
+    return Future.value();
   }
 }

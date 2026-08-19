@@ -61,6 +61,7 @@ class ScaleSerialService extends GetxService {
   final StringBuffer _buf = StringBuffer();
   Timer? _settleTimer;
   Timer? _pollTimer;
+  Future<void>? _disconnecting;
 
   /// 每次 [disconnect] 递增；用于中止进行中的 connect 探测，避免竞态崩
   int _session = 0;
@@ -70,6 +71,7 @@ class ScaleSerialService extends GetxService {
   final portNameRx = ''.obs;
   final lastErrorRx = ''.obs;
   final connectingRx = false.obs;
+  final disconnectingRx = false.obs;
   final lastRawRx = ''.obs;
 
   /// 当前生效的通信参数（设置页展示）
@@ -550,28 +552,36 @@ class ScaleSerialService extends GetxService {
     });
   }
 
-  Future<void> disconnect() async {
-    _session++;
-    _settingsAutoConnectScheduled = false;
-    _stopWeightPolling();
-    _settleTimer?.cancel();
-    _settleTimer = null;
+  Future<void> disconnect() => _disconnecting ??= _disconnectOnce();
+
+  Future<void> _disconnectOnce() async {
+    disconnectingRx.value = true;
     try {
-      await _sub?.cancel();
-    } catch (_) {}
-    _sub = null;
-    try {
-      await _backend.close();
-    } catch (e) {
-      logI('电子秤关闭异常: $e');
+      _session++;
+      _settingsAutoConnectScheduled = false;
+      _stopWeightPolling();
+      _settleTimer?.cancel();
+      _settleTimer = null;
+      try {
+        await _sub?.cancel();
+      } catch (_) {}
+      _sub = null;
+      try {
+        await _backend.close();
+      } catch (e) {
+        logI('电子秤关闭异常: $e');
+      }
+      try {
+        connectedRx.value = false;
+        _buf.clear();
+        _lastRawLine = null;
+        _lastGrams = null;
+        _lastParsedRaw = '';
+      } catch (_) {}
+    } finally {
+      disconnectingRx.value = false;
+      _disconnecting = null;
     }
-    try {
-      connectedRx.value = false;
-      _buf.clear();
-      _lastRawLine = null;
-      _lastGrams = null;
-      _lastParsedRaw = '';
-    } catch (_) {}
   }
 
   void clearReading() {
