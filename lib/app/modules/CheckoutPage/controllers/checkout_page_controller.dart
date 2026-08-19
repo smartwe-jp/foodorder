@@ -532,7 +532,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   void startDiningOrder({required bool takeout}) {
-    if (machineInfo.isShopSpicyHotPot) {
+    if (machineInfo.isSpicyHotPotOn) {
       machineInfo.currentMode = MachineMode.spicyHotPot;
       machineInfo.spicyHotPotTakeout = takeout;
       logI('[麻辣烫] 首页点单入口 takeout=$takeout language=$selectLanguage');

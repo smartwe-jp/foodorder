@@ -89,7 +89,7 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '麻辣烫設定',
+                    '計量詳細設定',
                     style: TextStyle(
                       fontFamily: 'NotoSansJP',
                       fontSize: 22,

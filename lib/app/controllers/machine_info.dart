@@ -55,6 +55,7 @@ class MachineInfoController extends GetxController {
   late bool showWithdraw;
 
   bool isShopSpicyHotPot = false;
+  bool isSpicyHotPotEnabled = false;
   bool spicyHotPotTakeout = false;
 
   //settings
@@ -139,7 +140,8 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
-  bool get isSpicyHotPotOn => isShopSpicyHotPot;
+  bool get isSpicyHotPotOn =>
+      isShopSpicyHotPot && isSpicyHotPotEnabled;
   String get spicyHotPotOrderType => 'normal';
   //1 券卖机  2 精算机 3 自助收银
   String get machineMode {
@@ -312,7 +314,14 @@ class MachineInfoController extends GetxController {
     machineModeInfo = runtime.machineModeInfo;
     logI('machineModeInfo: $machineModeInfo');
     isShopSpicyHotPot = activation?.spicyHotPot ?? false;
-    logI('isShopSpicyHotPot: $isShopSpicyHotPot');
+    final spicyEnabledValue = systemSettingInfo['spicyHotPotEnabled'];
+    final normalizedSpicyEnabled = spicyEnabledValue?.toString().toLowerCase();
+    isSpicyHotPotEnabled = spicyEnabledValue == null ||
+        spicyEnabledValue == true ||
+        normalizedSpicyEnabled == '1' ||
+        normalizedSpicyEnabled == 'true';
+    logI(
+        'isShopSpicyHotPot: $isShopSpicyHotPot, enabled: $isSpicyHotPotEnabled');
     posSettingInfo = runtime.posSettings;
 
     pos_ip = posSettingInfo['posIp'] ?? "";
