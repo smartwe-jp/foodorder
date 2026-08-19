@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/option_view.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:foodorder/app/services/spicy_weigh_settings.dart';
 import 'package:get/get.dart';
@@ -1228,6 +1229,9 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
   void goHome() {
     logI('[麻辣烫] 点击返回首页 /checkout-page');
     // Get.lazyPut 下 controller 随路由销毁，无需手动重置状态
-    Get.offAllNamed('/checkout-page');
+    //Get.offAllNamed('/checkout-page');
+    Get.until(
+      (route) => route.settings.name == Routes.CHECKOUT_PAGE,
+    );
   }
 }
