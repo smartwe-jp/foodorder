@@ -129,7 +129,7 @@ class publicShowCartView extends GetView {
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
-                                        TextSpan(text: "${formatMoney(controller.shopCartTotalPrice.value)}",style: TextStyle(
+                                        TextSpan(text: "${formatMoney(controller.displayCartPayable)}",style: TextStyle(
                                           fontFamily: GFont.getFontFamily(),
                                           fontSize: 50,
                                           fontWeight: FontWeight.w600,
@@ -162,7 +162,7 @@ class publicShowCartView extends GetView {
                         KioskTap(
                           
                           onTap: () {
-                            if (int.parse(controller.shopCartTotalPrice.value) < 0) {
+                            if (int.parse(controller.displayCartPayable) < 0) {
                               return;
                             }
                             if (controller.recommendFoods.isNotEmpty) {
@@ -178,7 +178,7 @@ class publicShowCartView extends GetView {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
 
-                              color: (int.parse(controller.shopCartTotalPrice.value) >=0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
+                              color: (int.parse(controller.displayCartPayable) >=0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),

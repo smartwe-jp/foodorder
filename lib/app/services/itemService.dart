@@ -25,6 +25,11 @@ class ItemServices {
     return await sqlService.addToCart(data);
   }
 
+  Future<List<int>> addCartItemsAtomically(
+      List<Map<String, dynamic>> items) async {
+    return await sqlService.addCartItemsAtomically(items);
+  }
+
   Future checkToCartItem(data) async {
     return await sqlService.checkItemAsCartList(data);
   }

@@ -3,12 +3,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../config/colorsUtil.dart';
 import '../config/fontSize.dart';
 import 'ScreenAdapter.dart';
+
+final CacheManager menuImageCacheManager = CacheManager(
+  Config('menu_page', stalePeriod: const Duration(days: 7), maxNrOfCacheObjects: 500),
+);
 
 class publicShowMenuImage  extends StatelessWidget{
   final String imgPath;

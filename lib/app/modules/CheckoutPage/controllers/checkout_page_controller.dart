@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/models/machine_activation.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/PosCheckService.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
@@ -530,6 +531,19 @@ class CheckoutPageController extends GetxController with StateMixin {
     //}
   }
 
+  void startDiningOrder({required bool takeout}) {
+    if (machineInfo.isShopSpicyHotPot) {
+      machineInfo.currentMode = MachineMode.spicyHotPot;
+      machineInfo.spicyHotPotTakeout = takeout;
+      logI('[麻辣烫] 首页点单入口 takeout=$takeout language=$selectLanguage');
+    } else {
+      machineInfo.currentMode =
+          takeout ? MachineMode.takeout : MachineMode.sell;
+      machineInfo.spicyHotPotTakeout = false;
+    }
+    goMenu(selectLanguage);
+  }
+
   goMenu(String lan) {
     // machineInfo.mealType = mealType;
     //machineInfo.currentMode = MachineMode.sell;
@@ -547,6 +561,9 @@ class CheckoutPageController extends GetxController with StateMixin {
         break;
       case MachineMode.checkout:
         jumpUrl = '/scancode-page';
+        break;
+      case MachineMode.spicyHotPot:
+        jumpUrl = Routes.SPICY_HOT_POT_MODE;
         break;
     }
 

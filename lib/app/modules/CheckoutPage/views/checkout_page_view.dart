@@ -93,8 +93,7 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
                 buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_eatin'.tr,
             selected: true,
             onTap: () {
-              controller.machineInfo.currentMode = MachineMode.sell;
-              controller.goMenu(controller.selectLanguage);
+              controller.startDiningOrder(takeout: false);
             },
           ),
         if (controller.machineInfo.isScanbuyOn)
@@ -147,8 +146,7 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
                 : 'menu_dingtype_takeout'.tr,
             selected: buttonCount == 1,
             onTap: () {
-              controller.machineInfo.currentMode = MachineMode.takeout;
-              controller.goMenu(controller.selectLanguage);
+              controller.startDiningOrder(takeout: true);
             },
           ),
       ],

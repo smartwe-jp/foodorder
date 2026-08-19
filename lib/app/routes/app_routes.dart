@@ -31,6 +31,7 @@ abstract class Routes {
   static const SETTING_EDIT_PAGE = _Paths.SETTING_EDIT_PAGE;
   static const RESULT_PAGE = _Paths.RESULT_PAGE;
   static const PRINTER_FAILED_LIST = _Paths.PRINTER_FAILED_LIST;
+  static const SPICY_HOT_POT_MODE = _Paths.SPICY_HOT_POT_MODE;
 }
 
 abstract class _Paths {
@@ -64,4 +65,5 @@ abstract class _Paths {
   static const SYSTEM_SETTING_PAGE_NEW = '/system-setting-page-new';
   static const RESULT_PAGE = '/result_page';
   static const PRINTER_FAILED_LIST = '/printer_failed_list';
+  static const SPICY_HOT_POT_MODE = '/spicyHotPot-mode';
 }

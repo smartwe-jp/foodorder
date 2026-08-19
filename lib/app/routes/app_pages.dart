@@ -46,6 +46,8 @@ import '../modules/WATextPage/views/windows_test_view.dart';
 import '../modules/edit_page/view.dart' deferred as edit_page;
 import '../modules/printerFailedList/controllers/printer_failed_list_controller.dart';
 import '../modules/printerFailedList/views/printer_failed_list_page.dart';
+import '../modules/spicyHotPot/bindings/spicy_hot_pot_binding.dart';
+import '../modules/spicyHotPot/views/spicy_hot_pot_mode_view.dart';
 
 part 'app_routes.dart';
 
@@ -199,6 +201,12 @@ class AppPages {
       binding: BindingsBuilder(() {
         Get.lazyPut(() => PrinterFailedListController());
       }),
+    ),
+    GetPage(
+      name: _Paths.SPICY_HOT_POT_MODE,
+      page: () => const SpicyHotPotModeView(),
+      binding: SpicyHotPotModeBinding(),
+      transition: Transition.noTransition,
     ),
   ];
 }

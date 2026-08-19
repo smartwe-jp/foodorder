@@ -8,6 +8,7 @@ import 'package:foodorder/app/services/print_failed_service.dart';
 import 'package:foodorder/app/services/print_task_service.dart';
 import 'package:foodorder/app/services/machine_runtime_service.dart';
 import 'package:foodorder/app/services/cash_machine_startup_service.dart';
+import 'package:foodorder/app/services/scale_serial_service.dart';
 import 'package:foodorder/app/controllers/print_task_controller.dart';
 import 'package:get/get.dart';
 
@@ -36,5 +37,6 @@ class AppBindings extends Bindings {
     Get.lazyPut(() => PrintTaskService(), fenix: true);
     Get.lazyPut(() => PrintTaskController(), fenix: true);
     Get.lazyPut(() => PrintFailedService(), fenix: true);
+    Get.lazyPut(() => ScaleSerialService(), fenix: true);
   }
 }

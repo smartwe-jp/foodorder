@@ -157,7 +157,7 @@ extension RecommendView on MenuPageController {
                   ),
                 ),
                 TextSpan(
-                  text: "${formatMoney(shopCartTotalPrice.value)}",
+                  text: "${formatMoney(displayCartPayable)}",
                   style: TextStyle(
                     fontFamily: GFont.getFontFamily(),
                     fontSize: 48,

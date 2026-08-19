@@ -10,6 +10,8 @@ import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/check_out_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_page_sideBar.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/spicy_scan_tip_banner.dart';
+import 'package:foodorder/app/modules/spicyHotPot/views/widgets/spicy_hot_pot_chrome.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
 
 import 'package:get/get.dart';
@@ -256,6 +258,26 @@ class MenuPageView extends GetView<MenuPageController> {
                         ),
                         child: Column(
                           children: [
+                            if (controller.isSpicyHotPotMenuScanEnabled)
+                              SizedBox(
+                                height: 0,
+                                child: TextField(
+                                  controller: controller.spicyScanQrController,
+                                  focusNode: controller.spicyScanQrFocusNode,
+                                  autofocus: true,
+                                  showCursor: false,
+                                  decoration: const InputDecoration(border: InputBorder.none),
+                                  onSubmitted: (_) =>
+                                      controller.doSpicyMenuBarCodeQuery(),
+                                ),
+                              ),
+                            if (controller.isSpicyHotPotMenuScanEnabled) ...[
+                              SpicyHotPotStepHeader(
+                                currentStep: 4,
+                                onBack: controller.gotoLanguageHome,
+                              ),
+                              const SpicyScanTipBanner(),
+                            ],
                             if (controller.machineInfo.machineType == MachineType.new_panel_max && controller.machineInfo.menu_direction != "1")
                               topArea(),
                             //顶部导航

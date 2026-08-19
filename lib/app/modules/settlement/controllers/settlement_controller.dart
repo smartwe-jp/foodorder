@@ -13,6 +13,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
+import 'package:foodorder/app/services/scale_serial_service.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -301,6 +302,9 @@ class SettlementController extends GetxController with StateMixin {
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
       case MachineMode.checkout:
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
+      case MachineMode.spicyHotPot:
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
     }
@@ -1118,6 +1122,7 @@ class SettlementController extends GetxController with StateMixin {
   Starttoubi({int connectCount = 1}) async {
     //入金开始
     debugPrint("Starttoubi $connectCount");
+    await ScaleSerialService.releaseUsbSafely(reason: 'Starttoubi');
     await Future.delayed(Duration(milliseconds: 500));
     bool result = await payCube.startPayCube(onSuccess: () {
       debugPrint("onSuccess");

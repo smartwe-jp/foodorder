@@ -83,6 +83,7 @@ const servicePath = {
   'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
 
   'webBootBarCodeQuery': base_url + 'pad/web/boot/bar_code/query', //通过商品条码找商品
+  'webBootBarCodeMenuQuery': base_url + 'pad/web/boot/bar_code/discount/query',
 
   //退款相关
   'webBootReimburseQuery':

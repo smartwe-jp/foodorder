@@ -33,6 +33,14 @@ class SQLService {
           createTables();
         },
       );
+      try {
+        await db?.execute(
+            "ALTER TABLE cart_list ADD COLUMN itemType TEXT DEFAULT ''");
+      } catch (_) {}
+      try {
+        await db?.execute(
+            "ALTER TABLE cart_list ADD COLUMN spicyGrams INTEGER DEFAULT 0");
+      } catch (_) {}
       return true;
     } catch (e) {
       print("ERROR IN OPEN DATABASE $e");
@@ -52,7 +60,9 @@ class SQLService {
           "qtyBounds INTEGER,"
           "optionGroupVoList TEXT,"
           "optionVoListMsg TEXT,"
-          "goodsNum INTEGER)";
+          "goodsNum INTEGER,"
+          "itemType TEXT DEFAULT '',"
+          "spicyGrams INTEGER DEFAULT 0)";
 
       await db?.execute(qry);
     } catch (e) {
@@ -114,10 +124,47 @@ class SQLService {
 
   Future addToCart(data) async {
     await this.db?.transaction((txn) async {
-      var qry =
-          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,unitPrice,qtyBounds,optionGroupVoList,optionVoListMsg,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},${data["unitPrice"]},${data["qtyBounds"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]})';
-      int id1 = await txn.rawInsert(qry);
+      final id1 = await txn.insert('cart_list', {
+        'menuCode': data['menuCode'] ?? '',
+        'mainTitle': data['mainTitle'] ?? '',
+        'image': data['image'] ?? '',
+        'currentPrice': data['currentPrice'] ?? 0,
+        'unitPrice': data['unitPrice'] ?? 0,
+        'qtyBounds': data['qtyBounds'] ?? 0,
+        'optionGroupVoList': data['optionGroupVoList'] ?? '',
+        'optionVoListMsg': data['optionVoListMsg'] ?? '',
+        'goodsNum': data['goodsNum'] ?? 1,
+        'itemType': data['itemType'] ?? '',
+        'spicyGrams': data['spicyGrams'] ?? 0,
+      });
       return id1;
+    });
+  }
+
+  Future<List<int>> addCartItemsAtomically(
+      List<Map<String, dynamic>> items) async {
+    final database = db;
+    if (database == null) {
+      throw StateError('购物车数据库尚未初始化');
+    }
+    return database.transaction((txn) async {
+      final ids = <int>[];
+      for (final data in items) {
+        ids.add(await txn.insert('cart_list', {
+          'menuCode': data['menuCode'] ?? '',
+          'mainTitle': data['mainTitle'] ?? '',
+          'image': data['image'] ?? '',
+          'currentPrice': data['currentPrice'] ?? 0,
+          'unitPrice': data['unitPrice'] ?? 0,
+          'qtyBounds': data['qtyBounds'] ?? 0,
+          'optionGroupVoList': data['optionGroupVoList'] ?? '',
+          'optionVoListMsg': data['optionVoListMsg'] ?? '',
+          'goodsNum': data['goodsNum'] ?? 1,
+          'itemType': data['itemType'] ?? '',
+          'spicyGrams': data['spicyGrams'] ?? 0,
+        }));
+      }
+      return ids;
     });
   }
 

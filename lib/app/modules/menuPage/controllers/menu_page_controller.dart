@@ -29,7 +29,9 @@ import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/scale_serial_service.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/spicy_weigh_settings.dart';
 import '../../../services/formatMoney.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
@@ -50,6 +52,9 @@ class MenuPageController extends GetxController with StateMixin {
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
+  String spicyTableNo = '';
+  final RxInt cartDiscountYen = 0.obs;
+  final RxInt spicyFloorDiscountYen = 0.obs;
 
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
@@ -103,6 +108,12 @@ class MenuPageController extends GetxController with StateMixin {
   bool forceUpdate = false;
 
   RxString bgColor = "#F9F9F9".obs;
+  final TextEditingController spicyScanQrController = TextEditingController();
+  final FocusNode spicyScanQrFocusNode = FocusNode(debugLabel: 'SpicyMenuBarCode');
+  bool _spicyBarCodeQueryInFlight = false;
+
+  bool get isSpicyHotPotMenuScanEnabled =>
+      machineInfo.currentMode == MachineMode.spicyHotPot;
 
   @override
   Future<void> onInit() async {
@@ -116,11 +127,18 @@ class MenuPageController extends GetxController with StateMixin {
   void onReady() {
     print("---MenuPageController onReady");
     super.onReady();
+    if (isSpicyHotPotMenuScanEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        requestSpicyMenuScanFocus();
+      });
+    }
   }
 
   //获取菜单
   Future<void> onClose() async {
     debugPrint('MenuPageController onClose');
+    spicyScanQrController.dispose();
+    spicyScanQrFocusNode.dispose();
     //player?.dispose();
     await customCacheManager.emptyCache();
     //await Get.delete<MenuPageController>();
@@ -132,6 +150,7 @@ class MenuPageController extends GetxController with StateMixin {
       checkLanguage.value = (Get.arguments['checkLanguage'] != null)
           ? Get.arguments['checkLanguage']
           : "JP";
+      spicyTableNo = Get.arguments['tableNo']?.toString().trim() ?? '';
     }
 
     MyImageCacheManager.preloadImages();
@@ -395,10 +414,106 @@ class MenuPageController extends GetxController with StateMixin {
       }
 
       showCartItems.value = ordersqlcontroller.cartItems;
+      await _refreshSpicyFloorDiscount();
       update(['shopping_cart', 'shoppingCar']);
     } catch (e) {
       print(e);
       logger.info('-- getCartPriceTotal error: $e --');
+    }
+  }
+
+  int get cartItemsTotalYen => int.tryParse(shopCartTotalPrice.value) ?? 0;
+  int get totalCartDiscountYen =>
+      spicyFloorDiscountYen.value + cartDiscountYen.value;
+  int get cartPayableYen {
+    final payable = cartItemsTotalYen - totalCartDiscountYen;
+    return payable < 0 ? 0 : payable;
+  }
+  String get displayCartPayable => '$cartPayableYen';
+
+  Future<void> _refreshSpicyFloorDiscount() async {
+    if (!isSpicyHotPotMenuScanEnabled ||
+        !await SpicyWeighSettings.loadFloorToTensEnabled()) {
+      spicyFloorDiscountYen.value = 0;
+      return;
+    }
+    var discount = 0;
+    for (final raw in ordersqlcontroller.cartItems) {
+      final item = raw as ShopItemModel;
+      if (item.itemType == 'spicy' && item.spicyGrams > 0) {
+        discount += (item.currentPrice ?? 0) % 10;
+      }
+    }
+    spicyFloorDiscountYen.value = discount;
+  }
+
+  bool _isDiscountBarCode(String code) =>
+      code.toLowerCase().startsWith('smartwe');
+
+  Future<void> _applyDiscountBarCode(String code) async {
+    final val = await request('webBootBarCodeMenuQuery', method: 'POST', parameters: {
+      'language': checkLanguage.value,
+      'machineCode': machineInfo.machineCode,
+      'barCode': code,
+    });
+    final response = json.decode(val.toString());
+    final data = response['data'];
+    final raw = data is Map ? data['discount'] : null;
+    final discount = (raw is int ? raw : int.tryParse('$raw') ?? 0).abs();
+    await getCartPriceTotal();
+    if (response['code'] != 200 || discount <= 0 ||
+        discount + spicyFloorDiscountYen.value >= cartItemsTotalYen) {
+      Fluttertoast.showToast(msg: 'menu_discount_invalid'.tr);
+      return;
+    }
+    cartDiscountYen.value = discount;
+    update(['shopping_cart', 'shoppingCar']);
+  }
+
+  void requestSpicyMenuScanFocus() {
+    if (!isSpicyHotPotMenuScanEnabled) return;
+    spicyScanQrController.clear();
+    spicyScanQrFocusNode.requestFocus();
+  }
+
+  Future<void> doSpicyMenuBarCodeQuery({
+    String? barCode,
+    bool restoreFocus = true,
+  }) async {
+    if (!isSpicyHotPotMenuScanEnabled || _spicyBarCodeQueryInFlight) return;
+    final code = (barCode ?? spicyScanQrController.text).trim();
+    if (code.isEmpty) return;
+    _spicyBarCodeQueryInFlight = true;
+    try {
+      if (_isDiscountBarCode(code)) {
+        await _applyDiscountBarCode(code);
+        return;
+      }
+      final val = await request('webBootBarCodeQuery', method: 'POST', parameters: {
+        'language': checkLanguage.value,
+        'machineCode': machineInfo.machineCode,
+        'barCode': code,
+      });
+      final response = json.decode(val.toString());
+      final data = response['data'];
+      if (response['code'] != 200 || data is! Map || data.isEmpty) {
+        Fluttertoast.showToast(msg: 'spicy_menu_scan_not_found'.tr);
+        return;
+      }
+      final item = Map<String, dynamic>.from(data);
+      if ('${item['priceType']}' == 'HUNDRED_GRAM') {
+        Fluttertoast.showToast(msg: 'spicy_menu_scan_weigh_reject'.tr);
+        return;
+      }
+      final context = Get.context;
+      if (context != null) await publicAddCart(context, item);
+    } catch (error) {
+      logger.warning('spicy menu barcode query failed: $error');
+      Fluttertoast.showToast(msg: 'spicy_menu_scan_not_found'.tr);
+    } finally {
+      _spicyBarCodeQueryInFlight = false;
+      spicyScanQrController.clear();
+      if (restoreFocus) requestSpicyMenuScanFocus();
     }
   }
 
@@ -712,8 +827,11 @@ class MenuPageController extends GetxController with StateMixin {
                 onIncrease: (value) {
                   publicChangeCartItemCreate(d, true);
                 },
-                price: "${d.unitPrice}",
-                quantity: d.goodsNum,
+                price: d.itemType == 'spicy'
+                    ? "${d.currentPrice}"
+                    : "${d.unitPrice}",
+                quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
+                showQtyControls: d.itemType != 'spicy',
               ))
           .toList(),
     );
@@ -1217,10 +1335,12 @@ print("加1了");
 
       for (var oneItem in cartItems) {
         var optionMap = {};
+        final grams = oneItem["spicyGrams"] ?? 0;
+        final qty = grams > 0 ? grams : oneItem["goodsNum"];
         if (oneItem["optionGroupVoList"] == "") {
           optionMap = {
             "menuCode": oneItem["menuCode"],
-            "qty": oneItem["goodsNum"]
+            "qty": qty
           };
         } else {
           var optionGroupVoList = oneItem["optionGroupVoList"];
@@ -1228,13 +1348,13 @@ print("加1了");
           optionMap = {
             "menuCode": oneItem["menuCode"],
             "optionList": itemsOption,
-            "qty": oneItem["goodsNum"]
+            "qty": qty
           };
         }
         selectedItem.add(optionMap);
       }
       var orderTotlaPrice = getItemTotal(ordersqlcontroller.cartItems);
-      var formData = {
+      var formData = <String, dynamic>{
         "language": checkLanguage.value,
         "machineCode": machineInfo.machineCode,
         "orderLineList": selectedItem,
@@ -1242,6 +1362,12 @@ print("加1了");
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": machineInfo.isTakeoutMode,
       };
+      if (isSpicyHotPotMenuScanEnabled && spicyTableNo.isNotEmpty) {
+        formData['tableNo'] = spicyTableNo;
+      }
+      if (totalCartDiscountYen > 0) {
+        formData['discount'] = totalCartDiscountYen;
+      }
       debugPrint("formData: $formData");
       request('webBootOrder',
           method: 'POST',
@@ -1386,6 +1512,10 @@ print("加1了");
   }
 
   gotoSettlement(String total, int tax) async {
+    if (isSpicyHotPotMenuScanEnabled &&
+        (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
+      await ScaleSerialService.releaseUsbSafely(reason: 'goto_settlement');
+    }
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "orderId": doSubmitOrderId.value,
@@ -1424,6 +1554,8 @@ print("加1了");
     await ordersqlcontroller.getCardList();
     //classTag.value = topMenu[0]["categoryCode"];
     menuLackMap.value = {};
+    cartDiscountYen.value = 0;
+    spicyFloorDiscountYen.value = 0;
     await getCartPriceTotal();
 
     if (topMenu.isNotEmpty) {

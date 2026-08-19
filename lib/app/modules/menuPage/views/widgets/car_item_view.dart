@@ -17,6 +17,7 @@ class CarItemView extends StatelessWidget {
   final Function(int) onReduce;
   final Function(int) onIncrease;
   final int quantity;
+  final bool showQtyControls;
 
   CarItemView({
     Key? key,
@@ -28,6 +29,7 @@ class CarItemView extends StatelessWidget {
     this.imageRadius = 10.0,
     required this.price,
     required this.quantity,
+    this.showQtyControls = true,
   });
 
   @override
@@ -60,7 +62,7 @@ class CarItemView extends StatelessWidget {
                     children: [
                       //title
 
-                      Row(
+                      if (showQtyControls) Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(

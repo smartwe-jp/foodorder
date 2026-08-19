@@ -9,7 +9,7 @@ import '../services/CustomLogerHandler.dart';
 
 enum MachineType { new_panel, new_panel_max, old_panel }
 
-enum MachineMode { sell, takeout, checkout, scan }
+enum MachineMode { sell, takeout, checkout, scan, spicyHotPot }
 
 class MachineInfoController extends GetxController {
   MachineType get machineType {
@@ -53,6 +53,9 @@ class MachineInfoController extends GetxController {
   late String isAllowRejishime;
   late bool actuarial;
   late bool showWithdraw;
+
+  bool isShopSpicyHotPot = false;
+  bool spicyHotPotTakeout = false;
 
   //settings
   double machinePrintWidth = 385.0;
@@ -136,6 +139,8 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+  bool get isSpicyHotPotOn => isShopSpicyHotPot;
+  String get spicyHotPotOrderType => 'normal';
   //1 券卖机  2 精算机 3 自助收银
   String get machineMode {
     if (currentMode == MachineMode.checkout) {
@@ -148,7 +153,8 @@ class MachineInfoController extends GetxController {
 
   bool get isTakeoutMode {
     return currentMode == MachineMode.takeout ||
-        currentMode == MachineMode.scan;
+        currentMode == MachineMode.scan ||
+        (currentMode == MachineMode.spicyHotPot && spicyHotPotTakeout);
   }
 
   String get printType {
@@ -305,6 +311,8 @@ class MachineInfoController extends GetxController {
 
     machineModeInfo = runtime.machineModeInfo;
     logI('machineModeInfo: $machineModeInfo');
+    isShopSpicyHotPot = activation?.spicyHotPot ?? false;
+    logI('isShopSpicyHotPot: $isShopSpicyHotPot');
     posSettingInfo = runtime.posSettings;
 
     pos_ip = posSettingInfo['posIp'] ?? "";

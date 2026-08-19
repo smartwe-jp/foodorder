@@ -6,9 +6,13 @@ class NumberKeyboardDialog extends StatefulWidget {
   final String title;
   final String? initialValue;
   final Function(String) onConfirm;
+  final double inputFontSize;
+  final double inputMinHeight;
+  final double borderRadius;
 
   const NumberKeyboardDialog({Key? key, required this.title, required this.onConfirm,
-    this.initialValue = ""
+    this.initialValue = "", this.inputFontSize = 32,
+    this.inputMinHeight = 48, this.borderRadius = 8,
   }) : super(key: key);
 
   @override
@@ -45,6 +49,9 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+      ),
       children: [
         SizedBox(height: 30),
         Center(child: Text(widget.title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
@@ -54,12 +61,13 @@ class _NumberKeyboardDialogState extends State<NumberKeyboardDialog> {
             constraints: BoxConstraints(
               minWidth: 200,
               maxWidth: 300,
+              minHeight: widget.inputMinHeight,
             ),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
-            child: Text(input, style: TextStyle(fontSize: 32)
+            child: Text(input, style: TextStyle(fontSize: widget.inputFontSize)
             ))),
         SizedBox(height: 10),
         SizedBox(

@@ -9,6 +9,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/machine_runtime_service.dart';
+import 'package:foodorder/app/services/scale_serial_service.dart';
 import 'package:logging/logging.dart';
 
 enum CashMachineStartupStep {
@@ -166,6 +167,9 @@ class CashMachineStartupService {
       );
     }
 
+    await ScaleSerialService.releaseUsbSafely(
+      reason: 'cash_machine_startup',
+    );
     final payCube = _appConfig.payCube;
     final timeout = _timeoutFor(mode);
     onStep?.call(CashMachineStartupStep.checkingStatus);

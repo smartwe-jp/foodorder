@@ -120,6 +120,16 @@ class OrderSqlController extends GetxService {
     return result;
   }
 
+  Future<List<int>> addCartItemsAtomically(
+      List<Map<String, dynamic>> items) async {
+    isLoading = true;
+    try {
+      return await itemServices.addCartItemsAtomically(items);
+    } finally {
+      isLoading = false;
+    }
+  }
+
   Future addToCartNum(item) async {
     isLoading = true;
     //update();

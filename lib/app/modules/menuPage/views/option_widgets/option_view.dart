@@ -15,6 +15,18 @@ import '../../../../services/ScreenAdapter.dart';
 import '../../../../widget/DialogUtils.dart';
 import 'option_list.dart';
 
+class OptionPreparedState {
+  final List<OptionGroup> optionGroupList;
+  final List<String> selectOptionCodes;
+  final int currentPrice;
+
+  const OptionPreparedState({
+    required this.optionGroupList,
+    required this.selectOptionCodes,
+    required this.currentPrice,
+  });
+}
+
 class OptionView extends StatefulWidget {
   OptionView({
     Key? key,
@@ -26,6 +38,7 @@ class OptionView extends StatefulWidget {
     required this.mainTitle,
     required this.subtitle,
     required this.addToCartCallback,
+    this.preparedState,
   }) : super(key: key);
 
   final bool isLabel;
@@ -36,7 +49,44 @@ class OptionView extends StatefulWidget {
   final List subtitle;
   final List<dynamic> optionInfo;
   final Function(int, List, String) addToCartCallback;
+  final OptionPreparedState? preparedState;
 
+  static OptionPreparedState prepareState({
+    required int itemPrice,
+    required List<dynamic> optionInfo,
+  }) {
+    final groups = <OptionGroup>[];
+    final codes = <String>[];
+    var price = itemPrice;
+    for (final item in optionInfo) {
+      final selectedCodes = <dynamic>[];
+      final selectedNames = <String>[];
+      for (final option in item['optionVoList'] ?? const []) {
+        final code = option['optionCode']?.toString() ?? '';
+        if (option['checked'] == true && code.isNotEmpty) {
+          price += option['currentPrice'] is int
+              ? option['currentPrice'] as int
+              : int.tryParse('${option['currentPrice']}') ?? 0;
+          selectedCodes.add(code);
+          codes.add(code);
+          selectedNames.add(option['mainTitle'] ?? '');
+        }
+      }
+      groups.add(OptionGroup(
+        groupCode: item['groupCode'] ?? '',
+        groupName: item['groupName'] ?? '',
+        selectedOptionCodes: selectedCodes,
+        selectedOptionNames: selectedNames,
+        maxNum: '${item['multipleState'] ?? 0}',
+        minNum: '${item['smallest'] ?? 0}',
+      ));
+    }
+    return OptionPreparedState(
+      optionGroupList: groups,
+      selectOptionCodes: codes,
+      currentPrice: price,
+    );
+  }
 
 
   @override
@@ -105,7 +155,14 @@ class _OptionViewState extends State<OptionView> {
   void initState() {
     super.initState();
     _initData();
-    _initOptionGroup();
+    final prepared = widget.preparedState;
+    if (prepared == null) {
+      _initOptionGroup();
+    } else {
+      _optionGroupList = prepared.optionGroupList;
+      _selectOptionCodes = List<String>.from(prepared.selectOptionCodes);
+      _currentPrice = prepared.currentPrice;
+    }
   }
 
   _initOptionGroup() {

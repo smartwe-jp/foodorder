@@ -10,6 +10,7 @@ import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/spicy_hot_pot_settings_card.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/print_failed_service.dart';
 import 'package:get/get.dart';
@@ -125,6 +126,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               _setIsAllowReceiptMenu(logic.machineInfo.systemSettingInfo),
               _allowPrintReceiptOptions(logic.machineInfo),
               _allowSettlementHome(logic.machineInfo.systemSettingInfo),
+              if (logic.machineInfo.isShopSpicyHotPot)
+                const SpicyHotPotSettingsCard(),
               if (Platform.isAndroid)
                 _openRejishime(logic.machineInfo.systemSettingInfo),
               if (logic.machineInfo.supportsCashMachine)
