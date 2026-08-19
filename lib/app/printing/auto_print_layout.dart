@@ -813,39 +813,78 @@ class PrintThreeColumnRow extends StatelessWidget {
     required this.rightStyle,
   }) : super(key: key);
 
+  Widget _qtyPriceRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(middle, style: rightStyle, softWrap: false),
+        const SizedBox(width: 8),
+        Text(right, style: rightStyle, softWrap: false),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            left,
-            maxLines: 2,
-            style: leftStyle,
-            softWrap: true,
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final leftPainter = TextPainter(
+          text: TextSpan(text: left, style: leftStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout();
+        final middlePainter = TextPainter(
+          text: TextSpan(text: middle, style: rightStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout();
+        final rightPainter = TextPainter(
+          text: TextSpan(text: right, style: rightStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout();
+        const gap = 8.0;
+        final needsWrap = leftPainter.width +
+                middlePainter.width +
+                rightPainter.width +
+                gap * 2 >
+            constraints.maxWidth;
+
+        if (needsWrap) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                middle,
-                style: rightStyle,
+                left,
+                maxLines: 2,
+                style: leftStyle,
                 softWrap: true,
               ),
-              Text(
-                right,
-                style: rightStyle,
-                textAlign: TextAlign.right,
+              Align(
+                alignment: Alignment.centerRight,
+                child: _qtyPriceRow(),
               ),
             ],
-          ),
-        ),
-      ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Text(
+                left,
+                maxLines: 2,
+                style: leftStyle,
+                softWrap: true,
+              ),
+            ),
+            const SizedBox(width: gap),
+            _qtyPriceRow(),
+          ],
+        );
+      },
     );
   }
 }
