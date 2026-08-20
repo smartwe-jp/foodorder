@@ -53,6 +53,10 @@ If a run was force-killed before cleanup completed, restore the original files:
 ```bash
 fvm dart run tool/variant.dart restore
 ```
+// build dev
+fvm dart run tool/variant.dart build-windows windows --env dev --release
+fvm dart run tool/variant.dart build-apk android7 --env dev --release
+fvm dart run tool/variant.dart build-apk android11 --env dev --release
 
 For a local variant build without editing manifests manually:
 
