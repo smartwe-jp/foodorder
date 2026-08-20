@@ -28,6 +28,8 @@ Windows PowerShell:
 ```powershell
 .\run_windows_dev.ps1 -d windows
 .\run_windows_release.ps1 -d windows
+.\build_windows_dev.ps1
+.\build_windows_release.ps1
 ```
 
 - `*_dev`: development API (`https://sit-api.smartwe.jp/`) and Flutter debug.
@@ -59,10 +61,14 @@ If a run was force-killed before cleanup completed, restore the original files:
 ```bash
 fvm dart run tool/variant.dart restore
 ```
-// build dev
+
+Build release binaries against the development API:
+
+```bash
 fvm dart run tool/variant.dart build-windows windows --env dev --release
 fvm dart run tool/variant.dart build-apk android7 --env dev --release
 fvm dart run tool/variant.dart build-apk android11 --env dev --release
+```
 
 For a local variant build without editing manifests manually:
 

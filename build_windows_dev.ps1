@@ -1,7 +1,7 @@
 $runnerExitCode = 1
 
 try {
-    & fvm dart run tool/variant.dart build-windows windows --env prod --release @args
+    & fvm dart run tool/variant.dart build-windows windows --env dev --release @args
     $runnerExitCode = $LASTEXITCODE
 }
 finally {

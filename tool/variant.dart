@@ -560,23 +560,25 @@ Future<void> _restoreBackup({required bool refreshPackages}) async {
     }
   }
 
-  restoreFiles();
+  try {
+    restoreFiles();
 
-  if (refreshPackages) {
-    _cleanGeneratedPluginSymlinks();
-    final result = await _runFvm(const ['flutter', 'pub', 'get']);
-    if (result != 0) {
-      stderr.writeln(
-        'Warning: original pubspec was restored, but flutter pub get failed.',
-      );
+    if (refreshPackages) {
+      _cleanGeneratedPluginSymlinks();
+      final result = await _runFvm(const ['flutter', 'pub', 'get']);
+      if (result != 0) {
+        stderr.writeln(
+          'Warning: original pubspec was restored, but flutter pub get failed.',
+        );
+      }
     }
+  } finally {
+    // pub get may rewrite generated registrants or throw before returning.
+    // Always restore the exact pre-run snapshot one final time.
+    restoreFiles();
+    _backupDirectory.deleteSync(recursive: true);
+    stdout.writeln('Restored the original pubspec and plugin state.');
   }
-
-  // pub get may rewrite generated registrants. Preserve the exact pre-run
-  // working-tree state, including any user edits.
-  restoreFiles();
-  _backupDirectory.deleteSync(recursive: true);
-  stdout.writeln('Restored the original pubspec and plugin state.');
 }
 
 Future<int> _runFvm(
