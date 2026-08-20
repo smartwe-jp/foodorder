@@ -8,6 +8,7 @@ class CheckoutPageBinding extends Bindings {
     //Get.put(CheckoutPageController());
     Get.lazyPut<CheckoutPageController>(
       () => CheckoutPageController(),
+      fenix: true,
     );
   }
 }
