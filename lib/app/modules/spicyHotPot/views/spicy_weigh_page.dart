@@ -211,7 +211,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     if (!mounted || _scaleDialogShowing || _openingScaleSettings) return;
     _scaleWorker?.dispose();
     _scaleWorker = null;
-    if (!_useManualWeight) setState(() => _stable = false);
+    _resetWeighingAfterScaleDisconnect();
     _scaleDialogShowing = true;
     _startScaleRetryLoop();
     final openSettings = await showScaleConnectionPrompt(message: message);
@@ -229,6 +229,16 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     await Get.toNamed(Routes.SPICY_HOT_POT_SETTINGS);
     _openingScaleSettings = false;
     if (mounted) await _startScaleListen();
+  }
+
+  void _resetWeighingAfterScaleDisconnect() {
+    _scale.clearReading();
+    setState(() {
+      _input = '0';
+      _stable = false;
+      _useManualWeight = false;
+    });
+    logI('[麻辣烫] 电子秤断开，已重置本次称重');
   }
 
   void _startScaleRetryLoop() {
