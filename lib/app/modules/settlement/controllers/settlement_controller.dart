@@ -1189,7 +1189,7 @@ class SettlementController extends GetxController with StateMixin {
 
   _updatePutMoneyInfo(String result) {
     debugPrint("_updatePutMoneyInfo==$result");
-    if (int.parse(result) > 0) {
+    if (int.parse(result) >= 0) {
       hasStartPayflow = true;
       getPutMoney.value = result;
       scanQrCodeFocusNode.unfocus();
@@ -1201,10 +1201,8 @@ class SettlementController extends GetxController with StateMixin {
         }else{
           showPrintButton.value = false;
         }
-
         var outMoney = int.parse(result) - int.parse(totalPrice.value); //找零金额
         showOutMoney.value = outMoney.toString(); //找零金额
-
       } else {
         showOutMoney.value = "0"; //找零金额
 
