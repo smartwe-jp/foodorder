@@ -55,13 +55,21 @@ class ScaleSerialService extends GetxService {
   /// 命令轮询间隔（出厂 prt=1 无连续流时靠此跟屏）
   static const Duration _pollInterval = Duration(milliseconds: 280);
 
+  /// 已连接时超过该时长收不到有效重量帧，判定连接已中断。
+  static const Duration connectionLostTimeout = Duration(seconds: 5);
+
   final ScalePortBackend _backend = createScalePortBackend();
 
   StreamSubscription<Uint8List>? _sub;
   final StringBuffer _buf = StringBuffer();
   Timer? _settleTimer;
   Timer? _pollTimer;
+  Timer? _connectionWatchdog;
   Future<void>? _disconnecting;
+  DateTime? _connectedAt;
+  DateTime? _lastValidFrameAt;
+  final RxInt _validFrameCountRx = 0.obs;
+  Completer<bool>? _pendingValidFrame;
 
   /// 每次 [disconnect] 递增；用于中止进行中的 connect 探测，避免竞态崩
   int _session = 0;
@@ -73,6 +81,10 @@ class ScaleSerialService extends GetxService {
   final connectingRx = false.obs;
   final disconnectingRx = false.obs;
   final lastRawRx = ''.obs;
+
+  /// 只在非主动断开（读错误、输入流结束、超时无响应）时赋值。
+  /// 称重页面监听该字段并提示进入设置页。
+  final connectionIssueRx = RxnString();
 
   /// 当前生效的通信参数（设置页展示）
   final paramsRx = ScaleSerialParams.appStandard.obs;
@@ -86,7 +98,11 @@ class ScaleSerialService extends GetxService {
   /// 设置页自动重连防抖（避免 TableRow 重建反复 connect）
   bool _settingsAutoConnectScheduled = false;
 
-  Future<String?> loadSavedPortName() => Storage.getString(storageKey);
+  Future<String?> loadSavedPortName() async {
+    final name = await Storage.getString(storageKey);
+    portNameRx.value = name ?? '';
+    return name;
+  }
 
   Future<void> savePortName(String name) async {
     await Storage.setString(storageKey, name);
@@ -95,7 +111,10 @@ class ScaleSerialService extends GetxService {
 
   Future<ScaleSerialParams> loadSavedParams() async {
     final id = await Storage.getString(paramsStorageKey);
-    return ScaleSerialParams.fromId(id) ?? ScaleSerialParams.appStandard;
+    final params =
+        ScaleSerialParams.fromId(id) ?? ScaleSerialParams.appStandard;
+    paramsRx.value = params;
+    return params;
   }
 
   Future<void> saveParams(ScaleSerialParams params) async {
@@ -133,6 +152,110 @@ class ScaleSerialService extends GetxService {
   List<String> listPorts({bool onlyLikely = true}) => portsRx.toList();
 
   String portLabel(String id) => portLabelsRx[id] ?? id;
+
+  /// 恢复已保存端口。Android USB 的 deviceName/deviceId 可能在重启或重插后变化，
+  /// 此时按 VID/PID/序列号匹配；无序列号时仅在同 VID/PID 只有一个设备时恢复。
+  Future<String?> restoreSavedPortName({bool refresh = true}) async {
+    final saved = await loadSavedPortName();
+    if (refresh) await refreshPorts();
+    if (saved == null || saved.isEmpty) return null;
+    if (portsRx.contains(saved)) return saved;
+
+    final matched = _matchCurrentUsbPort(saved);
+    if (matched != null) {
+      await savePortName(matched);
+      logI('电子秤恢复已保存 USB: $saved -> $matched');
+      return matched;
+    }
+    // 设备暂未插入时仍保留原设置，不因一次枚举失败清空。
+    portNameRx.value = saved;
+    return saved;
+  }
+
+  String? _matchCurrentUsbPort(String saved) {
+    final target = saved.split('|');
+    if (target.length < 4 || target[0] != 'usb') return null;
+    final sameVidPid = portsRx.where((current) {
+      final parts = current.split('|');
+      return parts.length >= 4 &&
+          parts[0] == 'usb' &&
+          parts[1] == target[1] &&
+          parts[2] == target[2];
+    }).toList();
+    final serial = target[3];
+    if (serial.isNotEmpty) {
+      for (final current in sameVidPid) {
+        final parts = current.split('|');
+        if (parts[3] == serial) return current;
+      }
+      return null;
+    }
+    return sameVidPid.length == 1 ? sameVidPid.single : null;
+  }
+
+  bool get hasRecentValidReading {
+    final last = _lastValidFrameAt;
+    return connectedRx.value &&
+        last != null &&
+        DateTime.now().difference(last) <= connectionLostTimeout;
+  }
+
+  /// 使用已保存配置连接，并以收到 A&D 有效重量帧作为成功标准。
+  Future<bool> ensureReady({
+    Duration timeout = connectionLostTimeout,
+  }) async {
+    if (hasRecentValidReading) return true;
+    connectionIssueRx.value = null;
+    final name = await restoreSavedPortName();
+    final params = await loadSavedParams();
+    final connected = await connect(
+      portName: name,
+      params: params,
+      persist: false,
+      autoProbe: true,
+    );
+    if (!connected) return false;
+    if (hasRecentValidReading) {
+      await _persistActiveConnection();
+      return true;
+    }
+
+    final valid = await _waitForValidFrame(timeout);
+    if (valid) {
+      await _persistActiveConnection();
+      return true;
+    }
+    lastErrorRx.value = '電子秤から計量データを受信できません';
+    await disconnect();
+    return false;
+  }
+
+  Future<void> _persistActiveConnection() async {
+    final name = portNameRx.value;
+    if (name.isNotEmpty) await savePortName(name);
+    await saveParams(paramsRx.value);
+  }
+
+  Future<bool> _waitForValidFrame(Duration timeout) async {
+    if (hasRecentValidReading) return true;
+    final startCount = _validFrameCountRx.value;
+    final completer = Completer<bool>();
+    late final Worker worker;
+    worker = ever<int>(_validFrameCountRx, (count) {
+      if (count > startCount && !completer.isCompleted) {
+        completer.complete(true);
+      }
+    });
+    final timer = Timer(timeout, () {
+      if (!completer.isCompleted) completer.complete(false);
+    });
+    try {
+      return await completer.future;
+    } finally {
+      timer.cancel();
+      worker.dispose();
+    }
+  }
 
   /// 设置页进入时：若有已保存口且当前未连接，自动重连以显示「接続済み」
   Future<void> autoConnectForSettings() async {
@@ -208,6 +331,7 @@ class ScaleSerialService extends GetxService {
     lastRawRx.value = '';
     try {
       await disconnect();
+      connectionIssueRx.value = null;
       final session = _session;
 
       var name = (portName?.isNotEmpty == true)
@@ -288,28 +412,25 @@ class ScaleSerialService extends GetxService {
         portNameRx.value = name;
         paramsRx.value = p;
         final gotFirst = Completer<bool>();
+        _pendingValidFrame = gotFirst;
         try {
           await _sub?.cancel();
         } catch (_) {}
         _sub = _backend.inputStream?.listen(
           (data) {
             try {
-              if (data.isNotEmpty && !gotFirst.isCompleted) {
-                gotFirst.complete(true);
-              }
               _onBytes(data);
             } catch (e) {
               logI('电子秤 listen 回调异常: $e');
             }
           },
           onError: (Object e, StackTrace st) {
-            lastErrorRx.value = '读错误: $e';
             logI('电子秤读流错误: $e\n$st');
-            connectedRx.value = false;
+            _reportUnexpectedDisconnect('電子秤との通信でエラーが発生しました');
           },
           onDone: () {
             logI('电子秤读流结束');
-            connectedRx.value = false;
+            _reportUnexpectedDisconnect('電子秤との接続が切断されました');
           },
           cancelOnError: false,
         );
@@ -339,6 +460,9 @@ class ScaleSerialService extends GetxService {
           if (session != _session) return false;
           if (!got) {
             logI('电子秤探测无数据: ${p.label}，试下一种');
+            if (identical(_pendingValidFrame, gotFirst)) {
+              _pendingValidFrame = null;
+            }
             // 仅关后端，不递增 session，以便继续探测
             try {
               await _sub?.cancel();
@@ -352,13 +476,18 @@ class ScaleSerialService extends GetxService {
           }
         }
 
+        if (identical(_pendingValidFrame, gotFirst)) {
+          _pendingValidFrame = null;
+        }
         lastErrorRx.value = '';
         if (persist) {
           await savePortName(name);
           await saveParams(p);
         }
         logI('电子秤已连接: $name @${p.label}');
+        _connectedAt = DateTime.now();
         _startWeightPolling();
+        _startConnectionWatchdog();
 
         // 最后一档：短时仍无数据则提示（不判失败）
         if (!probing && !gotFirst.isCompleted) {
@@ -387,6 +516,7 @@ class ScaleSerialService extends GetxService {
       } catch (_) {}
       return false;
     } finally {
+      _pendingValidFrame = null;
       connectingRx.value = false;
     }
   }
@@ -423,7 +553,10 @@ class ScaleSerialService extends GetxService {
         if (match == null) break;
         final line = s.substring(0, match.start).trim();
         s = s.substring(match.end);
-        if (line.isNotEmpty) _parseLine(line);
+        if (line.isNotEmpty) {
+          if (_isValidWeightFrame(line)) _markValidFrame();
+          _parseLine(line);
+        }
       }
       _buf
         ..clear()
@@ -431,6 +564,20 @@ class ScaleSerialService extends GetxService {
     } catch (e) {
       logI('电子秤解析字节异常: $e');
     }
+  }
+
+  bool _isValidWeightFrame(String line) {
+    return RegExp(
+      r'^(ST|US)\s*,.*\s(?:kg|g)$',
+      caseSensitive: false,
+    ).hasMatch(line);
+  }
+
+  void _markValidFrame() {
+    _lastValidFrameAt = DateTime.now();
+    _validFrameCountRx.value++;
+    final pending = _pendingValidFrame;
+    if (pending != null && !pending.isCompleted) pending.complete(true);
   }
 
   /// 发一次即时要数（说明书：`Q CR LF`）
@@ -450,6 +597,35 @@ class ScaleSerialService extends GetxService {
       // ignore: unawaited_futures
       _requestWeightOnce();
     });
+  }
+
+  void _startConnectionWatchdog() {
+    _connectionWatchdog?.cancel();
+    _connectionWatchdog = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!connectedRx.value || connectingRx.value) return;
+      final reference = _lastValidFrameAt ?? _connectedAt;
+      if (reference == null) return;
+      if (DateTime.now().difference(reference) > connectionLostTimeout) {
+        _reportUnexpectedDisconnect('電子秤からの応答がありません。接続を確認してください');
+      }
+    });
+  }
+
+  void _stopConnectionWatchdog() {
+    _connectionWatchdog?.cancel();
+    _connectionWatchdog = null;
+  }
+
+  void _reportUnexpectedDisconnect(String message) {
+    if (!connectedRx.value || disconnectingRx.value) return;
+    logI('电子秤连接中断: $message');
+    lastErrorRx.value = message;
+    connectionIssueRx.value = message;
+    connectedRx.value = false;
+    _stopWeightPolling();
+    _stopConnectionWatchdog();
+    // ignore: discarded_futures
+    disconnect(clearIssue: false);
   }
 
   void _stopWeightPolling() {
@@ -552,7 +728,10 @@ class ScaleSerialService extends GetxService {
     });
   }
 
-  Future<void> disconnect() => _disconnecting ??= _disconnectOnce();
+  Future<void> disconnect({bool clearIssue = true}) {
+    if (clearIssue) connectionIssueRx.value = null;
+    return _disconnecting ??= _disconnectOnce();
+  }
 
   Future<void> _disconnectOnce() async {
     disconnectingRx.value = true;
@@ -560,6 +739,9 @@ class ScaleSerialService extends GetxService {
       _session++;
       _settingsAutoConnectScheduled = false;
       _stopWeightPolling();
+      _stopConnectionWatchdog();
+      _connectedAt = null;
+      _lastValidFrameAt = null;
       _settleTimer?.cancel();
       _settleTimer = null;
       try {

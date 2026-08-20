@@ -40,10 +40,9 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
       SpicyWeighSettings.loadTareGrams(),
       SpicyWeighSettings.loadMinAmountYen(),
       SpicyWeighSettings.loadGiftThresholdYen(),
-      scale.loadSavedPortName(),
-      scale.loadSavedParams(),
-      scale.refreshPorts(),
     ]);
+    final savedPort = await scale.restoreSavedPortName();
+    final savedParams = await scale.loadSavedParams();
     if (!mounted) return;
     setState(() {
       manualInput = values[0] as bool;
@@ -52,8 +51,8 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
       tareGrams = values[3] as double;
       minAmount = values[4] as int;
       giftThreshold = values[5] as int;
-      selectedPort = values[6] as String? ?? '';
-      selectedParams = values[7] as ScaleSerialParams;
+      selectedPort = savedPort ?? '';
+      selectedParams = savedParams;
       loading = false;
     });
   }
@@ -194,11 +193,17 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
                   if (connected) {
                     await scale.disconnect();
                   } else {
-                    await scale.connect(
-                      portName: selectedPort,
-                      params: selectedParams,
-                      autoProbe: false,
-                    );
+                    if (selectedPort.isNotEmpty) {
+                      await scale.savePortName(selectedPort);
+                    }
+                    await scale.saveParams(selectedParams);
+                    final ready = await scale.ensureReady();
+                    if (ready && mounted) {
+                      setState(() {
+                        selectedPort = scale.portNameRx.value;
+                        selectedParams = scale.paramsRx.value;
+                      });
+                    }
                   }
                 },
           child: Text(busy ? '処理中…' : (connected ? '切断' : '接続')),
@@ -209,7 +214,13 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
 
   Widget _portRow() {
     final ports = scale.portsRx.toList();
-    final value = ports.contains(selectedPort) ? selectedPort : null;
+    final savedPortUnavailable =
+        selectedPort.isNotEmpty && !ports.contains(selectedPort);
+    final displayPorts = <String>[
+      if (savedPortUnavailable) selectedPort,
+      ...ports,
+    ];
+    final value = selectedPort.isEmpty ? null : selectedPort;
     return Row(
       children: [
         const SizedBox(width: 150, child: Text('シリアルポート')),
@@ -218,10 +229,14 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
             isExpanded: true,
             value: value,
             hint: const Text('未設定'),
-            items: ports
+            items: displayPorts
                 .map((port) => DropdownMenuItem(
                       value: port,
-                      child: Text(scale.portLabel(port)),
+                      child: Text(
+                        savedPortUnavailable && port == selectedPort
+                            ? '${scale.portLabel(port)}（保存済み・未検出）'
+                            : scale.portLabel(port),
+                      ),
                     ))
                 .toList(),
             onChanged: (port) async {
@@ -232,7 +247,10 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
           ),
         ),
         IconButton(
-          onPressed: scale.refreshPorts,
+          onPressed: () async {
+            final restored = await scale.restoreSavedPortName();
+            if (mounted) setState(() => selectedPort = restored ?? '');
+          },
           icon: const Icon(Icons.refresh),
         ),
       ],

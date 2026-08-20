@@ -7,10 +7,12 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../services/scale_serial_service.dart';
 import '../../../services/spicy_weigh_settings.dart';
+import '../../../routes/app_pages.dart';
 import '../../../widget/KioskTap.dart';
 import '../controllers/spicy_hot_pot_checkout_controller.dart';
 import 'spicy_bowl_scan_dialog.dart';
 import 'widgets/spicy_hot_pot_chrome.dart';
+import 'widgets/scale_connection_prompt.dart';
 
 const _kBg = Color(0xFFF5EFDE);
 const _kRed = Color(0xFFC82333);
@@ -43,6 +45,9 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   /// 最低额度（日元），0＝不限制
   int _minAmountYen = 0;
   Worker? _scaleWorker;
+  Worker? _scaleConnectionWorker;
+  bool _scaleDialogShowing = false;
+  bool _openingScaleSettings = false;
 
   ScaleSerialService get _scale {
     if (!Get.isRegistered<ScaleSerialService>()) {
@@ -118,13 +123,24 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
   }
 
   Future<void> _startScaleListen() async {
+    _scaleWorker?.dispose();
+    _scaleWorker = null;
     _scale.clearReading();
+    var ready = false;
     try {
-      if (!_scale.connectedRx.value) {
-        await _scale.connect(persist: false);
-      }
+      ready = await _scale.ensureReady();
     } catch (e) {
       debugPrint('称重弹窗连接电子秤失败: $e');
+    }
+    if (!mounted) return;
+    _startScaleConnectionMonitor();
+    if (!ready) {
+      await _showScaleConnectionIssue(
+        _scale.lastErrorRx.value.isEmpty
+            ? '電子秤に接続できません。接続ポートと通信設定を確認してください。'
+            : _scale.lastErrorRx.value,
+      );
+      return;
     }
     _scaleWorker = ever<ScaleReading?>(_scale.weightRx, (reading) {
       if (!mounted || reading == null) return;
@@ -137,11 +153,35 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
     });
   }
 
+  void _startScaleConnectionMonitor() {
+    _scaleConnectionWorker ??=
+        ever<String?>(_scale.connectionIssueRx, (message) {
+      if (message == null || message.isEmpty) return;
+      _showScaleConnectionIssue(message);
+    });
+  }
+
+  Future<void> _showScaleConnectionIssue(String message) async {
+    if (!mounted || _scaleDialogShowing || _openingScaleSettings) return;
+    _scaleDialogShowing = true;
+    final openSettings = await showScaleConnectionPrompt(message: message);
+    _scaleDialogShowing = false;
+    if (!mounted || !openSettings) return;
+
+    _openingScaleSettings = true;
+    await _scale.disconnect();
+    await Get.toNamed(Routes.SPICY_HOT_POT_SETTINGS);
+    _openingScaleSettings = false;
+    if (mounted) await _startScaleListen();
+  }
+
   @override
   void dispose() {
     try {
       _scaleWorker?.dispose();
       _scaleWorker = null;
+      _scaleConnectionWorker?.dispose();
+      _scaleConnectionWorker = null;
       _scale.clearReading();
     } catch (e) {
       debugPrint('称重弹窗 dispose 清理异常: $e');
