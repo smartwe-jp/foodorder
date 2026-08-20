@@ -3,13 +3,12 @@ import 'package:get/get.dart';
 import '../../../widget/PressScaleButton.dart';
 import 'logic.dart';
 
-class ResultPage extends StatelessWidget {
+class ResultPage extends GetView<ResultLogic> {
   const ResultPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 注入逻辑控制器
-    final logic = Get.put(ResultLogic());
+    final logic = controller;
     final state = logic.state;
 
     return Scaffold(
