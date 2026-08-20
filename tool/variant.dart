@@ -272,19 +272,21 @@ Future<void> _activateVariant(
   String variant, {
   required bool useVariantLock,
 }) async {
-  final manifest = File('${_root.path}/variants/$variant.yaml');
-  if (!manifest.existsSync()) {
-    _fail('Missing variant manifest: ${manifest.path}');
+  final overlay = File('${_root.path}/variants/$variant.yaml');
+  if (!overlay.existsSync()) {
+    _fail('Missing variant overlay: ${overlay.path}');
   }
 
-  final manifestContents = manifest.readAsStringSync();
-  _validateManifest(variant, manifestContents);
-  _validateSharedConfiguration(
+  final rootManifest = File('${_root.path}/pubspec.yaml');
+  final manifestContents = _composeVariantManifest(
     variant,
-    rootContents: File('${_root.path}/pubspec.yaml').readAsStringSync(),
-    variantContents: manifestContents,
+    rootContents: rootManifest.readAsStringSync(),
+    overlayContents: overlay.readAsStringSync(),
   );
-  manifest.copySync('${_root.path}/pubspec.yaml');
+  _validateManifest(variant, manifestContents);
+  rootManifest.writeAsStringSync(manifestContents, flush: true);
+  stdout
+      .writeln('Composed pubspec.yaml from common config + $variant overlay.');
   _cleanGeneratedPluginSymlinks();
 
   if (!useVariantLock) {
@@ -299,6 +301,123 @@ Future<void> _activateVariant(
     );
   }
   lock.copySync('${_root.path}/pubspec.lock');
+}
+
+String _composeVariantManifest(
+  String variant, {
+  required String rootContents,
+  required String overlayContents,
+}) {
+  _validateVariantOverlay(variant, overlayContents);
+
+  final root = loadYaml(rootContents);
+  if (root is! YamlMap || root['dependencies'] is! YamlMap) {
+    _fail('Root pubspec.yaml must contain a dependencies map.');
+  }
+
+  final lineEnding = rootContents.contains('\r\n') ? '\r\n' : '\n';
+  final hadTrailingLineEnding = rootContents.endsWith(lineEnding);
+  final lines = rootContents.split(RegExp(r'\r?\n'));
+  if (hadTrailingLineEnding && lines.isNotEmpty && lines.last.isEmpty) {
+    lines.removeLast();
+  }
+
+  final dependenciesStart = lines.indexWhere(
+    (line) => RegExp(r'^dependencies\s*:\s*(?:#.*)?$').hasMatch(line),
+  );
+  if (dependenciesStart < 0) {
+    _fail('Cannot locate dependencies in pubspec.yaml.');
+  }
+
+  var dependenciesEnd = _findTopLevelSectionEnd(
+    lines,
+    dependenciesStart + 1,
+  );
+  final platformDependency = RegExp(r'^  (paycube_old|paycube)\s*:');
+
+  for (var index = dependenciesEnd - 1; index > dependenciesStart; index--) {
+    if (!platformDependency.hasMatch(lines[index])) {
+      continue;
+    }
+
+    var blockEnd = index + 1;
+    while (blockEnd < dependenciesEnd) {
+      final line = lines[blockEnd];
+      final trimmed = line.trimLeft();
+      if (trimmed.isNotEmpty &&
+          !trimmed.startsWith('#') &&
+          line.length - trimmed.length <= 2) {
+        break;
+      }
+      blockEnd++;
+    }
+    lines.removeRange(index, blockEnd);
+    dependenciesEnd -= blockEnd - index;
+  }
+
+  final overlayLines = overlayContents.split(RegExp(r'\r?\n'));
+  final overlayDependenciesStart = overlayLines.indexWhere(
+    (line) => RegExp(r'^dependencies\s*:').hasMatch(line),
+  );
+  final dependencyLines = overlayLines
+      .skip(overlayDependenciesStart + 1)
+      .where((line) => line.trim().isNotEmpty)
+      .toList(growable: false);
+  lines.insertAll(dependenciesEnd, dependencyLines);
+
+  final result = lines.join(lineEnding);
+  return hadTrailingLineEnding ? '$result$lineEnding' : result;
+}
+
+int _findTopLevelSectionEnd(List<String> lines, int start) {
+  for (var index = start; index < lines.length; index++) {
+    final line = lines[index];
+    final trimmed = line.trimLeft();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) {
+      continue;
+    }
+    if (trimmed.length == line.length) {
+      return index;
+    }
+  }
+  return lines.length;
+}
+
+void _validateVariantOverlay(String variant, String contents) {
+  final yaml = loadYaml(contents);
+  if (yaml is! YamlMap ||
+      yaml.keys.any((key) => key != 'dependencies') ||
+      yaml['dependencies'] is! YamlMap) {
+    _fail(
+      'Variant overlay $variant may only contain a dependencies map.',
+    );
+  }
+
+  final dependencies = yaml['dependencies'] as YamlMap;
+  final unsupported = dependencies.keys.where(
+    (key) => key != 'paycube_old' && key != 'paycube',
+  );
+  if (unsupported.isNotEmpty) {
+    _fail(
+      'Variant overlay $variant contains unsupported dependencies: '
+      '${unsupported.join(', ')}.',
+    );
+  }
+
+  final hasOld = dependencies.containsKey('paycube_old');
+  final hasNew = dependencies.containsKey('paycube');
+  final valid = switch (variant) {
+    'android7' => hasOld && !hasNew,
+    'android11' => !hasOld && hasNew,
+    'windows' => !hasOld && !hasNew,
+    _ => false,
+  };
+  if (!valid) {
+    _fail(
+      'Variant overlay $variant has an invalid PayCube selection '
+      '(paycube_old=$hasOld, paycube=$hasNew).',
+    );
+  }
 }
 
 void _cleanGeneratedPluginSymlinks() {
@@ -339,49 +458,6 @@ void _validateManifest(String variant, String contents) {
       '(paycube_old=$hasOld, paycube=$hasNew).',
     );
   }
-}
-
-void _validateSharedConfiguration(
-  String variant, {
-  required String rootContents,
-  required String variantContents,
-}) {
-  final root = _normalizedManifest(rootContents);
-  final selected = _normalizedManifest(variantContents);
-  if (jsonEncode(root) != jsonEncode(selected)) {
-    _fail(
-      'Variant $variant is out of sync with pubspec.yaml. '
-      'Copy common dependency/configuration changes into all files under '
-      'variants/, changing only paycube_old/paycube.',
-    );
-  }
-}
-
-Map<String, Object?> _normalizedManifest(String contents) {
-  final value = _toPlainValue(loadYaml(contents));
-  if (value is! Map<String, Object?>) {
-    _fail('Invalid pubspec content.');
-  }
-
-  final dependencies = value['dependencies'];
-  if (dependencies is Map<String, Object?>) {
-    dependencies.remove('paycube_old');
-    dependencies.remove('paycube');
-  }
-  return value;
-}
-
-Object? _toPlainValue(Object? value) {
-  if (value is YamlMap) {
-    return <String, Object?>{
-      for (final entry in value.entries)
-        entry.key.toString(): _toPlainValue(entry.value),
-    };
-  }
-  if (value is YamlList) {
-    return value.map(_toPlainValue).toList();
-  }
-  return value;
 }
 
 Future<void> _prepareBackup() async {

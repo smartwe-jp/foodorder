@@ -35,18 +35,24 @@ Windows PowerShell:
 - Extra arguments such as `-d`, `--verbose`, and `--device-timeout` are
   forwarded to `flutter run`.
 
-The runner temporarily activates the matching file under `variants/`, uses its
-lock file, and restores the original `pubspec.yaml`, lock file, and generated
-plugin files after Flutter exits (including Ctrl+C).
+`pubspec.yaml` is the single source of truth for version, dependencies, assets,
+fonts, and other platform-independent configuration. The files under
+`variants/` are small overlays that select only `paycube_old`, `paycube`, or no
+PayCube dependency. The runner composes the selected manifest at build time,
+uses its lock file, and restores the original `pubspec.yaml`, lock file, and
+generated plugin files after Flutter exits (including Ctrl+C).
 
-When changing common dependencies, apply the same change to all three manifests
-and regenerate their lock files:
+When changing a common dependency, edit only `pubspec.yaml`, then regenerate
+the lock files for all variants:
 
 ```bash
 fvm dart run tool/variant.dart resolve android7
 fvm dart run tool/variant.dart resolve android11
 fvm dart run tool/variant.dart resolve windows
 ```
+
+When changing a platform-specific PayCube path, edit only the matching overlay
+under `variants/`, then resolve that variant.
 
 If a run was force-killed before cleanup completed, restore the original files:
 
