@@ -12,6 +12,7 @@ export 'scale_port_backend.dart' show ScaleSerialParams;
 /// 电子秤读数（统一为克）
 class ScaleReading {
   final double grams;
+
   /// 软件判定稳定（或协议 ST）；未稳时禁止点「下一步」
   final bool isStable;
   final String raw;
@@ -70,6 +71,7 @@ class ScaleSerialService extends GetxService {
   DateTime? _lastValidFrameAt;
   final RxInt _validFrameCountRx = 0.obs;
   Completer<bool>? _pendingValidFrame;
+  Future<bool>? _ensuringReady;
 
   /// 每次 [disconnect] 递增；用于中止进行中的 connect 探测，避免竞态崩
   int _session = 0;
@@ -79,6 +81,9 @@ class ScaleSerialService extends GetxService {
   final portNameRx = ''.obs;
   final lastErrorRx = ''.obs;
   final connectingRx = false.obs;
+
+  /// 包含打开串口、自动探测以及等待首个合法重量帧的完整验证过程。
+  final checkingRx = false.obs;
   final disconnectingRx = false.obs;
   final lastRawRx = ''.obs;
 
@@ -203,7 +208,21 @@ class ScaleSerialService extends GetxService {
   /// 使用已保存配置连接，并以收到 A&D 有效重量帧作为成功标准。
   Future<bool> ensureReady({
     Duration timeout = connectionLostTimeout,
-  }) async {
+  }) {
+    final active = _ensuringReady;
+    if (active != null) return active;
+
+    checkingRx.value = true;
+    late final Future<bool> operation;
+    operation = _ensureReadyOnce(timeout).whenComplete(() {
+      checkingRx.value = false;
+      if (identical(_ensuringReady, operation)) _ensuringReady = null;
+    });
+    _ensuringReady = operation;
+    return operation;
+  }
+
+  Future<bool> _ensureReadyOnce(Duration timeout) async {
     if (hasRecentValidReading) return true;
     connectionIssueRx.value = null;
     final name = await restoreSavedPortName();
@@ -259,7 +278,7 @@ class ScaleSerialService extends GetxService {
 
   /// 设置页进入时：若有已保存口且当前未连接，自动重连以显示「接続済み」
   Future<void> autoConnectForSettings() async {
-    if (connectedRx.value || connectingRx.value) return;
+    if (hasRecentValidReading || checkingRx.value) return;
     if (_settingsAutoConnectScheduled) return;
     _settingsAutoConnectScheduled = true;
     try {
@@ -272,22 +291,13 @@ class ScaleSerialService extends GetxService {
       try {
         await refreshPorts();
       } catch (_) {}
-      if (connectedRx.value || connectingRx.value) return;
-      portNameRx.value = name;
-      final params = await loadSavedParams();
-      paramsRx.value = params;
-      await connect(
-        portName: name,
-        persist: true,
-        params: params,
-        // 换秤后出厂参数可能变；允许探测 + Q 轮询
-        autoProbe: true,
-      );
+      if (hasRecentValidReading || checkingRx.value) return;
+      await ensureReady();
     } catch (e, st) {
       logI('设置页电子秤自动连接异常: $e\n$st');
     } finally {
-      // 连上后保持挡板，直到 disconnect；失败则稍后允许再试
-      if (connectedRx.value) {
+      // 验证成功后保持挡板，直到连接失效；失败则稍后允许再试
+      if (hasRecentValidReading) {
         // keep _settingsAutoConnectScheduled == true
       } else {
         Future.delayed(const Duration(seconds: 2), () {
@@ -302,9 +312,7 @@ class ScaleSerialService extends GetxService {
     try {
       if (!Get.isRegistered<ScaleSerialService>()) return;
       final s = Get.find<ScaleSerialService>();
-      await s
-          .disconnect()
-          .timeout(const Duration(seconds: 3), onTimeout: () {
+      await s.disconnect().timeout(const Duration(seconds: 3), onTimeout: () {
         logI('电子秤释放超时($reason)');
       });
       logI('电子秤已释放($reason)');
@@ -454,8 +462,8 @@ class ScaleSerialService extends GetxService {
             // ignore: unawaited_futures
             _requestWeightOnce();
           });
-          final got = await gotFirst.future
-              .timeout(_probeWait, onTimeout: () => false);
+          final got =
+              await gotFirst.future.timeout(_probeWait, onTimeout: () => false);
           probePoll.cancel();
           if (session != _session) return false;
           if (!got) {
@@ -681,8 +689,7 @@ class ScaleSerialService extends GetxService {
     final protocolUnstable = status == 'US';
 
     final prev = _lastGrams;
-    final changed =
-        prev == null || (v - prev).abs() >= changeThresholdG;
+    final changed = prev == null || (v - prev).abs() >= changeThresholdG;
 
     if (!changed && !protocolUnstable) {
       // 微小抖动：不改显示，继续等稳定计时

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -54,6 +56,18 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
       selectedPort = savedPort ?? '';
       selectedParams = savedParams;
       loading = false;
+    });
+    if (savedPort != null && savedPort.isNotEmpty) {
+      unawaited(_autoConnectSavedScale());
+    }
+  }
+
+  Future<void> _autoConnectSavedScale() async {
+    await scale.autoConnectForSettings();
+    if (!mounted) return;
+    setState(() {
+      selectedPort = scale.portNameRx.value;
+      selectedParams = scale.paramsRx.value;
     });
   }
 
@@ -171,26 +185,34 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
   }
 
   Widget _statusRow() {
-    final connected = scale.connectedRx.value;
-    final busy = scale.connectingRx.value || scale.disconnectingRx.value;
+    final ready = scale.hasRecentValidReading;
+    final busy = scale.checkingRx.value ||
+        scale.connectingRx.value ||
+        scale.disconnectingRx.value;
     final error = scale.lastErrorRx.value;
     return Row(
       children: [
-        Icon(connected ? Icons.check_circle : Icons.error_outline,
-            color: connected ? Colors.green : Colors.orange),
+        Icon(
+          busy
+              ? Icons.sync
+              : (ready ? Icons.check_circle : Icons.error_outline),
+          color: busy ? Colors.blue : (ready ? Colors.green : Colors.orange),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            connected
-                ? '電子秤：接続済み'
-                : '電子秤：未接続${error.isEmpty ? '' : '（$error）'}',
+            busy
+                ? '電子秤：接続確認中…'
+                : ready
+                    ? '電子秤：接続済み'
+                    : '電子秤：未接続${error.isEmpty ? '' : '（$error）'}',
           ),
         ),
         OutlinedButton(
           onPressed: busy
               ? null
               : () async {
-                  if (connected) {
+                  if (ready) {
                     await scale.disconnect();
                   } else {
                     if (selectedPort.isNotEmpty) {
@@ -206,7 +228,7 @@ class _SpicyHotPotSettingsCardState extends State<SpicyHotPotSettingsCard> {
                     }
                   }
                 },
-          child: Text(busy ? '処理中…' : (connected ? '切断' : '接続')),
+          child: Text(busy ? '処理中…' : (ready ? '切断' : '接続')),
         ),
       ],
     );

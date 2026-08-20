@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -45,16 +46,22 @@ class SpicyWeighPage extends StatefulWidget {
 class _SpicyWeighPageState extends State<SpicyWeighPage> {
   String _input = '0';
   bool _stable = false;
+
   /// 系统设置「手動入力」为开时显示按钮
   bool _manualInputAllowed = false;
+
   /// 当前重量是否来自手动键盘（避免串口覆盖；手动值为净重，不再减皮重）
   bool _useManualWeight = false;
+
   /// 皮重（克），来自设置，默认 0
   double _tareGrams = 0;
+
   /// 最低额度（日元），来自设置；0＝不限制
   int _minAmountYen = 0;
   Worker? _scaleWorker;
   Worker? _scaleConnectionWorker;
+  Timer? _scaleRetryTimer;
+  bool _scaleRetrying = false;
   bool _scaleDialogShowing = false;
   bool _openingScaleSettings = false;
 
@@ -71,14 +78,15 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     if (raw <= 0) return 0;
     return raw.floorToDouble();
   }
+
   // 价格：按向下取整后的克重 × 单价，再向下取整
   int get _price =>
       _weight > 0 ? ((_weight / 100) * widget.unitPricePer100g).floor() : 0;
   bool get _hasWeight => _weight > 0;
+
   /// 界面展示：整数克重
   String get _displayWeight => _weight <= 0 ? '0' : _weight.toInt().toString();
-  bool get _meetsMinAmount =>
-      _minAmountYen <= 0 || _price >= _minAmountYen;
+  bool get _meetsMinAmount => _minAmountYen <= 0 || _price >= _minAmountYen;
   bool get _canConfirm => _hasWeight && _stable && _meetsMinAmount;
 
   String get _nextLabel {
@@ -152,6 +160,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   }
 
   Future<void> _startScaleListen() async {
+    _stopScaleRetryLoop();
     _scaleWorker?.dispose();
     _scaleWorker = null;
     _scale.clearReading();
@@ -171,16 +180,22 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       );
       return;
     }
-    _scaleWorker = ever<ScaleReading?>(_scale.weightRx, (reading) {
-      if (!mounted || reading == null) return;
-      // 手动录入中不覆盖
-      if (_useManualWeight) return;
-      final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
-      setState(() {
-        _stable = reading.isStable;
-        // 实时重量向下取整显示
-        _input = net <= 0 ? '0' : net.floor().toString();
-      });
+    _attachScaleReadingWorker();
+  }
+
+  void _attachScaleReadingWorker() {
+    _scaleWorker?.dispose();
+    _scaleWorker = ever<ScaleReading?>(_scale.weightRx, _applyScaleReading);
+    _applyScaleReading(_scale.weightRx.value);
+  }
+
+  void _applyScaleReading(ScaleReading? reading) {
+    if (!mounted || reading == null || _useManualWeight) return;
+    final net = SpicyWeighSettings.netGrams(reading.grams, _tareGrams);
+    setState(() {
+      _stable = reading.isStable;
+      // 实时重量向下取整显示
+      _input = net <= 0 ? '0' : net.floor().toString();
     });
   }
 
@@ -194,16 +209,64 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
 
   Future<void> _showScaleConnectionIssue(String message) async {
     if (!mounted || _scaleDialogShowing || _openingScaleSettings) return;
+    _scaleWorker?.dispose();
+    _scaleWorker = null;
+    if (!_useManualWeight) setState(() => _stable = false);
     _scaleDialogShowing = true;
     final openSettings = await showScaleConnectionPrompt(message: message);
     _scaleDialogShowing = false;
-    if (!mounted || !openSettings) return;
+    if (!mounted) return;
+    if (!openSettings) {
+      _startScaleRetryLoop();
+      return;
+    }
 
+    _stopScaleRetryLoop();
     _openingScaleSettings = true;
     await _scale.disconnect();
     await Get.toNamed(Routes.SPICY_HOT_POT_SETTINGS);
     _openingScaleSettings = false;
     if (mounted) await _startScaleListen();
+  }
+
+  void _startScaleRetryLoop() {
+    if (!mounted || _openingScaleSettings || _scaleRetryTimer != null) return;
+    _scaleRetryTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _retryScaleConnection(),
+    );
+  }
+
+  Future<void> _retryScaleConnection() async {
+    if (!mounted ||
+        _scaleRetrying ||
+        _scaleDialogShowing ||
+        _openingScaleSettings) {
+      return;
+    }
+    if (_scale.hasRecentValidReading) {
+      _stopScaleRetryLoop();
+      _attachScaleReadingWorker();
+      return;
+    }
+
+    _scaleRetrying = true;
+    try {
+      final ready = await _scale.ensureReady();
+      if (!mounted || !ready) return;
+      _stopScaleRetryLoop();
+      _attachScaleReadingWorker();
+      logI('[麻辣烫] 电子秤后台重连成功，恢复称重监听');
+    } catch (e) {
+      debugPrint('称重页后台重连电子秤失败: $e');
+    } finally {
+      _scaleRetrying = false;
+    }
+  }
+
+  void _stopScaleRetryLoop() {
+    _scaleRetryTimer?.cancel();
+    _scaleRetryTimer = null;
   }
 
   @override
@@ -213,6 +276,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       _scaleWorker = null;
       _scaleConnectionWorker?.dispose();
       _scaleConnectionWorker = null;
+      _stopScaleRetryLoop();
       _scale.clearReading();
     } catch (e) {
       debugPrint('称重页 dispose 清理异常: $e');
@@ -617,7 +681,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   Widget _buildStatusLine() {
     return Obx(() {
       // 同时订阅连接态与重量，避免仅依赖本地 bool 时 Obx 判定无订阅
-      final linked = _scale.connectedRx.value;
+      final linked = _scale.hasRecentValidReading;
       final _ = _scale.weightRx.value;
       final belowMin = _hasWeight && _stable && !_meetsMinAmount;
       final showStable = _canConfirm;
@@ -628,8 +692,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       } else if (!linked) {
         tip = 'spicy_weigh_scale_disconnected'.tr;
       } else if (belowMin) {
-        tip = 'spicy_weigh_below_min_tip'
-            .trParams({'amount': '$_minAmountYen'});
+        tip =
+            'spicy_weigh_below_min_tip'.trParams({'amount': '$_minAmountYen'});
       } else if (showStable) {
         tip = 'spicy_weigh_stable'.tr;
       } else if (settling) {
@@ -648,7 +712,6 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           Flexible(
             child: Text(
               tip,
@@ -713,8 +776,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.warning_amber_rounded,
-              color: const Color(0xFFE65100),
-              size: ScreenAdapter.fontSize(26)),
+              color: const Color(0xFFE65100), size: ScreenAdapter.fontSize(26)),
           SizedBox(width: ScreenAdapter.width(10)),
           Flexible(
             child: Text(
@@ -754,8 +816,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.info_outline,
-              color: const Color(0xFF7B1FA2),
-              size: ScreenAdapter.fontSize(24)),
+              color: const Color(0xFF7B1FA2), size: ScreenAdapter.fontSize(24)),
           SizedBox(width: ScreenAdapter.width(10)),
           Flexible(
             child: Text(
