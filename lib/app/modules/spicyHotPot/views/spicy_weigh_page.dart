@@ -213,10 +213,12 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     _scaleWorker = null;
     if (!_useManualWeight) setState(() => _stable = false);
     _scaleDialogShowing = true;
+    _startScaleRetryLoop();
     final openSettings = await showScaleConnectionPrompt(message: message);
     _scaleDialogShowing = false;
     if (!mounted) return;
     if (!openSettings) {
+      if (_scale.hasRecentValidReading) return;
       _startScaleRetryLoop();
       return;
     }
@@ -238,15 +240,11 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   }
 
   Future<void> _retryScaleConnection() async {
-    if (!mounted ||
-        _scaleRetrying ||
-        _scaleDialogShowing ||
-        _openingScaleSettings) {
+    if (!mounted || _scaleRetrying || _openingScaleSettings) {
       return;
     }
     if (_scale.hasRecentValidReading) {
-      _stopScaleRetryLoop();
-      _attachScaleReadingWorker();
+      _handleScaleReconnected();
       return;
     }
 
@@ -254,13 +252,20 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
     try {
       final ready = await _scale.ensureReady();
       if (!mounted || !ready) return;
-      _stopScaleRetryLoop();
-      _attachScaleReadingWorker();
-      logI('[麻辣烫] 电子秤后台重连成功，恢复称重监听');
+      _handleScaleReconnected();
     } catch (e) {
       debugPrint('称重页后台重连电子秤失败: $e');
     } finally {
       _scaleRetrying = false;
+    }
+  }
+
+  void _handleScaleReconnected() {
+    _stopScaleRetryLoop();
+    _attachScaleReadingWorker();
+    logI('[麻辣烫] 电子秤后台重连成功，恢复称重监听');
+    if (_scaleDialogShowing && Get.isDialogOpen == true) {
+      Get.back(result: false);
     }
   }
 
