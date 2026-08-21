@@ -951,7 +951,7 @@ class SettingView extends GetView<SettingController> {
                         height: ScreenAdapter.height(20),
                       ),
 
-                      if (Platform.isAndroid)
+                      if (Platform.isAndroid && controller.isAllowCashSetting)
                         CashSettingView(
                           cashInfoList: controller.cashInfoList,
                           isAllowRejishime: controller.isAllowRejishime,
@@ -975,7 +975,7 @@ class SettingView extends GetView<SettingController> {
                           },
                         ),
 
-                      if (Platform.isWindows) cycleCashSetting(),
+                      if (Platform.isWindows && controller.isAllowCashSetting) cycleCashSetting(),
 
                       SizedBox(
                         height: ScreenAdapter.height(20),

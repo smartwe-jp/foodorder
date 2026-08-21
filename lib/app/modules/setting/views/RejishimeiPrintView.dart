@@ -16,13 +16,16 @@ class PrintView extends StatefulWidget {
   final PrintType? printType;
   final Map printInfo;
   final bool isPrint;
+  final isNotCashInfo;
   final Function(double)? lengthUpdate;
   PrintView(
       {super.key,
       this.isPrint = false,
       required this.printInfo,
       this.lengthUpdate,
-      this.printType = PrintType.REJISHIME});
+      this.isNotCashInfo = false,
+      this.printType = PrintType.REJISHIME,
+      });
   @override
   RejishimePrintViewState createState() => RejishimePrintViewState();
 }

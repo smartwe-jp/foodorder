@@ -62,10 +62,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   final baseUrl = "https://app.smartwe.co.jp/";
 
-  String get downloadUrl {
-    String isNp = appConfig.isAndroid11 ? "_NP" : "";
-    String url = baseUrl + "smartwe_ticket_machine${isNp}.apk";
-    return url;
+  String get installFileName {
+    String androidName = appConfig.isAndroid11 ? "_android11.apk" : "_android7.apk";
+    String extraName = Platform.isAndroid ? androidName : ".exe";
+    String name = "smartwe_ticket_machine${extraName}";
+    return name;
   }
 
   final Map subPrinterInfos = {
@@ -480,10 +481,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 Get.dialog(showSpeedView());
                                 //https://app.gutingjun.com/kanran-release.apk
 
-                                String fileName = Platform.isAndroid
-                                    ? 'smartwe_ticket_machine.apk'
-                                    : 'smartwe_ticket_machine.exe';
-                                downloadAndroid(file_url + fileName);
+                                downloadAndroid(baseUrl + installFileName);
                                 //testReadAndInstall();
                               },
                             ),
@@ -519,10 +517,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //print(url);
     Directory storageDir = await getTemporaryDirectory();
     String storagePath = storageDir.path;
-    String fileName = Platform.isAndroid
-        ? '/smartwe_ticket_machine.apk'
-        : '/smartwe_ticket_machine.exe';
-    final path = storagePath + fileName;
+    final path = storagePath + '/' +installFileName;
     try {
       var dio = Dio();
       final Response response = await dio.download(url, path,
@@ -540,7 +535,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
           Get.back();
           //下载完成，跳转到程序安装界面
           if (Platform.isAndroid) {
-            openApk(path);
+            await openApk(path);
           } else {
             await installExe(path);
           }
@@ -571,7 +566,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     Get.back();
     // 执行安装
-    await installExe(file.path);
+    if (Platform.isAndroid) {
+      await openApk(file.path);
+    } else {
+      await installExe(file.path);
+    }
   }
 
   /// 安装 EXE 文件

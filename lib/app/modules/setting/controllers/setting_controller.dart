@@ -87,6 +87,7 @@ class SettingController extends GetxController with StateMixin {
   String get shopCode => machineInfo.shopCode;
   bool get is_reimburse => machineInfo.isAllowReimburse;
   Map get usbDevice => machineInfo.usbDevice;
+  bool get isAllowCashSetting => machineInfo.showCashPayment;
 
   @override
   void onInit() {
@@ -559,18 +560,23 @@ class SettingController extends GetxController with StateMixin {
         Get.back();
       }
     });
-    
-    if (Platform.isAndroid) {
-      await _getChangeState();
-    } else {
-      await getCashInfo();
-      await gloryConfirmSync(showLoading: false);
+
+    //only when cash is on, and machine type is SWF1/SWF2/SWFG need get and sync cash info
+
+    if (isAllowCashSetting) {
+      if (Platform.isAndroid) {
+        await getChangeState();
+      } else {
+        await getCashInfo();
+        await gloryConfirmSync(showLoading: false);
+      }
     }
+
     change(null, status: RxStatus.success());
     //print(_menuOption);
   }
 
-  _getChangeState() async {
+  getChangeState() async {
     var formData = {
       "machineCode": machineCode,
     };
@@ -607,7 +613,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }
@@ -633,7 +639,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }
@@ -658,7 +664,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }

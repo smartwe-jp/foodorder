@@ -93,6 +93,8 @@ dependencies:
   #widget_to_image:
     #path: ./lib/app/plugins/widget_to_image-main
 
+  paycube_old:
+    path: ./lib/app/plugins/paycube_old
 dev_dependencies: 
   flutter_test: 
     sdk: flutter
