@@ -1086,7 +1086,7 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
       if (categoryVoList.isNotEmpty) {
         // 优先取 businessType == SPICY_HOT_POT 的分类；否则取第一个
         final target = categoryVoList.firstWhere(
-          (c) => (c as Map)['businessType'] != 'SPICY_HOT_POT',
+          (c) => (c as Map)['businessType'] == 'SPICY_HOT_POT',
           orElse: () => categoryVoList[0],
         ) as Map;
         selectedCategoryName.value = target['categoryName'] ?? '';
