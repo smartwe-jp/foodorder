@@ -247,7 +247,10 @@ class MenuPageView extends GetView<MenuPageController> {
         return controller.obx((state) =>
             AnnotatedRegion(
               value: SystemUiOverlayStyle.light,
-              child: Stack(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: controller.requestSpicyMenuScanFocus,
+                child: Stack(
                 children: [
                   GetBuilder<MenuPageController>(
                       id: 'background',
@@ -266,7 +269,11 @@ class MenuPageView extends GetView<MenuPageController> {
                                   focusNode: controller.spicyScanQrFocusNode,
                                   autofocus: true,
                                   showCursor: false,
-                                  decoration: const InputDecoration(border: InputBorder.none),
+                                  keyboardType: TextInputType.text,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                  ),
                                   onSubmitted: (_) =>
                                       controller.doSpicyMenuBarCodeQuery(),
                                 ),
@@ -335,9 +342,8 @@ class MenuPageView extends GetView<MenuPageController> {
 
                   //controller.shoppingCar(),
 
-                  GetBuilder<MenuPageController>(
-                      id: 'shopping_cart',
-                      builder: (logic) {
+                  Obx(() {
+                        final _ = controller.totalCartDiscountYen;
                         return AnimatedPositioned(
                           duration: const Duration(milliseconds: 300),
                           height: controller.showCartTotalGoodsNum.value > 0
@@ -352,6 +358,7 @@ class MenuPageView extends GetView<MenuPageController> {
                         );
                       }),
                 ],
+              ),
               ),
             ),
           onLoading: Center(

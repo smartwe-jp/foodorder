@@ -173,18 +173,11 @@ extension MenuPageCategory on MenuPageController {
                                     "qtyBounds": itemsFirst['qtyBounds'],
                                     "unitPrice":currentPrice
                                   };
-                                  publicAddCartMenu(cartItem, false).then((val) {
-                                    //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                    //更改显示购物车价格
-                                    //getCartPriceTotal();
-                                    if(val != false){
-                                      publicShowAddCartNew(context);
-                                    }
-          
-          
-                                    changeInitialAllOption(itemsFirst['menuCode']);
-          
-                                  });
+                                  publicAddCartWithOptions(
+                                    cartItem,
+                                    context,
+                                    resetOptionMenuCode: itemsFirst['menuCode'],
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(
@@ -773,18 +766,11 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": itemsFirst['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-
-                                changeInitialAllOption(
-                                    itemsFirst['menuCode']);
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode: itemsFirst['menuCode'],
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -1347,15 +1333,11 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-                                changeInitialAllOption(item['menuCode']);
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode: item['menuCode'],
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -2151,18 +2133,14 @@ extension MenuPageCategory on MenuPageController {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              publicAddCartMenu(cartItem, false)
-                                  .then((val) {
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if (val != false) {
-                                  publicShowAddCartNew(context);
-                                }
-
-                                if (item['optionGroupVoList']?.length > 0) {
-                                  changeInitialAllOption(item['menuCode']);
-                                }
-                              });
+                              publicAddCartWithOptions(
+                                cartItem,
+                                context,
+                                resetOptionMenuCode:
+                                    item['optionGroupVoList']?.length > 0
+                                        ? item['menuCode']
+                                        : null,
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(
@@ -2466,12 +2444,12 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategorySixItemList(items, context, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-
-    return GridMenuView(children: children, crossAxisCount: 2);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      crossAxisCount: 2,
+    );
   }
 
   showCategorySixItemOne(item, context, {popupType = "old"}) {
@@ -2572,11 +2550,16 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategorySevenItemList(items, context, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.63));
-    }
-    return GridMenuView(children: children, childAspectRatio: 0.5,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 0.63,
+      ),
+      childAspectRatio: 0.5,
+    );
     // return Padding(
     //   padding: EdgeInsets.only(
     //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -2769,11 +2752,18 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategoryEightItemList(items, context, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
-    }
-    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.71, canScroll: false,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 1.0,
+      ),
+      crossAxisCount: 3,
+      childAspectRatio: 0.71,
+      canScroll: false,
+    );
   }
 
   showCategoryEightItemOne(item, context, {popupType = "old"}) {
@@ -2949,11 +2939,18 @@ extension MenuPageCategory on MenuPageController {
   }
 
   showCategoryNineItemList(items, context ,{popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
-    }
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.76, canScroll: false,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) => menuItemView(
+        items[index],
+        ctx,
+        popupType: popupType,
+        aspectRatio: 1.0,
+      ),
+      crossAxisCount: 2,
+      childAspectRatio: 0.76,
+      canScroll: false,
+    );
   }
 
   showCategoryNineItemOne(item, context, {popupType = "old"}) {

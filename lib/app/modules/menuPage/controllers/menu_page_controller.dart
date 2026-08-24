@@ -34,6 +34,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/spicy_weigh_settings.dart';
 import '../../../services/formatMoney.dart';
 import '../../../widget/DialogUtils.dart';
+import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../views/SelectPayment.dart';
 import '../views/option_widgets/option_view.dart';
 
@@ -108,12 +109,61 @@ class MenuPageController extends GetxController with StateMixin {
   bool forceUpdate = false;
 
   RxString bgColor = "#F9F9F9".obs;
+
+  /// 分类菜单网络请求去重（仅内存，不落盘）
+  final Map<String, Future<bool>> categoryMenuPrefetchTasks = {};
+
+  /// 每次重新拉分类时递增，忽略刷新前返回的旧菜单响应
+  int menuLoadGeneration = 0;
+
+  /// 正在写库的 key（menuCode 或 cart:行 id），防止限购连点超卖
+  final Set<String> _cartAddInFlight = {};
+
+  /// 当前已打开的规格弹窗对应商品，防止重复弹窗
+  String? _openOptionMenuCode;
+
+  /// 下单请求进行中，防止重复提交
+  bool _submitInFlight = false;
+
   final TextEditingController spicyScanQrController = TextEditingController();
   final FocusNode spicyScanQrFocusNode = FocusNode(debugLabel: 'SpicyMenuBarCode');
   bool _spicyBarCodeQueryInFlight = false;
 
   bool get isSpicyHotPotMenuScanEnabled =>
       machineInfo.currentMode == MachineMode.spicyHotPot;
+
+  bool isMenuAddLocked(String menuCode) => _cartAddInFlight.contains(menuCode);
+
+  bool isCartRowLocked(int? cartId) =>
+      cartId != null && _cartAddInFlight.contains('cart:$cartId');
+
+  bool _tryLockCartWrite(String lockKey) {
+    if (_cartAddInFlight.contains(lockKey)) {
+      return false;
+    }
+    _cartAddInFlight.add(lockKey);
+    return true;
+  }
+
+  void _unlockCartWrite(String lockKey) {
+    _cartAddInFlight.remove(lockKey);
+  }
+
+  bool _tryLockCartAdd(String menuCode) => _tryLockCartWrite(menuCode);
+
+  void _unlockCartAdd(String menuCode) => _unlockCartWrite(menuCode);
+
+  void _showStorageLimitDialog() {
+    final showString = "show_storage_num_error".tr;
+    Get.dialog(
+      DialogUtils.alertOneButton(
+        showString,
+        title: "tag_title".tr,
+        confirmtitle: "tag_button_yes".tr,
+        confirm: () => Get.back(),
+      ),
+    );
+  }
 
   @override
   Future<void> onInit() async {
@@ -177,12 +227,13 @@ class MenuPageController extends GetxController with StateMixin {
   //获取页面分类
   getBookingBootIndexCategory({isReset = false, int retryCount = 0}) {
     debugPrint('getBookingBootIndexCategory');
+    final currentGeneration = ++menuLoadGeneration;
+    categoryMenuPrefetchTasks.clear();
     if (isReset) {
       change(null, status: RxStatus.loading());
-    } else {
-      topMenu.value = [];
-      showItem.clear();
     }
+    topMenu.value = [];
+    showItem.clear();
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
@@ -198,6 +249,10 @@ class MenuPageController extends GetxController with StateMixin {
         parameters: formData,
         timeout: const Duration(seconds: 15)
     ).then((val) {
+      if (currentGeneration != menuLoadGeneration) {
+        logI('ignore stale category response: generation=$currentGeneration');
+        return;
+      }
       var response = json.decode(val.toString());
 
         //2、保存商品信息
@@ -221,6 +276,9 @@ class MenuPageController extends GetxController with StateMixin {
         var colorIndex = 0;
         topMenu.value = [];
         for (var i = 0; i < myList.length; i++) {
+          if (myList[i]['businessType'] == 'SPICY_HOT_POT') {
+            continue;
+          }
           if (colorIndex >= 5) colorIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
@@ -234,12 +292,14 @@ class MenuPageController extends GetxController with StateMixin {
           });
           menuIndex++;
           colorIndex++;
-          //配置顶部菜单默认项
-          if (i == 0) {
-            classTag.value = categoryVoList['categoryCode'];
-            bgColor .value =
-                categoryVoList['background'] ?? "#F9F9F9";
-          }
+        }
+        if (topMenu.isNotEmpty) {
+          classTag.value = topMenu.first['categoryCode'];
+          bgColor.value = topMenu.first['background'] ?? "#F9F9F9";
+          prefetchCategoryMenu(
+            topMenu.first['categoryCode'],
+            loadGeneration: currentGeneration,
+          );
         }
         change(null, status: RxStatus.success());
     })
@@ -265,133 +325,6 @@ class MenuPageController extends GetxController with StateMixin {
     update();
     forceUpdate = false;
   }
-
-  // getBookingBootIndexMenu(queryCategoryCode, {int retryCount = 0}) {
-  //   debugPrint('getBookingBootIndexMenu');
-  //   var queryTakeout = "2";
-  //   if (machineInfo.currentMode == MachineMode.takeout) {
-  //     queryTakeout = "0";
-  //   }
-  //   var formData = {
-  //     "machineCode": machineInfo.machineCode,
-  //     "language": checkLanguage.value,
-  //     "takeout": queryTakeout,
-  //     "categoryCode": queryCategoryCode
-  //   };
-  //   request('webBootIndexMenuv3', method: 'POST', parameters: formData)
-  //       .then((val) {
-  //     var response = json.decode(val.toString());
-  //     debugPrint('getBookingBootIndexMenu response:$response');
-  //     if (response['code'] == 200) {
-  //       //2、保存商品信息
-  //       List myList = response['data'];
-  //       //如果菜单为空则返回言语选择页面并给出提示
-  //       if (myList.length == 0 || null == myList || "" == myList) {
-  //         //showToast("少々お待ちください");
-  //         Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
-  //             title: "tag_title".tr,
-  //             confirmtitle: "tag_button_yes".tr, confirm: () {
-  //           Get.back();
-  //         }));
-  //         sleep(Duration(milliseconds: 2000));
-  //         Get.back();
-  //       }
-
-  //       showItem.value[queryCategoryCode] = myList;
-
-  //       //该分类下有option，先初始化页面数据
-  //       if (myList.length > 0) {
-  //         for (var menuVoList in myList) {
-  //           num _addOptionPrice = 0;
-  //           if (menuVoList['optionGroupVoList'] != null &&
-  //               menuVoList['optionGroupVoList']?.length > 0 &&
-  //               menuVoList['optionGroupVoList'] != "") {
-  //             //初始化菜品option选项
-  //             //属性循环相关
-  //             var attr = menuVoList['optionGroupVoList'];
-  //             var nochangeattr = menuVoList['optionGroupVoList'];
-  //             List tempArr = [];
-  //             List initalCode = [];
-  //             var checkNum = 0;
-
-  //             for (var m = 0; m < attr.length; m++) {
-  //               for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
-  //                 /*attr[m]['optionVoList'][n]["checked"] = false;
-  //                     if(n == 0){
-  //                       tempArr.add(attr[m]['optionVoList'][n]);
-  //                     }*/
-  //                 if (attr[m]['optionVoList'][n]["standard"] == 1) {
-  //                   attr[m]['optionVoList'][n]["checked"] = true;
-  //                   nochangeattr[m]['optionVoList'][n]["checked"] = true;
-  //                   attr[m]['optionVoList'][n]["groupTitle"] =
-  //                       attr[m]["groupName"];
-  //                   tempArr.add(attr[m]['optionVoList'][n]);
-  //                   initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
-
-  //                   _addOptionPrice +=
-  //                       attr[m]['optionVoList'][n]["currentPrice"];
-  //                   checkNum++;
-  //                 } else {
-  //                   attr[m]['optionVoList'][n]["checked"] = false;
-  //                   nochangeattr[m]['optionVoList'][n]["checked"] = false;
-  //                 }
-  //               }
-  //             }
-  //             //需要创建的小组件
-  //             menuOption.value[menuVoList['menuCode']] = attr;
-  //             noChangeinitialmenuOption.value[menuVoList['menuCode']] =
-  //                 initalCode;
-  //             initialMenuOption.value[menuVoList['menuCode']] =
-  //                 tempArr; //tempArr;
-  //             selectedMenuOptionList.value[menuVoList['menuCode']] = tempArr;
-  //             selectedMenuOptionCheckedNum.value[menuVoList['menuCode']] =
-  //                 checkNum;
-  //             attr = [];
-  //             tempArr = [];
-  //             checkNum = 0;
-  //           }
-  //           selectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
-  //               menuVoList['currentPrice'];
-  //           addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
-  //               _addOptionPrice;
-  //         }
-  //       }
-  //       classTag.value = queryCategoryCode;
-  //       change(null, status: RxStatus.success());
-  //     } else {
-  //       //showToast(response['msg']);
-  //       Get.dialog(DialogUtils.alertOneButton(response['msg'],
-  //           title: "tag_title".tr,
-  //           confirmtitle: "tag_button_yes".tr, confirm: () {
-  //         Get.back();
-  //       }));
-  //       sleep(Duration(milliseconds: 2000));
-  //       Get.back();
-  //     }
-  //   }).catchError((e) {
-  //     if (retryCount < 3) {
-  //       retryCount++;
-  //       debugPrint('Retrying getBookingBootIndexMenu, attempt: $retryCount');
-  //       getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
-  //     } else {
-  //       // FirebaseAnalytics.instance.logEvent(
-  //       //     name: 'load_menu_failure',
-  //       //     parameters: {'machineCode': machineInfo.machineCode});
-  //       change(null, status: RxStatus.error('Failed to load data'));
-  //     }
-  //   }).timeout(Duration(seconds: 12), onTimeout: () {
-  //     //FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
-  //     change(null, status: RxStatus.error('Failed to load data Timeout'));
-  //     // if (retryCount < 3) {
-  //     //   retryCount++;
-  //     //   debugPrint('Retrying getBookingBootIndexMenu on timeout, attempt: $retryCount');
-  //     //   getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
-  //     // } else {
-  //     //   FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
-  //     //   change(null, status: RxStatus.error('Failed to load data Timeout'));
-  //     // }
-  //   });
-  // }
 
   getCartPriceTotal() async {
     debugPrint('getCartPriceTotal');
@@ -472,8 +405,54 @@ class MenuPageController extends GetxController with StateMixin {
 
   void requestSpicyMenuScanFocus() {
     if (!isSpicyHotPotMenuScanEnabled) return;
+    try {
+      spicyScanQrController.clear();
+      spicyScanQrFocusNode.requestFocus();
+    } catch (error) {
+      logI('麻辣烫菜单扫码抢焦点失败: $error');
+    }
+  }
+
+  void _resetSpicyMenuScan({bool restoreFocus = true}) {
     spicyScanQrController.clear();
-    spicyScanQrFocusNode.requestFocus();
+    if (EasyLoading.isShow) {
+      EasyLoading.dismiss();
+    }
+    if (restoreFocus) requestSpicyMenuScanFocus();
+  }
+
+  void _showSpicyScanEasyLoading() {
+    EasyLoading.show(
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'spicy_menu_scan_loading'.tr,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: GFont.getFontFamily(),
+                fontSize: ScreenAdapter.fontSize(28),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 60),
+              height: ScreenAdapter.height(200),
+              child: Image.asset(
+                GImage.getImageString('imgpublic', 'printticketloading'),
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
   }
 
   Future<void> doSpicyMenuBarCodeQuery({
@@ -485,6 +464,7 @@ class MenuPageController extends GetxController with StateMixin {
     if (code.isEmpty) return;
     _spicyBarCodeQueryInFlight = true;
     try {
+      _showSpicyScanEasyLoading();
       if (_isDiscountBarCode(code)) {
         await _applyDiscountBarCode(code);
         return;
@@ -505,19 +485,49 @@ class MenuPageController extends GetxController with StateMixin {
         Fluttertoast.showToast(msg: 'spicy_menu_scan_weigh_reject'.tr);
         return;
       }
+
       final context = Get.context;
-      if (context != null) await publicAddCart(context, item);
-    } catch (error) {
-      logger.warning('spicy menu barcode query failed: $error');
+      if (context != null) {
+        await publicAddCart(context, item);
+      } else {
+        final menuCode = '${item['menuCode']}';
+        if (!_tryLockCartAdd(menuCode)) return;
+        try {
+          final cartItem = {
+            'menuCode': item['menuCode'],
+            'mainTitle': item['mainTitle'],
+            'image': item['homeImage'],
+            'currentPrice': item['currentPrice'],
+            'unitPrice': item['currentPrice'],
+            'optionGroupVoList': '',
+            'optionVoListMsg': '',
+            'goodsNum': 1,
+            'qtyBounds': item['qtyBounds'],
+          };
+          await publicAddCartMenu(cartItem, true);
+        } finally {
+          _unlockCartAdd(menuCode);
+        }
+      }
+    } catch (error, stackTrace) {
+      logger.warning(
+        'spicy menu barcode query failed',
+        error,
+        stackTrace,
+      );
       Fluttertoast.showToast(msg: 'spicy_menu_scan_not_found'.tr);
     } finally {
       _spicyBarCodeQueryInFlight = false;
-      spicyScanQrController.clear();
-      if (restoreFocus) requestSpicyMenuScanFocus();
+      _resetSpicyMenuScan(restoreFocus: restoreFocus);
     }
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
+    final rowLockKey = 'cart:${d.id}';
+    if (isCartRowLocked(d.id)) {
+      return;
+    }
+
     var cartItem = {
       "cartId": d.id,
       "menuCode": d.menuCode,
@@ -529,31 +539,36 @@ class MenuPageController extends GetxController with StateMixin {
       Get.dialog(DialogUtils.alert("show_del_cart_item_tag".tr,
           title: "tag_title".tr,
           canceltitle: "show_del_cart_item_no".tr,
-          confirmtitle: "show_del_cart_item_yes".tr, confirm: () {
-        //widget.confirmCallback('确定');
-        ordersqlcontroller.removeFromCart(d.id ?? 0);
-        //print("Item removed from cart successfully");
-        //删除商品声音
-        deleteItemSound();
-        ordersqlcontroller.getCardList();
-        //更改显示购物车价格
-        getCartPriceTotal();
-
-        Get.back();
+          confirmtitle: "show_del_cart_item_yes".tr, confirm: () async {
+        if (!_tryLockCartWrite(rowLockKey)) return;
+        try {
+          await ordersqlcontroller.removeFromCart(d.id ?? 0);
+          deleteItemSound();
+          await ordersqlcontroller.getCardList();
+          await getCartPriceTotal();
+          Get.back();
+        } finally {
+          _unlockCartWrite(rowLockKey);
+        }
       }, cancle: () {
         Get.back();
       }));
     } else {
-      final action = isAdd ? "add" : "reduce";
-      if (isAdd) {
-        playQRScannerSound();
-      } else {
-        deleteItemSound();
+      if (!_tryLockCartWrite(rowLockKey)) {
+        return;
       }
-      publicChangeCartMenuCount(cartItem, action).then((val) {
-        //更改显示购物车价格
-        getCartPriceTotal();
-      });
+      final action = isAdd ? "add" : "reduce";
+      try {
+        if (isAdd) {
+          playQRScannerSound();
+        } else {
+          deleteItemSound();
+        }
+        await publicChangeCartMenuCount(cartItem, action);
+        await getCartPriceTotal();
+      } finally {
+        _unlockCartWrite(rowLockKey);
+      }
     }
   }
 
@@ -814,10 +829,14 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   publicCartView() {
-    return ListView(
-      shrinkWrap: true,
-      children: showCartItems
-          .map((d) => CarItemView(
+    return Obx(() {
+      final discount = totalCartDiscountYen;
+      return ListView(
+        shrinkWrap: true,
+        children: [
+          for (final d in showCartItems)
+            CarItemView(
+                key: ValueKey(d.id),
                 title: d.mainTitle,
                 subtitle: d.optionVoListMsg,
                 image: itemImage(d.image),
@@ -832,9 +851,39 @@ class MenuPageController extends GetxController with StateMixin {
                     : "${d.unitPrice}",
                 quantity: d.itemType == 'spicy' ? 1 : d.goodsNum,
                 showQtyControls: d.itemType != 'spicy',
-              ))
-          .toList(),
-    );
+              ),
+          if (discount > 0)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ScreenAdapter.width(16),
+                vertical: ScreenAdapter.height(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'settlement_discount'.tr,
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(32),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFE64340),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '-¥$discount',
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(36),
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFE64340),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      );
+    });
   }
 
   //公共加入购物车
@@ -843,13 +892,7 @@ class MenuPageController extends GetxController with StateMixin {
       var checkresult =
           await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
       if (checkresult >= cartItem['qtyBounds']) {
-        var showString = "show_storage_num_error".tr;
-        //showToast("${showString}");
-        Get.dialog(DialogUtils.alertOneButton(showString,
-            title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr, confirm: () {
-          Get.back();
-        }));
+        _showStorageLimitDialog();
         return false;
       }
     }
@@ -857,10 +900,9 @@ class MenuPageController extends GetxController with StateMixin {
     var result = false;
     try {
       await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
-      ordersqlcontroller.getCardList();
+      await ordersqlcontroller.getCardList();
       result = true;
-      //更改显示购物车价格
-      getCartPriceTotal();
+      await getCartPriceTotal();
     } catch (e) {
       print(e);
       logger.info('-- publicAddCartMenu error: $e --');
@@ -870,7 +912,12 @@ class MenuPageController extends GetxController with StateMixin {
     return result;
   }
 
-  publicAddCart(BuildContext context, item) async {
+  Future<void> publicAddCart(BuildContext context, item) async {
+    final menuCode = '${item['menuCode']}';
+    if (!_tryLockCartAdd(menuCode)) {
+      return;
+    }
+
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
@@ -882,13 +929,14 @@ class MenuPageController extends GetxController with StateMixin {
       "goodsNum": 1,
       "qtyBounds": item['qtyBounds']
     };
-    publicAddCartMenu(cartItem, true).then((val) async {
-      //更改显示购物车价格
-      //getCartPriceTotal();
-      if (val != false) {
+    try {
+      final added = await publicAddCartMenu(cartItem, true);
+      if (added) {
         await publicShowAddCartNew(context);
       }
-    });
+    } finally {
+      _unlockCartAdd(menuCode);
+    }
   }
 
   //公共购物车加减
@@ -900,13 +948,7 @@ class MenuPageController extends GetxController with StateMixin {
           var checkresult =
               await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
           if (checkresult >= cartItem['qtyBounds']) {
-            var showString = "show_storage_num_error".tr;
-            //showToast("${showString}");
-            Get.dialog(DialogUtils.alertOneButton(showString,
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr, confirm: () {
-              Get.back();
-            }));
+            _showStorageLimitDialog();
             return;
           } else {
             result = await ordersqlcontroller.addToCartNum(cartItem);
@@ -918,7 +960,7 @@ class MenuPageController extends GetxController with StateMixin {
         result = await ordersqlcontroller.reduceToCart(cartItem);
       }
 
-      ordersqlcontroller.getCardList();
+      await ordersqlcontroller.getCardList();
     } catch (e) {
       print(e);
       result = 0;
@@ -1097,88 +1139,118 @@ print("加1了");
     update(['option_view']);
   }
 
-//限量商品请求接口
+  //限量商品请求接口
   checkQtyBoundsCount(item, optionCode, popupType, context) async {
-    // if (canAddCart.value == false) {
-    //   return;
-    // }
-
-    var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
-
-    if (result >= item['qtyBounds']) {
-      var showString = "show_storage_num_error".tr;
-      //showToast("${showString}");
-      Get.dialog(DialogUtils.alertOneButton(showString,
-          title: "tag_title".tr,
-          confirmtitle: "tag_button_yes".tr, confirm: () {
-        Get.back();
-      }));
+    if (!canAddCart.value) {
       return;
-    } else {
-      //如果option 存在，则弹出option
-      if (item['optionGroupVoList']?.length > 0) {
-        //publicShowOneItemWidget(item);
-        if (popupType == "v1") {
-          debugPrint("11111111111111");
-          publicShowOneItemWidgetv1(item);
-        } else {
-          debugPrint("00000000000000");
-          publicShowOneItemWidget(item);
-        }
-      } else {
-        await publicAddCart(context, item);
+    }
+
+    final menuCode = '${item['menuCode']}';
+    if (item['qtyBounds'] == 0 || _cartAddInFlight.contains(menuCode)) {
+      return;
+    }
+
+    final hasOptions = item['optionGroupVoList']?.length > 0;
+    final isLimited = item['qtyBounds'] > 0;
+    if (isLimited) {
+      final count = await ordersqlcontroller.getCartItemNum(menuCode);
+      if (count >= item['qtyBounds']) {
+        _showStorageLimitDialog();
+        return;
       }
     }
+
+    if (hasOptions) {
+      _showOptionDialog(item, popupType: popupType);
+      return;
+    }
+
+    await publicAddCart(context, item);
+  }
+
+  void _showOptionDialog(item, {required String popupType}) {
+    final menuCode = '${item['menuCode']}';
+    if (_openOptionMenuCode != null) {
+      return;
+    }
+    _openOptionMenuCode = menuCode;
+
+    final optionInfo =
+        List<dynamic>.from(item['optionGroupVoList'] ?? const []);
+    final prepared = OptionView.prepareState(
+      itemPrice: item['currentPrice'] ?? 0,
+      optionInfo: optionInfo,
+    );
+
+    Get.generalDialog(
+      pageBuilder: (_, __, ___) => OptionView(
+        isLabel: popupType != "v1",
+        languageKey: checkLanguage.value,
+        itemPrice: item['currentPrice'],
+        originalPrice: item['price'],
+        optionInfo: optionInfo,
+        mainTitle: item['mainTitle'],
+        subtitle: item['subtitle'] ?? [],
+        preparedState: prepared,
+        addToCartCallback: (price, options, optionTitle) {
+          _addToCartCallback(item, price, options, optionTitle);
+        },
+      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      transitionDuration: Duration.zero,
+      transitionBuilder: (_, __, ___, child) => child,
+    ).whenComplete(() {
+      if (_openOptionMenuCode == menuCode) {
+        _openOptionMenuCode = null;
+      }
+    });
   }
 
   //展示某带option商品
   //展示某带option商品
   publicShowOneItemWidget(item) {
-    //changeInitialAllOption(item['menuCode']);
-    //Future.delayed(Duration(milliseconds: 50),() async {
-    // Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
-    Get.dialog(
-        barrierDismissible: false,
-        //showOneItemOptionWidgetView(item)
-        OptionView(
-          isLabel: true,
-          languageKey: checkLanguage.value,
-          itemPrice: item['currentPrice'],
-          originalPrice: item['price'],
-          optionInfo: item['optionGroupVoList'] ?? [],
-          mainTitle: item['mainTitle'],
-          subtitle: item['subtitle'] ?? [],
-          addToCartCallback: (price, options, optionTitle) {
-            _addToCartCallback(item, price, options, optionTitle);
-          },
-        ));
-    //});
+    _showOptionDialog(item, popupType: "old");
   }
 
   publicShowOneItemWidgetv1(item) {
-    //changeInitialAllOption(item['menuCode']);
-    //Future.delayed(Duration(milliseconds: 50),() async {
-    // Get.dialog(
-    //     barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
-    Get.dialog(
-        barrierDismissible: false,
-        //showOneItemOptionWidgetVOneView(item)
-        OptionView(
-          isLabel: false,
-          languageKey: checkLanguage.value,
-          itemPrice: item['currentPrice'],
-          originalPrice: item['price'],
-          optionInfo: item['optionGroupVoList'] ?? [],
-          mainTitle: item['mainTitle'],
-          subtitle: item['subtitle'] ?? [],
-          addToCartCallback: (price, options, optionTitle) {
-            _addToCartCallback(item, price, options, optionTitle);
-          },
-        ));
-    //});
+    _showOptionDialog(item, popupType: "v1");
   }
 
-  _addToCartCallback(item, price, options, optionTitle) async {
+  Future<bool> publicAddCartWithOptions(
+    Map cartItem,
+    BuildContext context, {
+    String? resetOptionMenuCode,
+  }) async {
+    final menuCode = '${cartItem['menuCode']}';
+    if (!_tryLockCartAdd(menuCode)) {
+      return false;
+    }
+
+    try {
+      final qtyBounds = cartItem['qtyBounds'] ?? -1;
+      if (qtyBounds > 0) {
+        final count = await ordersqlcontroller.getCartItemNum(menuCode);
+        if (count >= qtyBounds) {
+          _showStorageLimitDialog();
+          return false;
+        }
+      }
+
+      final added = await publicAddCartMenu(cartItem, false);
+      if (added) {
+        publicShowAddCartNew(context);
+        if (resetOptionMenuCode != null) {
+          changeInitialAllOption(resetOptionMenuCode);
+        }
+      }
+      return added;
+    } finally {
+      _unlockCartAdd(menuCode);
+    }
+  }
+
+  Future<void> _addToCartCallback(item, price, options, optionTitle) async {
     debugPrint("price:$price");
     debugPrint("options:$options");
     debugPrint("optionTitle:$optionTitle");
@@ -1197,13 +1269,11 @@ print("加1了");
       "qtyBounds": item['qtyBounds']
     };
 
-    await publicAddCartMenu(cartItem, false).then((val) {
-      final context = Get.context;
-      if (val != false && context != null) {
-        publicShowAddCartNew(context);
-      }
-    });
     Get.back();
+    final context = Get.context;
+    if (context != null) {
+      await publicAddCartWithOptions(cartItem, context);
+    }
   }
 
   //初始化默认option选项
@@ -1317,20 +1387,29 @@ print("加1了");
     return sum.toString();
   }
 
-  submitOrderFlow() async {
-    _doSubmitOrder();
-  }
-
+  Future<void> submitOrderFlow() => _doSubmitOrder();
 
   //提交订单
-  _doSubmitOrder({int times = 0}) {
-    if (machineInfo.machineCode != "") {
-      _showOrderEasyLoading();
+  Future<void> _doSubmitOrder({int times = 0}) async {
+    if (machineInfo.machineCode == "" ||
+        _submitInFlight ||
+        showCartTotalGoodsNum.value <= 0) {
+      return;
+    }
 
-      //自定义声音
+    _submitInFlight = true;
+    canAddCart.value = false;
+    try {
+      _showOrderEasyLoading();
       playQRScannerSound();
 
+      // 提交前同步一次 DB，保证明细与总价一致
+      await ordersqlcontroller.getCardList();
       var cartItems = ordersqlcontroller.getcartItems;
+      if (cartItems.isEmpty) {
+        await EasyLoading.dismiss();
+        return;
+      }
       List selectedItem = [];
 
       for (var oneItem in cartItems) {
@@ -1369,51 +1448,43 @@ print("加1了");
         formData['discount'] = totalCartDiscountYen;
       }
       debugPrint("formData: $formData");
-      request('webBootOrder',
-          method: 'POST',
-          parameters: formData,
-          timeout: const Duration(seconds: 15)
-      ).then((val) {
-        EasyLoading.dismiss();
-        var response = json.decode(val.toString());
-        debugPrint("webBootOrder response: $response");
+      final val = await request(
+        'webBootOrder',
+        method: 'POST',
+        parameters: formData,
+        timeout: const Duration(seconds: 15),
+      );
+      await EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      debugPrint("webBootOrder response: $response");
 
-        if (response['code'] == 200 && response != null) {
-          //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
+      if (response != null && response['code'] == 200) {
+        doSubmitOrderId.value = response['data']["orderId"];
+        final total = response['data']["total"].toString();
+        int tax1 = response['data']["tax1"] ?? 0;
+        int tax2 = response['data']["tax2"] ?? 0;
 
-          doSubmitOrderId.value = response['data']["orderId"];
-          final total = response['data']["total"].toString();
-          //int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
-          int tax1 = response['data']["tax1"] ?? 0;
-          int tax2 = response['data']["tax2"] ?? 0;
-
-          showSelectMealTypeAndPaymentMethodDialog(total,
-              tax1: tax1, tax2: tax2);
-        } else {
-          //getBookingBootMenu();
-          // FirebaseAnalytics.instance
-          //     .logEvent(name: "submit_order_fail", parameters: {
-          //   "machineCode": machineInfo.machineCode,
-          // });
-          if (response != null &&
-              response['data'] != null &&
-              response['data']["menuLackMap"] != null) {
-            menuLackMap.value = response['data']["menuLackMap"];
-          }
-          //showToast(response['data']["message"]);
-          Get.dialog(DialogUtils.alertOneButton(response['data']["message"],
-              title: "tag_title".tr,
-              confirmtitle: "tag_button_yes".tr, confirm: () {
-            Get.back();
-          }));
+        showSelectMealTypeAndPaymentMethodDialog(total,
+            tax1: tax1, tax2: tax2);
+      } else {
+        if (response != null &&
+            response['data'] != null &&
+            response['data']["menuLackMap"] != null) {
+          menuLackMap.value = response['data']["menuLackMap"];
         }
-      }).catchError((e) {
-        _handleOrderResultAlert(times: times);
-      });
-    } else {
-      // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-      //   "machineCode": machineInfo.machineCode,
-      // });
+        Get.dialog(DialogUtils.alertOneButton(response['data']["message"],
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
+      }
+    } catch (e) {
+      _handleOrderResultAlert(times: times);
+    } finally {
+      _submitInFlight = false;
+      if (!paymentIsShow) {
+        canAddCart.value = true;
+      }
     }
   }
 
@@ -1578,6 +1649,15 @@ print("加1了");
     //clearCartList();
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
+    if (machineInfo.currentMode == MachineMode.spicyHotPot) {
+      machineInfo.currentMode = MachineMode.sell;
+    }
+    checkLanguage.value = 'JP';
+    if (Get.isRegistered<CheckoutPageController>()) {
+      Get.find<CheckoutPageController>().updateSettingLanguage('JP');
+    } else {
+      Get.updateLocale(const Locale('ja', 'JP'));
+    }
     //getBookingBootMenu();
     //Future.delayed(Duration(milliseconds: 100),() async {
     Get.back();

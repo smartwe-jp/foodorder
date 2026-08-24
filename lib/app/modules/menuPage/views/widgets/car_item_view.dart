@@ -62,7 +62,7 @@ class CarItemView extends StatelessWidget {
                     children: [
                       //title
 
-                      if (showQtyControls) Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
@@ -124,8 +124,9 @@ class CarItemView extends StatelessWidget {
                       //   height: 10,
                       // ),
 
-                      Row(
-                        children: [
+                      if (showQtyControls)
+                        Row(
+                          children: [
                           Container(
                               alignment: Alignment.bottomCenter,
                               child: Row(
@@ -180,8 +181,8 @@ class CarItemView extends StatelessWidget {
                               )
                           ),
                           Spacer()
-                        ],
-                      ),
+                          ],
+                        ),
 
                     ],
                   ),

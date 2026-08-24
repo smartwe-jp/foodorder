@@ -149,6 +149,7 @@ class _OptionViewState extends State<OptionView> {
   late List _subtitle;
   List<OptionGroup> _optionGroupList = [];
   List<String> _selectOptionCodes = [];
+  bool _deferOptionImages = true;
   String get _optionTitle => _optionGroupList.map((e) => e.optionTitle).join("　");
 
   @override
@@ -163,6 +164,10 @@ class _OptionViewState extends State<OptionView> {
       _selectOptionCodes = List<String>.from(prepared.selectOptionCodes);
       _currentPrice = prepared.currentPrice;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _deferOptionImages = false);
+    });
   }
 
   _initOptionGroup() {
@@ -171,8 +176,8 @@ class _OptionViewState extends State<OptionView> {
       String groupCode = optionItem['groupCode'] ?? "";
       List selectedOptionCodes = [];
       List<String> selectedOptionNames = [];
-      String maxNum = optionItem['multipleState'] ?? 0;
-      String minNum = optionItem['smallest'] ?? 0;
+      String maxNum = '${optionItem['multipleState'] ?? 0}';
+      String minNum = '${optionItem['smallest'] ?? 0}';
       List<dynamic> optionVoList = optionItem['optionVoList'] ?? [];
       for (var option in optionVoList) {
         String optionCode = option['optionCode'];
@@ -390,7 +395,8 @@ class _OptionViewState extends State<OptionView> {
           ...optionGroupInfo.map((optionItem) => OptionListWidget(
             isLabel: widget.isLabel,
             languageKey: widget.languageKey,
-            optionSelectMaxNum: optionItem['multipleState'] ?? '1',
+            deferImages: _deferOptionImages,
+            optionSelectMaxNum: '${optionItem['multipleState'] ?? '1'}',
             optionListInfo: optionItem['optionVoList'] ?? [],
             title: optionItem['groupName'] ?? "",
             subTitle: optionItem['remark'] ?? "",

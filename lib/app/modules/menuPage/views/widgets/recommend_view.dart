@@ -17,6 +17,8 @@ import 'menu_sheet_views.dart';
 extension RecommendView on MenuPageController {
   recommendItemView(item, {popupType = "old", aspectRatio = 1.0}) {
     //debugPrint("menuItemView: $item");
+    final menuCode = '${item['menuCode']}';
+    final isLimited = (item['qtyBounds'] ?? -1) > 0;
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
@@ -26,8 +28,14 @@ extension RecommendView on MenuPageController {
       option: item['optionGroupVoList']?.length > 0 ? "select_option".tr : "",
       aspectRatio: aspectRatio,
       imageRadius: 15,
+      debounceDuration: isLimited
+          ? const Duration(milliseconds: 400)
+          : Duration.zero,
       onTap: () async {
         debugPrint("GridItemView onTap");
+        if (isMenuAddLocked(menuCode)) {
+          return;
+        }
         if (item['qtyBounds'] == 0) {
           return;
         } else if (item['qtyBounds'] > 0) {
@@ -40,12 +48,17 @@ extension RecommendView on MenuPageController {
             await checkQtyBoundsCount(item, "", popupType, Get.context);
           }
         } else {
-          //如果option 存在，则弹出option
           debugPrint("GridItemView onTap option");
           recommendBookList.add(item);
-          //update(['shopping_cart']);
-          if (Get.context != null) publicAddCart(Get.context!, item);
-          //}
+          if (item['optionGroupVoList']?.length > 0) {
+            if (popupType == "v1") {
+              publicShowOneItemWidgetv1(item);
+            } else {
+              publicShowOneItemWidget(item);
+            }
+          } else if (Get.context != null) {
+            await publicAddCart(Get.context!, item);
+          }
         }
       },
       cover: publicShowMenuSellOut(item['qtyBounds']),
@@ -53,13 +66,11 @@ extension RecommendView on MenuPageController {
   }
 
   showRecommendItemList(items, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(recommendItemView(item, popupType: popupType));
-    }
     return GridMenuView(
-      children: children,
-      padding: EdgeInsets.only(left: 50, right: 50),
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          recommendItemView(items[index], popupType: popupType),
+      padding: const EdgeInsets.only(left: 50, right: 50),
     );
   }
 

@@ -10,6 +10,7 @@ import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
 import '../views/widgets/grid_item_view.dart';
+import '../../../services/CustomLogerHandler.dart';
 
 extension MenuPageControllerExtension on MenuPageController {
   void restoreNavigationStatus(String tag, int page) {
@@ -98,11 +99,51 @@ extension MenuPageControllerExtension on MenuPageController {
     final queryCategoryCode = categoryCode ?? classTag.value;
 
     debugPrint("getCategoryMenu:$queryCategoryCode");
-    Widget? menuWidget = null;
+    if (queryCategoryCode.isEmpty) return null;
+
+    final context = Get.context;
+    if (context == null) return null;
+
     if (showItem.containsKey(queryCategoryCode)) {
-      return showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
+      return showMiddleMenuList(context, categoryCode: queryCategoryCode);
     }
 
+    final loaded = await prefetchCategoryMenu(queryCategoryCode);
+    if (loaded && showItem.containsKey(queryCategoryCode)) {
+      return showMiddleMenuList(context, categoryCode: queryCategoryCode);
+    }
+    return null;
+  }
+
+  Future<bool> prefetchCategoryMenu(
+    String categoryCode, {
+    int? loadGeneration,
+  }) {
+    if (categoryCode.isEmpty) return Future.value(false);
+
+    final generation = loadGeneration ?? menuLoadGeneration;
+    if (showItem.containsKey(categoryCode)) return Future.value(true);
+
+    final inflight = categoryMenuPrefetchTasks[categoryCode];
+    if (inflight != null) return inflight;
+
+    late final Future<bool> task;
+    task = _fetchCategoryMenuFromNetwork(
+      categoryCode,
+      loadGeneration: generation,
+    ).whenComplete(() {
+      if (identical(categoryMenuPrefetchTasks[categoryCode], task)) {
+        categoryMenuPrefetchTasks.remove(categoryCode);
+      }
+    });
+    categoryMenuPrefetchTasks[categoryCode] = task;
+    return task;
+  }
+
+  Future<bool> _fetchCategoryMenuFromNetwork(
+    String categoryCode, {
+    required int loadGeneration,
+  }) async {
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
@@ -111,7 +152,7 @@ extension MenuPageControllerExtension on MenuPageController {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
-      "categoryCode": queryCategoryCode
+      "categoryCode": categoryCode,
     };
     debugPrint("formData:${formData}");
 
@@ -120,14 +161,17 @@ extension MenuPageControllerExtension on MenuPageController {
           method: 'POST',
           parameters: formData,
           timeout: const Duration(seconds: 15));
+      if (loadGeneration != menuLoadGeneration) {
+        logI('ignore stale category menu response: $categoryCode');
+        return false;
+      }
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        showItem[queryCategoryCode] = response['data'];
+        showItem[categoryCode] = response['data'];
         _updateOptionsInfo(response['data']);
-        menuWidget =
-            showMiddleMenuList(Get.context!, categoryCode: queryCategoryCode);
+        return true;
       }
 
     } on TimeoutException catch (e) {
@@ -135,7 +179,7 @@ extension MenuPageControllerExtension on MenuPageController {
     } catch (e) {
       debugPrint('error Exception:${e.toString()}');
     }
-    return menuWidget;
+    return false;
   }
 
   itemImage(String? url) {
@@ -148,6 +192,8 @@ extension MenuPageControllerExtension on MenuPageController {
 
   menuItemView(item, context, {popupType = "old", aspectRatio = 1.0}) {
     //debugPrint("menuItemView: $item");
+    final menuCode = '${item['menuCode']}';
+    final isLimited = (item['qtyBounds'] ?? -1) > 0;
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
@@ -158,8 +204,15 @@ extension MenuPageControllerExtension on MenuPageController {
           ? "select_option".tr
           : "",
       aspectRatio: aspectRatio,
+      debounceDuration: isLimited
+          ? const Duration(milliseconds: 400)
+          : Duration.zero,
       onTap: () async {
         debugPrint("GridItemView onTap");
+
+        if (isMenuAddLocked(menuCode)) {
+          return;
+        }
 
         if (item['qtyBounds'] == 0) {
           return;
@@ -254,19 +307,21 @@ extension MenuPageControllerExtension on MenuPageController {
   }
 
   showCategoryTwoItemList(items, context, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-    return GridMenuView(children: children, childAspectRatio: 0.71,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      childAspectRatio: 0.71,
+    );
   }
 
   showCategoryFourItemList(items, context, {popupType = "old"}) {
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType));
-    }
-
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.71,);
+    return GridMenuView(
+      itemCount: items.length,
+      itemBuilder: (ctx, index) =>
+          menuItemView(items[index], ctx, popupType: popupType),
+      crossAxisCount: 2,
+      childAspectRatio: 0.71,
+    );
   }
 }
