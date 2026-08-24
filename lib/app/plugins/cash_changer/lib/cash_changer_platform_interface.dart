@@ -84,6 +84,12 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('startSupply() has not been implemented.');
   }
 
+  // Set bill SSW 24 Bit0 to enable six-digit amount dispensing.
+  Future<int?> setSixDigitDispenseAmount() {
+    throw UnimplementedError(
+        'setSixDigitDispenseAmount() has not been implemented.');
+  }
+
   //supplyCounts
   Future<Map?> supplyCounts(int mode) {
     throw UnimplementedError('supplyCounts() has not been implemented.');

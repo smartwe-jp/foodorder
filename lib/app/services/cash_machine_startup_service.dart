@@ -316,6 +316,20 @@ class CashMachineStartupService {
       );
     }
 
+    onStep?.call(CashMachineStartupStep.applyingSettings);
+    final sswResult = await CashChanger.setSixDigitDispenseAmount()
+        .timeout(_timeoutFor(mode));
+    final sswOposResult = CashChanger.getOposResult(sswResult) as OposResult;
+    if (sswOposResult.resultCode != HealthResultCode.OPOS_SUCCESS) {
+      _logger.warning(
+        'CashChanger bill SSW 24 setting failed: $sswResult',
+      );
+      return CashMachineCheckResult.failed(
+        CashMachineCheckFailure.recoveryFailed,
+        detail: 'CashChanger bill SSW 24 setting failed: $sswResult',
+      );
+    }
+
     onStep?.call(CashMachineStartupStep.readingBalance);
     if (!await _readCashChangerBalance(mode)) {
       // The field-proven flow records the balance error but still completes

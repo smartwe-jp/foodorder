@@ -126,6 +126,11 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
+  Future<int?> setSixDigitDispenseAmount() async {
+    return methodChannel.invokeMethod<int>('setSixDigitDispenseAmount');
+  }
+
+  @override
   Future<Map?> supplyCounts(int mode) async {
     final result = await methodChannel
         .invokeMethod<Map>('supplyCounts', <String, dynamic>{

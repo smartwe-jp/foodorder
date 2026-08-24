@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/models/sse_subscription_setting.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
@@ -27,6 +28,7 @@ import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/machine_runtime_service.dart';
+import '../../../services/cash_machine_startup_service.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
@@ -669,9 +671,20 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   Future<void> checkCashMachineEnabled(bool enabled) async {
     machineInfo.cashMachineEnabled = enabled;
-    await Get.find<MachineRuntimeService>()
-        .updateCashMachineEnabled(enabled);
+    final runtime = Get.find<MachineRuntimeService>();
+    await runtime.updateCashMachineEnabled(enabled);
     update();
+
+    if (enabled &&
+        machineInfo.cashMachineDriver == CashMachineDriver.cashChanger) {
+      final result = await Get.find<CashMachineStartupService>()
+          .checkForPayment(force: true);
+      machineInfo.update(['selectPayment']);
+      update();
+      if (!result.isReady) {
+        await showToast('現金機の初期設定に失敗しました。');
+      }
+    }
   }
 
   checkIsAllowPrintReceiptOptions(checkedType) async {

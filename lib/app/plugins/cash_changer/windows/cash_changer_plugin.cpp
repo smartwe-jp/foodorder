@@ -843,6 +843,39 @@ void CashChangerPlugin::HandleMethodCall(
         //SysFreeString(dummyString);
         return;
     }
+
+    // 紙幣部 SSW 24: 金額指定出金フォーマットを6桁に設定
+    if (method_call.method_name().compare("setSixDigitDispenseAmount") == 0) {
+        cerr << "setSixDigitDispenseAmount called 。。" << endl;
+
+        if (pCashChanger == nullptr) {
+            result->Success(flutter::EncodableValue(-1));
+            return;
+        }
+
+        // pData: 0x01 = 紙幣部
+        // pString: SSW No.24 = 01H (Bit0: 6桁, Bit1: 2桁枚数指定)
+        long lngData = 0x01;
+        BSTR strTemp = SysAllocString(L"24,01");
+        if (!strTemp) {
+            result->Error(
+                "MEMORY_ALLOCATION_FAILED",
+                "Failed to allocate SSW setting parameter");
+            return;
+        }
+
+        long lngRet =
+            pCashChanger->DirectIO(CHAN_DI_SSWSET, &lngData, &strTemp);
+        if (lngRet == OposEExtended) {
+            lngRet = pCashChanger->ResultCodeExtended;
+        }
+        SysFreeString(strTemp);
+
+        cerr << "DirectIO CHAN_DI_SSWSET bill SSW24=01 end 。。 "
+             << lngRet << endl;
+        result->Success(flutter::EncodableValue(lngRet));
+        return;
+    }
     
     //補充枚数取得 CHAN_DI_SUPPLYCOUNTS
     if (method_call.method_name().compare("supplyCounts") == 0) {

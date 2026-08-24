@@ -12,6 +12,7 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       channel,
       (MethodCall methodCall) async {
+        if (methodCall.method == 'setSixDigitDispenseAmount') return 0;
         return '42';
       },
     );
@@ -23,5 +24,9 @@ void main() {
 
   test('getPlatformVersion', () async {
     expect(await platform.getPlatformVersion(), '42');
+  });
+
+  test('setSixDigitDispenseAmount', () async {
+    expect(await platform.setSixDigitDispenseAmount(), 0);
   });
 }

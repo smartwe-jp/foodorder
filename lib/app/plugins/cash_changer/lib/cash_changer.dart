@@ -188,6 +188,11 @@ class CashChanger {
     return CashChangerPlatform.instance.startSupply();
   }
 
+  // Set bill SSW 24 Bit0 to enable six-digit amount dispensing.
+  static Future<int?> setSixDigitDispenseAmount() async {
+    return CashChangerPlatform.instance.setSixDigitDispenseAmount();
+  }
+
   //SUPPLYCOUNTS
   static Future<bool> supplyCounts(int mode,
       {required Function(String) onSuccess,

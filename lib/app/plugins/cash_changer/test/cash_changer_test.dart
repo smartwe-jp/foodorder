@@ -17,6 +17,11 @@ class MockCashChangerPlatform
     // TODO: implement checkChangerStatus
     throw UnimplementedError();
   }
+
+  @override
+  Future<int?> setSixDigitDispenseAmount() {
+    throw UnimplementedError();
+  }
   
   @override
   Future<int?> closeCashChanger() {
