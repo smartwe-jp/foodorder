@@ -21,6 +21,9 @@ class Exchangeview extends StatelessWidget {
   }
 
   cashInfoGrid() {
+    final cashItems = controller.cashInfoList.entries
+        .where((element) => element.key != '二千円')
+        .toList();
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -37,13 +40,11 @@ class Exchangeview extends StatelessWidget {
             height: ScreenAdapter.height(40),
           ),
           GridMenuView(
-            children: [
-              ...controller.cashInfoList.entries.where((element) {
-                return element.key != '二千円';
-              }).map((element) {
-                return moneyItem(element.key, element.value);
-              }).toList()
-            ],
+            itemCount: cashItems.length,
+            itemBuilder: (context, index) {
+              final item = cashItems[index];
+              return moneyItem(item.key, item.value);
+            },
             crossAxisCount: 2,
             childAspectRatio: 4,
           )
