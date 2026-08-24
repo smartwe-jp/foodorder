@@ -228,7 +228,17 @@ class _SpicyWeighDialogState extends State<SpicyWeighDialog> {
     _scaleRetrying = true;
     try {
       final ready = await _scale.ensureReady();
-      if (!mounted || !ready) return;
+      if (!mounted) return;
+      if (!ready) {
+        if (!_scaleDialogShowing) {
+          await _showScaleConnectionIssue(
+            _scale.lastErrorRx.value.isEmpty
+                ? '電子秤に接続できません。接続ポートと通信設定を確認してください。'
+                : _scale.lastErrorRx.value,
+          );
+        }
+        return;
+      }
       _handleScaleReconnected();
     } catch (e) {
       debugPrint('称重弹窗后台重连电子秤失败: $e');
