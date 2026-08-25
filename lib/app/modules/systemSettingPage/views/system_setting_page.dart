@@ -130,7 +130,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 const SpicyHotPotSettingsEntry(),
               if (Platform.isAndroid)
                 _openRejishime(logic.machineInfo.systemSettingInfo),
-              if (logic.machineInfo.supportsCashMachine)
+              //if (logic.machineInfo.supportsCashMachine)
                 _cashMachineEnabledArea(logic.machineInfo),
               if (logic.machineInfo.cashMachineDriver ==
                       CashMachineDriver.payCube &&
