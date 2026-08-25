@@ -7,11 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:foodorder/app/services/app_event_outbox.dart';
+import 'package:foodorder/app/services/app_event_sync_service.dart';
+import 'package:foodorder/app/services/incident_outbox.dart';
+import 'package:foodorder/app/services/incident_sync_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:logging/logging.dart';
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/app_environment.dart';
@@ -70,8 +73,36 @@ void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    CustomLogHandler.setEventSink(appEventReporter.record);
+    CustomLogHandler.configureContext(
+      environment: AppEnvironmentConfig.name,
+    );
+    await CustomLogHandler.initializeLogging();
+    logI(
+      'Application bootstrap started',
+      tag: 'Bootstrap',
+      eventCode: 'APP_BOOTSTRAP_STARTED',
+    );
+
     await GetStorage.init();
     await Hive.initFlutter();
+    await appEventOutbox.initialize();
+    await appEventReporter.initialize();
+    await incidentOutbox.initialize();
+    if (openObserveUploadEnabled) {
+      await appEventSyncService.start();
+      await incidentSyncService.start();
+    }
+
+    FlutterError.onError = (details) {
+      _captureUnhandledIncident(
+        eventCode: 'UNHANDLED_FLUTTER_ERROR',
+        message: 'Unhandled Flutter error',
+        error: details.exception,
+        stackTrace: details.stack,
+      );
+      FlutterError.presentError(details);
+    };
 
     if (!Hive.isAdapterRegistered(63)) {
       Hive.registerAdapter(PrintRecordAdapter());
@@ -90,7 +121,6 @@ void main() {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
-    await CustomLogHandler.initializeLogging();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
       runApp(ScreenUtilInit(
@@ -136,8 +166,9 @@ void main() {
                     builder: (context, widget) {
                       return MediaQuery(
                         ///设置文字大小不随系统设置改变
-                        data: MediaQuery.of(context)
-                            .copyWith(textScaleFactor: 1.0),
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: TextScaler.noScaling,
+                        ),
                         child: FlutterEasyLoading(child: widget),
                       );
                     },
@@ -150,13 +181,27 @@ void main() {
     //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
-    //debugPrint('runZonedGuarded: Caught error in my root zone.:: $error');
-    //final logger = Logger('main');
-    Logger('main').info('-- Caught error in my root zone.:: $error --');
-    // if (Platform.isAndroid) {
-    //   FirebaseCrashlytics.instance.recordError(error, stackTrace);
-    // }
+    _captureUnhandledIncident(
+      eventCode: 'UNHANDLED_ROOT_ZONE_ERROR',
+      message: 'Unhandled root zone error',
+      error: error,
+      stackTrace: stackTrace,
+    );
   });
+}
+
+void _captureUnhandledIncident({
+  required String eventCode,
+  required String message,
+  required Object error,
+  StackTrace? stackTrace,
+}) {
+  incidentReporter.capture(
+    eventCode: eventCode,
+    message: message,
+    error: error,
+    stackTrace: stackTrace,
+  );
 }
 
 class MyHttpOverrides extends HttpOverrides {

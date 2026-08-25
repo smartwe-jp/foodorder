@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
-import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
 
 import '../config/index.dart';
@@ -26,17 +25,57 @@ Future request(
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        logI("Request: ${options.method} ${options.uri}");
-        logI("Headers: ${options.headers}");
-        logI("Data: ${options.data}");
+        final requestId = CustomLogHandler.newFlowId();
+        options.extra['log_request_id'] = requestId;
+        options.extra['log_started_at'] = DateTime.now().millisecondsSinceEpoch;
+        logI(
+          'HTTP request started',
+          tag: 'HTTP',
+          eventCode: 'HTTP_REQUEST_STARTED',
+          flowId: requestId,
+          data: <String, Object?>{
+            'method': options.method,
+            'path': options.uri.path,
+          },
+        );
         handler.next(options);
       },
       onResponse: (response, handler) {
         debugPrint("Response: ${response.statusCode} ${response.data}");
+        final options = response.requestOptions;
+        final requestId = options.extra['log_request_id']?.toString();
+        logI(
+          'HTTP request succeeded',
+          tag: 'HTTP',
+          eventCode: 'HTTP_REQUEST_SUCCEEDED',
+          flowId: requestId,
+          data: <String, Object?>{
+            'method': options.method,
+            'path': options.uri.path,
+            'status_code': response.statusCode ?? 0,
+            'duration_ms': _requestDurationMs(options),
+          },
+        );
         handler.next(response);
       },
       onError: (DioException e, handler) {
-        logE("Error: ${e.message}");
+        final options = e.requestOptions;
+        final requestId = options.extra['log_request_id']?.toString();
+        logW(
+          'HTTP request failed',
+          tag: 'HTTP',
+          eventCode: 'HTTP_REQUEST_FAILED',
+          flowId: requestId,
+          data: <String, Object?>{
+            'method': options.method,
+            'path': options.uri.path,
+            'status_code': e.response?.statusCode ?? 0,
+            'duration_ms': _requestDurationMs(options),
+            'dio_error_type': e.type.name,
+          },
+          error: e,
+          stack: e.stackTrace,
+        );
         handler.next(e);
       },
     ));
@@ -103,15 +142,46 @@ Future request(
 
       return response;
     } else {
-      logE("HTTP request failed with status: ${response?.statusCode}");
+      logE(
+        'HTTP request returned an unsuccessful status',
+        tag: 'HTTP',
+        eventCode: 'HTTP_UNSUCCESSFUL_STATUS',
+        data: <String, Object?>{
+          'request_key': url,
+          'method': method.toString(),
+          'status_code': response?.statusCode ?? 0,
+        },
+      );
       throw Exception('異常が生じてます。お近くのスタッフにお声かけください。...');
     }
-  } catch (e) {
+  } catch (e, stackTrace) {
 
     if (e is DioException && didTimeout) {
+      logE(
+        'HTTP request timed out',
+        tag: 'HTTP',
+        eventCode: 'HTTP_REQUEST_TIMEOUT',
+        data: <String, Object?>{
+          'request_key': url,
+          'method': method.toString(),
+          'timeout_seconds': timeout?.inSeconds ?? 0,
+        },
+        error: e,
+        stack: stackTrace,
+      );
       throw TimeoutException('Request timeout: $url', timeout);
     }
-    logE("HTTP request error: $e");
+    logE(
+      'HTTP request error',
+      tag: 'HTTP',
+      eventCode: 'HTTP_REQUEST_ERROR',
+      data: <String, Object?>{
+        'request_key': url,
+        'method': method.toString(),
+      },
+      error: e,
+      stack: stackTrace,
+    );
     //if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
 
     // showToast('異常が生じてます。お近くのスタッフにお声かけください〜。');
@@ -122,4 +192,10 @@ Future request(
   } finally {
     timeoutTimer?.cancel();
   }
+}
+
+int _requestDurationMs(RequestOptions options) {
+  final startedAt = options.extra['log_started_at'];
+  if (startedAt is! int) return 0;
+  return DateTime.now().millisecondsSinceEpoch - startedAt;
 }

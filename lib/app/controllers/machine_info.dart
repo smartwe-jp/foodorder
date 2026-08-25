@@ -212,7 +212,14 @@ class MachineInfoController extends GetxController {
     final paymentChannels = activation?.paymentChannels;
     shopCode = activation?.shopCode ?? "";
 
-    logI('loadMachineSettingInfo 0');
+    CustomLogHandler.configureContext(
+      merchantId: shopCode,
+      machineId: machineCode,
+    );
+    logI(
+      'Machine log context configured',
+      eventCode: 'MACHINE_CONTEXT_CONFIGURED',
+    );
 
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
     // diningType = systemSettingInfo['diningType'] ?? '1';
