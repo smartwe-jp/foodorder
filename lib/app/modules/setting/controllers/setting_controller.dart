@@ -542,7 +542,7 @@ class SettingController extends GetxController with StateMixin {
         // debugPrint('MachineCashInfo: $result');
         update();
       } else {
-        showToast('現金機の状態を取得できませんでした。');
+        showToast('サーバーに接続できませんでした。');
         //change(null, status: RxStatus.error('获取现金机状态失败'));
         //Get.back();
       }
@@ -555,9 +555,9 @@ class SettingController extends GetxController with StateMixin {
         });
       } else {
         //日文显示
-        showToast('現金機の状態を取得できませんでした。');
+        showToast('サーバーに接続できませんでした。');
         //change(null, status: RxStatus.error('获取现金机状态失败'));
-        Get.back();
+        //Get.back();
       }
     });
 
