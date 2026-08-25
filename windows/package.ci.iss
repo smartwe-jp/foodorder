@@ -62,10 +62,12 @@ Source: "{#BuildOut}\\cash_changer_plugin.dll"; DestDir: "{app}"; Flags: ignorev
 Source: "{#BuildOut}\\charset_converter_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\connectivity_plus_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\dynamic_color_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildOut}\\flutter_libserialport_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\flutter_plugin_msprinter_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\permission_handler_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\r_get_ip_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BuildOut}\\serialport.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; Data directory (recursive)
 Source: "{#BuildOut}\\data\\*"; DestDir: "{app}\\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Extra setup scripts/resources
