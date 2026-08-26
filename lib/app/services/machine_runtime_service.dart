@@ -39,7 +39,7 @@ class MachineRuntimeService {
   MachineActivation? _activation;
   String _settingPassword = '';
   String _printLogoImageData = '';
-  bool _cashMachineEnabled = true;
+  bool _cashMachineEnabled = false;
   CashMachineRuntimeStatus _cashMachineStatus =
       CashMachineRuntimeStatus.notChecked;
   List<dynamic> _printerList = [];
@@ -62,7 +62,7 @@ class MachineRuntimeService {
   bool get cashMachineEnabled => _cashMachineEnabled;
   CashMachineRuntimeStatus get cashMachineStatus => _cashMachineStatus;
   bool get shouldCheckCashMachine =>
-      _cashMachineEnabled && capabilities.supportsCashMachine;
+      _cashMachineEnabled;// && capabilities.supportsCashMachine
   bool get requiresCashMachineStartupCheck =>
       shouldCheckCashMachine &&
       _cashMachineStatus != CashMachineRuntimeStatus.ready &&

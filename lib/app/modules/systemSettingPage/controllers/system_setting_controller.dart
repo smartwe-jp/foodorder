@@ -72,7 +72,7 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     machineInfo.posSettingInfo = posSettings;
     // The dialog callback is not awaited, so refresh the displayed values before
     // the first asynchronous storage operation.
-    update();
+    //update();
 
     if (isAllowPos != null) {
       await _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
@@ -83,12 +83,9 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
   }
 
   Future<void> _updateSystemSetting(String key, dynamic value) async {
-    if (systemSettingData.containsKey(key)) {
-      systemSettingData[key] = value;
-      await HomeServices.updateSystemSettingInfo(systemSettingData);
-    } else {
-      print('Key $key does not exist in systemSettingData.');
-    }
+    final systemSettingData = await HomeServices.getSystemSettingInfo();
+    systemSettingData[key] = value;
+    await HomeServices.updateSystemSettingInfo(systemSettingData);
   }
 
   updateScreenCallSetting({String? posIp, String? posPort, bool? isAllowScreenCall}) async {

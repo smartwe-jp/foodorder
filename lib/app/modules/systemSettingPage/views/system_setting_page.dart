@@ -130,7 +130,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 const SpicyHotPotSettingsEntry(),
               if (Platform.isAndroid)
                 _openRejishime(logic.machineInfo.systemSettingInfo),
-              if (logic.machineInfo.supportsCashMachine)
+              //if (logic.machineInfo.supportsCashMachine)
                 _cashMachineEnabledArea(logic.machineInfo),
               if (logic.machineInfo.cashMachineDriver ==
                       CashMachineDriver.payCube &&
@@ -1037,10 +1037,26 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             if (usbPrinterInfo.isNotEmpty)
               //显示名称和打印按钮
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _settingContent(usbPrinterInfo["productName"], color: Colors.blue),
-                  const SizedBox(height: 8),
+                  const Spacer(),
+                  //reset button
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.dialog(PrinterListPage(
+                        searchType: SearchType.usb,
+                        currentPrinter: controller.curUsbPrinter?.id,
+                        onPrinterSelected: (device) => {
+                          controller.setUsbPrinter(usbPrinter: device.usbDevice)
+                        },
+                    ));
+                    },
+                    child: const Text('再設定'),
+                  ),
+
+                  const SizedBox(width: 18),
+
                   ElevatedButton(
                     onPressed: () {
                       controller.printTest(
