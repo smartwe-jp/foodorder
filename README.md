@@ -10,6 +10,9 @@ temporarily edit `pubspec.yaml`, `machineType`, or `isProduction`.
 macOS/Linux:
 
 ```bash
+# Automatically select the connected Android variant and local OpenObserve:
+./run_android_dev.sh
+
 # Android 7: paycube_old
 ./run_android7_dev -d <device-id>
 ./run_android7_release -d <device-id>
@@ -26,11 +29,19 @@ macOS/Linux:
 Windows PowerShell:
 
 ```powershell
-.\run_windows_dev.ps1 -d windows
+# One-time setup: copy the example and enter the remote OpenObserve server key.
+Copy-Item .openobserve-client.example.json .openobserve-client.json
+
+.\run_windows_dev.ps1
 .\run_windows_release.ps1 -d windows
 .\build_windows_dev.ps1
 .\build_windows_release.ps1
 ```
+
+Windows does not run OpenObserve locally. `.openobserve-client.json` points the
+App to the Mac or server where Docker is running. The local file is ignored by
+Git and is loaded automatically by `run_windows_dev` and
+`run_windows_dev.ps1`.
 
 - `*_dev`: development API (`https://sit-api.smartwe.jp/`) and Flutter debug.
 - `*_release`: production API (`https://api.smartwe.jp/`) and Flutter release.

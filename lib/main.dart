@@ -89,6 +89,16 @@ void main() {
     await appEventOutbox.initialize();
     await appEventReporter.initialize();
     await incidentOutbox.initialize();
+    logI(
+      'OpenObserve upload configuration loaded',
+      tag: 'Bootstrap',
+      eventCode: 'OPENOBSERVE_CONFIGURATION',
+      data: <String, Object?>{
+        'enabled': openObserveUploadEnabled,
+        'ingest_url': openObserveIngestUrl,
+        'ingest_key_configured': openObserveIngestKey.trim().isNotEmpty,
+      },
+    );
     if (openObserveUploadEnabled) {
       await appEventSyncService.start();
       await incidentSyncService.start();

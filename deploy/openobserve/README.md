@@ -37,17 +37,23 @@ distinguished by `record_type` (`log` or `incident`).
 
 ## Run the Flutter app against the local stack
 
-Load `OPENOBSERVE_INGEST_KEY` from `.env` without printing it:
+From the repository root, run:
 
 ```bash
-set -a
-. deploy/openobserve/.env
-set +a
-fvm flutter run \
-  --dart-define=OPENOBSERVE_INGEST_URL=http://127.0.0.1:5080/app-events \
-  --dart-define=OPENOBSERVE_INGEST_KEY="$OPENOBSERVE_INGEST_KEY" \
-  --dart-define=APP_ENV=dev
+./run_android_dev.sh
 ```
+
+The script selects the first online ADB device, chooses the Android 7 or
+Android 11 dependency variant, reads the ingestion key from the running Nginx
+container, detects the host address, and forwards the monitoring settings to
+Flutter. Set `ANDROID_DEVICE_ID` or `OPENOBSERVE_HOST` only when the automatic
+selection needs to be overridden.
+
+For development on a Windows computer, Docker can remain on this Mac or on a
+separate server. Copy `.openobserve-client.example.json` to
+`.openobserve-client.json` in the Windows checkout, replace the URL with the
+Docker host's LAN address and set the same Nginx ingestion key. After this
+one-time setup, `run_windows_dev.ps1` loads it automatically.
 
 Platform-specific host URL:
 

@@ -135,6 +135,7 @@ Future<void> _runVariant(String variant, _RunOptions options) async {
       if (options.release) '--release',
       '--dart-define=APP_ENV=${options.environment}',
       '--dart-define=APP_VARIANT=$variant',
+      ..._monitoringDartDefinesFromEnvironment(),
       ...options.forwardedArguments,
     ];
 
@@ -175,6 +176,7 @@ Future<void> _buildApkVariant(String variant, _RunOptions options) async {
       options.release ? '--release' : '--debug',
       '--dart-define=APP_ENV=${options.environment}',
       '--dart-define=APP_VARIANT=$variant',
+      ..._monitoringDartDefinesFromEnvironment(),
       ...options.forwardedArguments,
     ];
 
@@ -253,6 +255,7 @@ Future<void> _buildWindowsVariant(_RunOptions options) async {
       options.release ? '--release' : '--debug',
       '--dart-define=APP_ENV=${options.environment}',
       '--dart-define=APP_VARIANT=windows',
+      ..._monitoringDartDefinesFromEnvironment(),
       ...options.forwardedArguments,
     ];
 
@@ -658,6 +661,33 @@ _RunOptions _parseRunOptions(List<String> arguments) {
     release: release,
     forwardedArguments: forwarded,
   );
+}
+
+List<String> _monitoringDartDefinesFromEnvironment() {
+  final ingestUrl =
+      Platform.environment['OPENOBSERVE_INGEST_URL']?.trim() ?? '';
+  final ingestKey =
+      Platform.environment['OPENOBSERVE_INGEST_KEY']?.trim() ?? '';
+
+  if (ingestUrl.isEmpty && ingestKey.isEmpty) {
+    return const <String>[];
+  }
+  if (ingestUrl.isEmpty || ingestKey.isEmpty) {
+    _fail(
+      'OPENOBSERVE_INGEST_URL and OPENOBSERVE_INGEST_KEY must be set together.',
+    );
+  }
+
+  final uri = Uri.tryParse(ingestUrl);
+  final endpoint = uri == null
+      ? 'configured endpoint'
+      : '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}${uri.path}';
+  stdout.writeln('OpenObserve monitoring enabled: $endpoint');
+
+  return <String>[
+    '--dart-define=OPENOBSERVE_INGEST_URL=$ingestUrl',
+    '--dart-define=OPENOBSERVE_INGEST_KEY=$ingestKey',
+  ];
 }
 
 void _requireVariant(String variant) {

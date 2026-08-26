@@ -1,4 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-fvm dart run tool/variant.dart run windows --env dev "$@"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$SCRIPT_DIR"
+
+client_config=${OPENOBSERVE_CLIENT_CONFIG:-$SCRIPT_DIR/.openobserve-client.json}
+monitoring_arguments=()
+device_arguments=(-d windows)
+
+for argument in "$@"; do
+  if [ "$argument" = "-d" ] || [ "$argument" = "--device-id" ]; then
+    device_arguments=()
+    break
+  fi
+done
+
+if [ -f "$client_config" ]; then
+  monitoring_arguments+=("--dart-define-from-file=$client_config")
+elif [ -n "${OPENOBSERVE_INGEST_URL:-}" ] &&
+  [ -n "${OPENOBSERVE_INGEST_KEY:-}" ]; then
+  monitoring_arguments+=(
+    "--dart-define=OPENOBSERVE_INGEST_URL=$OPENOBSERVE_INGEST_URL"
+    "--dart-define=OPENOBSERVE_INGEST_KEY=$OPENOBSERVE_INGEST_KEY"
+  )
+else
+  echo "Error: OpenObserve client configuration was not found." >&2
+  echo "Copy .openobserve-client.example.json to .openobserve-client.json and fill in the server URL and ingestion key." >&2
+  exit 1
+fi
+
+fvm dart run tool/variant.dart run windows --env dev \
+  "${device_arguments[@]}" "${monitoring_arguments[@]}" "$@"
