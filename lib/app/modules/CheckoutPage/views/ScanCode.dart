@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
-import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
-import 'Appointment.dart';
 
 class ScanCodeView extends GetView {
   //final CheckoutPageController controller = Get.put(CheckoutPageController());
@@ -50,16 +46,16 @@ class ScanCodeView extends GetView {
                             ),
                             style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(11.0)),
                             onChanged: (value) {
-                              //print(value);
-                              if(value.length==1){
-                                controller.showOrderEasyLoading();
-                              }
+                              logI('scan on changed: $value');
+                              // if(value.length==1){
+                              //   controller.showOrderEasyLoading();
+                              // }
 
                             },
                             onSubmitted: (value){
-                              Future.delayed(Duration(milliseconds: 150), () {
+                              //Future.delayed(Duration(milliseconds: 150), () {
                                 controller.requestOrderList(value);
-                              });
+                              //});
 
 
 
