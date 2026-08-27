@@ -14,6 +14,7 @@ Logger l([String name = 'App']) => Logger(name);
 void logI(
   Object msg, {
   String tag = 'App',
+  String? recordType,
   String? eventCode,
   String? flowId,
   String? incidentId,
@@ -22,6 +23,7 @@ void logI(
   Logger(tag).info(
     AppLogMessage(
       message: msg.toString(),
+      recordType: recordType,
       eventCode: eventCode,
       flowId: flowId,
       incidentId: incidentId,

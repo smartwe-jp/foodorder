@@ -212,15 +212,6 @@ class MachineInfoController extends GetxController {
     final paymentChannels = activation?.paymentChannels;
     shopCode = activation?.shopCode ?? "";
 
-    CustomLogHandler.configureContext(
-      merchantId: shopCode,
-      machineId: machineCode,
-    );
-    logI(
-      'Machine log context configured',
-      eventCode: 'MACHINE_CONTEXT_CONFIGURED',
-    );
-
     isBackHome = systemSettingInfo['isBackHome'] ?? true;
     // diningType = systemSettingInfo['diningType'] ?? '1';
     // logI('loadMachineSettingInfo diningType : $diningType');

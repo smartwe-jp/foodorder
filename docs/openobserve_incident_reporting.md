@@ -29,7 +29,31 @@ fvm flutter run \
 - `print`、`debugPrint` 按当前要求不采集。
 - 普通 Logger 记录使用 `record_type: log`。
 - 需要错误堆栈和前置操作轨迹的错误事件，会额外产生 `record_type: incident` 记录；可用同一个 `incident_id` 关联错误日志和详细事件。
+- 机器信息加载完成后立即产生一条 `record_type: device_heartbeat`，之后每 60 秒产生一次。心跳同样进入本地 Outbox，断网时保存、网络恢复后补传。
 - 每条记录包含当前可用的 `merchant_id`、`machine_id`、App 版本、平台、会话 ID 和环境字段。
+
+设备心跳包含以下顶层字段：
+
+- `shop_name`：目前保留为空字符串，等待后台补充店铺名称。
+- `logo_image_url`：来自激活数据的 `logoImage`，仅随心跳发送，不附加到每条业务日志。
+- `machine_type`：来自激活数据的 `machineType`，不使用当前没有数据来源的 `machine_name`。
+- `device_status`：App 发出心跳时固定为 `online`。
+- `heartbeat_interval_seconds`：当前固定为 `60`。
+
+设备是否离线必须由查询时间和最后一次心跳时间计算，不能依赖 App
+主动发送 `offline`：关机、进程崩溃或断网时都无法发送事件。第一版建议以最后心跳超过
+150 秒作为离线阈值。断网期间累积的旧心跳恢复后会按实际 `_timestamp` 补传，因此设备列表应始终取每台机器最大的 `_timestamp`。
+
+设备详情 Dashboard 可以用 HTML 面板显示当前设备的 logo：
+
+```html
+<img
+  src="{{logo_image_url}}"
+  style="width:64px;height:64px;object-fit:contain;border-radius:6px"
+/>
+```
+
+如果 `logoImage` 是带签名和有效期的临时 URL，过期后 Dashboard 图片也会失效；生产环境最终应由后台提供稳定 URL 或图片代理。
 
 上传 Key 不是商户或点餐机登录账号，但仍应视为可轮换凭据。APK/EXE 中的构建参数无法被视为真正的秘密，因此服务端必须同时配置限流、请求体大小限制和路径隔离。
 
@@ -135,7 +159,7 @@ App 每次发送一个 JSON 数组，普通 Logger 事件最多每批 100 条。
 
 Stream：`app_events`
 
-- 精确索引：`record_type`、`incident_id`、`event_code`、`merchant_id`、`machine_id`、`severity`、`app_version`、`platform`
+- 精确索引：`record_type`、`incident_id`、`event_code`、`merchant_id`、`machine_id`、`machine_type`、`device_status`、`severity`、`app_version`、`platform`
 - 全文索引：`message`、`error`
 - 保留周期：初期 90 天
 - 不要对 `breadcrumbs` 和 `stack_trace` 建立精确索引

@@ -13,6 +13,7 @@ import '../../../controllers/machine_info.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/Storage.dart';
+import '../../../services/device_heartbeat_service.dart';
 import '../../../services/machine_runtime_service.dart';
 import '../../../widget/DialogUtils.dart';
 
@@ -216,6 +217,8 @@ class TransitPageController extends GetxController {
   }
 
   Future<void> _injectControllers() async {
+    deviceHeartbeatService.startForRuntime(_machineRuntime);
+
     if (!Get.isRegistered<MachineInfoController>()) {
       final controller = MachineInfoController();
       await Get.putAsync<MachineInfoController>(() async {

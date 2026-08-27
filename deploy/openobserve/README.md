@@ -33,7 +33,14 @@ Then open Logs and select the `app_events` stream.
 The App sends every structured `Logger` record (`INFO`, `WARNING`, `SEVERE`,
 and other `package:logging` levels) to this stream. `print` and `debugPrint`
 are intentionally excluded. Detailed error incidents share the stream and are
-distinguished by `record_type` (`log` or `incident`).
+distinguished by `record_type` (`log`, `incident`, or `device_heartbeat`).
+
+After machine information is available, an enabled monitoring build sends one
+`device_heartbeat` immediately and then every 60 seconds. The record includes
+`merchant_id`, `machine_id`, `shop_name`, `logo_image_url`, `machine_type`, App
+version, and platform. Treat a machine as offline when its latest heartbeat is
+older than 150 seconds; the App cannot send an explicit offline event after a
+power loss, process kill, or network outage.
 
 ## Run the Flutter app against the local stack
 

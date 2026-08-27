@@ -56,6 +56,7 @@ class AppLogMessage {
 
   const AppLogMessage({
     required this.message,
+    this.recordType,
     this.eventCode,
     this.flowId,
     this.incidentId,
@@ -63,6 +64,7 @@ class AppLogMessage {
   });
 
   final String message;
+  final String? recordType;
   final String? eventCode;
   final String? flowId;
   final String? incidentId;
@@ -78,6 +80,7 @@ class AppLogMessage {
       if (decoded is! Map) return null;
       return AppLogMessage(
         message: decoded['message']?.toString() ?? '',
+        recordType: decoded['record_type']?.toString(),
         eventCode: decoded['event_code']?.toString(),
         flowId: decoded['flow_id']?.toString(),
         incidentId: decoded['incident_id']?.toString(),
@@ -93,6 +96,7 @@ class AppLogMessage {
   @override
   String toString() => '$_transportPrefix${jsonEncode(<String, Object?>{
             'message': message,
+            if (recordType?.isNotEmpty ?? false) 'record_type': recordType,
             if (eventCode?.isNotEmpty ?? false) 'event_code': eventCode,
             if (flowId?.isNotEmpty ?? false) 'flow_id': flowId,
             if (incidentId?.isNotEmpty ?? false) 'incident_id': incidentId,
@@ -108,6 +112,7 @@ class AppLogEntry {
     required this.message,
     required this.context,
     this.eventCode,
+    this.recordType = 'log',
     this.flowId,
     this.incidentId,
     this.data = const <String, Object?>{},
@@ -127,6 +132,9 @@ class AppLogEntry {
       level: record.level.name,
       tag: record.loggerName,
       message: AppLogSanitizer.text(payload.message),
+      recordType: payload.recordType?.trim().isNotEmpty ?? false
+          ? payload.recordType!.trim()
+          : 'log',
       eventCode: payload.eventCode,
       flowId: payload.flowId,
       incidentId: payload.incidentId,
@@ -148,6 +156,7 @@ class AppLogEntry {
   final String level;
   final String tag;
   final String message;
+  final String recordType;
   final String? eventCode;
   final String? flowId;
   final String? incidentId;
@@ -175,7 +184,7 @@ class AppLogEntry {
         ...toJson(),
         ..._openObserveDimensions,
         'schema_version': 1,
-        'record_type': 'log',
+        'record_type': recordType,
         'event_id': eventId,
         '_timestamp': timestamp.toUtc().toIso8601String(),
         'timestamp': timestamp.toUtc().toIso8601String(),
@@ -211,6 +220,11 @@ class AppLogEntry {
       'cash_device',
       'recovery_exhausted',
       'listener_type',
+      'shop_name',
+      'logo_image_url',
+      'machine_type',
+      'device_status',
+      'heartbeat_interval_seconds',
     };
     return <String, Object?>{
       for (final entry in data.entries)

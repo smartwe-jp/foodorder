@@ -40,6 +40,7 @@ void main() {
   test('restores structured message after logging converts it to text', () {
     const message = AppLogMessage(
       message: 'Payment request started',
+      recordType: 'device_heartbeat',
       eventCode: 'PAYMENT_REQUEST_STARTED',
       flowId: 'flow-1',
       data: {'phase': 'request'},
@@ -56,9 +57,42 @@ void main() {
     );
 
     expect(entry.message, 'Payment request started');
+    expect(entry.recordType, 'device_heartbeat');
     expect(entry.eventCode, 'PAYMENT_REQUEST_STARTED');
     expect(entry.flowId, 'flow-1');
     expect(entry.data, {'phase': 'request'});
+  });
+
+  test('promotes device heartbeat fields for OpenObserve dashboards', () {
+    final entry = AppLogEntry(
+      timestamp: DateTime.parse('2026-08-27T10:30:00+09:00'),
+      level: 'INFO',
+      tag: 'Monitoring',
+      recordType: 'device_heartbeat',
+      eventCode: 'DEVICE_HEARTBEAT',
+      message: 'Device heartbeat',
+      data: const {
+        'shop_name': '',
+        'logo_image_url': 'https://example.jp/logo.png',
+        'machine_type': 'SWF1',
+        'device_status': 'online',
+        'heartbeat_interval_seconds': 60,
+      },
+      context: const AppLogContext(
+        sessionId: 'session-1',
+        merchantId: 'shop-1',
+        machineId: 'machine-1',
+      ),
+    );
+
+    final uploadJson = entry.toOpenObserveJson(eventId: 'event-1');
+
+    expect(uploadJson['record_type'], 'device_heartbeat');
+    expect(uploadJson['shop_name'], '');
+    expect(uploadJson['logo_image_url'], 'https://example.jp/logo.png');
+    expect(uploadJson['machine_type'], 'SWF1');
+    expect(uploadJson['device_status'], 'online');
+    expect(uploadJson['heartbeat_interval_seconds'], 60);
   });
 
   test('structured entry contains searchable context and error details', () {
