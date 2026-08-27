@@ -8,7 +8,6 @@ import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 class ResetToHomeTimer {
   Timer? _timer;
@@ -22,11 +21,6 @@ class ResetToHomeTimer {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
-        //一个访问公网的主动心跳用于检测网络是否正常
-        if (Platform.isAndroid) {
-          getPing();
-        }
-
         if (Get.routing.current == Routes.ORDER_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {
           if (Platform.isAndroid) {
@@ -105,20 +99,6 @@ class ResetToHomeTimer {
         logI("event resetTimer");
         _timeoutSeconds = timeSeconds;
       }
-    }
-  }
-
-  getPing() async {
-    print("--getPing--");
-    try {
-      final response = await http.get(Uri.parse('https://www.google.com'));
-      if (response.statusCode == 200) {
-        logI('Network Ping successful');
-      } else {
-        logI('Network Ping failed');
-      }
-    } catch (e) {
-      logI('Network Ping failed: $e');
     }
   }
 
