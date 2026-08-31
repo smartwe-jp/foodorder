@@ -109,9 +109,9 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
     logI(
         '[麻辣烫] 流程开始 language=${checkLanguage.value} takeout=${machineInfo.isTakeoutMode} machine=${machineInfo.machineCode}');
     // 延后到帧结束后再切 locale，避免 build 中 updateLocale → forceAppUpdate 崩溃
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _applyLanguageLocale(checkLanguage.value);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _applyLanguageLocale(checkLanguage.value);
+    // });
     if (!isNormalMode) {
       itemFocusNode.requestFocus();
     }

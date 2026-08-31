@@ -34,13 +34,12 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
         onTap: () => controller.updateSettingLanguage(language.code),
       );
     }).toList();
-
     return Container(
         alignment: Alignment.center,
         height: ScreenAdapter.height(100),
         margin: EdgeInsets.only(
-          left: ScreenAdapter.width(40),
-          right: ScreenAdapter.width(40),
+          left: ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
         ),
         padding: EdgeInsets.only(
           top: ScreenAdapter.height(20),
@@ -49,7 +48,7 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
           bottom: ScreenAdapter.height(20),
         ),
         child: Row(
-          spacing: 20,
+          spacing: 16,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         ));

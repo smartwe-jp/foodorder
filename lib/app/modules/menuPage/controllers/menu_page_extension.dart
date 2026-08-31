@@ -30,6 +30,9 @@ extension MenuPageControllerExtension on MenuPageController {
 
     update(['side_bar']);
     update(['background']);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      requestSpicyMenuScanFocus();
+    });
   }
 
   _updateOptionsInfo(List menuList) {
