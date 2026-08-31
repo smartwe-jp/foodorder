@@ -90,7 +90,6 @@ class MenuPageController extends GetxController with StateMixin {
   bool showRecommend = false;
   bool showCartView = false;
   String shopCode = '';
-  final logger = Logger('MenuPageController');
 
   AudioPlayer? player;
 
