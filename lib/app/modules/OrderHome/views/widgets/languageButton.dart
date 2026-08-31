@@ -52,7 +52,7 @@ class _LanguageButtonState extends State<LanguageButton> {
         curve: Curves.easeOutCubic,
         child: Container(
           height: ScreenAdapter.height(120),
-          width: ScreenAdapter.width(220),
+          width: ScreenAdapter.width(176),
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(15),
@@ -70,7 +70,7 @@ class _LanguageButtonState extends State<LanguageButton> {
             child: AutoSizeText(
               widget.title,
               style: TextStyle(
-                color: widget.selected ? Colors.black : widget.startColor,
+                color: widget.startColor,//widget.selected ? Colors.black : 
                 fontSize: 36,
                 fontWeight: FontWeight.w600,
               ),

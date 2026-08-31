@@ -34,13 +34,12 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
         onTap: () => controller.updateSettingLanguage(language.code),
       );
     }).toList();
-
     return Container(
         alignment: Alignment.center,
-        //height: ScreenAdapter.height(100),
+        height: ScreenAdapter.height(100),
         margin: EdgeInsets.only(
-          left: ScreenAdapter.width(40),
-          right: ScreenAdapter.width(40),
+          left: ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
         ),
         padding: EdgeInsets.only(
           top: ScreenAdapter.height(20),
@@ -48,10 +47,9 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
           right: ScreenAdapter.width(30),
           bottom: ScreenAdapter.height(20),
         ),
-        child: Wrap(
-          spacing: 20,
-          runSpacing: 20,
-          //mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         ));
   }
@@ -371,10 +369,10 @@ class CheckoutPageView extends GetView<CheckoutPageController> {
                       ),
                 ),
                 Positioned(
-                  bottom: ScreenAdapter.height(1),
+                  bottom: ScreenAdapter.height(100),
                   child: Container(
                       width: ScreenAdapter.width(1080),
-                      height: ScreenAdapter.height(300),
+                      height: ScreenAdapter.height(200),
                       child: _buildLanguageSelector()),
                 ),
                 // Positioned(
