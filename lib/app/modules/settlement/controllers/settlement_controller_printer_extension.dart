@@ -687,7 +687,7 @@ class PrintService extends GetxService {
                     child: AutoSizeText(
                       name,
                       maxLines: 3,
-                      minFontSize: 22,
+                      minFontSize: 18,
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         fontSize: 32,
