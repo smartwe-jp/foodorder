@@ -128,6 +128,7 @@ class MenuPageController extends GetxController with StateMixin {
   final TextEditingController spicyScanQrController = TextEditingController();
   final FocusNode spicyScanQrFocusNode = FocusNode(debugLabel: 'SpicyMenuBarCode');
   bool _spicyBarCodeQueryInFlight = false;
+  bool _spicyScanResourcesDisposed = false;
 
   bool get isSpicyHotPotMenuScanEnabled =>
       machineInfo.currentMode == MachineMode.spicyHotPot;
@@ -187,6 +188,10 @@ class MenuPageController extends GetxController with StateMixin {
   //获取菜单
   Future<void> onClose() async {
     debugPrint('MenuPageController onClose');
+    _spicyScanResourcesDisposed = true;
+    if (_spicyBarCodeQueryInFlight && EasyLoading.isShow) {
+      EasyLoading.dismiss();
+    }
     spicyScanQrController.dispose();
     spicyScanQrFocusNode.dispose();
     //player?.dispose();
@@ -404,7 +409,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   void requestSpicyMenuScanFocus() {
-    if (!isSpicyHotPotMenuScanEnabled) return;
+    if (_spicyScanResourcesDisposed || !isSpicyHotPotMenuScanEnabled) return;
     try {
       spicyScanQrController.clear();
       spicyScanQrFocusNode.requestFocus();
@@ -414,6 +419,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   void _resetSpicyMenuScan({bool restoreFocus = true}) {
+    if (_spicyScanResourcesDisposed) return;
     spicyScanQrController.clear();
     if (EasyLoading.isShow) {
       EasyLoading.dismiss();
@@ -1587,13 +1593,19 @@ print("加1了");
         (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
       await ScaleSerialService.releaseUsbSafely(reason: 'goto_settlement');
     }
-    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+    await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "orderId": doSubmitOrderId.value,
       "totalPrice": total,
       "machineMode": "1",
       "showOpenPayment": showOpenPayment.value
     });
+    if (!_spicyScanResourcesDisposed && _isCurrentMenuRoute) {
+      debugPrint('requestSpicyMenuScanFocus');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        requestSpicyMenuScanFocus();
+      });
+    }
   }
 
   CancelOrder() {
