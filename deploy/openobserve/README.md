@@ -51,10 +51,11 @@ From the repository root, run:
 ```
 
 The script selects the first online ADB device, chooses the Android 7 or
-Android 11 dependency variant, reads the ingestion key from the running Nginx
-container, detects the host address, and forwards the monitoring settings to
-Flutter. Set `ANDROID_DEVICE_ID` or `OPENOBSERVE_HOST` only when the automatic
-selection needs to be overridden.
+Android 11 dependency variant, and loads the agreed client URL and ingestion
+key from `.openobserve-client.json`. Set `ANDROID_DEVICE_ID` only when the
+automatic device selection needs to be overridden. Android and Windows use
+the same client configuration and never need to inspect the Nginx container
+when launching the App.
 
 For development on a Windows computer, Docker can remain on this Mac or on a
 separate server. Copy `.openobserve-client.example.json` to

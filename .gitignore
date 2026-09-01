@@ -54,4 +54,3 @@ app.*.map.json
 .fvm/
 
 # Local OpenObserve client credentials
-.openobserve-client.json
