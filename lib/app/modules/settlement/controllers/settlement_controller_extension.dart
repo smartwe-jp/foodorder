@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -52,6 +51,11 @@ extension SettlementControllerExtension on SettlementController {
           error: error,
           data: const <String, Object?>{'cash_device': 'glory'},
         );
+        monitorPaymentFlowFailed(
+          failedStage: 'cash_device_open',
+          failureType: PaymentFailureType.deviceUnavailable,
+          error: error,
+        );
         logger.info('--start Deposit error: $ret--');
         //"サービスは利用できません。スタッフに連絡してください。";
         //errorHandleDialog(GString.getToString(checkLanguage.value, error));
@@ -60,42 +64,147 @@ extension SettlementControllerExtension on SettlementController {
     return ret;
   }
 
-  _checkChangerStatus() async {
+  _checkChangerStatus({int attempt = 1}) async {
     debugPrint("checkChangerStatus 1");
     logger.info('--start checkChangerStatus--');
+    monitorPaymentInfo(
+      PaymentEventCode.cashDeviceStatusCheckStarted,
+      'Glory cash device status check started',
+      status: 'started',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'attempt': attempt,
+      },
+    );
     var resultCode = await CashChanger.checkChangerStatus;
     if (resultCode == null) {
       debugPrint("Unknown error");
-      _checkChangerStatus();
+      final willRetry = attempt < 3;
+      if (willRetry) {
+        monitorPaymentWarning(
+          PaymentEventCode.cashDeviceStatusCheckFailed,
+          'Glory cash device status check returned no result',
+          failureType: PaymentFailureType.invalidResponse,
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'attempt': attempt,
+            'will_retry': true,
+          },
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        _checkChangerStatus(attempt: attempt + 1);
+      } else {
+        monitorPaymentCritical(
+          PaymentEventCode.cashDeviceStatusCheckFailed,
+          'Glory cash device status check failed after retry',
+          failureType: PaymentFailureType.invalidResponse,
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'attempt': attempt,
+            'will_retry': false,
+          },
+        );
+        monitorPaymentFlowFailed(
+          failedStage: 'cash_device_status_check',
+          failureType: PaymentFailureType.invalidResponse,
+        );
+      }
       return;
     }
     debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
     if (resultCode == 0) {
       resultCode = 100;
     }
-    HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode - 100];
+    final resultIndex = resultCode - 100;
+    if (resultIndex < 0 || resultIndex >= HealthResultCode.values.length) {
+      monitorPaymentCritical(
+        PaymentEventCode.cashDeviceStatusCheckFailed,
+        'Glory cash device returned an unknown status code',
+        failureType: PaymentFailureType.invalidResponse,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'attempt': attempt,
+          'result_code': resultCode,
+        },
+      );
+      monitorPaymentFlowFailed(
+        failedStage: 'cash_device_status_check',
+        failureType: PaymentFailureType.invalidResponse,
+      );
+      return;
+    }
+    HealthResultCode resultCodeEnum = HealthResultCode.values[resultIndex];
     logger.info('-- checkChangerStatus : $resultCodeEnum--');
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
+        monitorPaymentInfo(
+          PaymentEventCode.cashDeviceStatusCheckSucceeded,
+          'Glory cash device status check succeeded',
+          status: 'succeeded',
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'attempt': attempt,
+            'result_code': resultCode,
+            'health_status': resultCodeEnum.name,
+          },
+        );
         _getInputMoney();
         break;
       case HealthResultCode.OPOS_E_CLOSED:
       case HealthResultCode.OPOS_E_NOTCLAIMED:
       case HealthResultCode.OPOS_E_DISABLED:
         debugPrint("checkChangerStatus error: $resultCode");
+        _reportGloryStatusCheckFailure(resultCodeEnum, resultCode, attempt);
         break;
       case HealthResultCode.OPOS_E_BUSY:
-        sleep(Duration(seconds: 5));
-        _checkChangerStatus();
+        monitorPaymentWarning(
+          PaymentEventCode.cashDeviceStatusCheckFailed,
+          'Glory cash device is busy',
+          failureType: PaymentFailureType.deviceUnavailable,
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'attempt': attempt,
+            'result_code': resultCode,
+            'health_status': resultCodeEnum.name,
+            'will_retry': true,
+          },
+        );
+        await Future.delayed(const Duration(seconds: 5));
+        _checkChangerStatus(attempt: attempt + 1);
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
         debugPrint("checkChangerStatus error: $resultCode");
+        _reportGloryStatusCheckFailure(resultCodeEnum, resultCode, attempt);
         break;
       default:
         debugPrint("checkChangerStatus error: $resultCode");
+        _reportGloryStatusCheckFailure(resultCodeEnum, resultCode, attempt);
         break;
     }
+  }
+
+  void _reportGloryStatusCheckFailure(
+    HealthResultCode status,
+    int resultCode,
+    int attempt,
+  ) {
+    monitorPaymentCritical(
+      PaymentEventCode.cashDeviceStatusCheckFailed,
+      'Glory cash device status check failed',
+      failureType: PaymentFailureType.deviceUnavailable,
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'attempt': attempt,
+        'result_code': resultCode,
+        'health_status': status.name,
+        'will_retry': false,
+      },
+    );
+    monitorPaymentFlowFailed(
+      failedStage: 'cash_device_status_check',
+      failureType: PaymentFailureType.deviceUnavailable,
+    );
   }
 
   //获取投入金额
@@ -164,6 +273,15 @@ extension SettlementControllerExtension on SettlementController {
       logger.info('-- onStatusUpdateEventChange: $result --');
       debugPrint("onStatusUpdateEventChange : $result");
       if (result == 'OK') {
+        monitorPaymentInfo(
+          PaymentEventCode.cashDeviceStatusUpdated,
+          'Glory cash device status updated',
+          status: 'observed',
+          data: const <String, Object?>{
+            'cash_device': 'glory',
+            'health_status': 'OK',
+          },
+        );
         return;
       }
       // if (result == 'NEARFULL') {
@@ -171,6 +289,32 @@ extension SettlementControllerExtension on SettlementController {
       //   return;
       // }
       if (result == 'FULL' || result == 'NEARFULL') {
+        final isFull = result == 'FULL';
+        if (isFull) {
+          monitorPaymentCritical(
+            PaymentEventCode.cashCapacityFull,
+            'Glory cash device capacity is full',
+            failureType: PaymentFailureType.cashCapacity,
+            data: const <String, Object?>{
+              'cash_device': 'glory',
+              'health_status': 'FULL',
+            },
+          );
+        } else {
+          monitorPaymentWarning(
+            PaymentEventCode.cashCapacityWarning,
+            'Glory cash device capacity is nearly full',
+            failureType: PaymentFailureType.cashCapacity,
+            data: const <String, Object?>{
+              'cash_device': 'glory',
+              'health_status': 'NEARFULL',
+            },
+          );
+        }
+        monitorPaymentFlowFailed(
+          failedStage: 'cash_capacity',
+          failureType: PaymentFailureType.cashCapacity,
+        );
         //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
         // _notifyMachineFull(true);
         // String? machineChangeInfo = await getMachineCashInfo();
@@ -190,6 +334,16 @@ extension SettlementControllerExtension on SettlementController {
         _whileFull();
         return;
       }
+      monitorPaymentCritical(
+        PaymentEventCode.cashDeviceStatusUpdated,
+        'Glory cash device reported an error status',
+        failureType: PaymentFailureType.deviceUnavailable,
+        error: result,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'health_status': result,
+        },
+      );
       errorHandleDialog(result);
     };
   }
@@ -217,11 +371,49 @@ extension SettlementControllerExtension on SettlementController {
   _fullRepayFlow(String errorMessage) async {
     Get.back();
     showEasyLoading();
+    monitorPaymentStageStarted(
+      'cash_refund',
+      PaymentEventCode.cashRefundStarted,
+      'Glory capacity recovery refund started',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'refund_amount': int.tryParse(getPutMoney.value),
+        'refund_method': 'capacity_recovery',
+      },
+    );
     final resultFixDeposit = await CashChanger.fixDeposit;
     logger.info('-- full repayFlow fixDeposit result: $resultFixDeposit --');
 
     final result = await CashChanger.depositRepay;
     logger.info('-- full repayFlow depositRepay result: $result --');
+    if (result == 0) {
+      monitorPaymentStageSucceeded(
+        'cash_refund',
+        PaymentEventCode.cashRefundSucceeded,
+        'Glory capacity recovery refund succeeded',
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'refund_amount': int.tryParse(getPutMoney.value),
+          'refund_method': 'capacity_recovery',
+          'result_code': result,
+        },
+      );
+    } else {
+      monitorPaymentStageFailed(
+        'cash_refund',
+        PaymentEventCode.cashRefundFailed,
+        'Glory capacity recovery refund needs manual handling',
+        failureType: PaymentFailureType.deviceRejected,
+        critical: true,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'refund_amount': int.tryParse(getPutMoney.value),
+          'refund_method': 'capacity_recovery',
+          'result_code': result,
+          'fix_deposit_result': resultFixDeposit,
+        },
+      );
+    }
     EasyLoading.dismiss();
     final pendingCashList = <PendingCashItem>[];
     if (result != 0) {
@@ -270,15 +462,36 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束
-  endDeposit({repay = false}) async {
+  endDeposit({repay = false, int attempt = 1}) async {
     logger.info('-- end Deposit and isRepay?: $repay --');
     debugPrint("endDeposit repay: $repay");
+    monitorPaymentStageStarted(
+      'cash_deposit_stop',
+      PaymentEventCode.cashDepositStopStarted,
+      'Glory cash deposit stop started',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'repay': repay,
+        'attempt': attempt,
+      },
+    );
     //sleep(Duration(milliseconds: 300));
     logger.info('-- end Deposit fixDeposit --');
     final result = await CashChanger.fixDeposit;
     if (result != 0) {
       debugPrint("endDeposit error: $result");
       logger.info('-- end Deposit fixDeposit error: $result--');
+      monitorPaymentWarning(
+        PaymentEventCode.cashDeviceStatusUpdated,
+        'Glory fix deposit returned a non-zero result',
+        failureType: PaymentFailureType.deviceRejected,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'repay': repay,
+          'attempt': attempt,
+          'result_code': result,
+        },
+      );
       // errorHandleDialog('OPOS_fixDeposit_FAILURE');
       // return;
     }
@@ -286,6 +499,16 @@ extension SettlementControllerExtension on SettlementController {
     //sleep(Duration(milliseconds: 300));
 
     if (repay) {
+      monitorPaymentStageSucceeded(
+        'cash_deposit_stop',
+        PaymentEventCode.cashDepositStopSucceeded,
+        'Glory cash deposit stopped for refund',
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'repay': true,
+          'attempt': attempt,
+        },
+      );
       _repayFlow();
       return;
     }
@@ -311,16 +534,46 @@ extension SettlementControllerExtension on SettlementController {
           //   }
           // }
           logger.info('-- end Deposit success --');
+          monitorPaymentStageSucceeded(
+            'cash_deposit_stop',
+            PaymentEventCode.cashDepositStopSucceeded,
+            'Glory cash deposit stop succeeded',
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'repay': false,
+              'attempt': attempt,
+              'result_code': resultCode,
+            },
+          );
           _payCubeCloseTransaction(true);
         },
         onRetry: () {
           debugPrint("endDeposit 2");
-          endDeposit();
+          endDeposit(repay: repay, attempt: attempt + 1);
         },
         showError: (String error) {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
           logger.info('-- end Deposit error: $error --');
+          monitorPaymentStageFailed(
+            'cash_deposit_stop',
+            PaymentEventCode.cashDepositStopFailed,
+            'Glory cash deposit stop failed',
+            failureType: PaymentFailureType.deviceRejected,
+            critical: true,
+            error: error,
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'repay': repay,
+              'attempt': attempt,
+              'result_code': resultCode,
+            },
+          );
+          monitorPaymentFlowFailed(
+            failedStage: 'cash_deposit_stop',
+            failureType: PaymentFailureType.deviceRejected,
+            error: error,
+          );
           errorHandleDialog(error.tr, confirm: () {
             _repayFlow();
           });
@@ -372,15 +625,36 @@ extension SettlementControllerExtension on SettlementController {
 
   Future<String?> getMachineCashInfo({Function? retry}) async {
     debugPrint("getMachineCashInfo 0");
+    monitorPaymentInfo(
+      PaymentEventCode.cashBalanceReadStarted,
+      'Glory cash balance read started',
+      status: 'started',
+      data: const <String, Object?>{'cash_device': 'glory'},
+    );
     var result = null;
     await CashChanger.getCashBalance(
       onSuccess: (value) {
         debugPrint("getMachineCashInfo 1");
-
+        monitorPaymentInfo(
+          PaymentEventCode.cashBalanceReadSucceeded,
+          'Glory cash balance read succeeded',
+          status: 'succeeded',
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'cash_balance_raw': value,
+          },
+        );
         result = value;
       },
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
+        monitorPaymentWarning(
+          PaymentEventCode.cashBalanceReadFailed,
+          'Glory cash balance read failed',
+          failureType: PaymentFailureType.deviceUnavailable,
+          error: error,
+          data: const <String, Object?>{'cash_device': 'glory'},
+        );
         if (retry == null) {
           errorHandleDialog(error.tr);
         } else {
@@ -391,10 +665,10 @@ extension SettlementControllerExtension on SettlementController {
     return result;
   }
 
-  _startOutputMoney(outMoney) async {
+  _startOutputMoney(outMoney, {int attempt = 1}) async {
     if (isOutMoney) {
       logger.info("-- isOutMoney == true --");
-      return;
+      return false;
     }
     isOutMoney = true;
     monitorPaymentStageStarted(
@@ -404,6 +678,7 @@ extension SettlementControllerExtension on SettlementController {
       data: <String, Object?>{
         'cash_device': 'glory',
         'change_amount': int.tryParse(outMoney.toString()),
+        'attempt': attempt,
       },
     );
     logger.info('-- startOutPutMoney : $outMoney --');
@@ -424,13 +699,15 @@ extension SettlementControllerExtension on SettlementController {
         data: <String, Object?>{
           'cash_device': 'glory',
           'change_amount': int.tryParse(outMoney.toString()),
+          'attempt': attempt,
         },
       );
       monitorPaymentFlowFailed(
         failedStage: 'cash_change',
         failureType: PaymentFailureType.invalidResponse,
       );
-      return;
+      isOutMoney = false;
+      return false;
     }
     debugPrint("resultCode: $result");
 
@@ -448,12 +725,14 @@ extension SettlementControllerExtension on SettlementController {
             data: <String, Object?>{
               'cash_device': 'glory',
               'change_amount': int.tryParse(outMoney.toString()),
+              'attempt': attempt,
             },
           );
         },
         onRetry: () {
           debugPrint("startOutPutMoney 2");
-          _startOutputMoney(outMoney);
+          isOutMoney = false;
+          _startOutputMoney(outMoney, attempt: attempt + 1);
         },
         showError: (String error) {
           isOutMoney = false;
@@ -468,6 +747,7 @@ extension SettlementControllerExtension on SettlementController {
             data: <String, Object?>{
               'cash_device': 'glory',
               'change_amount': int.tryParse(outMoney.toString()),
+              'attempt': attempt,
             },
           );
           monitorPaymentFlowFailed(
@@ -488,16 +768,40 @@ extension SettlementControllerExtension on SettlementController {
     return success;
   }
 
-  _repayFlow() async {
+  _repayFlow({int attempt = 1}) async {
     showEasyLoading();
     logger.info('-- start repayFlow --');
+    monitorPaymentStageStarted(
+      'cash_refund',
+      PaymentEventCode.cashRefundStarted,
+      'Glory cash refund started',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'refund_amount': int.tryParse(getPutMoney.value),
+        'refund_method': 'deposit_repay',
+        'attempt': attempt,
+      },
+    );
     final result = await CashChanger.depositRepay;
     await CashChanger.changerResultNext(
         resultCode: result,
-        onSuccess: () {
+        onSuccess: () async {
           logger.info('-- start repayFlow depositRepay success --');
+          monitorPaymentStageSucceeded(
+            'cash_refund',
+            PaymentEventCode.cashRefundSucceeded,
+            'Glory cash refund succeeded',
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'refund_amount': int.tryParse(getPutMoney.value),
+              'refund_method': 'deposit_repay',
+              'attempt': attempt,
+              'result_code': result,
+            },
+          );
           //if (getPutMoney.value == '2000') {
-          _getPayCubeOutMoney(reportWithOrder: false);
+          await _getPayCubeOutMoney(reportWithOrder: false);
+          monitorPaymentFlowCancelled(cancelledStage: 'cash_refund');
           // } else {
           //   EasyLoading.dismiss();
           //   Get.back();
@@ -505,11 +809,24 @@ extension SettlementControllerExtension on SettlementController {
         },
         onRetry: () {
           debugPrint("depositRepay 2");
-          _repayFlow();
+          _repayFlow(attempt: attempt + 1);
         },
         showError: (String error) {
           debugPrint("depositRepay error: $error");
           logger.info('-- start repayFlow depositRepay error: $error --');
+          monitorPaymentWarning(
+            PaymentEventCode.cashRefundFailed,
+            'Glory deposit repay failed; using outside dispense fallback',
+            failureType: PaymentFailureType.deviceRejected,
+            error: error,
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'refund_amount': int.tryParse(getPutMoney.value),
+              'refund_method': 'deposit_repay',
+              'attempt': attempt,
+              'will_retry': true,
+            },
+          );
           // errorHandleDialog(GString.getToString(checkLanguage.value, error),
           //     confirm: () {
           //   Get.back();
@@ -520,19 +837,44 @@ extension SettlementControllerExtension on SettlementController {
         });
   }
 
-  gloryOutputMoney(outMoney) async {
+  gloryOutputMoney(outMoney, {int attempt = 1}) async {
     //debugPrint("startOutPutMoney");
     logger.info('-- start gloryOutputMoney: $outMoney --');
     print("outMoney: $outMoney");
+    monitorPaymentStageStarted(
+      'cash_refund',
+      PaymentEventCode.cashRefundStarted,
+      'Glory outside cash refund started',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'refund_amount': int.tryParse(outMoney.toString()),
+        'refund_method': 'dispense_change_outside',
+        'attempt': attempt,
+      },
+    );
     //var outStringMoney = outMoney.toString();
+    Object? outsideRefundError;
     bool? result =
-        await CashChanger.dispenseChangeOutside(outMoney, onSuccess: () {
+        await CashChanger.dispenseChangeOutside(outMoney, onSuccess: () async {
       //已经结束入金，处理取引终了
       logger.info('-- start gloryOutputMoney success --');
-      _getPayCubeOutMoney(reportWithOrder: false);
+      monitorPaymentStageSucceeded(
+        'cash_refund',
+        PaymentEventCode.cashRefundSucceeded,
+        'Glory outside cash refund succeeded',
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'refund_amount': int.tryParse(outMoney.toString()),
+          'refund_method': 'dispense_change_outside',
+          'attempt': attempt,
+        },
+      );
+      await _getPayCubeOutMoney(reportWithOrder: false);
+      monitorPaymentFlowCancelled(cancelledStage: 'cash_refund');
     }, catchError: (error) {
       logger.info('-- start gloryOutputMoney error: $error --');
       debugPrint("startOutPutMoney error: $error");
+      outsideRefundError = error;
       // _errorHandleDialog(GString.getToString(checkLanguage.value, error),
       // confirm: () {
       //   Get.back();
@@ -541,6 +883,25 @@ extension SettlementControllerExtension on SettlementController {
 
     debugPrint("resultCode: $result");
     if (!result) {
+      monitorPaymentStageFailed(
+        'cash_refund',
+        PaymentEventCode.cashRefundFailed,
+        'Glory outside cash refund failed',
+        failureType: PaymentFailureType.deviceRejected,
+        critical: true,
+        error: outsideRefundError,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'refund_amount': int.tryParse(outMoney.toString()),
+          'refund_method': 'dispense_change_outside',
+          'attempt': attempt,
+        },
+      );
+      monitorPaymentFlowFailed(
+        failedStage: 'cash_refund',
+        failureType: PaymentFailureType.deviceRejected,
+        error: outsideRefundError,
+      );
       EasyLoading.dismiss();
       errorHandleDialog('repay_cash_error'.tr, confirm: () {
         Get.back();
@@ -556,6 +917,12 @@ extension SettlementControllerExtension on SettlementController {
     }
 
     isReportCash.value = true;
+    monitorPaymentStageStarted(
+      'cash_reimburse_notify',
+      PaymentEventCode.cashReimburseNotifyStarted,
+      'Glory cash reimburse notification started',
+      data: const <String, Object?>{'cash_device': 'glory'},
+    );
 
     var formData = {
       "responseMessage": changeString,
@@ -568,6 +935,15 @@ extension SettlementControllerExtension on SettlementController {
 
       EasyLoading.dismiss();
       if (response['code'] == 200 && response['data'] == true) {
+        monitorPaymentStageSucceeded(
+          'cash_reimburse_notify',
+          PaymentEventCode.cashReimburseNotifySucceeded,
+          'Glory cash reimburse notification succeeded',
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'result_code': response['code'],
+          },
+        );
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
                 title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -575,6 +951,17 @@ extension SettlementControllerExtension on SettlementController {
             }),
             barrierDismissible: false);
       } else {
+        monitorPaymentStageFailed(
+          'cash_reimburse_notify',
+          PaymentEventCode.cashReimburseNotifyFailed,
+          'Glory cash reimburse notification was rejected',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'result_code': response['code'],
+          },
+        );
         Get.dialog(
             DialogUtils.alertOneButton("返金失敗です。",
                 title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -582,6 +969,17 @@ extension SettlementControllerExtension on SettlementController {
             }),
             barrierDismissible: false);
       }
+    }).catchError((error) {
+      isReportCash.value = false;
+      monitorPaymentStageFailed(
+        'cash_reimburse_notify',
+        PaymentEventCode.cashReimburseNotifyFailed,
+        'Glory cash reimburse notification failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        data: const <String, Object?>{'cash_device': 'glory'},
+      );
     });
   }
 
@@ -612,6 +1010,15 @@ extension SettlementControllerExtension on SettlementController {
   _getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
     logger.info('-- getInputMoneyInfo --');
+    monitorPaymentStageStarted(
+      'cash_denominations_read',
+      PaymentEventCode.cashDenominationsReadStarted,
+      'Glory cash denominations read started',
+      data: const <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit',
+      },
+    );
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
     debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
 
@@ -633,6 +1040,51 @@ extension SettlementControllerExtension on SettlementController {
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
     logger.info('-- getInputMoneyInfo: ${getPutMoneyCurrency.value}--');
+    if (getPutMoneyCurrency.value.trim().isEmpty &&
+        (int.tryParse(getPutMoney.value) ?? 0) > 0) {
+      monitorPaymentStageFailed(
+        'cash_denominations_read',
+        PaymentEventCode.cashDenominationsReadFailed,
+        'Glory cash deposit denominations were empty',
+        failureType: PaymentFailureType.invalidResponse,
+        critical: true,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'direction': 'deposit',
+          'coin_status_raw': currencyCoinStringresult,
+          'banknote_status_raw': currencyCashStringresult,
+        },
+      );
+      monitorPaymentFlowFailed(
+        failedStage: 'cash_denominations_read',
+        failureType: PaymentFailureType.invalidResponse,
+      );
+      return;
+    }
+    monitorPaymentStageSucceeded(
+      'cash_denominations_read',
+      PaymentEventCode.cashDenominationsReadSucceeded,
+      'Glory cash deposit denominations read succeeded',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit',
+        'snapshot_kind': 'device_read',
+        'coin_status_raw': currencyCoinStringresult,
+        'banknote_status_raw': currencyCashStringresult,
+        'payment_info': getPutMoneyCurrency.value,
+      },
+    );
+    monitorPaymentInfo(
+      PaymentEventCode.cashDepositDenominationsUpdated,
+      'Glory cash deposit denominations updated',
+      status: 'received',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit',
+        'snapshot_kind': 'device_read',
+        'denomination_data': getPutMoneyCurrency.value,
+      },
+    );
     _payCubeCloseTransaction(false);
   }
 
@@ -642,6 +1094,15 @@ extension SettlementControllerExtension on SettlementController {
 
     debugPrint("_getPayCubeOutMoney");
     logger.info('-- getPayCubeOutMoney --');
+    monitorPaymentStageStarted(
+      'cash_denominations_read',
+      PaymentEventCode.cashDenominationsReadStarted,
+      'Glory cash denominations read started',
+      data: const <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit_and_payout',
+      },
+    );
     //获取硬币入金出金币种
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
     debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
@@ -675,10 +1136,76 @@ extension SettlementControllerExtension on SettlementController {
         MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
     logger.info('-- getPayCubeMoney out==${currencyString} --');
 
+    if (getPutMoneyCurrency.value.trim().isEmpty &&
+        currencyString.value.trim().isEmpty) {
+      monitorPaymentStageFailed(
+        'cash_denominations_read',
+        PaymentEventCode.cashDenominationsReadFailed,
+        'Glory cash denominations were empty',
+        failureType: PaymentFailureType.invalidResponse,
+        critical: true,
+        data: <String, Object?>{
+          'cash_device': 'glory',
+          'direction': 'deposit_and_payout',
+          'coin_status_raw': currencyCoinStringresult,
+          'banknote_status_raw': currencyCashStringresult,
+        },
+      );
+      monitorPaymentFlowFailed(
+        failedStage: 'cash_denominations_read',
+        failureType: PaymentFailureType.invalidResponse,
+      );
+      return;
+    }
+    monitorPaymentStageSucceeded(
+      'cash_denominations_read',
+      PaymentEventCode.cashDenominationsReadSucceeded,
+      'Glory cash denominations read succeeded',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit_and_payout',
+        'snapshot_kind': 'device_read',
+        'coin_status_raw': currencyCoinStringresult,
+        'banknote_status_raw': currencyCashStringresult,
+        'payment_info': getPutMoneyCurrency.value,
+        'change_info': currencyString.value,
+      },
+    );
+    monitorPaymentInfo(
+      PaymentEventCode.cashDepositDenominationsUpdated,
+      'Glory cash deposit denominations updated',
+      status: 'received',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'deposit',
+        'snapshot_kind': 'device_read',
+        'denomination_data': getPutMoneyCurrency.value,
+      },
+    );
+    monitorPaymentInfo(
+      PaymentEventCode.cashPayoutDenominationsUpdated,
+      'Glory cash payout denominations updated',
+      status: 'received',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'direction': 'payout',
+        'snapshot_kind': 'device_read',
+        'denomination_data': currencyString.value,
+      },
+    );
+
     getOutMoneyString.value == false;
     if (reportWithOrder) {
       _reportOutMoney();
     } else {
+      final operation = machineInfo.machineMode == "1" ? 1 : 2;
+      monitorCashDenominationsFinalized(
+        operation: operation,
+        paymentInfo: getPutMoneyCurrency.value.trim(),
+        changeInfo: currencyString.value.trim(),
+        insertedAmount: int.tryParse(getPutMoney.value),
+        changeAmount: int.tryParse(getPutMoney.value),
+      );
       Map inputInfo = MoneyParser.migrationGloryToMap(putMoneyCurrency);
       List<Map> puts = inputInfo.entries.map((entry) {
         return {'catVal': entry.key, 'val': entry.value};
@@ -697,6 +1224,12 @@ extension SettlementControllerExtension on SettlementController {
     logger.info('-- getPayCubeMoney reportExchange --');
     var success = false;
     debugPrint('reportExchange');
+    monitorPaymentStageStarted(
+      'cash_exchange_report',
+      PaymentEventCode.cashExchangeReportStarted,
+      'Glory cash exchange report started',
+      data: const <String, Object?>{'cash_device': 'glory'},
+    );
     var formData = {
       'machineCode': machineInfo.machineCode,
       'puts': puts,
@@ -718,15 +1251,44 @@ extension SettlementControllerExtension on SettlementController {
       Get.back();
       if (response["code"] == 200) {
         success = true;
+        monitorPaymentStageSucceeded(
+          'cash_exchange_report',
+          PaymentEventCode.cashExchangeReportSucceeded,
+          'Glory cash exchange report succeeded',
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'result_code': response['code'],
+          },
+        );
         //showToast('完了しました', context: Get.context);
       } else {
         success = false;
+        monitorPaymentStageFailed(
+          'cash_exchange_report',
+          PaymentEventCode.cashExchangeReportFailed,
+          'Glory cash exchange report was rejected',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{
+            'cash_device': 'glory',
+            'result_code': response['code'],
+          },
+        );
         //showToast('両替失败!', context: Get.context);
       }
     }).catchError((error) {
       logger.info(
           '-- getPayCubeMoney reportExchange error:${error.toString()} --');
       success = false;
+      monitorPaymentStageFailed(
+        'cash_exchange_report',
+        PaymentEventCode.cashExchangeReportFailed,
+        'Glory cash exchange report failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        data: const <String, Object?>{'cash_device': 'glory'},
+      );
       EasyLoading.dismiss();
       Get.back();
       //showToast('両替失败!', context: Get.context);

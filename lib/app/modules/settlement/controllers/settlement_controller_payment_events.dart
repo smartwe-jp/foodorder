@@ -6,6 +6,7 @@ final class _SettlementPaymentEventState {
   final Map<String, DateTime> stageStartedAt = <String, DateTime>{};
   final PaymentFlowTerminalGuard terminalGuard = PaymentFlowTerminalGuard();
   bool cancelRequestReported = false;
+  bool cashDenominationsFinalizedReported = false;
   int qrPaymentAttempt = 0;
   int posConnectAttempt = 0;
   int posConnectedAttempt = 0;
@@ -259,6 +260,37 @@ extension SettlementControllerPaymentEvents on SettlementController {
     );
   }
 
+  void _reportCashDenominationsFinalized({
+    required int operation,
+    required String paymentInfo,
+    required String changeInfo,
+    required int? insertedAmount,
+    required int? changeAmount,
+  }) {
+    if (_paymentEventState.cashDenominationsFinalizedReported) return;
+    _paymentEventState.cashDenominationsFinalizedReported = true;
+
+    final cashDevice = switch (machineInfo.cashMachineDriver) {
+      CashMachineDriver.payCube => 'paycube',
+      CashMachineDriver.cashChanger => 'glory',
+      CashMachineDriver.none => 'none',
+    };
+    _paymentInfo(
+      PaymentEventCode.cashDenominationsFinalized,
+      'Cash denominations finalized',
+      status: 'finalized',
+      data: <String, Object?>{
+        'cash_device': cashDevice,
+        'operation': operation,
+        'snapshot_kind': 'final',
+        'payment_info': paymentInfo,
+        'change_info': changeInfo,
+        'inserted_amount': insertedAmount,
+        'change_amount': changeAmount,
+      },
+    );
+  }
+
   void monitorPaymentInfo(
     String eventCode,
     String message, {
@@ -266,6 +298,54 @@ extension SettlementControllerPaymentEvents on SettlementController {
     Map<String, Object?> data = const <String, Object?>{},
   }) {
     _paymentInfo(eventCode, message, status: status, data: data);
+  }
+
+  void monitorPaymentWarning(
+    String eventCode,
+    String message, {
+    required String failureType,
+    Object? error,
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    _paymentWarning(
+      eventCode,
+      message,
+      failureType: failureType,
+      error: error,
+      data: data,
+    );
+  }
+
+  void monitorPaymentCritical(
+    String eventCode,
+    String message, {
+    required String failureType,
+    Object? error,
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    _paymentCritical(
+      eventCode,
+      message,
+      failureType: failureType,
+      error: error,
+      data: data,
+    );
+  }
+
+  void monitorCashDenominationsFinalized({
+    required int operation,
+    required String paymentInfo,
+    required String changeInfo,
+    required int? insertedAmount,
+    required int? changeAmount,
+  }) {
+    _reportCashDenominationsFinalized(
+      operation: operation,
+      paymentInfo: paymentInfo,
+      changeInfo: changeInfo,
+      insertedAmount: insertedAmount,
+      changeAmount: changeAmount,
+    );
   }
 
   void monitorPaymentStageStarted(

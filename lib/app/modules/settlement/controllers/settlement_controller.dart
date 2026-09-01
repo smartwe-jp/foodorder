@@ -21,6 +21,7 @@ import 'package:logging/logging.dart';
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
+import '../../../models/machine_capabilities.dart';
 import '../../../plugins/cash_changer/lib/cash_changer.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
@@ -1650,8 +1651,10 @@ class SettlementController extends GetxController with StateMixin {
             'Cash deposit amount updated',
             status: 'received',
             data: <String, Object?>{
+              'cash_device': 'paycube',
               'listener_type': type,
               'listener_value': value,
+              'inserted_amount': int.tryParse(value),
             },
           );
           _updatePutMoneyInfo(value);
@@ -1663,8 +1666,12 @@ class SettlementController extends GetxController with StateMixin {
             'Cash deposit denominations updated',
             status: 'received',
             data: <String, Object?>{
+              'cash_device': 'paycube',
               'listener_type': type,
               'listener_value': value,
+              'denomination_data': value,
+              'direction': 'deposit',
+              'snapshot_kind': 'realtime',
             },
           );
           _getPayCubePutMoneyCurrency(value, canReportFromListen);
@@ -1676,8 +1683,12 @@ class SettlementController extends GetxController with StateMixin {
             'Cash payout denominations updated',
             status: 'received',
             data: <String, Object?>{
+              'cash_device': 'paycube',
               'listener_type': type,
               'listener_value': value,
+              'denomination_data': value,
+              'direction': 'payout',
+              'snapshot_kind': 'realtime',
             },
           );
           _getPayCubeOutMoney(value, isRepayCash);
@@ -2110,6 +2121,13 @@ class SettlementController extends GetxController with StateMixin {
       "operation": operation,
       "coinForbidden": Platform.isAndroid ? int.parse(machineInfo.is_allow_oneyen) : 1
     };
+    _reportCashDenominationsFinalized(
+      operation: operation,
+      paymentInfo: getPutMoneyCurrency.value.trim(),
+      changeInfo: currencyString.value.trim(),
+      insertedAmount: int.tryParse(getPutMoney.value),
+      changeAmount: int.tryParse(outStringMoney.value),
+    );
     final reportAttempt = retry ? 1 : 2;
     _paymentStageStarted(
       'cash_payment_report',
