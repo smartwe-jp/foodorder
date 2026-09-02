@@ -15,14 +15,12 @@ class OrderSqlController extends GetxService {
     // TODO: implement onInit
     super.onInit();
     loadDB();
-
-    getCardList();
   }
 
   loadDB() async {
     await itemServices.openDB();
 
-    getCardList();
+    await getCardList();
   }
 
   bool isAlreadyInCart(id) {
