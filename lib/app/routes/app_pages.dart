@@ -142,21 +142,25 @@ class AppPages {
         SettingbackTransitBinding(),
         TransitPageBinding()
       ],
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: _Paths.MIDDLEWARE_SETTING_PAGE,
       page: () => MiddlewareSettingPageView(),
       binding: MiddlewareSettingPageBinding(),
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: _Paths.SYSTEM_SETTING_PAGE,
       page: () => SystemSettingPageView(),
       binding: SystemSettingPageBinding(),
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: _Paths.SYSTEM_SETTING_PAGE_NEW,
       page: () => SystemSettingPage(),
       binding: SystemSettingPageBinding(),
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: _Paths.SETTINGBACK_TRANSIT,
