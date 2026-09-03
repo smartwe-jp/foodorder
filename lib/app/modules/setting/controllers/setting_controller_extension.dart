@@ -13,6 +13,7 @@ import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:foodorder/app/services/cash_monitoring_events.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
@@ -442,6 +443,7 @@ extension SettingControllerExtension on SettingController {
     if (machineChangeInfo == null) {
       return;
     }
+    pendingGloryEmptyBalance = Map.from(machineChangeInfo);
 
     var formData = {
       'changeInfoMap': machineChangeInfo,
@@ -464,10 +466,12 @@ extension SettingControllerExtension on SettingController {
       if (response["code"] == 200) {
         success = true;
       } else {
+        pendingGloryEmptyBalance = {};
         errorHandleDialog("${response["msg"] ?? 'この機能はレジ締め後に実行する必要があります。'}");
         success = false;
       }
     }).catchError((error) {
+      pendingGloryEmptyBalance = {};
       logE("gloryEmptyReport error: $error");
 
       if (error.toString().contains("Http status error")) {
@@ -512,7 +516,12 @@ extension SettingControllerExtension on SettingController {
     );
   }
 
-  gloryConfirmSync({bool showLoading = true}) async {
+  Future<CashBalanceSyncResult> gloryConfirmSync({
+    bool showLoading = true,
+    String reason = 'manual_sync',
+    String? flowId,
+    bool createBaseline = false,
+  }) async {
     logger.info("---gloryConfirmSync---");
 
     //
@@ -520,7 +529,27 @@ extension SettingControllerExtension on SettingController {
       showEasyLoading(content: "データを同期中");
     }
     Map machineCash = await getMachineCashInfos() ?? {};
-    if (machineCash.isEmpty) return false;
+    if (machineCash.isEmpty) {
+      EasyLoading.dismiss();
+      logW(
+        'Cash Changer balance read failed',
+        upload: true,
+        tag: 'CashMonitoring',
+        eventCode: 'CASH_BALANCE_SNAPSHOT_FAILED',
+        flowId: flowId,
+        data: <String, Object?>{
+          'event_status': 'failed',
+          'cash_device': 'glory',
+          'snapshot_reason': reason,
+          'is_baseline': createBaseline,
+          'failure_type': 'balance_read_failed',
+        },
+      );
+      return const CashBalanceSyncResult(
+        snapshotCaptured: false,
+        backendSynced: false,
+      );
+    }
     debugPrint("gloryConfirmSync: $machineCash");
 
     var formData = {
@@ -529,32 +558,109 @@ extension SettingControllerExtension on SettingController {
       'shopCode': shopCode,
     };
     logger.info("formData: $formData");
-    request(
-      'webGloryConfirmSync',
-      method: 'POST',
-      parameters: formData,
-    ).then((value) async {
+    try {
+      final value = await request(
+        'webGloryConfirmSync',
+        method: 'POST',
+        parameters: formData,
+      );
       debugPrint("gloryConfirmSync value: $value");
       final response = json.decode(value.toString());
       logger.info("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
+        CashMonitoringEvents.snapshot(
+          reason: reason,
+          counts: machineCash,
+          isBaseline: createBaseline,
+          flowId: flowId,
+        );
         if (showLoading) {
           showToast('完了しました');
         }
         getCashInfo();
+        return const CashBalanceSyncResult(
+          snapshotCaptured: true,
+          backendSynced: true,
+        );
       } else {
+        CashMonitoringEvents.snapshot(
+          reason: reason,
+          counts: machineCash,
+          isBaseline: createBaseline,
+          flowId: flowId,
+          backendSyncStatus: 'failed',
+        );
+        logW(
+          'Cash Changer balance backend sync failed',
+          upload: true,
+          tag: 'CashMonitoring',
+          eventCode: 'CASH_BALANCE_SYNC_FAILED',
+          flowId: flowId,
+          data: <String, Object?>{
+            'event_status': 'failed',
+            'cash_device': 'glory',
+            'snapshot_reason': reason,
+            'is_baseline': createBaseline,
+            'failure_type': 'backend_sync_rejected',
+            'response_code': response['code'],
+          },
+        );
         if (showLoading) {
-          errorHandleDialogTwo('同期失败', gloryConfirmSync());
+          errorHandleDialogTwo(
+            '同期失败',
+            () => gloryConfirmSync(
+              reason: reason,
+              flowId: flowId,
+              createBaseline: createBaseline,
+            ),
+          );
         }
+        return const CashBalanceSyncResult(
+          snapshotCaptured: true,
+          backendSynced: false,
+        );
       }
-    }).catchError((error) {
+    } catch (error) {
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
+      CashMonitoringEvents.snapshot(
+        reason: reason,
+        counts: machineCash,
+        isBaseline: createBaseline,
+        flowId: flowId,
+        backendSyncStatus: 'failed',
+      );
+      logW(
+        'Cash Changer balance backend sync failed',
+        upload: true,
+        tag: 'CashMonitoring',
+        eventCode: 'CASH_BALANCE_SYNC_FAILED',
+        flowId: flowId,
+        data: <String, Object?>{
+          'event_status': 'failed',
+          'cash_device': 'glory',
+          'snapshot_reason': reason,
+          'is_baseline': createBaseline,
+          'failure_type': 'backend_sync_exception',
+        },
+        error: error,
+      );
       if (showLoading) {
-        errorHandleDialogTwo('同期失败', gloryConfirmSync());
+        errorHandleDialogTwo(
+          '同期失败',
+          () => gloryConfirmSync(
+            reason: reason,
+            flowId: flowId,
+            createBaseline: createBaseline,
+          ),
+        );
       }
-    });
+      return const CashBalanceSyncResult(
+        snapshotCaptured: true,
+        backendSynced: false,
+      );
+    }
   }
 
   void askBeforeReplanish(printView) {
@@ -562,62 +668,51 @@ extension SettingControllerExtension on SettingController {
     Get.dialog(
       Obx(() {
         Widget content = Container(
-              padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
-              child: Column(
-                spacing: 20,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+          padding: EdgeInsets.symmetric(horizontal: 100, vertical: 30),
+          child: Column(
+            spacing: 20,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
               Text('入金は完了しましたか？ 補充を実行しますか？',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontFamily: GFont.getFontFamily(),
-                        fontSize: ScreenAdapter.fontSize(28)
-                        )
-                      ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(28))),
               Container(
                 padding: EdgeInsets.only(left: 50),
                 alignment: Alignment.centerLeft,
                 child: Text('補充情報:',
-                      style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w400,
-                          fontSize: ScreenAdapter.fontSize(24)
-                          )
-                        ),
+                    style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w400,
+                        fontSize: ScreenAdapter.fontSize(24))),
               ),
               ...uploadMoneyInfo.entries.map((entry) {
                 return Container(
-                  padding: EdgeInsets.only(left: 100, right: 100, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(
+                      left: 100, right: 100, top: 10, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${getDepositHexVal(entry.key)}',
-                        style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(24)
-                            )
-                      ),
-                      Text(
-                        '枚数: ${entry.value}',
-                        style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(24)
-                            )
-                      ),
-
+                      Text('${getDepositHexVal(entry.key)}',
+                          style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
+                              fontSize: ScreenAdapter.fontSize(24))),
+                      Text('枚数: ${entry.value}',
+                          style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
+                              fontSize: ScreenAdapter.fontSize(24))),
                     ],
                   ),
                 );
               }).toList(),
-              
               SizedBox(
                 height: 30,
               ),
-              ],
-            ),
-          );
+            ],
+          ),
+        );
 
         return DialogUtils.cashActionAlert(
           content,
@@ -657,6 +752,15 @@ extension SettingControllerExtension on SettingController {
       return;
     }
 
+    final cashFlowId = CashMonitoringEvents.newFlowId();
+    CashMonitoringEvents.ledgerDelta(
+      cashDevice: 'glory',
+      operationType: 'replenishment',
+      delta: CashMonitoringEvents.normalizeCodeCounts(uploadMoneyInfo),
+      flowId: cashFlowId,
+      source: 'cash_changer',
+    );
+
     var formData = {
       'changeInfoMap': uploadMoneyInfo,
       'machineCode': machineCode, //'PAZK8N7KKE8evkXks4'
@@ -683,6 +787,20 @@ extension SettingControllerExtension on SettingController {
         //commonHandleDialog('完了しました');
         //showToast('完了しました', context: Get.context);
       } else {
+        logW(
+          'Cash Changer replenishment backend report failed',
+          upload: true,
+          tag: 'CashMonitoring',
+          eventCode: 'CASH_REPLENISHMENT_REPORT_FAILED',
+          flowId: cashFlowId,
+          data: <String, Object?>{
+            'event_status': 'failed',
+            'cash_device': 'glory',
+            'operation_type': 'replenishment',
+            'failure_type': 'backend_report_rejected',
+            'response_code': response['code'],
+          },
+        );
         commonHandleDialog('補充失败!');
         //showToast('補充失败!', context: Get.context);
       }
@@ -690,6 +808,20 @@ extension SettingControllerExtension on SettingController {
       taskTouch = false;
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
+      logW(
+        'Cash Changer replenishment backend report failed',
+        upload: true,
+        tag: 'CashMonitoring',
+        eventCode: 'CASH_REPLENISHMENT_REPORT_FAILED',
+        flowId: cashFlowId,
+        data: <String, Object?>{
+          'event_status': 'failed',
+          'cash_device': 'glory',
+          'operation_type': 'replenishment',
+          'failure_type': 'backend_report_exception',
+        },
+        error: error,
+      );
       commonHandleDialog('補充失败!');
       //showToast('補充失败!', context: Get.context);
     });
@@ -771,7 +903,9 @@ extension SettingControllerExtension on SettingController {
     exchangeFromInfo = {};
     isStartPutMoney.value = false;
     //await gloryConfirmSync();
-    if (syncCash) gloryConfirmSync();
+    if (syncCash) {
+      gloryConfirmSync(reason: 'post_cash_operation');
+    }
     //update();
   }
 

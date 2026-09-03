@@ -11,6 +11,7 @@ import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/cash_machine_startup_service.dart';
+import 'package:foodorder/app/services/cash_monitoring_events.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
@@ -555,8 +556,15 @@ extension ExchangeControllerExtension on SettingController {
     if (outMoneySuccess || hasExchangeCash) {
       //isExchange = false;
       hasExchangeCash = true;
-      final result =
-          await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+      final cashFlowId = CashMonitoringEvents.newFlowId();
+      CashMonitoringEvents.ledgerDelta(
+        cashDevice: 'glory',
+        operationType: 'exchange',
+        delta: CashMonitoringEvents.movementDelta(puts: puts, pops: pops),
+        flowId: cashFlowId,
+        source: 'cash_changer',
+      );
+      final result = await reportExchange(puts, pops, flowId: cashFlowId);
       if (result) {
         clearTask();
         Get.back();
@@ -594,7 +602,15 @@ extension ExchangeControllerExtension on SettingController {
       return false;
     }
 
-    await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+    final cashFlowId = CashMonitoringEvents.newFlowId();
+    CashMonitoringEvents.ledgerDelta(
+      cashDevice: 'glory',
+      operationType: 'external_dispense',
+      delta: CashMonitoringEvents.movementDelta(puts: puts, pops: pops),
+      flowId: cashFlowId,
+      source: 'cash_changer',
+    );
+    await reportExchange(puts, pops, flowId: cashFlowId);
     clearTask();
     Get.back();
 
@@ -608,8 +624,9 @@ extension ExchangeControllerExtension on SettingController {
     int totalExchange = exChangeType * count;
     if (getPutMoney.value == 0) {
       return 'お金を入れてください';
-    }  else if (getExchange().isNotEmpty &&
-        (getExchange().length > 1) && (totalExchange < getPutMoney.value)) {
+    } else if (getExchange().isNotEmpty &&
+        (getExchange().length > 1) &&
+        (totalExchange < getPutMoney.value)) {
       //超出兑换金额，请取消再重试。
       return '両替金額を超えています。キャンセルして再試行してください。';
     } else if (getExchange().isNotEmpty &&
@@ -663,7 +680,7 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   //添加重试3次逻辑 和最后失败弹框提示。
-  reportExchange(puts, pops) async {
+  reportExchange(puts, pops, {String? flowId}) async {
     var success = false;
     logI('reportExchange');
     var formData = {
@@ -689,11 +706,39 @@ extension ExchangeControllerExtension on SettingController {
       } else {
         success = false;
         logI('---reportExchange failed: ${response["message"]}');
+        logW(
+          'Cash Changer exchange backend report failed',
+          upload: true,
+          tag: 'CashMonitoring',
+          eventCode: 'CASH_EXCHANGE_REPORT_FAILED',
+          flowId: flowId,
+          data: <String, Object?>{
+            'event_status': 'failed',
+            'cash_device': 'glory',
+            'operation_type': 'exchange',
+            'failure_type': 'backend_report_rejected',
+            'response_code': response['code'],
+          },
+        );
         showToast('report 失败!', context: Get.context);
       }
     }).catchError((error) {
       logI('---reportExchange error: $error');
       success = false;
+      logW(
+        'Cash Changer exchange backend report failed',
+        upload: true,
+        tag: 'CashMonitoring',
+        eventCode: 'CASH_EXCHANGE_REPORT_FAILED',
+        flowId: flowId,
+        data: <String, Object?>{
+          'event_status': 'failed',
+          'cash_device': 'glory',
+          'operation_type': 'exchange',
+          'failure_type': 'backend_report_exception',
+        },
+        error: error,
+      );
       EasyLoading.dismiss();
       showToast('report 失败!', context: Get.context);
     });

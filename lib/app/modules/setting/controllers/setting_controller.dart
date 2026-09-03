@@ -20,6 +20,7 @@ import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/Storage.dart';
+import 'package:foodorder/app/services/cash_monitoring_events.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
@@ -77,12 +78,14 @@ class SettingController extends GetxController with StateMixin {
   var taskTouch = false;
   //var isExchange = false;
   var exchangeFromInfo = {};
+  Map pendingGloryEmptyBalance = {};
   // Map printInfo = {};
   // double printLength = 2048;
   Timer? showCashTimer;
   final logger = Logger('SettingController');
 
-  bool get isAllowRejishime => machineInfo.isAllowRejishime == '1' ? true : false;
+  bool get isAllowRejishime =>
+      machineInfo.isAllowRejishime == '1' ? true : false;
   String get machineCode => machineInfo.machineCode;
   String get shopCode => machineInfo.shopCode;
   bool get is_reimburse => machineInfo.isAllowReimburse;
@@ -175,7 +178,6 @@ class SettingController extends GetxController with StateMixin {
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     try {
-
       if (Platform.isWindows) {
         logfile = await CustomLogHandler.exportLogs();
       }
@@ -185,33 +187,32 @@ class SettingController extends GetxController with StateMixin {
         "file": await MultipartFile.fromFile(logfile),
       });
 
-      final resp = await request("webBootLogUpload", method: "POST", parameters: formData);
+      final resp = await request("webBootLogUpload",
+          method: "POST", parameters: formData);
       final response = json.decode(resp.toString());
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-          Get.dialog(DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
-            Get.back();
-          }));
+        Get.dialog(DialogUtils.alertOneButton("ログのアップロードに完了しました。", confirm: () {
+          Get.back();
+        }));
       } else {
-        Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました", title: "エラー",
-            confirmtitle: "再試行",
-            confirm: () {
-              Get.back();
-              uploadErrorLog();
-            },
-            cancle: () {Get.back();}
-        ));
+        Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました",
+            title: "エラー", confirmtitle: "再試行", confirm: () {
+          Get.back();
+          uploadErrorLog();
+        }, cancle: () {
+          Get.back();
+        }));
       }
     } catch (e) {
       EasyLoading.dismiss();
-      Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}", title: "エラー",
-          confirmtitle: "再試行",
-          confirm: () {
-            Get.back();
-            uploadErrorLog();
-          },
-          cancle: () {Get.back();}
-      ));
+      Get.dialog(DialogUtils.alert("ログのアップロードに失敗しました ${e.toString()}",
+          title: "エラー", confirmtitle: "再試行", confirm: () {
+        Get.back();
+        uploadErrorLog();
+      }, cancle: () {
+        Get.back();
+      }));
     }
   }
   //20241128PT3_OperationLog.log.zip
@@ -285,7 +286,11 @@ class SettingController extends GetxController with StateMixin {
   //   }
   // }
 
-  printRejishimei(printLength, data) async {
+  printRejishimei(
+    printLength,
+    data, {
+    bool syncCashAfterPrint = true,
+  }) async {
     print('printRejishimei:$printLength, data:$data');
     if (data.isEmpty) {
       EasyLoading.dismiss();
@@ -299,11 +304,19 @@ class SettingController extends GetxController with StateMixin {
         //showToast('完了しました');
       });
     } else {
-      directPrintRejishimei(printLength, data);
+      directPrintRejishimei(
+        printLength,
+        data,
+        syncCashAfterPrint: syncCashAfterPrint,
+      );
     }
   }
 
-  directPrintRejishimei(printLength, data) async {
+  directPrintRejishimei(
+    printLength,
+    data, {
+    bool syncCashAfterPrint = true,
+  }) async {
     final printView = PrintView(isPrint: true, printInfo: data);
 
     final printWidget = Container(
@@ -320,7 +333,9 @@ class SettingController extends GetxController with StateMixin {
       Get.back();
       clearTask(syncCash: false);
       //Future.delayed(Duration(milliseconds: 500), () {
-      gloryConfirmSync();
+      if (syncCashAfterPrint) {
+        gloryConfirmSync(reason: 'register_close_legacy');
+      }
       //});
     });
 
@@ -339,17 +354,15 @@ class SettingController extends GetxController with StateMixin {
     //   settingController: this,
     // ));
 
-    Get.dialog(
-        RejishimeView());
+    Get.dialog(RejishimeView());
   }
 
   showRecycleAlert() {
     hasOutMoney = false;
 
-    Get.dialog(
-        RejishimeView(
-          isRejishime: false,
-        ));
+    Get.dialog(RejishimeView(
+      isRejishime: false,
+    ));
 
     // Get.to(RejishimeView(
     //   machineCode: machineCode.value,
@@ -481,8 +494,7 @@ class SettingController extends GetxController with StateMixin {
             barrierDismissible: false);
       }
     });
-    Get.toNamed('/receipt-query',
-        arguments: {"machineCode": machineCode});
+    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode});
   }
 
   String findChange(String cashStatus, int changeCount) {
@@ -524,11 +536,10 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode,
     };
     request('webBootChangeState',
-        method: 'POST',
-        parameters:
-        formData,
-        timeout: const Duration(seconds: 15)
-    ).then((val) {
+            method: 'POST',
+            parameters: formData,
+            timeout: const Duration(seconds: 15))
+        .then((val) {
       var response = json.decode(val.toString());
       debugPrint(
           "SettingController _getPaycubeChangeState response = ${response}");
@@ -568,7 +579,10 @@ class SettingController extends GetxController with StateMixin {
         await getChangeState();
       } else {
         await getCashInfo();
-        await gloryConfirmSync(showLoading: false);
+        await gloryConfirmSync(
+          showLoading: false,
+          reason: 'settings_opened',
+        );
       }
     }
 
@@ -597,9 +611,10 @@ class SettingController extends GetxController with StateMixin {
   }
 
   setCashSenOutset(type, number) {
+    final catVal = _getCatVal(type);
     var formData = {
       "currencyInfoVo": {
-        "catVal": _getCatVal(type),
+        "catVal": catVal,
         //"adjust": 0,
         "outset": number,
       },
@@ -612,18 +627,39 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
+        final counts = CashMonitoringEvents.normalizeCodeCounts(
+          <String, Object?>{catVal: number},
+        );
+        logI(
+          'PayCube initial cash count set',
+          upload: true,
+          tag: 'CashMonitoring',
+          recordType: 'cash_ledger_adjustment',
+          eventCode: 'PAYCUBE_CASH_INITIAL_SET',
+          data: <String, Object?>{
+            'event_status': 'succeeded',
+            'cash_device': 'paycube',
+            'operation_type': 'initial_set',
+            'denomination_counts': jsonEncode(counts),
+          },
+        );
         showToast('设置成功');
         getChangeState();
       } else {
+        _reportPayCubeCashSettingFailure('initial_set', response);
         showToast('设置失败');
       }
+    }).catchError((error) {
+      _reportPayCubeCashSettingFailure('initial_set', error);
+      showToast('设置失败');
     });
   }
 
   adjustCash(type, number) {
+    final catVal = _getCatVal(type);
     var formData = {
       "currencyInfoVo": {
-        "catVal": _getCatVal(type),
+        "catVal": catVal,
         "adjust": number,
         "outset": "",
       },
@@ -638,22 +674,36 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
+        CashMonitoringEvents.ledgerDelta(
+          cashDevice: 'paycube',
+          operationType: 'external_adjustment',
+          delta: CashMonitoringEvents.normalizeCodeCounts(
+            <String, Object?>{catVal: number},
+          ),
+          source: 'settings',
+        );
         showToast('设置成功');
         getChangeState();
       } else {
+        _reportPayCubeCashSettingFailure('external_adjustment', response);
         showToast('设置失败');
       }
+    }).catchError((error) {
+      _reportPayCubeCashSettingFailure('external_adjustment', error);
+      showToast('设置失败');
     });
   }
 
   adjustCashFromDeposit(type, number, depositCatVal, depositQty) {
+    final targetCatVal = _getCatVal(type);
+    final sourceCatVal = getDepositCatVal(depositCatVal);
     var formData = {
       "currencyInfoVo": {
-        "catVal": _getCatVal(type),
+        "catVal": targetCatVal,
         "adjust": number,
       },
       "fromDeposit": true,
-      "fromDepositCatVal": getDepositCatVal(depositCatVal),
+      "fromDepositCatVal": sourceCatVal,
       "fromDepositQty": depositQty,
       "machineCode": machineCode,
       "shopCode": shopCode,
@@ -663,12 +713,51 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
+        CashMonitoringEvents.ledgerDelta(
+          cashDevice: 'paycube',
+          operationType: 'deposit_to_change_transfer',
+          delta: CashMonitoringEvents.movementDelta(
+            puts: <Map<String, Object?>>[
+              <String, Object?>{'catVal': targetCatVal, 'val': number},
+            ],
+            pops: <Map<String, Object?>>[
+              <String, Object?>{'catVal': sourceCatVal, 'val': depositQty},
+            ],
+          ),
+          source: 'settings',
+        );
         showToast('设置成功');
         getChangeState();
       } else {
+        _reportPayCubeCashSettingFailure(
+          'deposit_to_change_transfer',
+          response,
+        );
         showToast('设置失败');
       }
+    }).catchError((error) {
+      _reportPayCubeCashSettingFailure(
+        'deposit_to_change_transfer',
+        error,
+      );
+      showToast('设置失败');
     });
+  }
+
+  void _reportPayCubeCashSettingFailure(String operationType, Object? error) {
+    logW(
+      'PayCube cash ledger update failed',
+      upload: true,
+      tag: 'CashMonitoring',
+      eventCode: 'PAYCUBE_CASH_LEDGER_UPDATE_FAILED',
+      data: <String, Object?>{
+        'event_status': 'failed',
+        'cash_device': 'paycube',
+        'operation_type': operationType,
+        'failure_type': 'backend_update_failed',
+      },
+      error: error,
+    );
   }
 
   recycleCashOut(count, Function skipAction) async {
@@ -702,6 +791,16 @@ class SettingController extends GetxController with StateMixin {
           resultCode: result,
           onSuccess: () async {
             logI("recycleCash onSuccess");
+            final counts = CashMonitoringEvents.normalizeCodeCounts(
+              pendingGloryEmptyBalance,
+            );
+            CashMonitoringEvents.ledgerDelta(
+              cashDevice: 'glory',
+              operationType: 'collection',
+              delta: counts.map((key, value) => MapEntry(key, -value)),
+              source: 'cash_changer',
+            );
+            pendingGloryEmptyBalance = {};
             EasyLoading.dismiss();
             await clearTask();
             commonHandleDialog('回收しました');

@@ -245,6 +245,18 @@ class AppLogEntry {
       'machine_type',
       'device_status',
       'heartbeat_interval_seconds',
+      'operation_type',
+      'event_source',
+      'snapshot_reason',
+      'is_baseline',
+      'denomination_counts',
+      'delta_counts',
+      'delta_amount',
+      'total_amount',
+      'backend_sync_status',
+      'business_close_status',
+      'print_status',
+      'baseline_status',
     };
     return <String, Object?>{
       for (final entry in data.entries)
