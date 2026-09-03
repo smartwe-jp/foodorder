@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
@@ -16,23 +15,30 @@ class ResetToHomeTimer {
 
   void startTimer() {
     cancelTimer();
-    logI("--startTimer--");
+    logI("--startTimer--", upload: false);
     _timeoutSeconds = timeSeconds;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
+        logI(
+          'Inactivity countdown completed',
+          upload: true,
+          tag: 'InactivityTimer',
+          eventCode: 'INACTIVITY_TIMER_COMPLETED',
+          data: <String, Object?>{
+            'route': Get.routing.current,
+            'timeout_seconds': timeSeconds,
+          },
+        );
+
         if (Get.routing.current == Routes.ORDER_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {
-          if (Platform.isAndroid) {
-            resetTimer();
-          } else {
-            cancelTimer();
-          }
+          cancelTimer();
           return;
         } else if (Get.routing.current == Routes.MENU_PAGE) {
           Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
           final isBackHome = systemSettingInfo['isBackHome'] ?? true;
-          logI("timer isBackHome:$isBackHome");
+          logI("timer isBackHome:$isBackHome", upload: false);
           if (isBackHome != true) {
             cancelTimer();
             if (Get.isRegistered<OrderSqlController>()) {
@@ -76,7 +82,7 @@ class ResetToHomeTimer {
             _returnToExistingCheckout();
           }
         } else {
-          logI('--offNamedUntil--');
+          logI('--offNamedUntil--', upload: false);
           _returnToExistingCheckout();
         }
       }
@@ -92,18 +98,18 @@ class ResetToHomeTimer {
 
   void resetTimer() {
     if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
-      logI("event startTimer");
+      logI("event startTimer", upload: false);
       startTimer();
     } else {
       if (_timer != null) {
-        logI("event resetTimer");
+        logI("event resetTimer", upload: false);
         _timeoutSeconds = timeSeconds;
       }
     }
   }
 
   void cancelTimer() {
-    logI("--cancelTimer--");
+    logI("--cancelTimer--", upload: false);
     _timer?.cancel();
     _timer = null;
   }

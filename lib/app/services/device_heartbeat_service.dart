@@ -79,6 +79,7 @@ class DeviceHeartbeatService {
   static void _emitToLogger(Map<String, Object?> data) {
     logI(
       'Device heartbeat',
+      upload: true,
       tag: 'Monitoring',
       recordType: 'device_heartbeat',
       eventCode: 'DEVICE_HEARTBEAT',

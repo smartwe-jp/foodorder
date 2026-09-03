@@ -56,6 +56,7 @@ class AppLogMessage {
 
   const AppLogMessage({
     required this.message,
+    this.upload = false,
     this.recordType,
     this.eventCode,
     this.flowId,
@@ -64,6 +65,7 @@ class AppLogMessage {
   });
 
   final String message;
+  final bool upload;
   final String? recordType;
   final String? eventCode;
   final String? flowId;
@@ -80,6 +82,7 @@ class AppLogMessage {
       if (decoded is! Map) return null;
       return AppLogMessage(
         message: decoded['message']?.toString() ?? '',
+        upload: decoded['upload'] == true,
         recordType: decoded['record_type']?.toString(),
         eventCode: decoded['event_code']?.toString(),
         flowId: decoded['flow_id']?.toString(),
@@ -96,6 +99,7 @@ class AppLogMessage {
   @override
   String toString() => '$_transportPrefix${jsonEncode(<String, Object?>{
             'message': message,
+            if (upload) 'upload': true,
             if (recordType?.isNotEmpty ?? false) 'record_type': recordType,
             if (eventCode?.isNotEmpty ?? false) 'event_code': eventCode,
             if (flowId?.isNotEmpty ?? false) 'flow_id': flowId,
@@ -118,6 +122,7 @@ class AppLogEntry {
     this.data = const <String, Object?>{},
     this.error,
     this.stackTrace,
+    this.shouldUpload = false,
   });
 
   factory AppLogEntry.fromRecord(
@@ -148,6 +153,7 @@ class AppLogEntry {
               record.stackTrace.toString(),
               maxLength: 16000,
             ),
+      shouldUpload: payload.upload,
       context: context,
     );
   }
@@ -163,6 +169,7 @@ class AppLogEntry {
   final Map<String, Object?> data;
   final String? error;
   final String? stackTrace;
+  final bool shouldUpload;
   final AppLogContext context;
 
   Map<String, Object?> toJson() => <String, Object?>{

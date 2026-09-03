@@ -13,6 +13,7 @@ Logger l([String name = 'App']) => Logger(name);
 
 void logI(
   Object msg, {
+  bool upload = false,
   String tag = 'App',
   String? recordType,
   String? eventCode,
@@ -23,6 +24,7 @@ void logI(
   Logger(tag).info(
     AppLogMessage(
       message: msg.toString(),
+      upload: upload,
       recordType: recordType,
       eventCode: eventCode,
       flowId: flowId,
@@ -34,6 +36,7 @@ void logI(
 
 void logW(
   Object msg, {
+  bool upload = false,
   String tag = 'App',
   String? eventCode,
   String? flowId,
@@ -45,6 +48,7 @@ void logW(
   Logger(tag).warning(
     AppLogMessage(
       message: msg.toString(),
+      upload: upload,
       eventCode: eventCode,
       flowId: flowId,
       incidentId: incidentId,
@@ -57,6 +61,7 @@ void logW(
 
 void logE(
   Object msg, {
+  bool upload = false,
   String tag = 'App',
   String? eventCode,
   String? flowId,
@@ -68,6 +73,7 @@ void logE(
   Logger(tag).severe(
     AppLogMessage(
       message: msg.toString(),
+      upload: upload,
       eventCode: eventCode,
       flowId: flowId,
       incidentId: incidentId,
@@ -201,7 +207,9 @@ class CustomLogHandler {
     if (_recentEntries.length > maxRecentEntries) {
       _recentEntries.removeRange(0, _recentEntries.length - maxRecentEntries);
     }
-    _eventSink?.call(entry);
+    if (entry.shouldUpload) {
+      _eventSink?.call(entry);
+    }
 
     final jsonLine = entry.toJsonLine();
     stdout.writeln(jsonLine);

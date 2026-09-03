@@ -58,6 +58,7 @@ extension SettlementControllerPaymentEvents on SettlementController {
   }) {
     logI(
       message,
+      upload: true,
       tag: 'PaymentFlow',
       eventCode: eventCode,
       flowId: paymentFlowId,
@@ -77,6 +78,7 @@ extension SettlementControllerPaymentEvents on SettlementController {
   }) {
     logW(
       message,
+      upload: true,
       tag: 'PaymentFlow',
       eventCode: eventCode,
       flowId: paymentFlowId,

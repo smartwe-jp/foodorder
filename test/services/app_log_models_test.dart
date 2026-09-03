@@ -63,6 +63,31 @@ void main() {
     expect(entry.data, {'phase': 'request'});
   });
 
+  test('restores the local-only upload decision after text conversion', () {
+    const message = AppLogMessage(
+      message: 'Timer reset',
+      upload: false,
+    );
+    final entry = AppLogEntry.fromRecord(
+      LogRecord(Level.INFO, message.toString(), 'Timer'),
+      const AppLogContext(sessionId: 'session-1'),
+    );
+
+    expect(entry.message, 'Timer reset');
+    expect(entry.shouldUpload, isFalse);
+  });
+
+  test('does not upload structured messages unless explicitly enabled', () {
+    const localMessage = AppLogMessage(message: 'Local debug log');
+    const uploadMessage = AppLogMessage(
+      message: 'Confirmed monitoring event',
+      upload: true,
+    );
+
+    expect(AppLogMessage.tryDecode(localMessage.toString())?.upload, isFalse);
+    expect(AppLogMessage.tryDecode(uploadMessage.toString())?.upload, isTrue);
+  });
+
   test('promotes device heartbeat fields for OpenObserve dashboards', () {
     final entry = AppLogEntry(
       timestamp: DateTime.parse('2026-08-27T10:30:00+09:00'),
