@@ -44,7 +44,7 @@ abstract final class CashMonitoringEvents {
       final denomination =
           _denominationByCode[entry.key.toString().toUpperCase()];
       final count = int.tryParse(entry.value.toString());
-      if (denomination == null || count == null || count == 0) continue;
+      if (denomination == null || count == null) continue;
       final key = denomination.toString();
       result[key] = (result[key] ?? 0) + count;
     }
@@ -150,7 +150,9 @@ abstract final class CashMonitoringEvents {
     String source = 'app_event',
     Map<String, Object?> data = const <String, Object?>{},
   }) {
-    if (delta.isEmpty) return;
+    final effectiveDelta = Map<String, int>.from(delta)
+      ..removeWhere((_, count) => count == 0);
+    if (effectiveDelta.isEmpty) return;
     logI(
       'Cash inventory movement recorded',
       upload: true,
@@ -163,8 +165,8 @@ abstract final class CashMonitoringEvents {
         'cash_device': cashDevice,
         'operation_type': operationType,
         'event_source': source,
-        'delta_counts': jsonEncode(delta),
-        'delta_amount': _total(delta),
+        'delta_counts': jsonEncode(effectiveDelta),
+        'delta_amount': _total(effectiveDelta),
         ...data,
       },
     );

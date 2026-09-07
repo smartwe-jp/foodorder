@@ -21,6 +21,23 @@ void main() {
       );
     });
 
+    test('keeps zero counts in synchronized denomination data', () {
+      expect(
+        CashMonitoringEvents.normalizeCodeCounts(<String, Object>{
+          '61': 0,
+          '62': '0',
+          '65': 2,
+          '87': 0,
+        }),
+        <String, int>{
+          '1': 0,
+          '5': 0,
+          '100': 2,
+          '1000': 0,
+        },
+      );
+    });
+
     test('builds a signed delta from inserted and dispensed movements', () {
       expect(
         CashMonitoringEvents.movementDelta(
