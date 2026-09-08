@@ -1543,6 +1543,7 @@ print("加1了");
             // }
             debugPrint('onCancelClick');
             paymentIsShow = false;
+            canAddCart.value = true;
             if (isBack == "back") {
               CancelOrder();
             }
