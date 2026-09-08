@@ -1778,7 +1778,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     final needInput = sseItem.needsIdentifyInput;
     final needCenterPrint = sseItem.needsCenterPrint;
     final centerOn = sseItem.centerOn;
-    final printOption = sseItem.printOption;
+    //final printOption = sseItem.printOption;
     var statusColor = Colors.red;
     final printSeat = sseItem.printSeat;
     final connectionStatus = controller.sseManager.connectionStatus(sseItem);
@@ -1887,22 +1887,22 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               ],
             ),
 
-          const SizedBox(height: 8),
+          // const SizedBox(height: 8),
 
-          if (isOn && sseItem.type == SseSubscriptionType.smartWe)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _settingContent('センタープリントオプション：'),
-                Switch(
-                  value: printOption,
-                  onChanged: (value) {
-                    controller.updateSSESetting(sseItem.key, printOption: value);
-                  },
-                  activeColor: Colors.blue,
-                ),
-              ],
-            ),
+          // if (isOn && sseItem.type == SseSubscriptionType.smartWe)
+          //   Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       _settingContent('センタープリントオプション：'),
+          //       Switch(
+          //         value: printOption,
+          //         onChanged: (value) {
+          //           controller.updateSSESetting(sseItem.key, printOption: value);
+          //         },
+          //         activeColor: Colors.blue,
+          //       ),
+          //     ],
+          //   ),
           if (isOn && sseItem.type == SseSubscriptionType.smartWe)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

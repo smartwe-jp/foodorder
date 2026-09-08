@@ -26,7 +26,7 @@ class _SpicyHotPotSettingsEntryState
     final enabled = machineInfo.isSpicyHotPotOn;
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.all(8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

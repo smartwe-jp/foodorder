@@ -56,7 +56,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxInt discount = 0.obs;
   RxInt itemCount = 0.obs;
 
-  String selectLanguage = 'JP';
   bool startShake = false;
   bool isAnimating = false;
 
@@ -104,6 +103,13 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   Color preThemeColor = Colors.green.shade900;
+
+  String get selectLanguage {
+    final languageCode = _locales.entries
+        .firstWhere((entry) => entry.value == Get.locale, orElse: () => MapEntry('JP', Locale('ja', 'JP')))
+        .key;
+    return languageCode;
+  }
 
   @override
   void onInit() {
@@ -588,7 +594,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   // }
 
   void updateSettingLanguage(String language) {
-    selectLanguage = language;
     Get.updateLocale(_locales[language] ?? _locales['JP']!);
     update();
   }

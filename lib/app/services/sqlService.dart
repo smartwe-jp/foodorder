@@ -4,51 +4,57 @@ import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SQLService {
+  static Future<Database>? _sharedDatabaseReady;
+
   Database? db;
+  late final Future<Database> _databaseReady;
+
   SQLService() {
     if (Platform.isWindows) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
     }
-    init();
+    _databaseReady = _sharedDatabaseReady ??= _openDB();
   }
 
   Future<void> init() async {
-    await openDB();
+    await _databaseReady;
   }
 
   Future openDB() async {
+    await _databaseReady;
+    return true;
+  }
+
+  Future<Database> _openDB() async {
     try {
       // Get a location using getDatabasesPath
       var databasesPath = await getDatabasesPath();
       String path = join(databasesPath, 'smartweshopping.db');
 
       // open the database
-      db = await openDatabase(
+      final database = await openDatabase(
         path,
         version: 1,
         onCreate: (Database db, int version) async {
           print(db);
-          this.db = db;
-          createTables();
+          await _createTables(db);
         },
       );
-      try {
-        await db?.execute(
-            "ALTER TABLE cart_list ADD COLUMN itemType TEXT DEFAULT ''");
-      } catch (_) {}
-      try {
-        await db?.execute(
-            "ALTER TABLE cart_list ADD COLUMN spicyGrams INTEGER DEFAULT 0");
-      } catch (_) {}
-      return true;
+      db = database;
+      await _ensureCartColumns(database);
+      return database;
     } catch (e) {
       print("ERROR IN OPEN DATABASE $e");
       return Future.error(e);
     }
   }
 
-  createTables() async {
+  Future<void> createTables() async {
+    await _createTables(await _databaseReady);
+  }
+
+  Future<void> _createTables(Database database) async {
     try {
       var qry = "CREATE TABLE IF NOT EXISTS cart_list ( "
           "id INTEGER PRIMARY KEY,"
@@ -64,18 +70,31 @@ class SQLService {
           "itemType TEXT DEFAULT '',"
           "spicyGrams INTEGER DEFAULT 0)";
 
-      await db?.execute(qry);
+      await database.execute(qry);
     } catch (e) {
       print("ERROR IN CREATE TABLE");
       print(e);
     }
   }
 
+  Future<void> _ensureCartColumns(Database database) async {
+    final columns = await database.rawQuery('PRAGMA table_info(cart_list)');
+    final columnNames = columns.map((column) => column['name']).toSet();
+    if (!columnNames.contains('itemType')) {
+      await database
+          .execute("ALTER TABLE cart_list ADD COLUMN itemType TEXT DEFAULT ''");
+    }
+    if (!columnNames.contains('spicyGrams')) {
+      await database.execute(
+          'ALTER TABLE cart_list ADD COLUMN spicyGrams INTEGER DEFAULT 0');
+    }
+  }
+
   Future getCartList() async {
     try {
-      var list =
-          await db?.rawQuery('SELECT * FROM cart_list ORDER BY id DESC', []);
-      return list ?? [];
+      final database = await _databaseReady;
+      return await database
+          .rawQuery('SELECT * FROM cart_list ORDER BY id DESC', []);
     } catch (e) {
       return Future.error(e);
     }
@@ -83,9 +102,9 @@ class SQLService {
 
   Future getAscCartList() async {
     try {
-      var list =
-          await db?.rawQuery('SELECT * FROM cart_list ORDER BY id ASC', []);
-      return list ?? [];
+      final database = await _databaseReady;
+      return await database
+          .rawQuery('SELECT * FROM cart_list ORDER BY id ASC', []);
     } catch (e) {
       return Future.error(e);
     }
@@ -93,37 +112,38 @@ class SQLService {
 
   Future getCartListPrice() async {
     var query = "SELECT SUM(currentPrice) AS totalPrice FROM cart_list";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future getCartItemNum(String menuCode) async {
     var query =
         "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list where menuCode = ${menuCode}";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future getCartItemNewId(String menuCode) async {
     var query = "SELECT id FROM cart_list where menuCode = ${menuCode}";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future getCartTotalNum() async {
     var query = "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future getCartItemNumberByID(int cartId) async {
     var query = "SELECT goodsNum FROM cart_list where id = ${cartId}";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future checkItemAsCartList(String menuCode) async {
     var query = "SELECT * FROM cart_list where menuCode = ${menuCode}";
-    return await this.db?.rawQuery(query);
+    return await (await _databaseReady).rawQuery(query);
   }
 
   Future addToCart(data) async {
-    await this.db?.transaction((txn) async {
+    final database = await _databaseReady;
+    await database.transaction((txn) async {
       final id1 = await txn.insert('cart_list', {
         'menuCode': data['menuCode'] ?? '',
         'mainTitle': data['mainTitle'] ?? '',
@@ -143,10 +163,7 @@ class SQLService {
 
   Future<List<int>> addCartItemsAtomically(
       List<Map<String, dynamic>> items) async {
-    final database = db;
-    if (database == null) {
-      throw StateError('购物车数据库尚未初始化');
-    }
+    final database = await _databaseReady;
     return database.transaction((txn) async {
       final ids = <int>[];
       for (final data in items) {
@@ -169,7 +186,8 @@ class SQLService {
   }
 
   Future updateToCartNum(data) async {
-    await this.db?.transaction((txn) async {
+    final database = await _databaseReady;
+    await database.transaction((txn) async {
       var query =
           "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
       int id2 = await txn.rawUpdate(query);
@@ -183,22 +201,22 @@ class SQLService {
   Future addToCartNum(data) async {
     var query =
         "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where id = '${data["cartId"]}'";
-    return await this.db?.rawUpdate(query);
+    return await (await _databaseReady).rawUpdate(query);
   }
 
   Future reduceToCartNum(data) async {
     var query =
         "UPDATE cart_list SET goodsNum=goodsNum-${data["goodsNum"]},currentPrice=currentPrice-${data["unitPrice"]} where id = '${data["cartId"]}'";
-    return await this.db?.rawUpdate(query);
+    return await (await _databaseReady).rawUpdate(query);
   }
 
   Future removeFromCart(int Id) async {
     var qry = "DELETE FROM cart_list where id = ${Id}";
-    return await this.db?.rawDelete(qry);
+    return await (await _databaseReady).rawDelete(qry);
   }
 
   Future removeAllFromCart() async {
     var qry = "cart_list";
-    return await this.db?.delete(qry);
+    return await (await _databaseReady).delete(qry);
   }
 }
