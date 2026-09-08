@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/CustomLogerHandler.dart';
-import '../../menuPage/controllers/menu_page_controller.dart';
 import 'state.dart';
 
 class ResultLogic extends GetxController {
   final ResultState state = ResultState();
   final MachineInfoController machineInfo = Get.find();
   Timer? _timer;
+  AudioPlayer? _audioPlayer;
 
   @override
   void onInit() {
@@ -25,14 +25,29 @@ class ResultLogic extends GetxController {
     //_playSound();
   }
 
-  void _playSound() {
-    // Implement sound playing logic here
-    logI('Playing sound...');
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/thankyou_voice.m4a"),
-      autoStart: true,
-      volume: 1.0,
-    );
+  Future<void> _playSound() async {
+    if (isClosed) return;
+    try {
+      logI('Playing sound...');
+      final player = _audioPlayer ??= AudioPlayer();
+      await player.play(
+        AssetSource('audios/thankyou_voice.m4a'),
+        volume: 1.0,
+      );
+    } catch (e) {
+      logW('Result thank-you sound playback failed: $e');
+    }
+  }
+
+  Future<void> _disposeAudioPlayer() async {
+    final player = _audioPlayer;
+    _audioPlayer = null;
+    if (player == null) return;
+    try {
+      await player.dispose();
+    } catch (e) {
+      logW('Result audio player disposal failed: $e');
+    }
   }
 
   void _checkToCloseLoading() async {
@@ -63,7 +78,7 @@ class ResultLogic extends GetxController {
       } else {
         state.secondsLeft.value = v;
         if (state.secondsLeft.value == 4){
-          _playSound();
+          unawaited(_playSound());
         }
       }
     });
@@ -111,6 +126,7 @@ class ResultLogic extends GetxController {
   @override
   void onClose() {
     _cancelTimer();
+    unawaited(_disposeAudioPlayer());
     super.onClose();
   }
 }
