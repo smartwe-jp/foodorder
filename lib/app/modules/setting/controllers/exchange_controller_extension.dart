@@ -586,6 +586,7 @@ extension ExchangeControllerExtension on SettingController {
     logI('outInfo: $outInfo');
 
     int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
+    logI('exportCashFlow resultCode: $resultCode');
     EasyLoading.dismiss();
     if (resultCode == null || resultCode != 0) {
       errorHandleDialogTwo(
