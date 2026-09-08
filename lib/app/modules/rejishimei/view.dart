@@ -29,6 +29,7 @@ class RejishimeView extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: GetBuilder<RejishimeLogic>(
         assignId: true,
+        init: logic,
         builder: (logic) {
           return Center(
               child: SimpleDialog(
