@@ -38,6 +38,7 @@ void logW(
   Object msg, {
   bool upload = false,
   String tag = 'App',
+  String? recordType,
   String? eventCode,
   String? flowId,
   String? incidentId,
@@ -49,6 +50,7 @@ void logW(
     AppLogMessage(
       message: msg.toString(),
       upload: upload,
+      recordType: recordType,
       eventCode: eventCode,
       flowId: flowId,
       incidentId: incidentId,

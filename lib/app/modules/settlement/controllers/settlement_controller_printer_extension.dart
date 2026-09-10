@@ -178,7 +178,10 @@ class PrintService extends GetxService {
           response['data'] != null) {
         logI("callbackBeforePrint uuid: $uuid send success");
         if (event == 'message' || event == 'rePrint') {
-          printData(data);
+          printData(
+            data,
+            source: event == 'rePrint' ? 'sse_reprint' : 'sse_order',
+          );
         }
         if (event == 'print') {
           printTableSeatInfo(data);
@@ -220,7 +223,10 @@ class PrintService extends GetxService {
   }
 
   void printData(Map data,
-      {bool fromSSE = true, String orderId = "", shopName = ""}) async {
+      {bool fromSSE = true,
+      String? source,
+      String orderId = "",
+      shopName = ""}) async {
     logI("---printData---: ${data}");
     String uuid = fromSSE ? data['uuid'].toString() : Uuid().v4();
     //如果数据库已经有该uuid则不打印返回
@@ -232,6 +238,10 @@ class PrintService extends GetxService {
     _sendToDisplayPanel(data);
     //获取UUID 如果不存在怎本地生成
     data['uuid'] = uuid;
+    data['printSource'] = source ?? (fromSSE ? 'sse_order' : 'checkout_direct');
+    if (orderId.isNotEmpty) {
+      data['orderId'] = orderId;
+    }
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
     final orderSnCode = data["order_sn_code"] ?? "";

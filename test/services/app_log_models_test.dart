@@ -188,6 +188,40 @@ void main() {
     );
   });
 
+  test('promotes remote print task dimensions for OpenObserve queries', () {
+    final entry = AppLogEntry(
+      timestamp: DateTime.parse('2026-09-10T10:30:00+09:00'),
+      level: 'INFO',
+      tag: 'RemotePrint',
+      recordType: 'remote_print_task',
+      eventCode: 'REMOTE_PRINT_SOCKET_SENT',
+      message: 'Remote print task socket data sent',
+      flowId: 'print-flow-1',
+      data: const {
+        'event_status': 'success',
+        'print_status': 'success',
+        'operation': 'upsert',
+        'print_task_id': 'print-flow-1:3',
+        'printer_type': 10,
+        'printer_ip': '192.168.5.30',
+        'print_source': 'checkout_direct',
+        'retry_count': 0,
+        'result_semantics': 'socket_flushed',
+      },
+      context: const AppLogContext(sessionId: 'session-1'),
+    );
+
+    final uploadJson = entry.toOpenObserveJson(eventId: 'event-1');
+
+    expect(uploadJson['record_type'], 'remote_print_task');
+    expect(uploadJson['print_task_id'], 'print-flow-1:3');
+    expect(uploadJson['printer_type'], 10);
+    expect(uploadJson['printer_ip'], '192.168.5.30');
+    expect(uploadJson['print_source'], 'checkout_direct');
+    expect(uploadJson['print_status'], 'success');
+    expect(uploadJson['result_semantics'], 'socket_flushed');
+  });
+
   test('promotes HTTP dimensions without exposing request payloads', () {
     final entry = AppLogEntry(
       timestamp: DateTime.parse('2026-08-25T10:30:00+09:00'),

@@ -257,6 +257,20 @@ class AppLogEntry {
       'business_close_status',
       'print_status',
       'baseline_status',
+      'print_task_id',
+      'printer_type',
+      'printer_ip',
+      'print_source',
+      'order_sn_code',
+      'from_plate',
+      'order_time',
+      'item_count',
+      'retry_count',
+      'last_error',
+      'task_created_at',
+      'task_updated_at',
+      'update_reason',
+      'result_semantics',
     };
     return <String, Object?>{
       for (final entry in data.entries)

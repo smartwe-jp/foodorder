@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
 import '../print_failed/print_failed_models.dart';
+import 'remote_print_monitoring_events.dart';
 
 class PrintFailedService extends GetxService {
   static const String boxName = 'print_records';
@@ -63,6 +64,10 @@ class PrintFailedService extends GetxService {
         record.lastError = 'init migration: pending -> failed';
       }
       await _box.put(record.uuid, record);
+      RemotePrintMonitoringEvents.stateChanged(
+        record,
+        reason: 'app_restart_pending_recovery',
+      );
     }
   }
 
@@ -121,6 +126,7 @@ class PrintFailedService extends GetxService {
       status: 'pending',
     );
     await _box.put(uuid, record);
+    RemotePrintMonitoringEvents.stateChanged(record);
     _refresh();
   }
 
@@ -131,6 +137,7 @@ class PrintFailedService extends GetxService {
     record.updatedAt = DateTime.now().millisecondsSinceEpoch;
     record.status = 'success';
     await _box.put(uuid, record);
+    RemotePrintMonitoringEvents.stateChanged(record);
     _refresh();
   }
 
@@ -146,6 +153,7 @@ class PrintFailedService extends GetxService {
       record.lastError = error;
     }
     await _box.put(uuid, record);
+    RemotePrintMonitoringEvents.stateChanged(record);
     _refresh();
   }
 
@@ -160,27 +168,44 @@ class PrintFailedService extends GetxService {
       record.lastError = error;
     }
     await _box.put(record.uuid, record);
+    RemotePrintMonitoringEvents.stateChanged(record);
     _refresh();
   }
 
   Future<void> removeFailure(String uuid) async {
     logI('Removing print record $uuid from failed records.');
+    final record = _box.get(uuid);
     await _box.delete(uuid);
+    if (record != null) {
+      RemotePrintMonitoringEvents.deleted(
+        record,
+        reason: 'settings_single_delete',
+      );
+    }
     _refresh();
   }
 
   Future<void> clearAll() async {
+    final recordsToDelete = _box.values.toList(growable: false);
     await _box.clear();
+    for (final record in recordsToDelete) {
+      RemotePrintMonitoringEvents.deleted(
+        record,
+        reason: 'settings_clear_all',
+      );
+    }
     _refresh();
   }
 
   Future<void> clearByPrinterType(int printerType) async {
-    final keysToRemove = _box.values
-        .where((r) => r.printerType == printerType)
-        .map((r) => r.uuid)
-        .toList();
-    for (final key in keysToRemove) {
-      await _box.delete(key);
+    final recordsToDelete =
+        _box.values.where((r) => r.printerType == printerType).toList();
+    for (final record in recordsToDelete) {
+      await _box.delete(record.uuid);
+      RemotePrintMonitoringEvents.deleted(
+        record,
+        reason: 'settings_clear_printer',
+      );
     }
     _refresh();
   }
