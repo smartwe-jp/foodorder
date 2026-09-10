@@ -48,7 +48,7 @@ dependencies:
   flutter_printer_plus:
     git:
       url: git@github.com:Aaron51FX/flutter_printer_plus.git
-      ref: ed1fbaad4701a7d7b4cbcfd3f1aa47153ad243a6
+      ref: 25e37349371b8e781294848edacdafa5ae9415d4
   badges: ^3.1.1
   audioplayers: ^5.2.1
   #win_toast: ^0.3.0
