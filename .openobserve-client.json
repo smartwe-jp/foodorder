@@ -1,4 +1,4 @@
 {
-  "OPENOBSERVE_INGEST_URL": "http://192.168.5.110:5080/app-events",
+  "OPENOBSERVE_INGEST_URL": "http://172.50.10.11:5080/app-events",
   "OPENOBSERVE_INGEST_KEY": "foodorder-local-test-ingest-key-v1"
 }
