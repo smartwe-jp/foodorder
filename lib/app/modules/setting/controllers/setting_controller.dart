@@ -453,6 +453,7 @@ class SettingController extends GetxController with StateMixin {
     // usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
     // debugPrint("usbPrinter = ${usbPrinter}");
     //查看机器零钱状态
+    change(null, status: RxStatus.success());
     await _getPaycubeChangeState();
   }
 
@@ -572,7 +573,7 @@ class SettingController extends GetxController with StateMixin {
       }
     }
 
-    change(null, status: RxStatus.success());
+    //change(null, status: RxStatus.success());
     //print(_menuOption);
   }
 
