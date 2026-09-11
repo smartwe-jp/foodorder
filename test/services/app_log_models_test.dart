@@ -207,6 +207,7 @@ void main() {
         'print_source': 'checkout_direct',
         'retry_count': 0,
         'result_semantics': 'socket_flushed',
+        'print_info': '{"order_sn_code":"0002","items":[]}',
       },
       context: const AppLogContext(sessionId: 'session-1'),
     );
@@ -220,6 +221,7 @@ void main() {
     expect(uploadJson['print_source'], 'checkout_direct');
     expect(uploadJson['print_status'], 'success');
     expect(uploadJson['result_semantics'], 'socket_flushed');
+    expect(uploadJson['print_info'], '{"order_sn_code":"0002","items":[]}');
   });
 
   test('promotes HTTP dimensions without exposing request payloads', () {

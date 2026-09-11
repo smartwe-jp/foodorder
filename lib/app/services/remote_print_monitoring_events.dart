@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import '../print_failed/print_failed_models.dart';
 import 'CustomLogerHandler.dart';
+import 'app_log_models.dart';
 
 abstract final class RemotePrintMonitoringEvents {
   static void stateChanged(
@@ -107,6 +110,10 @@ abstract final class RemotePrintMonitoringEvents {
       'task_created_at': _timestamp(record.createdAt),
       'task_updated_at': _timestamp(record.updatedAt),
       'update_reason': reason,
+      'print_info': AppLogSanitizer.text(
+        jsonEncode(AppLogSanitizer.map(info)),
+        maxLength: 16000,
+      ),
       if (effectiveStatus == 'success') 'result_semantics': 'socket_flushed',
     };
   }

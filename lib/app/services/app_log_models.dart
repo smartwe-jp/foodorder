@@ -271,6 +271,7 @@ class AppLogEntry {
       'task_updated_at',
       'update_reason',
       'result_semantics',
+      'print_info',
     };
     return <String, Object?>{
       for (final entry in data.entries)
@@ -330,9 +331,13 @@ class AppLogSanitizer {
     final result = <String, Object?>{};
     values.forEach((key, value) {
       final normalizedKey = key.toString();
-      result[normalizedKey] = _sensitiveKey.hasMatch(normalizedKey)
-          ? '[REDACTED]'
-          : _sanitizeValue(value, depth: depth + 1);
+      if (_sensitiveKey.hasMatch(normalizedKey)) {
+        result[normalizedKey] = '[REDACTED]';
+      } else if (normalizedKey == 'print_info' && value is String) {
+        result[normalizedKey] = text(value, maxLength: 16000);
+      } else {
+        result[normalizedKey] = _sanitizeValue(value, depth: depth + 1);
+      }
     });
     return result;
   }
