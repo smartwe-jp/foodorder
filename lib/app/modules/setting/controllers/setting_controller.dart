@@ -171,14 +171,14 @@ class SettingController extends GetxController with StateMixin {
   //上传现金机log
   uploadErrorLog() async {
     showEasyLoading();
-
-    var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    String? logfile;
+    //var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     try {
 
-      if (Platform.isWindows) {
+      //if (Platform.isWindows) {
         logfile = await CustomLogHandler.exportLogs();
-      }
+      //}
 
       FormData formData = FormData.fromMap({
         "machineCode": machineCode,
