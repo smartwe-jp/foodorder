@@ -22,8 +22,11 @@ import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
+import '../../../services/payment_event_codes.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/reimbruse_order_print_view.dart';
+
+part 'reimburse_order_monitoring.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
@@ -69,6 +72,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
+  _RefundEventState _refundEventState = _RefundEventState();
 
   String get machineCode {
     return machineInfo.machineCode;
@@ -185,16 +189,64 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   refoundOrder() async {
+    startRefundMonitoring();
     if (refundInfo.value["payChannel"] == "Edy") {
+      monitorRefundStageFailed(
+        'refund_validation',
+        PaymentEventCode.refundExecuteFailed,
+        'Edy refund is not supported',
+        failureType: PaymentFailureType.deviceUnavailable,
+        critical: true,
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_validation',
+        failureType: PaymentFailureType.deviceUnavailable,
+      );
       refundFailedAlert();
     } else if (refundInfo.value["payChannel"] == "Cash") {
       showPosEasyLoading();
       if (Platform.isAndroid) {
-        String strartPayCube = await payCube.strartRefundPayCube;
-        logI("调用插件的监听结果:${strartPayCube}");
-        //调用插件的监听
-        payCube.getPayCubeListener();
-        _setPayCubeListener();
+        monitorRefundStageStarted(
+          'cash_device_prepare',
+          PaymentEventCode.refundDeviceStarted,
+          'PayCube refund preparation started',
+          data: const <String, Object?>{'cash_device': 'paycube'},
+        );
+        try {
+          String strartPayCube = await payCube.strartRefundPayCube;
+          logI("调用插件的监听结果:${strartPayCube}");
+          monitorRefundStageSucceeded(
+            'cash_device_prepare',
+            PaymentEventCode.refundDeviceSucceeded,
+            'PayCube refund preparation completed',
+            data: <String, Object?>{
+              'cash_device': 'paycube',
+              'device_result': strartPayCube,
+            },
+          );
+          //调用插件的监听
+          payCube.getPayCubeListener();
+          _setPayCubeListener();
+        } catch (error, stackTrace) {
+          monitorRefundStageFailed(
+            'cash_device_prepare',
+            PaymentEventCode.refundDeviceFailed,
+            'PayCube refund preparation failed',
+            failureType: PaymentFailureType.deviceRejected,
+            critical: true,
+            error: error,
+            stackTrace: stackTrace,
+            data: const <String, Object?>{'cash_device': 'paycube'},
+          );
+          monitorRefundFlowFailed(
+            failedStage: 'cash_device_prepare',
+            failureType: PaymentFailureType.deviceRejected,
+            error: error,
+            stackTrace: stackTrace,
+          );
+          cashErrorHandle();
+          return;
+        }
       }
 
       startOutPutMoney(refundInfo["amount"]);
@@ -208,6 +260,11 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   refundCreditCard() {
+    monitorRefundStageStarted(
+      'refund_execute',
+      PaymentEventCode.refundExecuteStarted,
+      'Credit card refund request started',
+    );
     var formData = {
       "machineCode": machineCode,
       "orderId": refundInfo["orderId"],
@@ -215,20 +272,62 @@ class ReimburseOrderController extends GetxController with StateMixin {
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
+      final responseData = response['data'];
+      final refundData = responseData is Map
+          ? responseData
+          : const <dynamic, dynamic>{};
       if (response['code'] == 200 &&
-          response['data']["executeMark"] == true &&
-          response['data']["requestMessage"] != "") {
-        payconnectSocker(questData: response['data']["requestMessage"]);
+          refundData["executeMark"] == true &&
+          refundData["requestMessage"] != "") {
+        monitorRefundStageSucceeded(
+          'refund_execute',
+          PaymentEventCode.refundExecuteSucceeded,
+          'Credit card refund request accepted',
+          data: const <String, Object?>{'requires_pos': true},
+        );
+        payconnectSocker(questData: refundData["requestMessage"]);
       } else {
+        monitorRefundStageFailed(
+          'refund_execute',
+          PaymentEventCode.refundExecuteFailed,
+          'Credit card refund request was rejected',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{'response_code': response['code']},
+        );
+        monitorRefundFlowFailed(
+          failedStage: 'refund_execute',
+          failureType: PaymentFailureType.backendRejected,
+        );
         refundFailedAlert();
       }
     }).onError((error, stackTrace) {
       logI("信用卡退款请求失败：${error}");
+      monitorRefundStageFailed(
+        'refund_execute',
+        PaymentEventCode.refundExecuteFailed,
+        'Credit card refund request failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_execute',
+        failureType: PaymentFailureType.network,
+        error: error,
+        stackTrace: stackTrace,
+      );
       refundFailedAlert();
     });
   }
 
   refundScanCodePay() {
+    monitorRefundStageStarted(
+      'refund_execute',
+      PaymentEventCode.refundExecuteStarted,
+      'QR refund request started',
+    );
     var formData = {
       "machineCode": machineCode,
       "orderId": refundInfo["orderId"],
@@ -237,9 +336,20 @@ class ReimburseOrderController extends GetxController with StateMixin {
         .then((value) {
       EasyLoading.dismiss();
       var response = json.decode(value.toString());
+      final responseData = response['data'];
+      final refundData = responseData is Map
+          ? responseData
+          : const <dynamic, dynamic>{};
       if (response['code'] == 200 &&
-          response['data']["executeMark"] == true &&
-          response['data']["requestMessage"] == "") {
+          refundData["executeMark"] == true &&
+          refundData["requestMessage"] == "") {
+        monitorRefundStageSucceeded(
+          'refund_execute',
+          PaymentEventCode.refundExecuteSucceeded,
+          'QR refund completed by backend',
+          data: const <String, Object?>{'requires_pos': false},
+        );
+        monitorRefundFlowSucceeded(completionStage: 'refund_execute');
         EasyLoading.dismiss();
         printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView); //打印
         Get.dialog(
@@ -254,20 +364,59 @@ class ReimburseOrderController extends GetxController with StateMixin {
             }),
             barrierDismissible: false);
       } else if (response['code'] == 200 &&
-          response['data']["executeMark"] == false &&
-          response['data']["requestMessage"] != "") {
+          refundData["executeMark"] == false &&
+          refundData["requestMessage"] != "") {
+        monitorRefundStageSucceeded(
+          'refund_execute',
+          PaymentEventCode.refundExecuteSucceeded,
+          'QR refund request requires POS processing',
+          data: const <String, Object?>{'requires_pos': true},
+        );
         //showPosEasyLoading();
-        payconnectSocker(questData: response['data']["requestMessage"]);
+        payconnectSocker(questData: refundData["requestMessage"]);
       } else if (response['code'] == 200 &&
-          response['data']["executeMark"] == true &&
-          response['data']["requestMessage"] != "") {
+          refundData["executeMark"] == true &&
+          refundData["requestMessage"] != "") {
+        monitorRefundStageSucceeded(
+          'refund_execute',
+          PaymentEventCode.refundExecuteSucceeded,
+          'QR refund request accepted for POS completion',
+          data: const <String, Object?>{'requires_pos': true},
+        );
         //showPosEasyLoading();
-        payconnectSocker(questData: response['data']["requestMessage"]);
+        payconnectSocker(questData: refundData["requestMessage"]);
       } else {
+        monitorRefundStageFailed(
+          'refund_execute',
+          PaymentEventCode.refundExecuteFailed,
+          'QR refund request was rejected',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{'response_code': response['code']},
+        );
+        monitorRefundFlowFailed(
+          failedStage: 'refund_execute',
+          failureType: PaymentFailureType.backendRejected,
+        );
         refundFailedAlert();
       }
     }).onError((error, stackTrace) {
       logI("扫码支付退款请求失败：${error}");
+      monitorRefundStageFailed(
+        'refund_execute',
+        PaymentEventCode.refundExecuteFailed,
+        'QR refund request failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_execute',
+        failureType: PaymentFailureType.network,
+        error: error,
+        stackTrace: stackTrace,
+      );
       refundFailedAlert();
     });
   }
@@ -339,7 +488,27 @@ class ReimburseOrderController extends GetxController with StateMixin {
   payconnectSocker({questData = ""}) async {
     //判断socket请求次数
     socketNumberTimes.value++;
+    if (socketNumberTimes.value == 1) {
+      monitorRefundStageStarted(
+        'refund_pos_connect',
+        PaymentEventCode.refundDeviceStarted,
+        'Refund POS connection started',
+        data: <String, Object?>{'attempt': socketNumberTimes.value},
+      );
+    }
     if (socketNumberTimes.value > 20) {
+      monitorRefundStageFailed(
+        'refund_pos_connect',
+        PaymentEventCode.refundDeviceFailed,
+        'Refund POS connection failed after retries',
+        failureType: PaymentFailureType.deviceUnavailable,
+        critical: true,
+        data: <String, Object?>{'attempts': socketNumberTimes.value - 1},
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_pos_connect',
+        failureType: PaymentFailureType.deviceUnavailable,
+      );
       socketNumberTimes.value = 0;
       EasyLoading.dismiss();
       Get.dialog(
@@ -351,16 +520,49 @@ class ReimburseOrderController extends GetxController with StateMixin {
       return;
     }
 
+    final port = int.tryParse(pos_port.value);
+    if (pos_ip.value.trim().isEmpty || port == null) {
+      monitorRefundStageFailed(
+        'refund_pos_connect',
+        PaymentEventCode.refundDeviceFailed,
+        'Refund POS settings are invalid',
+        failureType: PaymentFailureType.deviceUnavailable,
+        critical: true,
+        data: <String, Object?>{
+          'has_pos_ip': pos_ip.value.trim().isNotEmpty,
+          'has_valid_pos_port': port != null,
+        },
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_pos_connect',
+        failureType: PaymentFailureType.deviceUnavailable,
+      );
+      refundFailedAlert();
+      return;
+    }
+
     Socket.connect(
       pos_ip.value,
-      int.parse(pos_port.value),
+      port,
       //timeout: Duration(seconds: 5),
     ).then((Socket socket) {
       logI("连接成功了么");
+      monitorRefundStageSucceeded(
+        'refund_pos_connect',
+        PaymentEventCode.refundDeviceSucceeded,
+        'Refund POS connection succeeded',
+        data: <String, Object?>{'attempt': socketNumberTimes.value},
+      );
+      socketNumberTimes.value = 0;
       this._socket = socket;
 
       //扫码过来的，请求数据不为空时候发送POS请求
       if (questData != "") {
+        monitorRefundStageStarted(
+          'refund_device',
+          PaymentEventCode.refundDeviceStarted,
+          'Refund request sent to POS device',
+        );
         //判断不为空则POS机
         this._socket?.write(questData);
       }
@@ -415,13 +617,37 @@ class ReimburseOrderController extends GetxController with StateMixin {
               eventReportString.value.length > 4800) {
             if (FirstString == "3" &&
                 SecondString == "11" &&
-                resultString == "000" &&
-                resultMPFSString == "000") {
+              resultString == "000" &&
+              resultMPFSString == "000") {
               // &&  resultMPFSString == "000"
+              monitorRefundStageSucceeded(
+                'refund_device',
+                PaymentEventCode.refundDeviceSucceeded,
+                'Refund POS device processing succeeded',
+                data: <String, Object?>{
+                  'result_code': resultString,
+                  'result_sub_code': resultMPFSString,
+                },
+              );
               reportChange(eventReportString.value);
             } else {
               EasyLoading.dismiss();
               if (resultString.trim() != "") {
+                monitorRefundStageFailed(
+                  'refund_device',
+                  PaymentEventCode.refundDeviceFailed,
+                  'Refund POS device processing failed',
+                  failureType: PaymentFailureType.deviceRejected,
+                  critical: true,
+                  data: <String, Object?>{
+                    'result_code': resultString,
+                    'result_sub_code': resultMPFSString,
+                  },
+                );
+                monitorRefundFlowFailed(
+                  failedStage: 'refund_device',
+                  failureType: PaymentFailureType.deviceRejected,
+                );
                 refundFailedAlert();
               }
             }
@@ -431,14 +657,38 @@ class ReimburseOrderController extends GetxController with StateMixin {
             if (FirstString == "3" &&
                 SecondString == "11" &&
                 resultString == "000" &&
-                resultMPFSString == "000") {
+              resultMPFSString == "000") {
               // &&  resultMPFSString == "000"
               String reportString = eventString.substring(0, 169);
+              monitorRefundStageSucceeded(
+                'refund_device',
+                PaymentEventCode.refundDeviceSucceeded,
+                'Refund POS device processing succeeded',
+                data: <String, Object?>{
+                  'result_code': resultString,
+                  'result_sub_code': resultMPFSString,
+                },
+              );
               reportChange(reportString);
               EasyLoading.dismiss();
             } else {
               EasyLoading.dismiss();
               if (resultString.trim() != "") {
+                monitorRefundStageFailed(
+                  'refund_device',
+                  PaymentEventCode.refundDeviceFailed,
+                  'Refund POS device processing failed',
+                  failureType: PaymentFailureType.deviceRejected,
+                  critical: true,
+                  data: <String, Object?>{
+                    'result_code': resultString,
+                    'result_sub_code': resultMPFSString,
+                  },
+                );
+                monitorRefundFlowFailed(
+                  failedStage: 'refund_device',
+                  failureType: PaymentFailureType.deviceRejected,
+                );
                 refundFailedAlert();
               }
             }
@@ -451,6 +701,19 @@ class ReimburseOrderController extends GetxController with StateMixin {
         onError: (e) {
           socketState.value = false;
           logI("pos机错误了");
+          monitorRefundStageFailed(
+            'refund_device',
+            PaymentEventCode.refundDeviceFailed,
+            'Refund POS socket failed',
+            failureType: PaymentFailureType.network,
+            critical: true,
+            error: e,
+          );
+          monitorRefundFlowFailed(
+            failedStage: 'refund_device',
+            failureType: PaymentFailureType.network,
+            error: e,
+          );
           //_close();
         },
       );
@@ -461,6 +724,17 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
       logI("Unable to connect: $e");
       logI("POS机连接${socketNumberTimes.value}");
+      monitorRefundWarning(
+        PaymentEventCode.refundDeviceFailed,
+        'Refund POS connection attempt failed',
+        failureType: PaymentFailureType.network,
+        error: e,
+        data: <String, Object?>{
+          'stage': 'refund_pos_connect',
+          'attempt': socketNumberTimes.value,
+          'will_retry': socketNumberTimes.value <= 20,
+        },
+      );
       Future.delayed(Duration(milliseconds: 400), () async {
         payconnectSocker(questData: questData);
       });
@@ -507,6 +781,15 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
+    monitorRefundStageStarted(
+      'refund_device',
+      PaymentEventCode.refundDeviceStarted,
+      'Cash refund payout started',
+      data: <String, Object?>{
+        'cash_device': Platform.isWindows ? 'glory' : 'paycube',
+        'refund_amount': outMoney,
+      },
+    );
     if (Platform.isWindows) {
       await gloryOutputMoney(outMoney);
       return;
@@ -514,9 +797,11 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
     var outStringMoney = outMoney.toString();
     //await Paycube.setReceiveEvent;
+    Object? payoutError;
     bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
       logI("出金成功");
     }, catchError: (error) {
+      payoutError = error;
       logI("出金失败");
     });
     logI("出金结果 ${outResult}");
@@ -527,6 +812,16 @@ class ReimburseOrderController extends GetxController with StateMixin {
     //   outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
     // 循环一定要记得设置取消条件，手动取消
     if (outResult) {
+      monitorRefundInfo(
+        PaymentEventCode.refundDeviceStarted,
+        'PayCube refund payout command accepted',
+        status: 'accepted',
+        data: <String, Object?>{
+          'stage': 'refund_device',
+          'cash_device': 'paycube',
+          'refund_amount': outMoney,
+        },
+      );
       //如果打开了现金机，则去掉倒计时监听
       showCashTimer?.cancel();
       seconds.value = 180;
@@ -534,6 +829,22 @@ class ReimburseOrderController extends GetxController with StateMixin {
       //_getPayCubeOutMoney();
       await payCube.setReceiveEvent;
     } else {
+      monitorRefundStageFailed(
+        'refund_device',
+        PaymentEventCode.refundDeviceFailed,
+        'PayCube refund payout command failed',
+        failureType: PaymentFailureType.deviceRejected,
+        critical: true,
+        error: payoutError,
+        data: <String, Object?>{
+          'cash_device': 'paycube',
+          'refund_amount': outMoney,
+        },
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_device',
+        failureType: PaymentFailureType.deviceRejected,
+      );
       cashErrorHandle();
     }
   }
@@ -578,6 +889,16 @@ class ReimburseOrderController extends GetxController with StateMixin {
         //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
         if (outtotalAmount == refundInfo.value["amount"]) {
+          monitorRefundStageSucceeded(
+            'refund_device',
+            PaymentEventCode.refundDeviceSucceeded,
+            'PayCube refund payout succeeded',
+            data: <String, Object?>{
+              'cash_device': 'paycube',
+              'refund_amount': outtotalAmount,
+              'denomination_data': currencyStringResult.trim(),
+            },
+          );
           //如果打开了现金机，则去掉倒计时监听
           // showCashTimer?.cancel();
           // seconds.value = 180;
@@ -587,6 +908,22 @@ class ReimburseOrderController extends GetxController with StateMixin {
           //OutMoneytimer?.cancel();
 
           payCubeCloseTransaction(currencyStringResult);
+        } else if (_refundEventState.lastDenominationMismatch !=
+            currencyStringResult) {
+          _refundEventState.lastDenominationMismatch = currencyStringResult;
+          monitorRefundWarning(
+            PaymentEventCode.refundDeviceFailed,
+            'PayCube refund payout denominations do not match refund amount',
+            failureType: PaymentFailureType.invalidResponse,
+            data: <String, Object?>{
+              'stage': 'refund_device',
+              'cash_device': 'paycube',
+              'expected_amount': refundInfo["amount"],
+              'actual_amount': outtotalAmount,
+              'denomination_data': currencyStringResult.trim(),
+              'is_final': false,
+            },
+          );
         }
       }
     }
@@ -603,6 +940,15 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
     isReportCash.value = true;
 
+    monitorRefundStageStarted(
+      'refund_notify',
+      PaymentEventCode.refundNotifyStarted,
+      'Refund result notification started',
+      data: <String, Object?>{
+        'response_message_length': changeString.toString().length,
+      },
+    );
+
     var formData = {
       "responseMessage": changeString,
       "machineCode": machineCode,
@@ -615,6 +961,12 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
       EasyLoading.dismiss();
       if (response['code'] == 200 && response['data'] == true) {
+        monitorRefundStageSucceeded(
+          'refund_notify',
+          PaymentEventCode.refundNotifySucceeded,
+          'Refund result notification succeeded',
+        );
+        monitorRefundFlowSucceeded(completionStage: 'refund_notify');
         printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView); //打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
@@ -628,6 +980,19 @@ class ReimburseOrderController extends GetxController with StateMixin {
             }),
             barrierDismissible: false);
       } else {
+        monitorRefundStageFailed(
+          'refund_notify',
+          PaymentEventCode.refundNotifyFailed,
+          'Refund result notification was rejected',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{'response_code': response['code']},
+        );
+        monitorRefundFlowFailed(
+          failedStage: 'refund_notify',
+          failureType: PaymentFailureType.backendRejected,
+        );
+        isReportCash.value = false;
         Get.dialog(
             DialogUtils.alertOneButton("返金失敗です。",
                 title: "お知らせ", confirmtitle: "はい", confirm: () {
@@ -639,24 +1004,72 @@ class ReimburseOrderController extends GetxController with StateMixin {
             }),
             barrierDismissible: false);
       }
+    }).catchError((error, stackTrace) {
+      isReportCash.value = false;
+      EasyLoading.dismiss();
+      monitorRefundStageFailed(
+        'refund_notify',
+        PaymentEventCode.refundNotifyFailed,
+        'Refund result notification failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_notify',
+        failureType: PaymentFailureType.network,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      refundFailedAlert();
     });
   }
 
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
     _countDownTimer("5");
+    monitorRefundStageStarted(
+      'refund_device_close',
+      PaymentEventCode.refundDeviceStarted,
+      'PayCube refund transaction close started',
+      data: const <String, Object?>{'cash_device': 'paycube'},
+    );
+    Object? closeError;
     bool endTrade = await payCube.endTrade(onSuccess: () {
       debugPrint("取引终了结束交易成功");
     }, catchError: (error) {
+      closeError = error;
       debugPrint("取引终了结束交易失败");
     });
 
     if (endTrade) {
+      monitorRefundStageSucceeded(
+        'refund_device_close',
+        PaymentEventCode.refundDeviceSucceeded,
+        'PayCube refund transaction close succeeded',
+        data: const <String, Object?>{'cash_device': 'paycube'},
+      );
       showCashTimer?.cancel();
       seconds.value = 180;
       reportChange(cashOutString);
     } else {
       debugPrint("取引终了结束交易失败");
+      monitorRefundStageFailed(
+        'refund_device_close',
+        PaymentEventCode.refundDeviceFailed,
+        'PayCube refund transaction close failed',
+        failureType: PaymentFailureType.deviceRejected,
+        critical: true,
+        error: closeError,
+        data: const <String, Object?>{'cash_device': 'paycube'},
+      );
+      monitorRefundFlowFailed(
+        failedStage: 'refund_device_close',
+        failureType: PaymentFailureType.deviceRejected,
+        error: closeError,
+      );
+      cashErrorHandle();
     }
   }
 

@@ -255,6 +255,14 @@ class PosSocketManager {
 
           debugPrint("_eventReportString:$_eventReportString");
 
+          // TCP may split one POS response across several socket chunks.
+          if (_eventReportString.length < 16) {
+            logger.info(
+              'POS response header is incomplete; waiting for next chunk '
+              '(${_eventReportString.length}/16)',
+            );
+          }
+
           //print(Utf8Codec().decode(zhuanhuan));
           //print("event=====${eventString}=====");
           String FirstString = _eventReportString.substring(0, 1);

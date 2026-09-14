@@ -26,6 +26,10 @@ import 'package:get/get.dart';
 extension SettingControllerExtension on SettingController {
   startPutMoney() async {
     debugPrint("startPutMoney");
+    replenishmentOperation = CashOperationFlow.start(
+      operationType: 'replenishment',
+      message: 'Cash Changer replenishment started',
+    );
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
@@ -38,22 +42,43 @@ extension SettingControllerExtension on SettingController {
   _startSupply() async {
     debugPrint("startSupply");
     logger.info('-- startSupply --');
+    replenishmentOperation?.stageStarted(
+      'start_supply',
+      'Cash Changer start supply requested',
+    );
     final resultCode = await CashChanger.startSupply;
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("startSupply 1");
           logger.info('-- startSupply success --');
+          replenishmentOperation?.stageSucceeded(
+            'start_supply',
+            'Cash Changer start supply succeeded',
+            data: <String, Object?>{'result_code': resultCode},
+          );
           checkChangerStatus();
           //_getInputMoney();
         },
         onRetry: () {
           debugPrint("startSupply 2");
+          replenishmentOperation?.stageFailed(
+            'start_supply',
+            'Cash Changer start supply will retry',
+            willRetry: true,
+            data: <String, Object?>{'result_code': resultCode},
+          );
           _startSupply();
         },
         showError: (String error) {
           debugPrint("startSupply error: $error");
           logger.info('-- startSupply error: $error --');
+          replenishmentOperation?.failed(
+            'Cash Changer replenishment failed to start',
+            stage: 'start_supply',
+            error: error,
+            data: <String, Object?>{'result_code': resultCode},
+          );
           errorHandleDialog(error.tr);
         });
   }
@@ -61,6 +86,10 @@ extension SettingControllerExtension on SettingController {
   _supplyCounts() async {
     debugPrint("supplyCounts");
     logger.info('-- supplyCounts --');
+    replenishmentOperation?.stageStarted(
+      'read_supply_counts',
+      'Cash Changer supply count read requested',
+    );
     await CashChanger.supplyCounts(
       0x00,
       onSuccess: (value) {
@@ -76,26 +105,51 @@ extension SettingControllerExtension on SettingController {
         }
 
         getPutMoneyCurrency.value = allPairs.join(',');
+        replenishmentOperation?.stageSucceeded(
+          'read_supply_counts',
+          'Cash Changer supply counts updated',
+          data: <String, Object?>{
+            'denomination_counts_raw': getPutMoneyCurrency.value,
+          },
+        );
         debugPrint("getPutMoneyCurrency==${getPutMoneyCurrency.value}");
         update();
       },
       catchError: (error) {
         logger.info('-- supplyCounts error: ${error.tr} --');
+        replenishmentOperation?.stageFailed(
+          'read_supply_counts',
+          'Cash Changer supply count read failed',
+          error: error,
+        );
         errorHandleDialog(error.tr);
       },
     );
   }
 
-  supplyCountsClear() async {
+  supplyCountsClear({CashOperationFlow? operation}) async {
     debugPrint("_supplyCountsClear");
     logger.info('-- supplyCountsClear --');
+    operation?.stageStarted(
+      'clear_supply_counts',
+      'Cash Changer supply count clear requested',
+    );
     return await CashChanger.supplyCounts(
       0x01,
       onSuccess: (value) {
         logger.info('-- supplyCountsClear success --');
+        operation?.stageSucceeded(
+          'clear_supply_counts',
+          'Cash Changer supply counts cleared',
+        );
       },
       catchError: (error) {
         logger.info('-- supplyCountsClear error: $error --');
+        operation?.stageFailed(
+          'clear_supply_counts',
+          'Cash Changer supply count clear failed',
+          error: error,
+        );
         errorHandleDialog(error.tr);
       },
     );
@@ -108,6 +162,11 @@ extension SettingControllerExtension on SettingController {
     logger.info('-- checkChangerStatus resultCode: $resultCode  --');
     if (resultCode == null) {
       debugPrint("Unknown error");
+      replenishmentOperation?.stageFailed(
+        'check_changer_status',
+        'Cash Changer status read returned no result',
+        willRetry: true,
+      );
       checkChangerStatus();
       return;
     }
@@ -120,29 +179,61 @@ extension SettingControllerExtension on SettingController {
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
+        replenishmentOperation?.stageSucceeded(
+          'check_changer_status',
+          'Cash Changer is ready for replenishment',
+          data: <String, Object?>{'result_code': resultCode},
+        );
         _getInputMoney();
         break;
       case HealthResultCode.OPOS_E_CLOSED:
       case HealthResultCode.OPOS_E_NOTCLAIMED:
       case HealthResultCode.OPOS_E_DISABLED:
         debugPrint("checkChangerStatus error: $resultCode");
+        replenishmentOperation?.failed(
+          'Cash Changer is unavailable for replenishment',
+          stage: 'check_changer_status',
+          data: <String, Object?>{
+            'result_code': resultCode,
+            'health_status': resultCodeEnum.name,
+          },
+        );
         break;
       case HealthResultCode.OPOS_E_BUSY:
+        replenishmentOperation?.stageFailed(
+          'check_changer_status',
+          'Cash Changer is busy; status check will retry',
+          willRetry: true,
+          data: <String, Object?>{'result_code': resultCode},
+        );
         sleep(Duration(seconds: 5));
         checkChangerStatus();
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
         debugPrint("checkChangerStatus error: $resultCode");
+        replenishmentOperation?.failed(
+          'Cash Changer hardware is unavailable',
+          stage: 'check_changer_status',
+          data: <String, Object?>{'result_code': resultCode},
+        );
         break;
       default:
         debugPrint("checkChangerStatus error: $resultCode");
+        replenishmentOperation?.failed(
+          'Cash Changer status check failed',
+          stage: 'check_changer_status',
+          data: <String, Object?>{
+            'result_code': resultCode,
+            'health_status': resultCodeEnum.name,
+          },
+        );
         break;
     }
   }
 
   //获取投入金额
   _getInputMoney() async {
-    final result = await supplyCountsClear();
+    final result = await supplyCountsClear(operation: replenishmentOperation);
     if (!result) return;
 
     await CashChanger.setEventsListener();
@@ -185,6 +276,15 @@ extension SettingControllerExtension on SettingController {
         }
 
         String cashList = machineChangeInfo.findMaxCash();
+        replenishmentOperation?.stageFailed(
+          'device_status',
+          'Cash Changer reported a replenishment capacity warning',
+          data: <String, Object?>{
+            'device_status': result,
+            'affected_denominations': cashList,
+            'balance_raw': machineChangeInfo,
+          },
+        );
 
         errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります. $cashList', confirm: () {
           //找钱失败一律退单和退回入金
@@ -195,6 +295,11 @@ extension SettingControllerExtension on SettingController {
         });
         return;
       }
+      replenishmentOperation?.stageFailed(
+        'device_status',
+        'Cash Changer reported an abnormal replenishment status',
+        data: <String, Object?>{'device_status': result},
+      );
       errorHandleDialog(result);
     };
   }
@@ -202,6 +307,10 @@ extension SettingControllerExtension on SettingController {
   getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
     logger.info('-- getInputMoneyInfo  --');
+    exchangeOperation?.stageStarted(
+      'read_deposit_breakdown',
+      'Cash Changer exchange deposit breakdown requested',
+    );
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(
         0x04); //'0000010000000000000000000000000010000000000000000000000000000000';
     //await CashChanger.changerDIStatus(0x04);
@@ -213,19 +322,43 @@ extension SettingControllerExtension on SettingController {
     debugPrint("currencyCashStringresult==${currencyCashStringresult}");
 
     var putMoneyCurrency = "";
+    final coinDataValid = currencyCoinStringresult != null &&
+        currencyCoinStringresult.length > 36;
+    final cashDataValid = currencyCashStringresult != null &&
+        currencyCashStringresult.length > 24;
 
-    if (currencyCoinStringresult != null &&
-        currencyCoinStringresult.length > 36) {
+    if (coinDataValid) {
       putMoneyCurrency = currencyCoinStringresult.substring(0, 18); //入金
     }
 
-    if (currencyCashStringresult != null &&
-        currencyCashStringresult.length > 24) {
+    if (cashDataValid) {
       putMoneyCurrency += currencyCashStringresult.substring(0, 12);
     }
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToIntString(putMoneyCurrency);
+    if (coinDataValid && cashDataValid) {
+      exchangeOperation?.stageSucceeded(
+        'read_deposit_breakdown',
+        'Cash Changer exchange deposit breakdown updated',
+        data: <String, Object?>{
+          'denomination_counts_raw': getPutMoneyCurrency.value,
+          'coin_status_raw': currencyCoinStringresult,
+          'cash_status_raw': currencyCashStringresult,
+        },
+      );
+    } else {
+      exchangeOperation?.stageFailed(
+        'read_deposit_breakdown',
+        'Cash Changer exchange deposit breakdown was incomplete',
+        data: <String, Object?>{
+          'coin_data_valid': coinDataValid,
+          'cash_data_valid': cashDataValid,
+          'coin_status_raw': currencyCoinStringresult,
+          'cash_status_raw': currencyCashStringresult,
+        },
+      );
+    }
     logger.info('-- getInputMoneyInfo : ${getPutMoneyCurrency.value}  --');
     update();
   }
@@ -264,10 +397,14 @@ extension SettingControllerExtension on SettingController {
     return true;
   }
 
-  Future<bool> closeDeposit() async {
+  Future<bool> closeDeposit({CashOperationFlow? operation}) async {
     debugPrint("closeDeposit");
     //await Future.delayed(Duration(seconds: 1));
     logger.info('-- closeDeposit  --');
+    operation?.stageStarted(
+      'close_deposit',
+      'Cash Changer deposit close requested',
+    );
     bool success = false;
     logger.info('-- fixDeposit  --');
     final depositAmount = await CashChanger.fixDeposit;
@@ -280,15 +417,32 @@ extension SettingControllerExtension on SettingController {
           logger.info('-- end Deposit success --');
           debugPrint("closeDeposit 1");
           success = true;
+          operation?.stageSucceeded(
+            'close_deposit',
+            'Cash Changer deposit closed',
+            data: <String, Object?>{'deposit_amount': depositAmount},
+          );
         },
         onRetry: () {
           debugPrint("closeDeposit 2");
-          closeDeposit();
+          operation?.stageFailed(
+            'close_deposit',
+            'Cash Changer deposit close will retry',
+            willRetry: true,
+            data: <String, Object?>{'result_code': resultCode},
+          );
+          closeDeposit(operation: operation);
         },
         showError: (String error) {
           debugPrint("closeDeposit error: $error");
           logger.info('-- end Deposit error: $error --');
           success = false;
+          operation?.failed(
+            'Cash Changer deposit close failed',
+            stage: 'close_deposit',
+            error: error,
+            data: <String, Object?>{'result_code': resultCode},
+          );
           errorHandleDialog(error.tr);
         });
     return success;
@@ -433,16 +587,37 @@ extension SettingControllerExtension on SettingController {
 
   //清空上报
 
-  gloryEmptyReport(String verifyCode, String verifyEmail) async {
+  gloryEmptyReport(
+    String verifyCode,
+    String verifyEmail, {
+    CashOperationFlow? operation,
+  }) async {
     logger.info("gloryEmptyReposrt");
 
     var success = false;
 
+    operation?.stageStarted(
+      'read_balance_before_collection',
+      'Cash Changer pre-collection balance read requested',
+    );
     Map? machineChangeInfo =
         await getMachineCashInfos(); //这里会获取失败，应该是上次操作未正常结束。
     if (machineChangeInfo == null) {
-      return;
+      operation?.stageFailed(
+        'read_balance_before_collection',
+        'Cash Changer pre-collection balance read failed',
+      );
+      return false;
     }
+    operation?.stageSucceeded(
+      'read_balance_before_collection',
+      'Cash Changer pre-collection balance captured',
+      data: <String, Object?>{
+        'denomination_counts': jsonEncode(
+          CashMonitoringEvents.normalizeCodeCounts(machineChangeInfo),
+        ),
+      },
+    );
     pendingGloryEmptyBalance = Map.from(machineChangeInfo);
 
     var formData = {
@@ -454,6 +629,10 @@ extension SettingControllerExtension on SettingController {
     };
 
     logger.info("gloryEmptyReposrt formData: $formData");
+    operation?.stageStarted(
+      'collection_authorization',
+      'Cash Changer collection authorization requested',
+    );
 
     await request(
       'webBootGloryEmpty',
@@ -465,14 +644,35 @@ extension SettingControllerExtension on SettingController {
       logger.info("response: $response");
       if (response["code"] == 200) {
         success = true;
+        operation?.stageSucceeded(
+          'collection_authorization',
+          'Cash Changer collection authorization succeeded',
+          data: <String, Object?>{'response_code': response['code']},
+        );
       } else {
         pendingGloryEmptyBalance = {};
         errorHandleDialog("${response["msg"] ?? 'この機能はレジ締め後に実行する必要があります。'}");
         success = false;
+        operation?.stageFailed(
+          'collection_authorization',
+          'Cash Changer collection authorization was rejected',
+          data: <String, Object?>{
+            'failure_type': 'backend_report_rejected',
+            'response_code': response['code'],
+          },
+        );
       }
     }).catchError((error) {
       pendingGloryEmptyBalance = {};
       logE("gloryEmptyReport error: $error");
+      operation?.stageFailed(
+        'collection_authorization',
+        'Cash Changer collection authorization failed',
+        error: error,
+        data: const <String, Object?>{
+          'failure_type': 'backend_report_exception',
+        },
+      );
 
       if (error.toString().contains("Http status error")) {
         //全回收功能需要在执行レジ締め后才可以执行。
@@ -487,6 +687,13 @@ extension SettingControllerExtension on SettingController {
     }).timeout(const Duration(seconds: 15), onTimeout: () {
       errorHandleDialog("通信タイムアウト");
       success = false;
+      operation?.stageFailed(
+        'collection_authorization',
+        'Cash Changer collection authorization timed out',
+        data: const <String, Object?>{
+          'failure_type': 'backend_report_timeout',
+        },
+      );
     });
 
     return success;
@@ -523,20 +730,54 @@ extension SettingControllerExtension on SettingController {
     bool createBaseline = false,
   }) async {
     logger.info("---gloryConfirmSync---");
+    final ownsOperation = flowId == null;
+    final operationType =
+        reason == 'register_close' ? 'register_close' : 'cash_sync';
+    final operation = ownsOperation
+        ? CashOperationFlow.start(
+            operationType: operationType,
+            message: 'Cash Changer balance sync started',
+            data: <String, Object?>{
+              'snapshot_reason': reason,
+              'is_baseline': createBaseline,
+            },
+          )
+        : CashOperationFlow.attach(
+            flowId: flowId,
+            operationType: operationType,
+          );
+    final effectiveFlowId = operation.flowId;
 
     //
     if (showLoading) {
       showEasyLoading(content: "データを同期中");
     }
+    operation.stageStarted(
+      'read_balance',
+      'Cash Changer balance read requested',
+    );
     Map machineCash = await getMachineCashInfos() ?? {};
     if (machineCash.isEmpty) {
       EasyLoading.dismiss();
+      operation.stageFailed(
+        'read_balance',
+        'Cash Changer balance read failed',
+      );
+      if (ownsOperation) {
+        operation.failed(
+          'Cash Changer balance sync failed',
+          stage: 'read_balance',
+          data: const <String, Object?>{
+            'failure_type': 'balance_read_failed',
+          },
+        );
+      }
       logW(
         'Cash Changer balance read failed',
         upload: true,
         tag: 'CashMonitoring',
         eventCode: 'CASH_BALANCE_SNAPSHOT_FAILED',
-        flowId: flowId,
+        flowId: effectiveFlowId,
         data: <String, Object?>{
           'event_status': 'failed',
           'cash_device': 'glory',
@@ -550,6 +791,15 @@ extension SettingControllerExtension on SettingController {
         backendSynced: false,
       );
     }
+    operation.stageSucceeded(
+      'read_balance',
+      'Cash Changer balance captured',
+      data: <String, Object?>{
+        'denomination_counts': jsonEncode(
+          CashMonitoringEvents.normalizeCodeCounts(machineCash),
+        ),
+      },
+    );
     debugPrint("gloryConfirmSync: $machineCash");
 
     var formData = {
@@ -558,6 +808,10 @@ extension SettingControllerExtension on SettingController {
       'shopCode': shopCode,
     };
     logger.info("formData: $formData");
+    operation.stageStarted(
+      'backend_sync',
+      'Cash Changer balance backend sync requested',
+    );
     try {
       final value = await request(
         'webGloryConfirmSync',
@@ -573,8 +827,19 @@ extension SettingControllerExtension on SettingController {
           reason: reason,
           counts: machineCash,
           isBaseline: createBaseline,
-          flowId: flowId,
+          flowId: effectiveFlowId,
         );
+        operation.stageSucceeded(
+          'backend_sync',
+          'Cash Changer balance backend sync succeeded',
+          data: <String, Object?>{'response_code': response['code']},
+        );
+        if (ownsOperation) {
+          operation.succeeded(
+            'Cash Changer balance sync succeeded',
+            stage: 'backend_sync',
+          );
+        }
         if (showLoading) {
           showToast('完了しました');
         }
@@ -588,15 +853,33 @@ extension SettingControllerExtension on SettingController {
           reason: reason,
           counts: machineCash,
           isBaseline: createBaseline,
-          flowId: flowId,
+          flowId: effectiveFlowId,
           backendSyncStatus: 'failed',
         );
+        operation.stageFailed(
+          'backend_sync',
+          'Cash Changer balance backend sync was rejected',
+          data: <String, Object?>{
+            'failure_type': 'backend_sync_rejected',
+            'response_code': response['code'],
+          },
+        );
+        if (ownsOperation) {
+          operation.failed(
+            'Cash Changer balance sync failed',
+            stage: 'backend_sync',
+            data: <String, Object?>{
+              'failure_type': 'backend_sync_rejected',
+              'response_code': response['code'],
+            },
+          );
+        }
         logW(
           'Cash Changer balance backend sync failed',
           upload: true,
           tag: 'CashMonitoring',
           eventCode: 'CASH_BALANCE_SYNC_FAILED',
-          flowId: flowId,
+          flowId: effectiveFlowId,
           data: <String, Object?>{
             'event_status': 'failed',
             'cash_device': 'glory',
@@ -611,7 +894,6 @@ extension SettingControllerExtension on SettingController {
             '同期失败',
             () => gloryConfirmSync(
               reason: reason,
-              flowId: flowId,
               createBaseline: createBaseline,
             ),
           );
@@ -628,15 +910,33 @@ extension SettingControllerExtension on SettingController {
         reason: reason,
         counts: machineCash,
         isBaseline: createBaseline,
-        flowId: flowId,
+        flowId: effectiveFlowId,
         backendSyncStatus: 'failed',
       );
+      operation.stageFailed(
+        'backend_sync',
+        'Cash Changer balance backend sync failed',
+        error: error,
+        data: const <String, Object?>{
+          'failure_type': 'backend_sync_exception',
+        },
+      );
+      if (ownsOperation) {
+        operation.failed(
+          'Cash Changer balance sync failed',
+          stage: 'backend_sync',
+          error: error,
+          data: const <String, Object?>{
+            'failure_type': 'backend_sync_exception',
+          },
+        );
+      }
       logW(
         'Cash Changer balance backend sync failed',
         upload: true,
         tag: 'CashMonitoring',
         eventCode: 'CASH_BALANCE_SYNC_FAILED',
-        flowId: flowId,
+        flowId: effectiveFlowId,
         data: <String, Object?>{
           'event_status': 'failed',
           'cash_device': 'glory',
@@ -651,7 +951,6 @@ extension SettingControllerExtension on SettingController {
           '同期失败',
           () => gloryConfirmSync(
             reason: reason,
-            flowId: flowId,
             createBaseline: createBaseline,
           ),
         );
@@ -747,17 +1046,22 @@ extension SettingControllerExtension on SettingController {
     showEasyLoading();
     logger.info('-- reportReplanishInfo --');
     ignoreNotify.value = true;
-    if (!await closeDeposit()) {
+    final operation = replenishmentOperation ??
+        CashOperationFlow.start(
+          operationType: 'replenishment',
+          message: 'Cash Changer replenishment report started',
+        );
+    replenishmentOperation = operation;
+    if (!await closeDeposit(operation: operation)) {
       taskTouch = false;
       return;
     }
 
-    final cashFlowId = CashMonitoringEvents.newFlowId();
     CashMonitoringEvents.ledgerDelta(
       cashDevice: 'glory',
       operationType: 'replenishment',
       delta: CashMonitoringEvents.normalizeCodeCounts(uploadMoneyInfo),
-      flowId: cashFlowId,
+      flowId: operation.flowId,
       source: 'cash_changer',
     );
 
@@ -767,6 +1071,13 @@ extension SettingControllerExtension on SettingController {
       'shopCode': shopCode,
     };
     logger.info("formData: $formData");
+    operation.stageStarted(
+      'backend_report',
+      'Cash Changer replenishment backend report requested',
+      data: <String, Object?>{
+        'denomination_counts': jsonEncode(uploadMoneyInfo),
+      },
+    );
     request(
       'webBootGlorySupplement',
       method: 'POST',
@@ -778,6 +1089,18 @@ extension SettingControllerExtension on SettingController {
       logger.info("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
+        operation.stageSucceeded(
+          'backend_report',
+          'Cash Changer replenishment backend report succeeded',
+          data: <String, Object?>{'response_code': response['code']},
+        );
+        operation.succeeded(
+          'Cash Changer replenishment succeeded',
+          stage: 'backend_report',
+          data: <String, Object?>{
+            'denomination_counts': jsonEncode(uploadMoneyInfo),
+          },
+        );
         if (printView != null) {
           sendToUsePrinter(printView);
         }
@@ -787,12 +1110,20 @@ extension SettingControllerExtension on SettingController {
         //commonHandleDialog('完了しました');
         //showToast('完了しました', context: Get.context);
       } else {
+        operation.failed(
+          'Cash Changer replenishment backend report was rejected',
+          stage: 'backend_report',
+          data: <String, Object?>{
+            'failure_type': 'backend_report_rejected',
+            'response_code': response['code'],
+          },
+        );
         logW(
           'Cash Changer replenishment backend report failed',
           upload: true,
           tag: 'CashMonitoring',
           eventCode: 'CASH_REPLENISHMENT_REPORT_FAILED',
-          flowId: cashFlowId,
+          flowId: operation.flowId,
           data: <String, Object?>{
             'event_status': 'failed',
             'cash_device': 'glory',
@@ -808,12 +1139,20 @@ extension SettingControllerExtension on SettingController {
       taskTouch = false;
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
+      operation.failed(
+        'Cash Changer replenishment backend report failed',
+        stage: 'backend_report',
+        error: error,
+        data: const <String, Object?>{
+          'failure_type': 'backend_report_exception',
+        },
+      );
       logW(
         'Cash Changer replenishment backend report failed',
         upload: true,
         tag: 'CashMonitoring',
         eventCode: 'CASH_REPLENISHMENT_REPORT_FAILED',
-        flowId: cashFlowId,
+        flowId: operation.flowId,
         data: <String, Object?>{
           'event_status': 'failed',
           'cash_device': 'glory',
@@ -902,6 +1241,8 @@ extension SettingControllerExtension on SettingController {
     getPutMoney.value = 0;
     exchangeFromInfo = {};
     isStartPutMoney.value = false;
+    replenishmentOperation = null;
+    exchangeOperation = null;
     //await gloryConfirmSync();
     if (syncCash) {
       gloryConfirmSync(reason: 'post_cash_operation');

@@ -3,6 +3,20 @@ import 'package:foodorder/app/services/cash_monitoring_events.dart';
 
 void main() {
   group('CashMonitoringEvents', () {
+    test('cash operation lifecycle event codes are distinct', () {
+      expect(
+        <String>{
+          CashOperationEventCode.started,
+          CashOperationEventCode.stageStarted,
+          CashOperationEventCode.stageSucceeded,
+          CashOperationEventCode.stageFailed,
+          CashOperationEventCode.succeeded,
+          CashOperationEventCode.failed,
+        }.length,
+        6,
+      );
+    });
+
     test('normalizes input and payout codes into yen denominations', () {
       expect(
         CashMonitoringEvents.normalizeCodeCounts(<String, Object>{

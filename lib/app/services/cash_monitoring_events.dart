@@ -12,6 +12,186 @@ class CashBalanceSyncResult {
   final bool backendSynced;
 }
 
+abstract final class CashOperationEventCode {
+  static const started = 'CASH_OPERATION_STARTED';
+  static const stageStarted = 'CASH_OPERATION_STAGE_STARTED';
+  static const stageSucceeded = 'CASH_OPERATION_STAGE_SUCCEEDED';
+  static const stageFailed = 'CASH_OPERATION_STAGE_FAILED';
+  static const succeeded = 'CASH_OPERATION_SUCCEEDED';
+  static const failed = 'CASH_OPERATION_FAILED';
+}
+
+final class CashOperationFlow {
+  CashOperationFlow._({
+    required this.flowId,
+    required this.operationType,
+    required DateTime startedAt,
+  }) : _startedAt = startedAt;
+
+  factory CashOperationFlow.start({
+    required String operationType,
+    required String message,
+    String? flowId,
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    final flow = CashOperationFlow._(
+      flowId: flowId ?? CashMonitoringEvents.newFlowId(),
+      operationType: operationType,
+      startedAt: DateTime.now(),
+    );
+    flow._info(
+      CashOperationEventCode.started,
+      message,
+      status: 'started',
+      stage: 'operation',
+      data: data,
+    );
+    return flow;
+  }
+
+  factory CashOperationFlow.attach({
+    required String flowId,
+    required String operationType,
+  }) {
+    return CashOperationFlow._(
+      flowId: flowId,
+      operationType: operationType,
+      startedAt: DateTime.now(),
+    );
+  }
+
+  final String flowId;
+  final String operationType;
+  final DateTime _startedAt;
+  bool _terminal = false;
+
+  void stageStarted(
+    String stage,
+    String message, {
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    if (_terminal) return;
+    _info(
+      CashOperationEventCode.stageStarted,
+      message,
+      status: 'started',
+      stage: stage,
+      data: data,
+    );
+  }
+
+  void stageSucceeded(
+    String stage,
+    String message, {
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    if (_terminal) return;
+    _info(
+      CashOperationEventCode.stageSucceeded,
+      message,
+      status: 'succeeded',
+      stage: stage,
+      data: data,
+    );
+  }
+
+  void stageFailed(
+    String stage,
+    String message, {
+    Object? error,
+    bool willRetry = false,
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    if (_terminal) return;
+    logW(
+      message,
+      upload: true,
+      tag: 'CashOperation',
+      recordType: 'cash_operation_event',
+      eventCode: CashOperationEventCode.stageFailed,
+      flowId: flowId,
+      error: error,
+      data: _payload(
+        status: willRetry ? 'retrying' : 'failed',
+        stage: stage,
+        data: <String, Object?>{
+          'will_retry': willRetry,
+          ...data,
+        },
+      ),
+    );
+  }
+
+  void succeeded(
+    String message, {
+    String stage = 'operation',
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    if (_terminal) return;
+    _terminal = true;
+    _info(
+      CashOperationEventCode.succeeded,
+      message,
+      status: 'succeeded',
+      stage: stage,
+      data: data,
+    );
+  }
+
+  void failed(
+    String message, {
+    required String stage,
+    Object? error,
+    Map<String, Object?> data = const <String, Object?>{},
+  }) {
+    if (_terminal) return;
+    _terminal = true;
+    logE(
+      message,
+      upload: true,
+      tag: 'CashOperation',
+      recordType: 'cash_operation_event',
+      eventCode: CashOperationEventCode.failed,
+      flowId: flowId,
+      error: error,
+      data: _payload(status: 'failed', stage: stage, data: data),
+    );
+  }
+
+  void _info(
+    String eventCode,
+    String message, {
+    required String status,
+    required String stage,
+    required Map<String, Object?> data,
+  }) {
+    logI(
+      message,
+      upload: true,
+      tag: 'CashOperation',
+      recordType: 'cash_operation_event',
+      eventCode: eventCode,
+      flowId: flowId,
+      data: _payload(status: status, stage: stage, data: data),
+    );
+  }
+
+  Map<String, Object?> _payload({
+    required String status,
+    required String stage,
+    required Map<String, Object?> data,
+  }) {
+    return <String, Object?>{
+      'event_status': status,
+      'cash_device': 'glory',
+      'operation_type': operationType,
+      'stage': stage,
+      'elapsed_ms': DateTime.now().difference(_startedAt).inMilliseconds,
+      ...data,
+    };
+  }
+}
+
 abstract final class CashMonitoringEvents {
   static const Map<String, int> _denominationByCode = <String, int>{
     '61': 1,

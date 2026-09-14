@@ -7,8 +7,10 @@ import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/models/machine_capabilities.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/machine_runtime_service.dart';
+import 'package:foodorder/app/services/payment_event_codes.dart';
 import 'package:foodorder/app/services/scale_serial_service.dart';
 import 'package:logging/logging.dart';
 
@@ -119,6 +121,20 @@ class CashMachineStartupService {
           .timeout(const Duration(seconds: 10));
     } catch (error, stackTrace) {
       _logger.warning('Failed to apply one-yen setting', error, stackTrace);
+      logW(
+        'Failed to apply PayCube one-yen setting',
+        upload: true,
+        tag: 'CashMachine',
+        eventCode: PaymentEventCode.cashSettingsApplyFailed,
+        data: <String, Object?>{
+          'event_status': 'failed',
+          'cash_device': CashMachineDriver.payCube.name,
+          'operation': 'prohibit_one_yen',
+          'failure_type': PaymentFailureType.deviceRejected,
+        },
+        error: error,
+        stack: stackTrace,
+      );
     }
   }
 
@@ -128,18 +144,108 @@ class CashMachineStartupService {
     CashMachineStepCallback? onStep,
     CashMachineCheckMode mode = CashMachineCheckMode.startupRecovery,
   }) async {
+    if (driver == CashMachineDriver.none) {
+      return const CashMachineCheckResult.ready();
+    }
+
+    final flowId = CustomLogHandler.newFlowId();
+    final startedAt = DateTime.now();
+    CashMachineStartupStep? lastStep;
+    final eventData = <String, Object?>{
+      'cash_device': driver.name,
+      'check_mode': mode.name,
+      if (machineCode.isNotEmpty) 'machine_code': machineCode,
+    };
+    logI(
+      'Cash machine recovery started',
+      upload: true,
+      tag: 'CashMachine',
+      eventCode: PaymentEventCode.cashRecoveryStarted,
+      flowId: flowId,
+      data: <String, Object?>{
+        ...eventData,
+        'event_status': 'started',
+      },
+    );
+
+    void reportStep(CashMachineStartupStep step) {
+      lastStep = step;
+      logI(
+        'Cash machine recovery step: ${step.name}',
+        upload: true,
+        tag: 'CashMachine',
+        eventCode: PaymentEventCode.cashRecoveryStep,
+        flowId: flowId,
+        data: <String, Object?>{
+          ...eventData,
+          'event_status': 'progress',
+          'step': step.name,
+        },
+      );
+      onStep?.call(step);
+    }
+
     try {
       final result = await switch (driver) {
-        CashMachineDriver.payCube => _runPayCubeRecovery(onStep, mode),
-        CashMachineDriver.cashChanger => _runCashChangerRecovery(onStep, mode),
-        CashMachineDriver.none =>
-          Future.value(const CashMachineCheckResult.ready()),
+        CashMachineDriver.payCube => _runPayCubeRecovery(reportStep, mode),
+        CashMachineDriver.cashChanger =>
+          _runCashChangerRecovery(reportStep, mode),
+        CashMachineDriver.none => throw StateError('unreachable'),
       };
-      if (!result.isReady) await _notifyFailure(machineCode);
+      final durationMs = DateTime.now().difference(startedAt).inMilliseconds;
+      if (result.isReady) {
+        logI(
+          'Cash machine recovery succeeded',
+          upload: true,
+          tag: 'CashMachine',
+          eventCode: PaymentEventCode.cashRecoverySucceeded,
+          flowId: flowId,
+          data: <String, Object?>{
+            ...eventData,
+            'event_status': 'succeeded',
+            'duration_ms': durationMs,
+            if (lastStep != null) 'last_step': lastStep!.name,
+          },
+        );
+      } else {
+        logW(
+          'Cash machine recovery failed',
+          upload: true,
+          tag: 'CashMachine',
+          eventCode: PaymentEventCode.cashRecoveryFailed,
+          flowId: flowId,
+          data: <String, Object?>{
+            ...eventData,
+            'event_status': 'failed',
+            'failure_type': _failureType(result.failure),
+            if (result.failure != null) 'failure': result.failure!.name,
+            if (result.detail.isNotEmpty) 'detail': result.detail,
+            if (lastStep != null) 'last_step': lastStep!.name,
+            'duration_ms': durationMs,
+          },
+        );
+        await _notifyFailure(machineCode);
+      }
       return result;
     } on TimeoutException catch (error, stackTrace) {
       _logger.warning(
           'Cash machine startup recovery timed out', error, stackTrace);
+      logE(
+        'Cash machine recovery timed out',
+        upload: true,
+        tag: 'CashMachine',
+        eventCode: PaymentEventCode.cashRecoveryFailed,
+        flowId: flowId,
+        data: <String, Object?>{
+          ...eventData,
+          'event_status': 'failed',
+          'failure_type': PaymentFailureType.timeout,
+          if (lastStep != null) 'last_step': lastStep!.name,
+          'duration_ms': DateTime.now().difference(startedAt).inMilliseconds,
+        },
+        error: error,
+        stack: stackTrace,
+      );
       await _notifyFailure(machineCode);
       return const CashMachineCheckResult.failed(
         CashMachineCheckFailure.timeout,
@@ -147,12 +253,43 @@ class CashMachineStartupService {
     } catch (error, stackTrace) {
       _logger.warning(
           'Cash machine startup recovery failed', error, stackTrace);
+      logE(
+        'Cash machine recovery threw an exception',
+        upload: true,
+        tag: 'CashMachine',
+        eventCode: PaymentEventCode.cashRecoveryFailed,
+        flowId: flowId,
+        data: <String, Object?>{
+          ...eventData,
+          'event_status': 'failed',
+          'failure_type': PaymentFailureType.unknown,
+          if (lastStep != null) 'last_step': lastStep!.name,
+          'duration_ms': DateTime.now().difference(startedAt).inMilliseconds,
+        },
+        error: error,
+        stack: stackTrace,
+      );
       await _notifyFailure(machineCode);
       return CashMachineCheckResult.failed(
         CashMachineCheckFailure.unknown,
         detail: error.toString(),
       );
     }
+  }
+
+  String _failureType(CashMachineCheckFailure? failure) {
+    return switch (failure) {
+      CashMachineCheckFailure.timeout => PaymentFailureType.timeout,
+      CashMachineCheckFailure.disconnected ||
+      CashMachineCheckFailure.unsupportedPlatform =>
+        PaymentFailureType.deviceUnavailable,
+      CashMachineCheckFailure.unexpectedResponse =>
+        PaymentFailureType.invalidResponse,
+      CashMachineCheckFailure.busy ||
+      CashMachineCheckFailure.recoveryFailed =>
+        PaymentFailureType.deviceRejected,
+      CashMachineCheckFailure.unknown || null => PaymentFailureType.unknown,
+    };
   }
 
   /// PayCube startup recovery keeps the established field sequence:

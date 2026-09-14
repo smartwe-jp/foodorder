@@ -79,6 +79,8 @@ class SettingController extends GetxController with StateMixin {
   //var isExchange = false;
   var exchangeFromInfo = {};
   Map pendingGloryEmptyBalance = {};
+  CashOperationFlow? replenishmentOperation;
+  CashOperationFlow? exchangeOperation;
   // Map printInfo = {};
   // double printLength = 2048;
   Timer? showCashTimer;
@@ -777,20 +779,46 @@ class SettingController extends GetxController with StateMixin {
     return null;
   }
 
-  recycleCash(String verifyCode, String verifyEmail) async {
+  recycleCash(
+    String verifyCode,
+    String verifyEmail, {
+    CashOperationFlow? operation,
+  }) async {
     if (Platform.isWindows) {
+      final collectionOperation = operation ??
+          CashOperationFlow.start(
+            operationType: 'collection',
+            message: 'Cash Changer collection started',
+          );
       showEasyLoading();
-      if (!await gloryEmptyReport(verifyCode, verifyEmail)) {
+      if (!await gloryEmptyReport(
+        verifyCode,
+        verifyEmail,
+        operation: collectionOperation,
+      )) {
         //commonHandleDialog("回收失败：Glory机器未清空");
+        collectionOperation.failed(
+          'Cash Changer collection authorization failed',
+          stage: 'collection_authorization',
+        );
         EasyLoading.dismiss();
         return;
       }
+      collectionOperation.stageStarted(
+        'collect_all',
+        'Cash Changer collect-all requested',
+      );
       final result = await CashChanger.collectAll(); //该步骤失败如何处理
       logI("recycleCash result: $result");
       await CashChanger.changerResultNext(
           resultCode: result,
           onSuccess: () async {
             logI("recycleCash onSuccess");
+            collectionOperation.stageSucceeded(
+              'collect_all',
+              'Cash Changer collect-all succeeded',
+              data: <String, Object?>{'result_code': result},
+            );
             final counts = CashMonitoringEvents.normalizeCodeCounts(
               pendingGloryEmptyBalance,
             );
@@ -798,7 +826,15 @@ class SettingController extends GetxController with StateMixin {
               cashDevice: 'glory',
               operationType: 'collection',
               delta: counts.map((key, value) => MapEntry(key, -value)),
+              flowId: collectionOperation.flowId,
               source: 'cash_changer',
+            );
+            collectionOperation.succeeded(
+              'Cash Changer collection succeeded',
+              stage: 'collect_all',
+              data: <String, Object?>{
+                'collected_counts': jsonEncode(counts),
+              },
             );
             pendingGloryEmptyBalance = {};
             EasyLoading.dismiss();
@@ -807,11 +843,27 @@ class SettingController extends GetxController with StateMixin {
             //showToast('回收成功');
           },
           onRetry: () {
-            recycleCash(verifyCode, verifyEmail);
+            collectionOperation.stageFailed(
+              'collect_all',
+              'Cash Changer collect-all will retry',
+              willRetry: true,
+              data: <String, Object?>{'result_code': result},
+            );
+            recycleCash(
+              verifyCode,
+              verifyEmail,
+              operation: collectionOperation,
+            );
           },
           showError: (String error) {
             EasyLoading.dismiss();
             logI("recycleCash error: ${error.tr}");
+            collectionOperation.failed(
+              'Cash Changer collection failed',
+              stage: 'collect_all',
+              error: error,
+              data: <String, Object?>{'result_code': result},
+            );
             //showToast('回收失败');
             commonHandleDialog("回收失败：${error.tr}");
           });

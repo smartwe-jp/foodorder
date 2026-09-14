@@ -10,6 +10,8 @@ final class _SettlementPaymentEventState {
   int qrPaymentAttempt = 0;
   int posConnectAttempt = 0;
   int posConnectedAttempt = 0;
+  String? lastPayCubePayoutMismatch;
+  String? lastPayCubeDepositMismatch;
   String lastOrderFinalizeFailureType = PaymentFailureType.unknown;
 }
 

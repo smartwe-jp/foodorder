@@ -9,6 +9,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
+import 'package:foodorder/app/services/payment_event_codes.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +30,18 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
           },
           catchError: (error) {
             debugPrint("startOutPutMoney error: $error");
+            monitorRefundWarning(
+              PaymentEventCode.refundDeviceFailed,
+              'Glory automatic refund payout failed; trying denomination fallback',
+              failureType: PaymentFailureType.deviceRejected,
+              error: error,
+              data: <String, Object?>{
+                'stage': 'refund_device',
+                'cash_device': 'glory',
+                'refund_amount': outMoney,
+                'will_retry_with_denominations': true,
+              },
+            );
             // _errorHandleDialog(GString.getToString(checkLanguage.value, error),
             // confirm: () {
             //   Get.back();
@@ -40,10 +53,43 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
       if (!result) {
         String machineCash = await getMachineCashInfo();
         debugPrint('machineCash: $machineCash');
-        if (machineCash.isEmpty) return false;
+        if (machineCash.isEmpty) {
+          monitorRefundStageFailed(
+            'refund_device',
+            PaymentEventCode.refundDeviceFailed,
+            'Glory cash balance was unavailable for refund fallback',
+            failureType: PaymentFailureType.invalidResponse,
+            critical: true,
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'refund_amount': outMoney,
+            },
+          );
+          monitorRefundFlowFailed(
+            failedStage: 'refund_device',
+            failureType: PaymentFailureType.invalidResponse,
+          );
+          return false;
+        }
         String outMoneyString = await findChange(machineCash, outMoney);
         debugPrint('outMoneyString: $outMoneyString');
         if (outMoneyString.isEmpty) {
+          monitorRefundStageFailed(
+            'refund_device',
+            PaymentEventCode.refundDeviceFailed,
+            'Glory did not have a valid denomination combination for refund',
+            failureType: PaymentFailureType.cashCapacity,
+            critical: true,
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'refund_amount': outMoney,
+              'cash_balance': machineCash,
+            },
+          );
+          monitorRefundFlowFailed(
+            failedStage: 'refund_device',
+            failureType: PaymentFailureType.cashCapacity,
+          );
           _errorHandleDialog('cash_error_over'.tr);
           return false;
         }
@@ -59,6 +105,16 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
     await CashChanger.getCashBalance(onSuccess: (value) {
       cashInfo = value;
     }, catchError: (error) {
+      monitorRefundWarning(
+        PaymentEventCode.refundDeviceFailed,
+        'Glory cash balance read failed during refund',
+        failureType: PaymentFailureType.deviceRejected,
+        error: error,
+        data: const <String, Object?>{
+          'stage': 'refund_device',
+          'cash_device': 'glory',
+        },
+      );
       _errorHandleDialog(error.tr);
     });
     debugPrint('machine cashInfo: $cashInfo');
@@ -118,6 +174,23 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
         },
         showError: (String error) {
           debugPrint("cancelReplanish error: $error");
+          monitorRefundStageFailed(
+            'refund_device',
+            PaymentEventCode.refundDeviceFailed,
+            'Glory denomination payout command failed',
+            failureType: PaymentFailureType.deviceRejected,
+            critical: true,
+            error: error,
+            data: <String, Object?>{
+              'cash_device': 'glory',
+              'payout_denominations': outInfo.toString(),
+            },
+          );
+          monitorRefundFlowFailed(
+            failedStage: 'refund_device',
+            failureType: PaymentFailureType.deviceRejected,
+            error: error,
+          );
           _errorHandleDialog(error.tr);
           success = false;
         });
@@ -174,6 +247,35 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
 
     currencyString.value =
         MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
+
+    if (currencyString.value.isEmpty) {
+      monitorRefundWarning(
+        PaymentEventCode.refundDeviceFailed,
+        'Glory refund succeeded but payout denomination data was unavailable',
+        failureType: PaymentFailureType.invalidResponse,
+        data: <String, Object?>{
+          'stage': 'refund_device',
+          'cash_device': 'glory',
+          'refund_amount': refundInfo['amount'],
+          'coin_device_data': currencyCoinStringresult,
+          'bill_device_data': currencyCashStringresult,
+          'payout_succeeded': true,
+        },
+      );
+    }
+
+    monitorRefundStageSucceeded(
+      'refund_device',
+      PaymentEventCode.refundDeviceSucceeded,
+      'Glory refund payout succeeded',
+      data: <String, Object?>{
+        'cash_device': 'glory',
+        'refund_amount': refundInfo['amount'],
+        'denomination_data': currencyString.value,
+        'coin_device_data': currencyCoinStringresult,
+        'bill_device_data': currencyCashStringresult,
+      },
+    );
 
     getOutMoneyString.value == false;
 

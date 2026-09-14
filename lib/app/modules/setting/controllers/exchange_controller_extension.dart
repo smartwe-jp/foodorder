@@ -20,6 +20,10 @@ extension ExchangeControllerExtension on SettingController {
   //get cashinfo
 
   startPutExchangeMoney() async {
+    exchangeOperation = CashOperationFlow.start(
+      operationType: 'exchange',
+      message: 'Cash Changer exchange started',
+    );
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
@@ -173,7 +177,15 @@ extension ExchangeControllerExtension on SettingController {
 
   //投币BEGINDEPOSITOUTSIDE
   beginDepositOutside() async {
+    final operation = exchangeOperation ??= CashOperationFlow.start(
+      operationType: 'exchange',
+      message: 'Cash Changer exchange started',
+    );
     logger.info('-- beginDepositOutside --');
+    operation.stageStarted(
+      'begin_deposit',
+      'Cash Changer exchange deposit requested',
+    );
     final result = await CashChanger.beginDepositOutside;
     debugPrint('beginDepositOutside: $result');
     await CashChanger.changerResultNext(
@@ -181,15 +193,32 @@ extension ExchangeControllerExtension on SettingController {
         onSuccess: () {
           logger.info('-- beginDepositOutside success--');
           debugPrint("beginDepositOutside 1");
+          operation.stageSucceeded(
+            'begin_deposit',
+            'Cash Changer exchange deposit started',
+            data: <String, Object?>{'result_code': result},
+          );
           _getOutsideInputMoney();
         },
         onRetry: () {
           debugPrint("beginDepositOutside 2");
+          operation.stageFailed(
+            'begin_deposit',
+            'Cash Changer exchange deposit will retry',
+            willRetry: true,
+            data: <String, Object?>{'result_code': result},
+          );
           beginDepositOutside();
         },
         showError: (String error) {
           debugPrint("beginDepositOutside error: $error");
           logger.info('-- beginDepositOutside error: ${error.tr} --');
+          operation.failed(
+            'Cash Changer exchange deposit failed',
+            stage: 'begin_deposit',
+            error: error,
+            data: <String, Object?>{'result_code': result},
+          );
           errorHandleDialog(error.tr);
         });
   }
@@ -231,6 +260,15 @@ extension ExchangeControllerExtension on SettingController {
         }
 
         String cashList = machineChangeInfo.findMaxCash();
+        exchangeOperation?.stageFailed(
+          'device_status',
+          'Cash Changer reported an exchange capacity warning',
+          data: <String, Object?>{
+            'device_status': result,
+            'affected_denominations': cashList,
+            'balance_raw': machineChangeInfo,
+          },
+        );
 
         errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
           Get.back();
@@ -238,6 +276,11 @@ extension ExchangeControllerExtension on SettingController {
         });
         return;
       }
+      exchangeOperation?.stageFailed(
+        'device_status',
+        'Cash Changer reported an abnormal exchange status',
+        data: <String, Object?>{'device_status': result},
+      );
       errorHandleDialog(result);
     };
   }
@@ -482,6 +525,10 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   Future<void> _runExchangeFlow(type, count, disconut) async {
+    final operation = exchangeOperation ??= CashOperationFlow.start(
+      operationType: 'exchange',
+      message: 'Cash Changer exchange started',
+    );
     await CashChanger.removeEventsListener();
     //isExchange = true;
     logI('exChangeFlow: $type, $count, $disconut');
@@ -489,10 +536,33 @@ extension ExchangeControllerExtension on SettingController {
     logI('exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
 
     showEasyLoading();
+    operation.stageStarted(
+      'fix_deposit',
+      'Cash Changer exchange deposit fix requested',
+    );
     await CashChanger.fixDeposit;
+    operation.stageSucceeded(
+      'fix_deposit',
+      'Cash Changer exchange deposit fixed',
+    );
 
+    operation.stageStarted(
+      'read_balance',
+      'Cash Changer exchange balance read requested',
+    );
     String? localCashInfo = await getMachineCashInfo();
-    if (localCashInfo == null) return;
+    if (localCashInfo == null) {
+      operation.failed(
+        'Cash Changer exchange balance read failed',
+        stage: 'read_balance',
+      );
+      return;
+    }
+    operation.stageSucceeded(
+      'read_balance',
+      'Cash Changer exchange balance captured',
+      data: <String, Object?>{'balance_raw': localCashInfo},
+    );
     Map<String, int> coinCounts = parseCoinCounts(
         getPutMoneyCurrency.value, localCashInfo, '$type:$count');
 
@@ -506,6 +576,15 @@ extension ExchangeControllerExtension on SettingController {
 
     if (change == null) {
       EasyLoading.dismiss();
+      operation.failed(
+        'Cash Changer exchange combination was not found',
+        stage: 'calculate_change',
+        data: <String, Object?>{
+          'input_type': type.toString(),
+          'input_count': count,
+          'discount': disconut,
+        },
+      );
       errorHandleDialog(
           "現在の組み合わせは両替できません、キャンセルしてやり直してください。"); //localized needed
       return;
@@ -543,7 +622,12 @@ extension ExchangeControllerExtension on SettingController {
     logI('pops: $pops');
 
     var outMoneySuccess = false;
-    if (!hasExchangeCash) outMoneySuccess = await gloryOutputMoney(outInfo);
+    if (!hasExchangeCash) {
+      outMoneySuccess = await gloryOutputMoney(
+        outInfo,
+        operation: operation,
+      );
+    }
 
     if (!outMoneySuccess) {
       //isExchange = false;
@@ -556,23 +640,48 @@ extension ExchangeControllerExtension on SettingController {
     if (outMoneySuccess || hasExchangeCash) {
       //isExchange = false;
       hasExchangeCash = true;
-      final cashFlowId = CashMonitoringEvents.newFlowId();
       CashMonitoringEvents.ledgerDelta(
         cashDevice: 'glory',
         operationType: 'exchange',
         delta: CashMonitoringEvents.movementDelta(puts: puts, pops: pops),
-        flowId: cashFlowId,
+        flowId: operation.flowId,
         source: 'cash_changer',
       );
-      final result = await reportExchange(puts, pops, flowId: cashFlowId);
+      final result = await reportExchange(
+        puts,
+        pops,
+        flowId: operation.flowId,
+        operation: operation,
+      );
       if (result) {
+        operation.succeeded(
+          'Cash Changer exchange succeeded',
+          stage: 'backend_report',
+          data: <String, Object?>{
+            'puts': jsonEncode(puts),
+            'pops': jsonEncode(pops),
+          },
+        );
         clearTask();
         Get.back();
+      } else {
+        operation.failed(
+          'Cash Changer exchange backend report failed',
+          stage: 'backend_report',
+        );
       }
     }
   }
 
   Future<bool> exportCashFlow(type, int count) async {
+    final operation = CashOperationFlow.start(
+      operationType: 'external_dispense',
+      message: 'Cash Changer external dispense started',
+      data: <String, Object?>{
+        'denomination_code': type.toString(),
+        'count': count,
+      },
+    );
     logI('exportCashFlow: $type, $count');
     showEasyLoading();
 
@@ -593,25 +702,59 @@ extension ExchangeControllerExtension on SettingController {
         moneyValue > 500 ? ';$moneyValue:$count' : '$moneyValue:$count';
     logI('outInfo: $outInfo');
 
+    operation.stageStarted(
+      'dispense',
+      'Cash Changer external dispense requested',
+      data: <String, Object?>{'dispense_raw': outInfo},
+    );
     int? resultCode = await CashChanger.dispenseCashOutside(outInfo);
     logI('exportCashFlow resultCode: $resultCode');
     EasyLoading.dismiss();
     if (resultCode == null || resultCode != 0) {
+      operation.failed(
+        'Cash Changer external dispense failed',
+        stage: 'dispense',
+        data: <String, Object?>{'result_code': resultCode},
+      );
       errorHandleDialogTwo(
           '出金に失敗しました。再度お試しください。', () => exportCashFlow(type, count),
           cancel: () => Get.back());
       return false;
     }
+    operation.stageSucceeded(
+      'dispense',
+      'Cash Changer external dispense succeeded',
+      data: <String, Object?>{'result_code': resultCode},
+    );
 
-    final cashFlowId = CashMonitoringEvents.newFlowId();
     CashMonitoringEvents.ledgerDelta(
       cashDevice: 'glory',
       operationType: 'external_dispense',
       delta: CashMonitoringEvents.movementDelta(puts: puts, pops: pops),
-      flowId: cashFlowId,
+      flowId: operation.flowId,
       source: 'cash_changer',
     );
-    await reportExchange(puts, pops, flowId: cashFlowId);
+    final reportSucceeded = await reportExchange(
+      puts,
+      pops,
+      flowId: operation.flowId,
+      operation: operation,
+    );
+    if (!reportSucceeded) {
+      operation.failed(
+        'Cash Changer external dispense backend report failed',
+        stage: 'backend_report',
+      );
+    } else {
+      operation.succeeded(
+        'Cash Changer external dispense succeeded',
+        stage: 'backend_report',
+        data: <String, Object?>{
+          'puts': jsonEncode(puts),
+          'pops': jsonEncode(pops),
+        },
+      );
+    }
     clearTask();
     Get.back();
 
@@ -644,10 +787,20 @@ extension ExchangeControllerExtension on SettingController {
     }
   }
 
-  gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
+  gloryOutputMoney(
+    outMoney, {
+    Function? successTask,
+    bool? fromeError,
+    CashOperationFlow? operation,
+  }) async {
     //debugPrint("startOutPutMoney");
     //print("outMoney: $outMoney");
     logger.info('-- gloryOutputMoney: $outMoney --');
+    operation?.stageStarted(
+      'dispense',
+      'Cash Changer exchange dispense requested',
+      data: <String, Object?>{'dispense_raw': outMoney.toString()},
+    );
     await CashChanger.removeEventsListener();
     bool success = false;
     final resultCode = await CashChanger.dispenseCashOutside(outMoney);
@@ -657,18 +810,35 @@ extension ExchangeControllerExtension on SettingController {
           logger.info('-- gloryOutputMoney: success --');
           debugPrint("startOutPutMoney 1");
           success = true;
+          operation?.stageSucceeded(
+            'dispense',
+            'Cash Changer exchange dispense succeeded',
+            data: <String, Object?>{'result_code': resultCode},
+          );
           if (fromeError != null && fromeError) {
             successTask?.call(true);
           }
         },
         onRetry: () {
           debugPrint("startOutPutMoney 2");
-          gloryOutputMoney(outMoney);
+          operation?.stageFailed(
+            'dispense',
+            'Cash Changer exchange dispense will retry',
+            willRetry: true,
+            data: <String, Object?>{'result_code': resultCode},
+          );
+          gloryOutputMoney(outMoney, operation: operation);
         },
         showError: (String error) {
           debugPrint("startOutPutMoney error: $error");
           logger.info('-- gloryOutputMoney error: $error --');
           success = false;
+          operation?.failed(
+            'Cash Changer exchange dispense failed',
+            stage: 'dispense',
+            error: error,
+            data: <String, Object?>{'result_code': resultCode},
+          );
           errorHandleDialog(error.tr, confirm: () {
             cancelReplanish(shouldBack: false);
 
@@ -681,7 +851,12 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   //添加重试3次逻辑 和最后失败弹框提示。
-  reportExchange(puts, pops, {String? flowId}) async {
+  reportExchange(
+    puts,
+    pops, {
+    String? flowId,
+    CashOperationFlow? operation,
+  }) async {
     var success = false;
     logI('reportExchange');
     var formData = {
@@ -692,6 +867,10 @@ extension ExchangeControllerExtension on SettingController {
     };
 
     logI('formData: $formData');
+    operation?.stageStarted(
+      'backend_report',
+      'Cash Changer cash operation backend report requested',
+    );
 
     await request(
       'webBootGloryExchange',
@@ -703,9 +882,22 @@ extension ExchangeControllerExtension on SettingController {
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         success = true;
+        operation?.stageSucceeded(
+          'backend_report',
+          'Cash Changer cash operation backend report succeeded',
+          data: <String, Object?>{'response_code': response['code']},
+        );
         //showToast('完了しました', context: Get.context);
       } else {
         success = false;
+        operation?.stageFailed(
+          'backend_report',
+          'Cash Changer cash operation backend report was rejected',
+          data: <String, Object?>{
+            'failure_type': 'backend_report_rejected',
+            'response_code': response['code'],
+          },
+        );
         logI('---reportExchange failed: ${response["message"]}');
         logW(
           'Cash Changer exchange backend report failed',
@@ -716,7 +908,7 @@ extension ExchangeControllerExtension on SettingController {
           data: <String, Object?>{
             'event_status': 'failed',
             'cash_device': 'glory',
-            'operation_type': 'exchange',
+            'operation_type': operation?.operationType ?? 'exchange',
             'failure_type': 'backend_report_rejected',
             'response_code': response['code'],
           },
@@ -726,6 +918,14 @@ extension ExchangeControllerExtension on SettingController {
     }).catchError((error) {
       logI('---reportExchange error: $error');
       success = false;
+      operation?.stageFailed(
+        'backend_report',
+        'Cash Changer cash operation backend report failed',
+        error: error,
+        data: const <String, Object?>{
+          'failure_type': 'backend_report_exception',
+        },
+      );
       logW(
         'Cash Changer exchange backend report failed',
         upload: true,
@@ -735,7 +935,7 @@ extension ExchangeControllerExtension on SettingController {
         data: <String, Object?>{
           'event_status': 'failed',
           'cash_device': 'glory',
-          'operation_type': 'exchange',
+          'operation_type': operation?.operationType ?? 'exchange',
           'failure_type': 'backend_report_exception',
         },
         error: error,

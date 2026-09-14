@@ -40,6 +40,17 @@ import '../../menuPage/controllers/menu_page_controller.dart';
 
 part 'settlement_controller_payment_events.dart';
 
+final class _PaymentReportRejectedException implements Exception {
+  const _PaymentReportRejectedException({this.code, this.message});
+
+  final Object? code;
+  final String? message;
+
+  @override
+  String toString() =>
+      'Payment report rejected (code: $code, message: ${message ?? ''})';
+}
+
 class SettlementController extends GetxController with StateMixin {
 
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
@@ -229,11 +240,8 @@ class SettlementController extends GetxController with StateMixin {
         machineInfo.paymentMethod == "9" ||
         machineInfo.paymentMethod == "10") {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
-      if(machineInfo.pos_ip != "" && machineInfo.pos_port != ""){
-
-        showEasyLoading();
-        payConnectSocket();
-      }
+      showEasyLoading();
+      await checkpayconnectSocker();
     }
     _getSystemSettingInfo();
     requestLatestCheckoutInfo();
@@ -350,7 +358,9 @@ class SettlementController extends GetxController with StateMixin {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
     //print(scanQrCodeController.text);
-    if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
+    if (machineInfo.machineCode != "" &&
+        scanQrCodeController.text != "" &&
+        orderId.value.isNotEmpty) {
       _qrPaymentAttempt++;
       _paymentStageStarted(
         'qr_payment',
@@ -457,6 +467,18 @@ class SettlementController extends GetxController with StateMixin {
         );
         _showScanCodeNoOpenDialog(3,"");
       });
+    } else {
+      _paymentWarning(
+        PaymentEventCode.qrPaymentFailed,
+        'QR payment input is incomplete',
+        failureType: PaymentFailureType.invalidResponse,
+        data: <String, Object?>{
+          'stage': 'qr_payment_input',
+          'has_machine_code': machineInfo.machineCode.isNotEmpty,
+          'has_order_id': orderId.value.isNotEmpty,
+          'has_auth_code': scanQrCodeController.text.isNotEmpty,
+        },
+      );
     }
   }
 
@@ -678,10 +700,39 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
+        _paymentStageSucceeded(
+          'qr_payment',
+          PaymentEventCode.qrPaymentSucceeded,
+          'QR payment final confirmation succeeded',
+          data: <String, Object?>{'attempt': _qrPaymentAttempt},
+        );
         doPrintOrderMenu(machineInfo.receiptPrintType);
       } else {
+        _paymentStageFailed(
+          'qr_payment',
+          PaymentEventCode.qrPaymentTimeout,
+          'QR payment final confirmation failed',
+          failureType: PaymentFailureType.backendRejected,
+          critical: true,
+          data: <String, Object?>{
+            'attempt': _qrPaymentAttempt,
+            'response_code': response['code'],
+          },
+        );
         _showScanCodeTimeOutDialog();
       }
+    }).catchError((error, stackTrace) {
+      _paymentStageFailed(
+        'qr_payment',
+        PaymentEventCode.qrPaymentFailed,
+        'QR payment final confirmation request failed',
+        failureType: PaymentFailureType.network,
+        critical: true,
+        error: error,
+        stackTrace: stackTrace,
+        data: <String, Object?>{'attempt': _qrPaymentAttempt},
+      );
+      _showScanCodeTimeOutDialog();
     });
   }
 
@@ -709,6 +760,13 @@ class SettlementController extends GetxController with StateMixin {
   checkpayconnectSocker({questData = ""}) async {
     Map systemSettingInfo = await HomeServices.getMachineActivateData();
     var showCreditCard = systemSettingInfo['showCreditCard'];
+    if (showCreditCard != true) {
+      _showPosConfigurationError(
+        message: 'POS payment is disabled in machine settings',
+        reason: 'credit_card_disabled',
+      );
+      return;
+    }
     if (showCreditCard == true) {
       Map posSettingInfo = await HomeServices.getPosSettingInfo();
 
@@ -719,55 +777,60 @@ class SettlementController extends GetxController with StateMixin {
           payConnectSocket(questData: questData);
         } else {
           //提醒未设置POS机 点击返回
-          _paymentCritical(
-            PaymentEventCode.posConnectFailed,
-            'POS connection settings are missing',
-            failureType: PaymentFailureType.deviceUnavailable,
-            data: const <String, Object?>{'stage': 'pos_configuration'},
+          _showPosConfigurationError(
+            message: 'POS connection settings are missing',
+            reason: 'missing_ip_or_port',
           );
-          _paymentFlowFailed(
-            failedStage: 'pos_configuration',
-            failureType: PaymentFailureType.deviceUnavailable,
-          );
-          EasyLoading.dismiss();
-          Get.dialog(
-              barrierDismissible: false,
-              DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr, confirm: () {
-            Get.back();
-            Get.back();
-          }));
         }
       } else {
         //提醒未设置POS机 点击返回
-        _paymentCritical(
-          PaymentEventCode.posConnectFailed,
-          'POS settings are unavailable',
-          failureType: PaymentFailureType.deviceUnavailable,
-          data: const <String, Object?>{'stage': 'pos_configuration'},
+        _showPosConfigurationError(
+          message: 'POS settings are unavailable',
+          reason: 'settings_unavailable',
         );
-        _paymentFlowFailed(
-          failedStage: 'pos_configuration',
-          failureType: PaymentFailureType.deviceUnavailable,
-        );
-        EasyLoading.dismiss();
-        Get.dialog(
-            barrierDismissible: false,
-            DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr, confirm: () {
-                  
-          Get.back();
-          Get.back();
-        }));
       }
     }
+  }
+
+  void _showPosConfigurationError({
+    required String message,
+    required String reason,
+  }) {
+    _paymentCritical(
+      PaymentEventCode.posConnectFailed,
+      message,
+      failureType: PaymentFailureType.deviceUnavailable,
+      data: <String, Object?>{
+        'stage': 'pos_configuration',
+        'reason': reason,
+      },
+    );
+    _paymentFlowFailed(
+      failedStage: 'pos_configuration',
+      failureType: PaymentFailureType.deviceUnavailable,
+    );
+    EasyLoading.dismiss();
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+      Get.back();
+      Get.back();
+    }));
   }
 
   //pos机相关
   payConnectSocket({questData = ""}) async {
     debugPrint('start connect pos');
+    final posPort = int.tryParse(machineInfo.pos_port);
+    if (machineInfo.pos_ip.trim().isEmpty || posPort == null) {
+      _showPosConfigurationError(
+        message: 'POS IP address or port is invalid',
+        reason: 'invalid_ip_or_port',
+      );
+      return;
+    }
     _posConnectAttempt++;
     _paymentStageStarted(
       'pos_connect',
@@ -800,7 +863,7 @@ class SettlementController extends GetxController with StateMixin {
 
     posCheckService.updateUseStatus(true);
     posManager.payConnectSocket(machineInfo.paymentMethod, machineInfo.pos_ip,
-        int.parse(machineInfo.pos_port), machineInfo.machineCode,
+        posPort, machineInfo.machineCode,
         questData: questData,
         onRequestPayData: () {
           debugPrint('onRequestPayData');
@@ -1097,6 +1160,23 @@ class SettlementController extends GetxController with StateMixin {
 //           gotonewMenuPage();
 // >>>>>>> 2.7.0-dev
         });
+      } else {
+        _paymentCritical(
+          PaymentEventCode.cancelFailed,
+          'POS cancellation request was rejected by backend',
+          failureType: PaymentFailureType.backendRejected,
+          data: <String, Object?>{
+            'stage': 'pos_cancel',
+            'response_code': response['code'],
+            if (response['message'] != null)
+              'response_message': response['message'],
+          },
+        );
+        _paymentFlowFailed(
+          failedStage: 'pos_cancel',
+          failureType: PaymentFailureType.backendRejected,
+        );
+        commonErrorAlert("network_error_tips".tr);
       }
     }).onError((error, stackTrace) {
       _paymentCritical(
@@ -1918,21 +1998,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getPayCubeOutMoney(String currencyStringResult, bool isCancel) async {
-
-    int queryTimes = 0;
-
-      if(queryTimes>150){
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        getOutMoneyString.value == false;
-
-        //OutMoneytimer?.cancel();
-        //汇报出金币种
-        reportOutMoney(isCancel);
-      }
-
-      if (getOutMoneyString.value == true) {
+    if (getOutMoneyString.value == true) {
         // 循环一定要记得设置取消条件，手动取消
         //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
         if (currencyStringResult.trim().length >= 28) {
@@ -1940,7 +2006,8 @@ class SettlementController extends GetxController with StateMixin {
           //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
-          if (outtotalAmount == int.parse(outStringMoney.value)) {
+          final expectedAmount = int.tryParse(outStringMoney.value);
+          if (expectedAmount != null && outtotalAmount == expectedAmount) {
             _paymentStageSucceeded(
               'cash_change',
               PaymentEventCode.cashChangeSucceeded,
@@ -1954,17 +2021,34 @@ class SettlementController extends GetxController with StateMixin {
             showCashTimer?.cancel();
             seconds.value = 180;
             currencyString.value = currencyStringResult;
-            getOutMoneyString.value == false;
+            getOutMoneyString.value = false;
+            _paymentEventState.lastPayCubePayoutMismatch = null;
 
             //OutMoneytimer?.cancel();
             //汇报出金币种
             reportOutMoney(isCancel);
+          } else if (_paymentEventState.lastPayCubePayoutMismatch !=
+              currencyStringResult) {
+            _paymentEventState.lastPayCubePayoutMismatch =
+                currencyStringResult;
+            _paymentWarning(
+              PaymentEventCode.cashDenominationsReadFailed,
+              'PayCube payout denominations do not match expected change',
+              failureType: PaymentFailureType.invalidResponse,
+              data: <String, Object?>{
+                'stage': 'cash_change',
+                'cash_device': 'paycube',
+                'direction': 'payout',
+                'denomination_data': currencyStringResult.trim(),
+                'expected_amount': expectedAmount,
+                'actual_amount': outtotalAmount,
+                'operation': isCancel ? 'cancel' : 'complete',
+              },
+            );
           }
         }
       }
-      outMonyNum.value++;
-      queryTimes++;
-    //});
+    outMonyNum.value++;
   }
 
   //汇报出金币种,请求后台
@@ -2055,25 +2139,14 @@ class SettlementController extends GetxController with StateMixin {
 
   _getPayCubePutMoneyCurrency(String putCurrencyString, bool canReport) async {
     debugPrint("putCurrencyString==$putCurrencyString canReport==$canReport");
-    var putQueryNum = 0;
-
-      if(putQueryNum >100){
-        //showCashTimer?.cancel();
-        //putMoneyCurrencyTime.cancel();
-        //汇报入金币种
-        if (canReport) {
-          reportPutMoneyCurrency();
-          getputMoneyString.value = false;
-        }
-
-      }
-      if (getputMoneyString.value == true) {
+    if (getputMoneyString.value == true) {
         // 循环一定要记得设置取消条件，手动取消
         //String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
         debugPrint("putCurrencyString.trim().length==${putCurrencyString.trim().length}");
         if (putCurrencyString.trim().length > 60) {
           var totalAmount = MoneyParser.calculateTotalAmount(putCurrencyString.trim());
-          if(totalAmount == int.parse(getPutMoney.value)){
+          final expectedAmount = int.tryParse(getPutMoney.value);
+          if(expectedAmount != null && totalAmount == expectedAmount){
             // showCashTimer?.cancel();
             // seconds.value = 180;
             getPutMoneyCurrency.value = putCurrencyString;
@@ -2083,14 +2156,51 @@ class SettlementController extends GetxController with StateMixin {
             if (canReport) {
               reportPutMoneyCurrency();
               getputMoneyString.value = false;
+              _paymentEventState.lastPayCubeDepositMismatch = null;
             }
-
+          } else if (canReport &&
+              _paymentEventState.lastPayCubeDepositMismatch !=
+                  putCurrencyString) {
+            _paymentEventState.lastPayCubeDepositMismatch = putCurrencyString;
+            _paymentWarning(
+              PaymentEventCode.cashDenominationsReadFailed,
+              'PayCube deposit denominations do not match inserted amount',
+              failureType: PaymentFailureType.invalidResponse,
+              data: <String, Object?>{
+                'stage': 'cash_payment_report',
+                'cash_device': 'paycube',
+                'direction': 'deposit',
+                'denomination_data': putCurrencyString.trim(),
+                'expected_amount': expectedAmount,
+                'actual_amount': totalAmount,
+                'will_report_raw_data': true,
+              },
+            );
+            getPutMoneyCurrency.value = putCurrencyString;
+            reportPutMoneyCurrency();
+            getputMoneyString.value = false;
           }
+        } else if (canReport) {
+          _paymentWarning(
+            PaymentEventCode.cashDenominationsReadFailed,
+            'PayCube final deposit denomination data is incomplete',
+            failureType: PaymentFailureType.invalidResponse,
+            data: <String, Object?>{
+              'stage': 'cash_payment_report',
+              'cash_device': 'paycube',
+              'direction': 'deposit',
+              'denomination_data': putCurrencyString.trim(),
+              'expected_amount': int.tryParse(getPutMoney.value),
+              'data_length': putCurrencyString.trim().length,
+              'will_report_raw_data': true,
+            },
+          );
+          getPutMoneyCurrency.value = putCurrencyString;
+          reportPutMoneyCurrency();
+          getputMoneyString.value = false;
         }
       }
-      putQueryNum++;
-      putMonyNum.value++;
-    
+    putMonyNum.value++;
   }
 
   //汇报入金币种,请求后台
@@ -2142,6 +2252,13 @@ class SettlementController extends GetxController with StateMixin {
     );
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
+          final response = json.decode(value.toString());
+          if (response is! Map || response['code'] != 200) {
+            throw _PaymentReportRejectedException(
+              code: response is Map ? response['code'] : null,
+              message: response is Map ? response['message']?.toString() : null,
+            );
+          }
           logger.info("----上报订单成功----");
           _paymentStageSucceeded(
             'cash_payment_report',
@@ -2153,7 +2270,7 @@ class SettlementController extends GetxController with StateMixin {
             },
           );
           isReportCash.value = false;
-    }).catchError((e) {
+    }).catchError((e, stackTrace) {
       //后期优化，上报失败存储本地，下次再上报。
       logger.info('reportPutMoneyCurrency error:${e.toString()}');
       debugPrint("----上报订单失败----");
@@ -2163,13 +2280,19 @@ class SettlementController extends GetxController with StateMixin {
         retry
             ? 'Cash payment result report attempt failed'
             : 'Cash payment result report failed after retry',
-        failureType: PaymentFailureType.network,
+        failureType: e is _PaymentReportRejectedException
+            ? PaymentFailureType.backendRejected
+            : e is FormatException
+                ? PaymentFailureType.invalidResponse
+                : PaymentFailureType.network,
         critical: !retry,
         error: e,
+        stackTrace: stackTrace,
         data: <String, Object?>{
           'attempt': reportAttempt,
           'operation': operation,
           'will_retry': retry,
+          if (e is _PaymentReportRejectedException) 'response_code': e.code,
         },
       );
       if (!retry && Platform.isAndroid) {

@@ -6,6 +6,19 @@ abstract final class PaymentEventCode {
   static const String cancelFailed = 'PAYMENT_CANCEL_FAILED';
   static const String cancelled = 'PAYMENT_FLOW_CANCELLED';
 
+  static const String refundFlowStarted = 'REFUND_FLOW_STARTED';
+  static const String refundFlowSucceeded = 'REFUND_FLOW_SUCCEEDED';
+  static const String refundFlowFailed = 'REFUND_FLOW_FAILED';
+  static const String refundExecuteStarted = 'REFUND_EXECUTE_STARTED';
+  static const String refundExecuteSucceeded = 'REFUND_EXECUTE_SUCCEEDED';
+  static const String refundExecuteFailed = 'REFUND_EXECUTE_FAILED';
+  static const String refundDeviceStarted = 'REFUND_DEVICE_STARTED';
+  static const String refundDeviceSucceeded = 'REFUND_DEVICE_SUCCEEDED';
+  static const String refundDeviceFailed = 'REFUND_DEVICE_FAILED';
+  static const String refundNotifyStarted = 'REFUND_NOTIFY_STARTED';
+  static const String refundNotifySucceeded = 'REFUND_NOTIFY_SUCCEEDED';
+  static const String refundNotifyFailed = 'REFUND_NOTIFY_FAILED';
+
   static const String cashDeviceOpenStarted = 'CASH_DEVICE_OPEN_STARTED';
   static const String cashDeviceOpenSucceeded = 'CASH_DEVICE_OPEN_SUCCEEDED';
   static const String cashDeviceOpenFailed = 'CASH_DEVICE_OPEN_FAILED';
@@ -17,6 +30,13 @@ abstract final class PaymentEventCode {
       'CASH_DEVICE_STATUS_CHECK_FAILED';
   static const String cashDeviceStatusUpdated =
       'CASH_DEVICE_STATUS_UPDATED';
+  static const String cashRecoveryStarted = 'CASH_MACHINE_RECOVERY_STARTED';
+  static const String cashRecoveryStep = 'CASH_MACHINE_RECOVERY_STEP';
+  static const String cashRecoverySucceeded =
+      'CASH_MACHINE_RECOVERY_SUCCEEDED';
+  static const String cashRecoveryFailed = 'CASH_MACHINE_RECOVERY_FAILED';
+  static const String cashSettingsApplyFailed =
+      'CASH_MACHINE_SETTINGS_APPLY_FAILED';
   static const String cashCapacityWarning = 'CASH_CAPACITY_WARNING';
   static const String cashCapacityFull = 'CASH_CAPACITY_FULL';
   static const String cashBalanceReadStarted = 'CASH_BALANCE_READ_STARTED';
