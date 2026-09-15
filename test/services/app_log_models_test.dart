@@ -282,6 +282,49 @@ void main() {
     expect(uploadJson['print_info'], '{"order_sn_code":"0002","items":[]}');
   });
 
+  test('keeps the complete settings snapshot and promotes its dimensions', () {
+    final settingsJson = '{"settings":"${'x' * 3000}"}';
+    final entry = AppLogEntry(
+      timestamp: DateTime.parse('2026-09-15T10:30:00+09:00'),
+      level: 'INFO',
+      tag: 'Settings',
+      recordType: 'settings_snapshot',
+      eventCode: 'APP_SETTINGS_SNAPSHOT',
+      message: 'Application settings snapshot changed',
+      data: {
+        'settings_schema_version': 1,
+        'settings_revision': 2,
+        'settings_hash': 'hash-2',
+        'previous_settings_hash': 'hash-1',
+        'change_reason': 'settings_changed',
+        'changed_sections': const ['printing'],
+        'settings_json': settingsJson,
+      },
+      context: const AppLogContext(sessionId: 'session-1'),
+    );
+
+    final restored = AppLogEntry.fromRecord(
+      LogRecord(
+        Level.INFO,
+        AppLogMessage(
+          message: entry.message,
+          upload: true,
+          recordType: entry.recordType,
+          eventCode: entry.eventCode,
+          data: entry.data,
+        ).toString(),
+        entry.tag,
+      ),
+      entry.context,
+    );
+    final uploadJson = restored.toOpenObserveJson(eventId: 'settings-event-1');
+
+    expect(restored.data['settings_json'], settingsJson);
+    expect(uploadJson['settings_revision'], 2);
+    expect(uploadJson['settings_hash'], 'hash-2');
+    expect(uploadJson['changed_sections'], ['printing']);
+  });
+
   test('promotes HTTP dimensions without exposing request payloads', () {
     final entry = AppLogEntry(
       timestamp: DateTime.parse('2026-08-25T10:30:00+09:00'),

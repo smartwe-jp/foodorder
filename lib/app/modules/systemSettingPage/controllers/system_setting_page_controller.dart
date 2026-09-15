@@ -31,8 +31,6 @@ import '../../../services/machine_runtime_service.dart';
 import '../../../services/cash_machine_startup_service.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../../services/GetxStorage.dart';
-import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../settlement/views/label_constrained_box.dart';
@@ -671,8 +669,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   Future<void> checkCashMachineEnabled(bool enabled) async {
     machineInfo.cashMachineEnabled = enabled;
-    final runtime = Get.find<MachineRuntimeService>();
-    await runtime.updateCashMachineEnabled(enabled);
+    await _updateSystemSetting('cashMachineEnabled', enabled);
     update();
 
     if (enabled &&
@@ -724,8 +721,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       machineInfo.pos_ip = "";
     }
 
-    Storage.setString('smartwe_posSetting', json.encode(posSettingData));
-    GetxStorage.setData('smartwe_posSetting', json.encode(posSettingData));
+    await HomeServices.updatePosSettingInfo(posSettingData);
 
     machineInfo.isAllowPos = checkedType;
     _updateSystemSetting("isAllowPos", checkedType);
@@ -1197,7 +1193,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //   update();
   // }
 
-  void _updateSystemSetting(String key, dynamic value) async {
+  Future<void> _updateSystemSetting(String key, dynamic value) async {
     final systemSettingData = await HomeServices.getSystemSettingInfo();
     debugPrint(
         "_updateSystemSetting: key=$key, value=$value, currentData=$systemSettingData");

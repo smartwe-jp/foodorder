@@ -6,6 +6,7 @@ import 'GetxStorage.dart';
 import 'Storage.dart';
 import 'machine_activation_local_service.dart';
 import 'machine_runtime_service.dart';
+import 'settings_snapshot_reporter.dart';
 
 class HomeServices {
   static MachineRuntimeService? get _machineRuntime =>
@@ -171,6 +172,7 @@ class HomeServices {
     } else {
       await Storage.setDouble('machinePrintWidth', machinePrintWidth);
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static setLabelPrintWidth(double labelPrintWidthData) async{
@@ -215,6 +217,7 @@ class HomeServices {
     } else {
       await Storage.setString('smartwe_systemSetting', json.encode(settings));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   //pos机多参数设置
@@ -289,6 +292,7 @@ class HomeServices {
     } else {
       await Storage.setData("machineModeInfo", json.encode(value));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static Future<List<dynamic>> getSSESettingList() async {
@@ -300,6 +304,7 @@ class HomeServices {
 
     final data = json.encode(sseSettingList);
     await Storage.setData("SSESetting", data);
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static Future<void> setPrinterListInfo(List printerListInfo) async {
@@ -309,6 +314,7 @@ class HomeServices {
     } else {
       await Storage.setData("printerListInfo", json.encode(printerListInfo));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static getWlanPrintSettingTwoInfo() async{
@@ -350,6 +356,7 @@ class HomeServices {
       await Storage.setString(
           'smartwe_wlanPanelPrintSetting', json.encode(settings));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static updatePosSettingInfo(Map posSettingData) async {
@@ -360,6 +367,7 @@ class HomeServices {
     } else {
       await Storage.setString('smartwe_posSetting', json.encode(settings));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static updateUsbPrintSettingInfo(Map usbDevice) async {
@@ -370,6 +378,7 @@ class HomeServices {
     } else {
       await Storage.setString('smartwe_usbPrintSetting', json.encode(device));
     }
+    settingsSnapshotReporter.scheduleChanged();
   }
 
   static updateMachineSettingPassword(String password) async {
@@ -518,4 +527,3 @@ class HomeServices {
     return passwordinfo;
   }
 }
-

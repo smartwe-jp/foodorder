@@ -272,6 +272,12 @@ class AppLogEntry {
       'update_reason',
       'result_semantics',
       'print_info',
+      'settings_schema_version',
+      'settings_revision',
+      'settings_hash',
+      'previous_settings_hash',
+      'change_reason',
+      'changed_sections',
     };
     return <String, Object?>{
       for (final entry in data.entries)
@@ -375,6 +381,8 @@ class AppLogSanitizer {
       final normalizedKey = key.toString();
       if (_sensitiveKey.hasMatch(normalizedKey)) {
         result[normalizedKey] = '[REDACTED]';
+      } else if (normalizedKey == 'settings_json' && value is String) {
+        result[normalizedKey] = value;
       } else if (normalizedKey == 'print_info' && value is String) {
         result[normalizedKey] = text(value, maxLength: 16000);
       } else {

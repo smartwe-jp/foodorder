@@ -6,6 +6,7 @@ import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:foodorder/app/services/sse_subscription_manager.dart';
+import 'package:foodorder/app/services/settings_snapshot_reporter.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -235,6 +236,7 @@ class TransitPageController extends GetxController {
     Get.lazyPut(() => PrintService(machineInfo));
 
     await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
+    await settingsSnapshotReporter.reportInitial();
 
     final list = machineInfo.homeList;
     if (list.isNotEmpty) {
