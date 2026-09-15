@@ -118,6 +118,64 @@ void main() {
     expect(uploadJson['machine_type'], 'SWF1');
     expect(uploadJson['device_status'], 'online');
     expect(uploadJson['heartbeat_interval_seconds'], 60);
+    expect(entry.shouldWriteToLocalLog, isFalse);
+  });
+
+  test('formats local logs without repeating upload context', () {
+    final entry = AppLogEntry(
+      timestamp: DateTime(2026, 9, 14, 10, 30, 0, 123, 456),
+      level: 'WARNING',
+      tag: 'CashOperation',
+      eventCode: 'CASH_OPERATION_STAGE_FAILED',
+      message: 'Cash Changer balance read failed',
+      flowId: 'flow-1',
+      data: const {
+        'operation_type': 'cash_sync',
+        'stage': 'read_balance',
+      },
+      error: 'TimeoutException',
+      context: const AppLogContext(
+        sessionId: 'session-1',
+        merchantId: 'shop-1',
+        machineId: 'machine-1',
+        appVersion: '3.0.0',
+        buildNumber: '190',
+        platform: 'windows',
+      ),
+    );
+
+    final localText = entry.toLocalText();
+
+    expect(
+      localText,
+      startsWith(
+        '2026-09-14 10:30:00.123456: WARNING: '
+        '[CashOperation] [CASH_OPERATION_STAGE_FAILED] '
+        'Cash Changer balance read failed flow=flow-1',
+      ),
+    );
+    expect(localText, contains('\n  data: '));
+    expect(localText, contains('\n  error: TimeoutException'));
+    expect(localText, isNot(contains('session-1')));
+    expect(localText, isNot(contains('shop-1')));
+    expect(localText, isNot(contains('machine-1')));
+    expect(localText, isNot(contains('build_number')));
+  });
+
+  test('keeps ordinary local log lines compact', () {
+    final entry = AppLogEntry(
+      timestamp: DateTime(2026, 9, 14, 10, 30),
+      level: 'INFO',
+      tag: 'App',
+      message: '--- App Start ---',
+      context: const AppLogContext(sessionId: 'session-1'),
+    );
+
+    expect(
+      entry.toLocalText(),
+      '2026-09-14 10:30:00.000: INFO: --- App Start ---',
+    );
+    expect(entry.shouldWriteToLocalLog, isTrue);
   });
 
   test('structured entry contains searchable context and error details', () {

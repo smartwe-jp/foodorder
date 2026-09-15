@@ -215,9 +215,11 @@ class CustomLogHandler {
       _eventSink?.call(entry);
     }
 
-    final jsonLine = entry.toJsonLine();
-    stdout.writeln(jsonLine);
-    _writeChain = _writeChain.then((_) => _writeToFile(jsonLine)).catchError(
+    if (!entry.shouldWriteToLocalLog) return;
+
+    final localText = entry.toLocalText();
+    stdout.writeln(localText);
+    _writeChain = _writeChain.then((_) => _writeToFile(localText)).catchError(
       (Object error, StackTrace stackTrace) {
         stderr.writeln('Logger file write failed: $error');
       },

@@ -295,7 +295,49 @@ class AppLogEntry {
     }
   }
 
+  bool get shouldWriteToLocalLog => eventCode != 'DEVICE_HEARTBEAT';
+
+  String toLocalText() {
+    final buffer = StringBuffer()
+      ..write('${timestamp.toIso8601String().replaceFirst('T', ' ')}: ')
+      ..write('$level: ');
+
+    if (tag.isNotEmpty && tag != 'App') {
+      buffer.write('[$tag] ');
+    }
+    if (eventCode?.isNotEmpty ?? false) {
+      buffer.write('[$eventCode] ');
+    }
+    buffer.write(_indentLocalValue(message, '  '));
+    if (flowId?.isNotEmpty ?? false) {
+      buffer.write(' flow=$flowId');
+    }
+    if (incidentId?.isNotEmpty ?? false) {
+      buffer.write(' incident=$incidentId');
+    }
+    if (data.isNotEmpty) {
+      buffer
+        ..write('\n  data: ')
+        ..write(_indentLocalValue(jsonEncode(data), '  '));
+    }
+    if (error?.isNotEmpty ?? false) {
+      buffer
+        ..write('\n  error: ')
+        ..write(_indentLocalValue(error!, '  '));
+    }
+    if (stackTrace?.isNotEmpty ?? false) {
+      buffer
+        ..write('\n  stack_trace:\n    ')
+        ..write(_indentLocalValue(stackTrace!, '    '));
+    }
+    return buffer.toString();
+  }
+
   String toJsonLine() => jsonEncode(toJson());
+
+  static String _indentLocalValue(String value, String indent) {
+    return value.replaceAll('\r\n', '\n').replaceAll('\n', '\n$indent');
+  }
 }
 
 class AppLogSanitizer {
