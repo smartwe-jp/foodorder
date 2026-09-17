@@ -1,4 +1,5 @@
 //import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 //import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
@@ -11,7 +12,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../controllers/machine_info.dart';
 import '../../../routes/app_pages.dart';
-import '../../../services/HomeServices.dart';
 import '../../../services/Storage.dart';
 import '../../../services/machine_runtime_service.dart';
 import '../../../widget/DialogUtils.dart';
@@ -106,15 +106,6 @@ class TransitPageController extends GetxController {
     int retryCount = 0,
   }) async {
     try {
-      final shouldActive = await _checkShouldActive();
-      if (_loadActiveInfo.value == false && !shouldActive) {
-        logger.info('-- getMachineActivate with loadActive no need --');
-        final cachedActivation = _machineRuntime.activation;
-        _actuarial.value = cachedActivation?.actuarial ?? true;
-        await _getSmartweSystemSettingInfo();
-        return;
-      }
-
       logI(
           '-- getMachineActivate with loadActive -- machineCode: ${_machineCode.value}, version: ${local_version.value} --');
       final activation = await _machineRuntime.activate(
@@ -175,27 +166,6 @@ class TransitPageController extends GetxController {
         });
       }));
 
-  Future<bool> _checkShouldActive() async {
-    if ((_machineRuntime.activation?.machineModelCode ?? '').isEmpty) {
-      return true;
-    }
-    var now = DateTime.now();
-    var lastActiveTime = await HomeServices.getActiveTimeInfo();
-    if (lastActiveTime != null && lastActiveTime != "") {
-      var last = DateTime.tryParse(lastActiveTime);
-      if (last == null) return true;
-      var diff = now.difference(last).inDays;
-      if (diff > 1) {
-        //超过一天 重新激活
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  }
-
   Future<void> _saveActiveCode(String code) async {
     //保存机器信息
     await Future.wait([
@@ -229,6 +199,15 @@ class TransitPageController extends GetxController {
     }
 
     MachineInfoController machineInfo = Get.find<MachineInfoController>();
+    final logoUrl = machineInfo.printLogoImageUrl;
+    if (logoUrl.isNotEmpty) {
+      try {
+        // 后台可能覆盖同 URL 的图片，启动时清理缓存以便下次加载最新内容。
+        await CachedNetworkImage.evictFromCache(logoUrl);
+      } catch (e) {
+        logW('Failed to evict receipt logo cache: $e');
+      }
+    }
     Get.lazyPut(() => PrintService(machineInfo));
 
     await Get.find<SseSubscriptionManager>().startEnabledSubscriptions();
