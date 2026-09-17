@@ -211,6 +211,8 @@ const Map<String, String> vi_VN = {
       'Rất tiếc, dịch vụ tạm thời không khả dụng do sự cố mạng. Vui lòng liên hệ nhân viên hoặc hủy giao dịch.',
   'pos_notwork_tips':
       'Thiết bị POS không phản hồi. Vui lòng liên hệ nhân viên.',
+  'settlement_pos_disabled':
+      'Thanh toán qua POS đã bị tắt. Vui lòng chọn phương thức thanh toán khác.',
   'settlement_posnosetting_error':
       'Thiết bị POS chưa được cài đặt. Vui lòng liên hệ nhân viên.',
   'pos_check_title': 'Kiểm tra trạng thái thiết bị POS',

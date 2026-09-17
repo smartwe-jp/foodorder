@@ -216,6 +216,7 @@ const Map<String, String> ko_KR = {
         "pos_notwork_tips":"죄송합니다. POS 기기가 응답하지 않습니다. 직원에게 도움을 요청해 주십시오. 감사합니다.",
 
         "settlement_posnosetting_error":"POS 기기가 설정되지 않았습니다. 직원에게 문의하십시오. 감사합니다!",
+        "settlement_pos_disabled":"POS 결제가 비활성화되어 있습니다. 다른 결제 수단을 선택해 주세요.",
         "pos_check_title": "POS 기기 상태 확인",
         "pos_checking": "POS 기기 상태를 확인하는 중입니다. POS 기기 상태가 정상인지 확인해 주십시오. POS 기기에 이상이 있는 경우, 확인 절차는 2분 후에 자동으로 종료됩니다.",
         "pos_check_success": "POS 기기 상태가 정상입니다.",

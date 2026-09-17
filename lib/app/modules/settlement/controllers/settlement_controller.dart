@@ -335,14 +335,15 @@ class SettlementController extends GetxController with StateMixin {
           method: 'POST',
           parameters: formData,
           timeout: const Duration(seconds: 180)
-      ).then((val) {
+      ).then((val) async {
         var response = json.decode(val.toString());
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
           logger.info("扫码支付返回数据：$resultData");
           if (resultData["requestInfo"] != "") {
-            EasyLoading.dismiss();
+            await EasyLoading.dismiss();
             if (resultData["exceptionMessage"] == "") {
+              if (await _stopDisabledPosPayment()) return;
               showPosEasyLoading();
               posResultReportData.value = response['data'];
               //检测是否需要连接socket
@@ -577,8 +578,20 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
+  Future<bool> _stopDisabledPosPayment() async {
+    if (machineInfo.allowPos) return false;
+    logger.info('POS payment blocked: local POS switch is disabled');
+    await _showScanCodeNoOpenDialog(
+      3,
+      'settlement_pos_disabled'.tr,
+      payType: machineInfo.paymentMethod == '2' ? 'qr' : 'pos',
+    );
+    return true;
+  }
+
   //pos机相关
   checkpayconnectSocker({questData = ""}) async {
+    if (await _stopDisabledPosPayment()) return;
     Map systemSettingInfo = await HomeServices.getMachineActivateData();
     var showCreditCard = systemSettingInfo['showCreditCard'];
     if (showCreditCard == true) {
@@ -619,6 +632,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //pos机相关
   payConnectSocket({questData = ""}) async {
+    if (await _stopDisabledPosPayment()) return;
     debugPrint('start connect pos');
 
     final canUsePos = await posCheckService.canUsePos().timeout(
