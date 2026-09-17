@@ -423,6 +423,11 @@ class SpicyHotPotCheckoutController extends GetxController with StateMixin {
 
     final optionInfo =
         List<dynamic>.from(item['optionGroupVoList'] ?? const []);
+    for (final group in optionInfo) {
+      for (final option in group['optionVoList'] ?? const []) {
+        option['checked'] = option['standard']?.toString() == '1';
+      }
+    }
     final itemPrice = item['currentPrice'] ?? 0;
     final priceInt =
         itemPrice is int ? itemPrice : int.tryParse('$itemPrice') ?? 0;
