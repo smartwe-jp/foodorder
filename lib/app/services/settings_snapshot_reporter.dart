@@ -55,7 +55,19 @@ class SettingsSnapshotReporter {
     final settings = await _capture(runtime);
     final canonicalSettings = _canonicalize(settings);
     final settingsJson = jsonEncode(canonicalSettings);
-    final settingsHash = sha256.convert(utf8.encode(settingsJson)).toString();
+    final machineType = runtime.machineModelCode.trim().toUpperCase();
+    final settingsHash = sha256
+        .convert(
+          utf8.encode(
+            jsonEncode(
+              _canonicalize(<String, Object?>{
+                'machine_type': machineType,
+                'settings': canonicalSettings,
+              }),
+            ),
+          ),
+        )
+        .toString();
     final previousHash = await Storage.getString('${_lastHashKey}_$machineKey');
     if (previousHash == settingsHash) return;
 
@@ -80,6 +92,7 @@ class SettingsSnapshotReporter {
 
     final snapshot = <String, Object?>{
       'schema_version': schemaVersion,
+      'machine_type': machineType,
       'revision': revision,
       'captured_at': capturedAt,
       'reason': previousSnapshot == null ? 'initial_sync' : reason,
@@ -125,6 +138,12 @@ class SettingsSnapshotReporter {
     final pos = runtime.posSettings;
     final screenCall = runtime.screenCallSettings;
     final rawSubscriptions = await Storage.getData('SSESetting');
+    final machineType = runtime.machineModelCode.trim().toUpperCase();
+    final hasCashMachineSetting = machineType == 'SWF1' ||
+        machineType == 'SWF2' ||
+        machineType == 'SWFG';
+    final hasDenominationSettings =
+        machineType == 'SWF1' || machineType == 'SWF2';
 
     return <String, Object?>{
       'general': <String, Object?>{
@@ -136,7 +155,6 @@ class SettingsSnapshotReporter {
         },
         'menu_direction': system['menuDirection']?.toString() ?? '1',
         'panel_type': system['panelType']?.toString() ?? 'Mini',
-        'reservation_enabled': _asBool(system['isReservation']),
         'return_after_payment':
             _asBool(system['isBackHome'], fallback: true) ? 'home' : 'menu',
         'register_close_enabled': _asBool(system['isAllowRejishime']),
@@ -150,19 +168,21 @@ class SettingsSnapshotReporter {
         'receipt_option_print': _asBool(system['printReceiptOptions']),
         'text_size': _asInt(system['printPaperTxtSize'], fallback: 2),
       },
-      'cash': <String, Object?>{
-        'machine_enabled':
-            _asBool(system['cashMachineEnabled'], fallback: true),
-        'accepted_denominations': <String, bool>{
-          '1': _asBool(
-            system['isAllowOneYen'] ?? system['isAllowOneyen'],
-          ),
-          '5': _asBool(system['isAllow5'], fallback: true),
-          '10': _asBool(system['isAllow10'], fallback: true),
-          '5000': _asBool(system['isAllow5000'], fallback: true),
-          '10000': _asBool(system['isAllow10000'], fallback: true),
+      if (hasCashMachineSetting)
+        'cash': <String, Object?>{
+          'machine_enabled':
+              _asBool(system['cashMachineEnabled'], fallback: true),
+          if (hasDenominationSettings)
+            'accepted_denominations': <String, bool>{
+              '1': _asBool(
+                system['isAllowOneYen'] ?? system['isAllowOneyen'],
+              ),
+              '5': _asBool(system['isAllow5'], fallback: true),
+              '10': _asBool(system['isAllow10'], fallback: true),
+              '5000': _asBool(system['isAllow5000'], fallback: true),
+              '10000': _asBool(system['isAllow10000'], fallback: true),
+            },
         },
-      },
       'printing': <String, Object?>{
         'machine_print_width': runtime.machinePrintWidth,
         'usb_printer': Map<String, Object?>.from(runtime.usbDevice),

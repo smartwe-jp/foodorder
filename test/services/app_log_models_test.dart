@@ -283,7 +283,8 @@ void main() {
   });
 
   test('keeps the complete settings snapshot and promotes its dimensions', () {
-    final settingsJson = '{"settings":"${'x' * 3000}"}';
+    final settingsJson =
+        '{"settings":"${List<String>.filled(3000, 'x').join()}"}';
     final entry = AppLogEntry(
       timestamp: DateTime.parse('2026-09-15T10:30:00+09:00'),
       level: 'INFO',
