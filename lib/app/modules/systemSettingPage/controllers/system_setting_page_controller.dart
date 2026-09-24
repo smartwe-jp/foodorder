@@ -955,7 +955,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //printType=0 receipt 1label
   printTest(type, printIp, printPort, {printType = 0, double labelWidth = 384}) async {
     // ignore: invalid_use_of_protected_member
-    print("type:$type");
+    debugPrint("type:$type, printType : $printType");
     final printerInfo = type == SearchType.net
         ? PrinterInfo(ip: printIp)
         : PrinterInfo(
@@ -1084,6 +1084,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
             break;
         }
         _updateSystemSetting(keyString, checkedType);
+        debugPrint("设置成功: $keyString = $checkedType");
         EasyLoading.dismiss();
       }, catchError: (error){
         EasyLoading.dismiss();

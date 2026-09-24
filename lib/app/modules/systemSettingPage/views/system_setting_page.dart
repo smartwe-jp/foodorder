@@ -992,7 +992,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         ),
                         const Divider(),
                         Switch(
-                          value: item['value'] == '1',
+                          value: item['value'] == '1' || item['value'] == true,
                           onChanged: item['onChanged'],
                           activeColor: Colors.blue,
                         ),
@@ -1518,6 +1518,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       "50x40": "384x300",
       "40x40": "300x300",
       "60x50": "460x375",
+      "60x60": "460x460",
       "50x50": "384x375",
       "50x60": "384x460",
       "40x50": "300x375"
