@@ -914,26 +914,26 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
         'key': 'isAllow1',
         'value': settingInfo['isAllowOneYen'] ??
             settingInfo['isAllowOneyen'] ??
-            '0',
+            '1',
         'onChanged': (bool val) =>
             controller.checkIsAllowOneYen(val ? '1' : '0'),
       },
       {
         'label': '五円',
         'key': 'isAllow5',
-        'value': settingInfo['isAllow5'] ?? '0',
+        'value': settingInfo['isAllow5'] ?? true,
         'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow5', 5),
       },
       {
         'label': '五千円',
         'key': 'isAllow5000',
-        'value': settingInfo['isAllow5000'] ?? '0',
+        'value': settingInfo['isAllow5000'] ?? true,
         'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow5000', 5000),
       },
       {
         'label': '一万円',
         'key': 'isAllow10000',
-        'value': settingInfo['isAllow10000'] ?? '0',
+        'value': settingInfo['isAllow10000'] ?? true,
         'onChanged': (bool val) => controller.settingAllowCash(val, 'isAllow10000', 10000),
       },
     ];
@@ -997,12 +997,12 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                           activeColor: Colors.blue,
                         ),
                         Text(
-                          item['value'] == '1' ? '使える' : '使えない',
+                          (item['value'] == '1' || item['value'] == true) ? '使える' : '使えない',
                           style: TextStyle(
                             fontFamily: 'NotoSansJP',
                             fontSize: 16,
                             color:
-                            item['value'] == '1' ? Colors.blue : Colors.red,
+                            (item['value'] == '1' || item['value'] == true) ? Colors.blue : Colors.red,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
