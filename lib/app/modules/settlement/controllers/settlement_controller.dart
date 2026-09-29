@@ -1335,7 +1335,9 @@ class SettlementController extends GetxController with StateMixin {
 
     } else {
       //出金失败
-      cashErrorHandle();
+      showCashTimer?.cancel();
+      _markCashMachineUnavailable();
+      Get.toNamed(Routes.ERROR_PAGE);
     }
   }
 

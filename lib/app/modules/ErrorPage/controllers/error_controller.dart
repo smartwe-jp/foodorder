@@ -1,9 +1,6 @@
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-
-import '../../../plugins/appset/lib/appset.dart';
 
 class ErrorPageController extends GetxController with StateMixin {
 
@@ -23,12 +20,6 @@ class ErrorPageController extends GetxController with StateMixin {
   @override
   void onClose() {
     super.onClose();
-  }
-
-  reStartApp() async {
-    print("重启app");
-    final result =  await Appset.restartApp;
-    debugPrint("重启app返回结果：$result");
   }
 
 }

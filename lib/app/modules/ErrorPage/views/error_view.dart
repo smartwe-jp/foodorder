@@ -1,8 +1,7 @@
 
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/ErrorPage/controllers/error_controller.dart';
@@ -16,7 +15,8 @@ class ErrorPageView extends GetView<ErrorPageController> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
+    return _CashMachineAlarmFrame(
+      child: Scaffold(
       body: Center(
         child: 
         Container(
@@ -50,6 +50,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
           ),
         )
       
+      ),
     ),
     );
   }
@@ -159,35 +160,8 @@ class ErrorPageView extends GetView<ErrorPageController> {
       ),
       padding: EdgeInsets.only(top: 50, bottom: 50, left: 100, right: 100),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-              child:
-              Container(
-                height: 80,
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.reStartApp();
-                  },
-                  child: Text("reboot_app".tr,
-                      style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
-                        fontSize: 35,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      )),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40)
-                    )),
-                  ),
-                ),
-              ),
-          ),
-
-          SizedBox(width: 100),
-
         Expanded(
           child:
           Container(
@@ -205,11 +179,10 @@ class ErrorPageView extends GetView<ErrorPageController> {
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   )),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.teal[700]),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40)
-                )),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal[700],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40)),
               ),
             ),
           )),
@@ -218,4 +191,125 @@ class ErrorPageView extends GetView<ErrorPageController> {
     );
   }
 
+}
+
+class _CashMachineAlarmFrame extends StatefulWidget {
+  const _CashMachineAlarmFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_CashMachineAlarmFrame> createState() => _CashMachineAlarmFrameState();
+}
+
+class _CashMachineAlarmFrameState extends State<_CashMachineAlarmFrame>
+    with SingleTickerProviderStateMixin {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  late final AnimationController _borderController;
+  late final Animation<double> _borderPulse;
+  bool _isMuted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _borderController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+    _borderPulse = CurvedAnimation(
+      parent: _borderController,
+      curve: Curves.easeInOut,
+    );
+    _playAlarm();
+  }
+
+  Future<void> _playAlarm() async {
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
+    if (!mounted || _isMuted) return;
+    await _audioPlayer.setVolume(1.8);
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audios/digital-alarm-2.mp3'));
+  }
+
+  Future<void> _toggleMute() async {
+    setState(() {
+      _isMuted = !_isMuted;
+    });
+    if (_isMuted) {
+      await _audioPlayer.stop();
+    } else {
+      await _playAlarm();
+    }
+  }
+
+  @override
+  void dispose() {
+    _borderController.dispose();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AnimatedBuilder(
+          animation: _borderPulse,
+          child: widget.child,
+          builder: (context, child) {
+            final glow = 4 + (6 * _borderPulse.value);
+            final opacity = 0.35 + (0.45 * _borderPulse.value);
+            return Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.redAccent.withValues(alpha: opacity),
+                    Colors.red.shade700.withValues(alpha: opacity),
+                    Colors.deepOrange.withValues(alpha: opacity),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.redAccent.withValues(alpha: opacity),
+                    blurRadius: 18 + glow,
+                    spreadRadius: 2 + (_borderPulse.value * 2),
+                  ),
+                ],
+              ),
+              child: child,
+            );
+          },
+        ),
+        Positioned(
+          top: 45,
+          right: 45,
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  _isMuted ? Colors.grey.shade400 : Colors.red.shade600,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: _toggleMute,
+            icon: Icon(
+              _isMuted ? Icons.volume_off : Icons.volume_up,
+              color: Colors.white,
+            ),
+            label: Text(
+              _isMuted ? '解除消音' : '消音',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
