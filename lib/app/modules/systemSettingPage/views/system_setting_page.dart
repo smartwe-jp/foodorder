@@ -81,7 +81,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 const SizedBox(width: 16),
 
                 IconButton(
-                  icon: const Icon(Icons.update, color: Colors.blue, size: 38),
+                  icon: const Icon(Icons.arrow_circle_down, color: Colors.blue, size: 38),
                   onPressed: () {
                     logic.showDownloadingAlert();
                   },

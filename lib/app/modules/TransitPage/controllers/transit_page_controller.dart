@@ -23,6 +23,7 @@ class TransitPageController extends GetxController {
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
   RxBool _loadActiveInfo = false.obs;
+  bool _checkStartupDevices = false;
   final MachineRuntimeService _machineRuntime = Get.find();
 
   String languageCode = "JP";
@@ -65,6 +66,8 @@ class TransitPageController extends GetxController {
     logger.info("transit startBootstrap");
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
       _loadActiveInfo.value = Get.arguments['loadActive'] ?? false;
+      _checkStartupDevices =
+          Get.arguments['checkStartupDevices'] ?? _loadActiveInfo.value;
       _machineCode.value = Get.arguments['machineCode'] ?? "";
     }
 
@@ -247,7 +250,7 @@ class TransitPageController extends GetxController {
   void _goCashMachineCheck() {
     Get.toNamed(
       Routes.CASH_MACHINE_CHECK,
-      arguments: {'initLaunch': _loadActiveInfo.value},
+      arguments: {'initLaunch': _checkStartupDevices},
     );
   }
 
@@ -255,7 +258,7 @@ class TransitPageController extends GetxController {
     //Future.delayed(Duration(milliseconds: 200), () {
     hasStart = false;
     Get.toNamed("/checkout-page",
-        arguments: {'initLaunch': _loadActiveInfo.value});
+        arguments: {'initLaunch': _checkStartupDevices});
     //});
   }
 }

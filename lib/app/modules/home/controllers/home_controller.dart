@@ -132,7 +132,10 @@ class HomeController extends GetxController {
     debugPrint("goMain 1");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => TransitPageView());
-      Get.toNamed("/transit-page", arguments: {"loadActive": false});
+      Get.toNamed("/transit-page", arguments: {
+        "loadActive": false,
+        "checkStartupDevices": true,
+      });
     });
   }
 
