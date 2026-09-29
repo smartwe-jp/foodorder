@@ -1521,10 +1521,79 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
+  List<String> _availablePaymentMethods() {
+    final hasQr = machineInfo.showAlipay ||
+        machineInfo.showWechat ||
+        machineInfo.showPayPay ||
+        machineInfo.showAuPay ||
+        machineInfo.showDPay ||
+        machineInfo.showRPay ||
+        machineInfo.showMPay;
+    final hasCreditCard = machineInfo.allowPos &&
+        machineInfo.showCreditCard &&
+        (machineInfo.showVisa ||
+            machineInfo.showMaster ||
+            machineInfo.showJcb ||
+            machineInfo.showUnionPay ||
+            machineInfo.showAmericanExpress ||
+            machineInfo.showDinersClub);
+    return [
+      if (machineInfo.showCashPayment) '1',
+      if (hasQr) '2',
+      if (hasCreditCard) '3',
+    ];
+  }
+
+  Future<bool> _confirmSinglePayment(String method) async {
+    final messageKey = {
+      '1': 'single_payment_cash_confirm',
+      '2': 'single_payment_qr_confirm',
+      '3': 'single_payment_card_confirm',
+    }[method]!;
+    return await Get.dialog<bool>(
+          DialogUtils.alert(
+            messageKey.tr,
+            title: 'tag_title'.tr,
+            canceltitle: 'tag_button_no'.tr,
+            confirmtitle: 'tag_button_yes'.tr,
+            cancle: () => Get.back(result: false),
+            confirm: () => Get.back(result: true),
+          ),
+          barrierDismissible: false,
+        ) ??
+        false;
+  }
+
+  void _cancelSinglePayment({bool selectionPageOpen = false}) {
+    if (selectionPageOpen) Get.back();
+    paymentIsShow = false;
+    showOpenPayment.value = false;
+    canAddCart.value = true;
+    CancelOrder();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      requestSpicyMenuScanFocus();
+    });
+  }
+
   showSelectMealTypeAndPaymentMethodDialog(String total,
       {int tax1 = 0, int tax2 = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
+    final availablePaymentMethods = _availablePaymentMethods();
+    final singlePaymentMethod = availablePaymentMethods.length == 1
+        ? availablePaymentMethods.single
+        : null;
+    if (!machineInfo.showReceiptPage && singlePaymentMethod != null) {
+      if (!await _confirmSinglePayment(singlePaymentMethod)) {
+        _cancelSinglePayment();
+        return;
+      }
+      machineInfo.paymentMethod = singlePaymentMethod;
+      paymentIsShow = false;
+      showOpenPayment.value = true;
+      await gotoSettlement(total, tax1 + tax2);
+      return;
+    }
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,
@@ -1533,7 +1602,13 @@ print("加1了");
           tax8: tax2,
           shopCartTotalPrice: total,
           tableNum: "",
-          onConfrimClick: () {
+          singlePaymentMethod: singlePaymentMethod,
+          onConfrimClick: () async {
+            if (singlePaymentMethod != null &&
+                !await _confirmSinglePayment(singlePaymentMethod)) {
+              _cancelSinglePayment(selectionPageOpen: true);
+              return;
+            }
             showOpenPayment.value = true;
             gotoSettlement(total, tax1 + tax2);
           },

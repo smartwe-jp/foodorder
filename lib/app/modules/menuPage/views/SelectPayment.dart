@@ -25,6 +25,7 @@ class SelectPaymentPage extends StatelessWidget {
         this.tableName = "",
         this.tax10 = 0,
         this.tax8 = 0,
+        this.singlePaymentMethod,
         required this.onConfrimClick,
         required this.onCancelClick})
       : super(key: key);
@@ -36,7 +37,18 @@ class SelectPaymentPage extends StatelessWidget {
   final Function onConfrimClick;
   final int tax10; //税率
   final int tax8;
+  final String? singlePaymentMethod;
   final Function(String) onCancelClick;
+
+  void _selectReceiptType(String type) {
+    machineInfo.receiptPrintType = type;
+    machineInfo.showReceiptPage = false;
+    machineInfo.update(['selectPayment']);
+    if (singlePaymentMethod != null) {
+      machineInfo.paymentMethod = singlePaymentMethod!;
+      onConfrimClick();
+    }
+  }
 
   String get showPrice {
     return (int.parse(shopCartTotalPrice)).toString();
@@ -82,9 +94,7 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _receiptPrintType = "1";
                 //   _showReceiptPage = false;
                 // });
-                machineInfo.receiptPrintType = '1';
-                machineInfo.showReceiptPage = false;
-                machineInfo.update(['selectPayment']);
+                _selectReceiptType('1');
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -125,9 +135,7 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _receiptPrintType = "2";
                 //   _showReceiptPage = false;
                 // });
-                machineInfo.receiptPrintType = '2';
-                machineInfo.showReceiptPage = false;
-                machineInfo.update(['selectPayment']);
+                _selectReceiptType('2');
               },
               child: Container(
                 width: ScreenAdapter.width(320),

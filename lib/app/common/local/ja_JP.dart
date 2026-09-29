@@ -92,6 +92,9 @@ const Map<String, String> ja_JP = {
 
         "select_payment_dining_title":"店内または持ち帰りをお選びください",
         "select_payment_type_title":"支払い方法をお選びください",
+        "single_payment_cash_confirm":"現在、現金でのお支払いのみご利用いただけます。続けますか？",
+        "single_payment_qr_confirm":"現在、QRコード決済のみご利用いただけます。続けますか？",
+        "single_payment_card_confirm":"現在、クレジットカード決済のみご利用いただけます。続けますか？",
 
         "payment_success_title":"支払完了いたしました",
 

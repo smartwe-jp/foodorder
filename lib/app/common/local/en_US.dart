@@ -90,6 +90,9 @@ const Map<String, String> en_US = {
 
         "select_payment_dining_title":"Please choose Eat in or Take out",
         "select_payment_type_title":"Please select a payment method",
+        "single_payment_cash_confirm":"Only cash payments are currently available. Continue?",
+        "single_payment_qr_confirm":"Only QR code payments are currently available. Continue?",
+        "single_payment_card_confirm":"Only credit card payments are currently available. Continue?",
 
         "payment_success_title":"Payment succeeded.",
 

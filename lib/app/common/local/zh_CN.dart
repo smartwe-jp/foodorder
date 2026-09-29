@@ -90,6 +90,9 @@ const Map<String, String> zh_CN = {
 
         "select_payment_dining_title":"请选择堂食还是打包",
         "select_payment_type_title":"请选择支付方式",
+        "single_payment_cash_confirm":"当前只支持现金支付，是否继续？",
+        "single_payment_qr_confirm":"当前只支持二维码支付，是否继续？",
+        "single_payment_card_confirm":"当前只支持信用卡支付，是否继续？",
 
         "payment_success_title":"支付成功!",
 

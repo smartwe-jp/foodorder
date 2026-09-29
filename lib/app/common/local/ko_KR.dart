@@ -91,6 +91,9 @@ const Map<String, String> ko_KR = {
 
         "select_payment_dining_title":"매장 내 식사 또는 테이크아웃을 선택하세요.",
         "select_payment_type_title":"결제 방법을 선택해주세요",
+        "single_payment_cash_confirm":"현재 현금 결제만 가능합니다. 계속하시겠습니까?",
+        "single_payment_qr_confirm":"현재 QR 코드 결제만 가능합니다. 계속하시겠습니까?",
+        "single_payment_card_confirm":"현재 신용카드 결제만 가능합니다. 계속하시겠습니까?",
 
         "payment_success_title":"결제 성공",
 
