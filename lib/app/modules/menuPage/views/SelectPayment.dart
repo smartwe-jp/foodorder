@@ -1813,7 +1813,7 @@ class SelectPaymentPage extends StatelessWidget {
 
                                   //if (!controller.taxSystem)
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         //taxin
@@ -1827,6 +1827,7 @@ class SelectPaymentPage extends StatelessWidget {
                                               fontSize: 34),
                                         ),
                                         //showPrice
+                                        const Spacer(),
                                         Container(
 
                                           child: RichText(
@@ -1853,21 +1854,26 @@ class SelectPaymentPage extends StatelessWidget {
                                                           Gcolor.priceColor),
                                                     ),
                                                   ),
-                                                  if (controller.taxSystem)
-                                                    TextSpan(
-                                                      text: "（${ "show_price_front".tr}）",
-                                                      style: TextStyle(
-                                                        fontSize: 24,
-                                                        fontFamily: GFont.getFontFamily(),
-                                                        fontWeight: FontWeight.w600,
-                                                        color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                                                        textBaseline: TextBaseline.alphabetic,
-                                                      ),
-                                                    ),
+
 
                                                 ]),
                                           ),
                                         ),
+                                        if (controller.taxSystem)
+                                          Expanded(child:
+                                            Text(
+                                              maxLines: 3,
+                                              "（${ "show_price_front".tr}）",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontFamily: GFont.getFontFamily(),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                                textBaseline: TextBaseline.alphabetic,
+                                              ),
+                                            ),
+                                          )
+
                                       ],
                                     ),
 

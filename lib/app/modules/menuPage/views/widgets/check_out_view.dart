@@ -33,7 +33,7 @@ extension CheckoutButton on MenuPageView {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
 
                 Expanded(
@@ -116,6 +116,7 @@ extension CheckoutButton on MenuPageView {
                             width: ScreenAdapter.width(20),
                           ),
                           if (controller.showCartTotalGoodsNum.value > 0)
+                            ...[
                             Align(
                                 alignment: Alignment.center,
                                 child:
@@ -134,26 +135,29 @@ extension CheckoutButton on MenuPageView {
                                         fontWeight: FontWeight.w500,
                                         color: Colors.white,
                                       ),),
-                                      TextSpan(
-                                        text: "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontFamily: GFont.getFontFamily(),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                                          textBaseline: TextBaseline.alphabetic,
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 )
                             ),
-                          Spacer(),
+                            Expanded(child:
+                              Text(
+                                maxLines: 3,
+                                "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontFamily: GFont.getFontFamily(),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                  textBaseline: TextBaseline.alphabetic,
+                                ),
+                              ),
+                            )
+                          ],
+                          //Spacer(),
                           Icon(
                             Icons.edit,
                             color: Colors.white,
                             size: 50,
-
                           ),
 
                         ],

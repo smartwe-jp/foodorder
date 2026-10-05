@@ -43,6 +43,7 @@ class GImage{
         "shouqing_png_EN":"assets/images/public/shouqing_EN.png",
         "shouqing_png_JP":"assets/images/public/shouqing_JP.png",
         "shouqing_png_KO":"assets/images/public/shouqing_KO.png",
+        "shouqing_png_VN":"assets/images/public/shouqing_JP.png",
         "home_button":"assets/images/public/home_button.png",
         "qiandaobutton":"assets/images/public/qiandaobutton.png",
         "menu_up":"assets/images/public/menu_up.png",
@@ -57,6 +58,7 @@ class GImage{
         "spicy_scan_howto_CH":"assets/images/public/spicy_scan_howto_CH.png",
         "spicy_scan_howto_EN":"assets/images/public/spicy_scan_howto_EN.png",
         "spicy_scan_howto_KO":"assets/images/public/spicy_scan_howto_KO.png",
+        "spicy_scan_howto_VN":"assets/images/public/spicy_scan_howto_JP.png",
         "settlement_alipay":"assets/images/public/settlement_alipay.png",
         "settlement_back":"assets/images/public/settlement_back.png",
         "settlement_paypay":"assets/images/public/settlement_paypay.png",
@@ -83,6 +85,10 @@ class GImage{
         "settlement_bottom_lead_cash_JP":"assets/images/public/settlement_bottom_lead_cash_JP.png",
         "settlement_top_lead_card_JP":"assets/images/public/settlement_top_lead_card_JP.png",
         "settlement_top_lead_nfc_JP":"assets/images/public/settlement_top_lead_nfc_JP.png",
+        "settlement_top_lead_cash_VN": Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_JP.png" : "assets/images/glory/settlement_top_lead_cash_JP.png" ,
+        "settlement_bottom_lead_cash_VN":"assets/images/public/settlement_bottom_lead_cash_JP.png",
+        "settlement_top_lead_card_VN":"assets/images/public/settlement_top_lead_card_JP.png",
+        "settlement_top_lead_nfc_VN":"assets/images/public/settlement_top_lead_nfc_JP.png",
         "settlement_top_lead_cash_CH":Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_CH.png" : "assets/images/glory/settlement_top_lead_cash_CH.png" ,
         "settlement_bottom_lead_cash_CH":"assets/images/public/settlement_bottom_lead_cash_CH.png",
         "settlement_top_lead_card_CH":"assets/images/public/settlement_top_lead_card_CH.png",
@@ -127,41 +133,49 @@ class GImage{
         "settlement_top_lead_posEdy_CH":"assets/images/public/settlement_top_lead_posEdy_CH.png",
         "settlement_top_lead_posEdy_EN":"assets/images/public/settlement_top_lead_posEdy_EN.png",
         "settlement_top_lead_posEdy_KO":"assets/images/public/settlement_top_lead_posEdy_KO.png",
+        "settlement_top_lead_posEdy_VN":"assets/images/public/settlement_top_lead_posEdy_JP.png",
 
         "settlement_top_lead_posID_JP":"assets/images/public/settlement_top_lead_posID_JP.png",
         "settlement_top_lead_posID_CH":"assets/images/public/settlement_top_lead_posID_CH.png",
         "settlement_top_lead_posID_EN":"assets/images/public/settlement_top_lead_posID_EN.png",
         "settlement_top_lead_posID_KO":"assets/images/public/settlement_top_lead_posID_KO.png",
+        "settlement_top_lead_posID_VN":"assets/images/public/settlement_top_lead_posID_JP.png",
 
         "settlement_top_lead_posIC_JP":"assets/images/public/settlement_top_lead_posIC_JP.png",
         "settlement_top_lead_posIC_CH":"assets/images/public/settlement_top_lead_posIC_CH.png",
         "settlement_top_lead_posIC_EN":"assets/images/public/settlement_top_lead_posIC_EN.png",
         "settlement_top_lead_posIC_KO":"assets/images/public/settlement_top_lead_posIC_KO.png",
+        "settlement_top_lead_posIC_VN":"assets/images/public/settlement_top_lead_posIC_KO.png",
 
         "settlement_top_lead_posQUICPay_JP":"assets/images/public/settlement_top_lead_posQUICPay_JP.png",
         "settlement_top_lead_posQUICPay_CH":"assets/images/public/settlement_top_lead_posQUICPay_CH.png",
         "settlement_top_lead_posQUICPay_EN":"assets/images/public/settlement_top_lead_posQUICPay_EN.png",
         "settlement_top_lead_posQUICPay_KO":"assets/images/public/settlement_top_lead_posQUICPay_KO.png",
+        "settlement_top_lead_posQUICPay_VN":"assets/images/public/settlement_top_lead_posQUICPay_JP.png",
 
         "settlement_top_lead_posWAON_JP":"assets/images/public/settlement_top_lead_posWAON_JP.png",
         "settlement_top_lead_posWAON_CH":"assets/images/public/settlement_top_lead_posWAON_CH.png",
         "settlement_top_lead_posWAON_EN":"assets/images/public/settlement_top_lead_posWAON_EN.png",
         "settlement_top_lead_posWAON_KO":"assets/images/public/settlement_top_lead_posWAON_KO.png",
+        "settlement_top_lead_posWAON_VN":"assets/images/public/settlement_top_lead_posWAON_JP.png",
 
         "settlement_top_lead_posNanaco_JP":"assets/images/public/settlement_top_lead_posNanaco_JP.png",
         "settlement_top_lead_posNanaco_CH":"assets/images/public/settlement_top_lead_posNanaco_CH.png",
         "settlement_top_lead_posNanaco_EN":"assets/images/public/settlement_top_lead_posNanaco_EN.png",
         "settlement_top_lead_posNanaco_KO":"assets/images/public/settlement_top_lead_posNanaco_KO.png",
+        "settlement_top_lead_posNanaco_VN":"assets/images/public/settlement_top_lead_posNanaco_JP.png",
 
         "safeScanback_JP":"assets/images/public/safeScanback_JP.jpg",
         "safeScanback_CH":"assets/images/public/safeScanback_CH.jpg",
         "safeScanback_EN":"assets/images/public/safeScanback_EN.jpg",
         "safeScanback_KO":"assets/images/public/safeScanback_KO.jpg",
+        "safeScanback_VN":"assets/images/public/safeScanback_JP.jpg",
 
         "safeScantop_JP":"assets/images/public/safeScantop_JP.jpg",
         "safeScantop_CH":"assets/images/public/safeScantop_CH.jpg",
         "safeScantop_EN":"assets/images/public/safeScantop_EN.jpg",
         "safeScantop_KO":"assets/images/public/safeScantop_KO.jpg",
+        "safeScantop_VN":"assets/images/public/safeScantop_JP.jpg",
 
         "cartItemCancel":"assets/images/public/cartItemCancel.png",
 
@@ -169,6 +183,7 @@ class GImage{
         "settlement_pos_loading_CH":"assets/images/public/settlement_pos_loading_CH.jpg",
         "settlement_pos_loading_EN":"assets/images/public/settlement_pos_loading_EN.jpg",
         "settlement_pos_loading_KO":"assets/images/public/settlement_pos_loading_KO.jpg",
+        "settlement_pos_loading_VN":"assets/images/public/settlement_pos_loading_JP.jpg",
       };
     }
 

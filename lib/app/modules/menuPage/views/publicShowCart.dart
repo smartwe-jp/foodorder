@@ -117,6 +117,7 @@ class publicShowCartView extends GetView {
                                   )),
 
                             if (controller.showCartTotalGoodsNum.value > 0)
+                              ...[
                               Align(
                                   alignment: Alignment.center,
                                   child:
@@ -135,20 +136,24 @@ class publicShowCartView extends GetView {
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
-                                        TextSpan(
-                                          text: "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                                            textBaseline: TextBaseline.alphabetic,
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   )
                               ),
+                                Expanded(child:
+                                Text(
+                                  "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                    textBaseline: TextBaseline.alphabetic,
+                                  ),
+                                )
+                                ),
+                            ],
                             SizedBox(
                               width: ScreenAdapter.width(40),
                             ),
