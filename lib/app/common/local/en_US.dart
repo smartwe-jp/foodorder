@@ -249,6 +249,7 @@ const Map<String, String> en_US = {
   "spicy_step_checkout":"Checkout",
   "spicy_step_pay":"Pay",
   "spicy_weigh_title":"Please weigh your bowl",
+  'spicy_weigh_remove_tongs': 'Please remove the tongs from the bowl',
   "spicy_weigh_subtitle":"Place the bowl on the scale",
   "spicy_weigh_unit_price":"Unit price",
   "spicy_weigh_remeasure":"Weigh again",

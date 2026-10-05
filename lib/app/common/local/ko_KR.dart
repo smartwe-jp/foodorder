@@ -250,6 +250,7 @@ const Map<String, String> ko_KR = {
   "spicy_step_checkout":"계산",
   "spicy_step_pay":"결제",
   "spicy_weigh_title":"그릇을 올려 계량해 주세요",
+  'spicy_weigh_remove_tongs': '집게를 그릇 밖으로 꺼내 주세요',
   "spicy_weigh_subtitle":"그릇을 저울 위에 올려 주세요",
   "spicy_weigh_unit_price":"단가",
   "spicy_weigh_remeasure":"다시 계량",

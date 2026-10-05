@@ -43,7 +43,10 @@ class SpicyWeighPage extends StatefulWidget {
   State<SpicyWeighPage> createState() => _SpicyWeighPageState();
 }
 
-class _SpicyWeighPageState extends State<SpicyWeighPage> {
+class _SpicyWeighPageState extends State<SpicyWeighPage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _tongsAnimation;
+  final LayerLink _scaleVisualLink = LayerLink();
   String _input = '0';
   bool _stable = false;
 
@@ -100,6 +103,10 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
   @override
   void initState() {
     super.initState();
+    _tongsAnimation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3200),
+    );
     _hideSystemKeyboard();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _bootstrap();
@@ -197,6 +204,17 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       // 实时重量向下取整显示
       _input = net <= 0 ? '0' : net.floor().toString();
     });
+    _updateTongsAnimation();
+  }
+
+  /// 放盆后取得正净重才播放；空秤、重新称重或断线时停止。
+  void _updateTongsAnimation() {
+    if (_hasWeight) {
+      if (!_tongsAnimation.isAnimating) _tongsAnimation.repeat();
+    } else {
+      _tongsAnimation.stop();
+      _tongsAnimation.value = 0;
+    }
   }
 
   void _startScaleConnectionMonitor() {
@@ -238,6 +256,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       _stable = false;
       _useManualWeight = false;
     });
+    _updateTongsAnimation();
     logI('[麻辣烫] 电子秤断开，已重置本次称重');
   }
 
@@ -296,6 +315,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
 
   @override
   void dispose() {
+    _tongsAnimation.dispose();
     try {
       _scaleWorker?.dispose();
       _scaleWorker = null;
@@ -333,6 +353,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       _stable = false;
       _useManualWeight = false;
     });
+    _updateTongsAnimation();
   }
 
   void _confirm() {
@@ -367,6 +388,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
             // 手动输入也向下取整
             _input = grams <= 0 ? '0' : grams.floor().toString();
           });
+          _updateTongsAnimation();
         },
       ),
       barrierDismissible: false,
@@ -396,7 +418,68 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
               ),
             ],
           ),
+          _buildTongsOverlay(),
         ],
+      ),
+    );
+  }
+
+  /// 页面最上层绘制夹子，跟随盆的位置，避免被局部 Stack/滚动区裁切。
+  Widget _buildTongsOverlay() {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: CompositedTransformFollower(
+          link: _scaleVisualLink,
+          showWhenUnlinked: false,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: TweenAnimationBuilder<double>(
+              tween:
+                  Tween<double>(end: math.min(_weight / 900, 1.0).toDouble()),
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutCubic,
+              builder: (_, animatedLoad, __) => SizedBox(
+                width: ScreenAdapter.width(680),
+                height: ScreenAdapter.height(436),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    AnimatedBuilder(
+                      animation: _tongsAnimation,
+                      child: Image.asset(
+                        'assets/images/public/jiazi.png',
+                        fit: BoxFit.contain,
+                      ),
+                      builder: (_, child) {
+                        final progress = _tongsAnimation.value;
+                        final lift = Curves.easeInOut.transform(
+                          ((progress - 0.18) / 0.52).clamp(0.0, 1.0).toDouble(),
+                        );
+                        final opacity = progress < 0.12
+                            ? progress / 0.12
+                            : progress > 0.82
+                                ? (1 - progress) / 0.18
+                                : 1.0;
+                        // 沿用原绘制坐标：只移动和淡入淡出，不旋转图片。
+                        return Positioned(
+                          left: ScreenAdapter.width(
+                              (310 + lift * 145 - 82.5) * 680 / 560),
+                          top: ScreenAdapter.height(
+                              (65 + animatedLoad * 12 - lift * 30 - 82.5) *
+                                  436 /
+                                  360),
+                          width: ScreenAdapter.width(165 * 680 / 560),
+                          height: ScreenAdapter.height(165 * 436 / 360),
+                          child: Opacity(opacity: opacity, child: child),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -435,6 +518,26 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
           _buildTableNoAndUnitPriceRow(),
 
           SizedBox(height: ScreenAdapter.height(_minAmountYen > 0 ? 50 : 78)),
+          Visibility(
+            visible: _hasWeight,
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            child: Transform.translate(
+              offset: Offset(0, -ScreenAdapter.height(30)),
+              child: Text(
+                'spicy_weigh_remove_tongs'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: const Color(0xFFC46A12),
+                  fontSize: ScreenAdapter.fontSize(30),
+                  fontFamily: GFont.getFontFamily(),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: ScreenAdapter.height(12)),
           _buildScaleVisual(),
           SizedBox(height: ScreenAdapter.height(14)),
           _buildStatusLine(),
@@ -646,57 +749,60 @@ class _SpicyWeighPageState extends State<SpicyWeighPage> {
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutCubic,
       builder: (_, animatedLoad, __) {
-        return SizedBox(
-          width: ScreenAdapter.width(680),
-          height: ScreenAdapter.height(436),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                size: Size(
-                  ScreenAdapter.width(680),
-                  ScreenAdapter.height(436),
-                ),
-                painter: _CartoonScalePainter(
-                  load: animatedLoad,
-                  hasWeight: _hasWeight,
-                  stable: _stable,
-                ),
-              ),
-              Positioned(
-                left: ScreenAdapter.width(188),
-                right: ScreenAdapter.width(188),
-                bottom: ScreenAdapter.height(72),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 180),
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: ScaleTransition(scale: animation, child: child),
+        return CompositedTransformTarget(
+          link: _scaleVisualLink,
+          child: SizedBox(
+            width: ScreenAdapter.width(680),
+            height: ScreenAdapter.height(436),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CustomPaint(
+                  size: Size(
+                    ScreenAdapter.width(680),
+                    ScreenAdapter.height(436),
                   ),
-                  child: Text(
-                    '${_displayWeight} g',
-                    key: ValueKey(_displayWeight),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    style: TextStyle(
-                      color: _stable
-                          ? const Color(0xFFB8FFD2)
-                          : const Color(0xFFFFFFFF),
-                      fontSize: ScreenAdapter.fontSize(46),
-                      fontFamily: GFont.getFontFamily(),
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
-                      shadows: const [
-                        Shadow(
-                          color: Color(0x9900FF88),
-                          blurRadius: 8,
-                        ),
-                      ],
+                  painter: _CartoonScalePainter(
+                    load: animatedLoad,
+                    hasWeight: _hasWeight,
+                    stable: _stable,
+                  ),
+                ),
+                Positioned(
+                  left: ScreenAdapter.width(188),
+                  right: ScreenAdapter.width(188),
+                  bottom: ScreenAdapter.height(72),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(scale: animation, child: child),
+                    ),
+                    child: Text(
+                      '${_displayWeight} g',
+                      key: ValueKey(_displayWeight),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: _stable
+                            ? const Color(0xFFB8FFD2)
+                            : const Color(0xFFFFFFFF),
+                        fontSize: ScreenAdapter.fontSize(46),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                        shadows: const [
+                          Shadow(
+                            color: Color(0x9900FF88),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

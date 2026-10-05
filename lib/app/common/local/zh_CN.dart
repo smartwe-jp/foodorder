@@ -250,6 +250,7 @@ const Map<String, String> zh_CN = {
   "spicy_step_checkout":"结账",
   "spicy_step_pay":"支付",
   "spicy_weigh_title":"请将碗放到秤上称重",
+  'spicy_weigh_remove_tongs': '请将夹菜的夹子取出盆外',
   "spicy_weigh_subtitle":"请把碗放在称重台上",
   "spicy_weigh_unit_price":"单价",
   "spicy_weigh_remeasure":"重新称重",

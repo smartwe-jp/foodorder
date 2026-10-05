@@ -247,6 +247,7 @@ const Map<String, String> ja_JP = {
   "spicy_step_checkout":"お会計",
   "spicy_step_pay":"支払い",
   "spicy_weigh_title":"ボウルを計量してください",
+  'spicy_weigh_remove_tongs': 'トングをボウルから取り出してください',
   "spicy_weigh_subtitle":"ボウルを計量台にのせてください",
   "spicy_weigh_unit_price":"単価",
   "spicy_weigh_remeasure":"再計量する",
