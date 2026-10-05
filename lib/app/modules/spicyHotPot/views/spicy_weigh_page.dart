@@ -398,7 +398,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kSpicyBg,
+      backgroundColor: const Color(0xFFF1FAFF),
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
@@ -406,16 +406,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
             children: [
               const SpicyHotPotStepHeader(currentStep: 2),
               Expanded(child: _buildContent()),
-              SpicyHotPotBottomBar(
-                onBack: _cancel,
-                backLabel: 'settlement_back'.tr,
-                onMiddle: widget.onSkip != null ? _skip : null,
-                middleLabel:
-                    widget.onSkip != null ? 'spicy_weigh_skip'.tr : null,
-                onNext: _confirm,
-                nextLabel: _nextLabel,
-                nextEnabled: _canConfirm,
-              ),
+              _buildWeighBottomBar(),
             ],
           ),
           _buildTongsOverlay(),
@@ -460,14 +451,18 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
                             : progress > 0.82
                                 ? (1 - progress) / 0.18
                                 : 1.0;
-                        // 沿用原绘制坐标：只移动和淡入淡出，不旋转图片。
+                        // 二次贝塞尔：盆内 → 向上抬起 → 右侧落点，不旋转图片。
+                        final start = Offset(310, 65 + animatedLoad * 12);
+                        final control = Offset(355, -65 + animatedLoad * 12);
+                        final end = Offset(485, 35 + animatedLoad * 12);
+                        final position = start * ((1 - lift) * (1 - lift)) +
+                            control * (2 * (1 - lift) * lift) +
+                            end * (lift * lift);
                         return Positioned(
                           left: ScreenAdapter.width(
-                              (310 + lift * 145 - 82.5) * 680 / 560),
+                              (position.dx - 82.5) * 680 / 560),
                           top: ScreenAdapter.height(
-                              (65 + animatedLoad * 12 - lift * 30 - 82.5) *
-                                  436 /
-                                  360),
+                              (position.dy - 82.5) * 436 / 360),
                           width: ScreenAdapter.width(165 * 680 / 560),
                           height: ScreenAdapter.height(165 * 436 / 360),
                           child: Opacity(opacity: opacity, child: child),
@@ -484,260 +479,220 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
     );
   }
 
-  Widget _buildContent() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        ScreenAdapter.width(40),
-        ScreenAdapter.height(28),
-        ScreenAdapter.width(40),
-        ScreenAdapter.height(16),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'spicy_weigh_title'.tr,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: kSpicyText,
-              fontSize: ScreenAdapter.fontSize(42),
-              fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: ScreenAdapter.height(18)),
-          /*Text(
-            'spicy_weigh_subtitle'.tr,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: kSpicyGrey,
-              fontSize: ScreenAdapter.fontSize(24),
-              fontFamily: GFont.getFontFamily(),
-            ),
-          ),*/
-          SizedBox(height: ScreenAdapter.height(42)),
-          _buildTableNoAndUnitPriceRow(),
+  TextStyle _weighText(double size, Color color,
+          [FontWeight weight = FontWeight.w600]) =>
+      TextStyle(
+          fontSize: ScreenAdapter.fontSize(size),
+          color: color,
+          fontFamily: GFont.getFontFamily(),
+          fontWeight: weight);
 
-          SizedBox(height: ScreenAdapter.height(_minAmountYen > 0 ? 50 : 78)),
-          Visibility(
-            visible: _hasWeight,
-            maintainSize: true,
-            maintainAnimation: true,
-            maintainState: true,
-            child: Transform.translate(
-              offset: Offset(0, -ScreenAdapter.height(30)),
-              child: Text(
-                'spicy_weigh_remove_tongs'.tr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFFC46A12),
-                  fontSize: ScreenAdapter.fontSize(30),
-                  fontFamily: GFont.getFontFamily(),
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
+  Widget _buildWeighBottomBar() {
+    Widget button(String label, VoidCallback? action, Color background,
+            Color foreground, int flex) =>
+        Expanded(
+            flex: flex,
+            child: KioskTap(
+                onTap: action,
+                child: Container(
+                  height: ScreenAdapter.height(110),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: background,
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                          color: background == Colors.white
+                              ? const Color(0xFFE5E7EB)
+                              : background)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: ScreenAdapter.width(28)),
+                  child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(label,
+                          style: _weighText(28, foreground, FontWeight.w800))),
+                )));
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: ScreenAdapter.width(16),
+          vertical: ScreenAdapter.height(24)),
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0)))),
+      child: SafeArea(
+          top: false,
+          child: Row(children: [
+            button('settlement_back'.tr, _cancel, Colors.white,
+                const Color(0xFF222222), 10),
+            SizedBox(width: ScreenAdapter.width(100)),
+            if (widget.onSkip != null) ...[
+              button('spicy_weigh_skip'.tr, _skip, const Color(0xFFFF7100),
+                  Colors.white, 14),
+            ],
+            SizedBox(width: ScreenAdapter.width(20)),
+            button(
+                _nextLabel,
+                _canConfirm ? _confirm : null,
+                _canConfirm ? const Color(0xFF00BC88) : const Color(0xFFCBD5E1),
+                Colors.white,
+                10),
+          ])),
+    );
+  }
+
+  Widget _buildContent() {
+    return LayoutBuilder(
+      builder: (_, constraints) => SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+            ScreenAdapter.width(44),
+            ScreenAdapter.height(24),
+            ScreenAdapter.width(44),
+            ScreenAdapter.height(28)),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight:
+                math.max(0.0, constraints.maxHeight - ScreenAdapter.height(52)),
           ),
-          SizedBox(height: ScreenAdapter.height(12)),
-          _buildScaleVisual(),
-          SizedBox(height: ScreenAdapter.height(14)),
-          _buildStatusLine(),
-          if (_tareGrams > 0) ...[
-            SizedBox(height: ScreenAdapter.height(12)),
-            _buildTareTip(),
-          ],
-          if (_hasWeight) ...[
-            SizedBox(height: ScreenAdapter.height(15)),
-            Text(
-              '¥ ${formatMoney(_price)}',
-              style: TextStyle(
-                color: const Color(0xFFE64340),
-                fontSize: ScreenAdapter.fontSize(86),
-                fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w900,
-                height: 1,
-              ),
-            ),
-          ],
-          SizedBox(height: ScreenAdapter.height(48)),
-          //_buildInfoTip(),
-          SizedBox(height: ScreenAdapter.height(16)),
-          if (_minAmountYen > 0) ...[
-            SizedBox(height: ScreenAdapter.height(16)),
-            _buildMinAmountTip(),
-          ],
-          SizedBox(height: ScreenAdapter.height(16)),
-          KioskTap(
-            onTap: _resetWeight,
-            child: Text(
-              'spicy_weigh_remeasure'.tr,
-              style: TextStyle(
-                color: kSpicyAccent,
-                fontSize: ScreenAdapter.fontSize(22),
-                fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-                decorationColor: kSpicyAccent,
-              ),
-            ),
-          ),
-          // 系统设置「手動入力」开启后显示
-          if (_manualInputAllowed) ...[
-            SizedBox(height: ScreenAdapter.height(20)),
-            KioskTap(
-              onTap: _openManualInputKeyboard,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ScreenAdapter.width(36),
-                  vertical: ScreenAdapter.height(16),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: kSpicyAccent, width: 2),
-                ),
-                child: Text(
-                  'spicy_weigh_manual_input'.tr,
-                  style: TextStyle(
-                    color: kSpicyAccent,
-                    fontSize: ScreenAdapter.fontSize(26),
-                    fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w700,
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('spicy_weigh_title'.tr,
+                    textAlign: TextAlign.center,
+                    style: _weighText(
+                        46, const Color(0xFF1E293B), FontWeight.w900)),
+                SizedBox(height: ScreenAdapter.height(32)),
+                Visibility(
+                  visible: _hasWeight,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                        horizontal: ScreenAdapter.width(30),
+                        vertical: ScreenAdapter.height(24)),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFFFFFBEA),
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(
+                            color: const Color(0xFFF00000), width: 3),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Color(0x14000000),
+                              blurRadius: 4,
+                              offset: Offset(0, 2))
+                        ]),
+                    child: Row(children: [
+                      Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                              color: Colors.white, shape: BoxShape.circle),
+                          child: Icon(Icons.error,
+                              color: const Color(0xFFF00000),
+                              size: ScreenAdapter.fontSize(64))),
+                      SizedBox(width: ScreenAdapter.width(24)),
+                      Expanded(
+                          child: Text('spicy_weigh_remove_tongs'.tr,
+                              style: _weighText(36, const Color(0xFFF00000),
+                                  FontWeight.w900))),
+                    ]),
                   ),
                 ),
-              ),
-            ),
+                // 给取出夹子的弧线动画留出空间。
+                SizedBox(height: ScreenAdapter.height(106)),
+                _buildScaleVisual(),
+                SizedBox(height: ScreenAdapter.height(24)),
+                _buildPriceCard(),
+                SizedBox(height: ScreenAdapter.height(28)),
+                KioskTap(
+                    onTap: _resetWeight,
+                    child: Text('spicy_weigh_remeasure'.tr,
+                        style: _weighText(
+                                27, const Color(0xFF008580), FontWeight.w800)
+                            .copyWith(
+                                decoration: TextDecoration.underline,
+                                decorationColor: const Color(0xFF008580)))),
+                if (_minAmountYen > 0) ...[
+                  SizedBox(height: ScreenAdapter.height(16)),
+                  _buildMinAmountTip(),
+                ],
+                if (_manualInputAllowed) ...[
+                  SizedBox(height: ScreenAdapter.height(20)),
+                  OutlinedButton(
+                      onPressed: _openManualInputKeyboard,
+                      child: Text('spicy_weigh_manual_input'.tr,
+                          style: _weighText(24, kSpicyAccent))),
+                ],
+              ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceCard() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+          horizontal: ScreenAdapter.width(36),
+          vertical: ScreenAdapter.height(28)),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x14000000), blurRadius: 4, offset: Offset(0, 2))
+          ]),
+      child: Column(children: [
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          if (_hasWeight && !_stable) ...[
+            SizedBox(
+                width: ScreenAdapter.width(18),
+                height: ScreenAdapter.width(18),
+                child: const CircularProgressIndicator(
+                    strokeWidth: 2, color: Color(0xFF71839E))),
+            SizedBox(width: ScreenAdapter.width(12)),
           ],
+          Flexible(child: _buildStatusLine()),
+        ]),
+        SizedBox(height: ScreenAdapter.height(20)),
+        FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text('¥${formatMoney(_price)}',
+                style: _weighText(94, const Color(0xFFF00000), FontWeight.w900)
+                    .copyWith(height: 1.1))),
+        SizedBox(height: ScreenAdapter.height(22)),
+        const Divider(color: Color(0xFFE2E8F0)),
+        SizedBox(height: ScreenAdapter.height(10)),
+        Wrap(
+            alignment: WrapAlignment.center,
+            spacing: ScreenAdapter.width(16),
+            runSpacing: 6,
+            children: [
+              Text(
+                  '${'spicy_weigh_unit_price'.tr} ¥${widget.unitPricePer100g}/100g',
+                  style: _weighText(30.8, const Color(0xFF64748B))),
+              Text('×', style: _weighText(33.6, const Color(0xFF94A3B8))),
+              Text('${'spicy_weigh_weight_label'.tr} ${_displayWeight}g',
+                  style: _weighText(
+                      30.8, const Color(0xFF1E293B), FontWeight.w800)),
+            ]),
+        if (_tareGrams > 0) ...[
+          SizedBox(height: ScreenAdapter.height(8)),
+          _buildTareTip()
         ],
-      ),
-    );
-  }
-
-  /// 盆号 / 单价共用同一背景高度
-  double get _badgeRowHeight => ScreenAdapter.height(72);
-
-  Widget _buildTableNoAndUnitPriceRow() {
-    return Obx(() {
-      String tableNo = '';
-      if (Get.isRegistered<SpicyHotPotCheckoutController>()) {
-        tableNo =
-            Get.find<SpicyHotPotCheckoutController>().tableNo.value.trim();
-      }
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (tableNo.isNotEmpty) _buildTableNoBadge(tableNo),
-          const Spacer(),
-          _buildUnitPriceBadge(),
-        ],
-      );
-    });
-  }
-
-  Widget _buildTableNoBadge(String tableNo) {
-    return Container(
-      height: _badgeRowHeight,
-      constraints: BoxConstraints(maxWidth: ScreenAdapter.width(260)),
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(28),
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF9800),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.qr_code_2,
-            color: Colors.white,
-            size: ScreenAdapter.fontSize(36),
-          ),
-          SizedBox(width: ScreenAdapter.width(10)),
-          Flexible(
-            child: Text(
-              tableNo,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: ScreenAdapter.fontSize(36),
-                fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w800,
-                height: 1,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUnitPriceBadge() {
-    return Container(
-      height: _badgeRowHeight,
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(28),
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6FAEF),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFC8EED9), width: 1.5),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            'spicy_weigh_unit_price'.tr,
-            style: TextStyle(
-              color: const Color(0xFF9A5B12),
-              fontSize: ScreenAdapter.fontSize(22),
-              fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(width: ScreenAdapter.width(12)),
-          Text(
-            '¥${widget.unitPricePer100g}',
-            style: TextStyle(
-              color: const Color(0xFF553918),
-              fontSize: ScreenAdapter.fontSize(36),
-              fontFamily: GFont.getFontFamily(),
-              fontWeight: FontWeight.w700,
-              height: 1,
-            ),
-          ),
-          SizedBox(width: ScreenAdapter.width(4)),
-          Padding(
-            padding: EdgeInsets.only(bottom: ScreenAdapter.height(2)),
-            child: Text(
-              '/100g',
-              style: TextStyle(
-                color: const Color(0xFF9A5B12),
-                fontSize: ScreenAdapter.fontSize(22),
-                fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
+        if (Get.isRegistered<SpicyHotPotCheckoutController>())
+          Obx(() {
+            final no =
+                Get.find<SpicyHotPotCheckoutController>().tableNo.value.trim();
+            return no.isEmpty
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                    child: Text('spicy_bowl_table_no'.trParams({'no': no}),
+                        style: _weighText(20, const Color(0xFF64748B))));
+          }),
+      ]),
     );
   }
 
@@ -837,8 +792,8 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
           : (_useManualWeight || showStable)
               ? const Color(0xFF4CAF50)
               : settling
-                  ? const Color(0xFFFF9800)
-                  : kSpicyGrey;
+                  ? const Color(0xFF71839E)
+                  : const Color(0xFF71839E);
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -849,7 +804,7 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: color,
-                fontSize: ScreenAdapter.fontSize(30),
+                fontSize: ScreenAdapter.fontSize(32.2),
                 fontFamily: GFont.getFontFamily(),
                 fontWeight: FontWeight.w400,
               ),
@@ -858,36 +813,6 @@ class _SpicyWeighPageState extends State<SpicyWeighPage>
         ],
       );
     });
-  }
-
-  Widget _buildInfoTip() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenAdapter.width(20),
-        vertical: ScreenAdapter.height(14),
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEEF8F7),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.info_outline,
-              color: kSpicyAccent, size: ScreenAdapter.fontSize(24)),
-          SizedBox(width: ScreenAdapter.width(10)),
-          Text(
-            'spicy_weigh_container_tip'.tr,
-            style: TextStyle(
-              color: kSpicyGrey,
-              fontSize: ScreenAdapter.fontSize(24),
-              fontFamily: GFont.getFontFamily(),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   /// 最低金额 > 0 时提示需达到多少才能下一步
