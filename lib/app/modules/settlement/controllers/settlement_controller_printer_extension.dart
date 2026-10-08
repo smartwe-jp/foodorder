@@ -643,7 +643,7 @@ class PrintService extends GetxService {
     return labelItem(data.name, data.number, legacyOptions,
       settings.width.toDouble(), settings.height.toDouble(),
       _labelMaxLine(settings.height), settings.rotate, data.index,
-      '${data.orderId}#${data.time}');
+      '${data.orderId}#${data.time}', settings.printQr, data.qr);
   }
 
   Widget labelItem(
@@ -656,6 +656,8 @@ class PrintService extends GetxService {
     bool rotate,
     String index,
     String time,
+    bool printOptionCode,
+    String extend1qr,
     {OrderType orderType = OrderType.shopin}
   ) {
     return LabelConstrainedBox(
@@ -761,15 +763,15 @@ class PrintService extends GetxService {
                   ],
                 ),
               ),
-              // if (extend1qr.isNotEmpty && printOptionCode)
-              // Container(
-              //   margin: EdgeInsets.only(left: 10),
-              //   child: BarcodeWidget(
-              //   height: 140,
-              //   width: 140,
-              //   barcode: Barcode.qrCode(),
-              //   data: extend1qr,
-              // ))
+              if (extend1qr.isNotEmpty && printOptionCode)
+              Container(
+                margin: EdgeInsets.only(left: 10),
+                child: BarcodeWidget(
+                height: 140,
+                width: 140,
+                barcode: Barcode.qrCode(),
+                data: extend1qr,
+              ))
             ],
           ),
         ),
