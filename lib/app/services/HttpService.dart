@@ -26,7 +26,7 @@ Future request(
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        logI("Request: ${options.method} ${options.uri}");
+        logI("Request: ${options.method} ${options.uri.path}");
         logI("Headers: ${options.headers}");
         logI("Data: ${options.data}");
         handler.next(options);
