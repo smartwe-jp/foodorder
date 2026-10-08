@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'label_print_controls.dart';
+import '../../settlement/views/product_label.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
@@ -347,7 +350,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     top: ScreenAdapter.height(3),
                     bottom: ScreenAdapter.height(3)),
                 child: isSingleMode ?
-                _singleModePrinter(type, receipt, isOff, continuous == 1, printIp, printPort, labelWidth) :
+                _singleModePrinter(type, receipt, isOff, continuous == 1, printIp, printPort, labelWidth, printerItem) :
                 _hasContinuosPrinter(type, receipt, isOff, continuous == 1, printIp, printPort),
               ),
               Table(
@@ -442,7 +445,16 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                               ),
                             ),
                           ),
-                          _setLabelPrintSize(type, receipt, labelSize), //第二台打印机
+                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            _setLabelPrintSize(type, receipt, labelSize),
+                            if (type != 10) LabelPrintControls(
+                              printer: printerItem,
+                              onPresetChanged: (value) => controller.updatePrinterInfo(type, receipt, labelFontPreset: value),
+                              buildSample: () => controller.printService.buildProductLabel(printerItem, ProductLabelData.sample),
+                              onPrintSample: () => controller.printTest(SearchType.net, printIp, printPort,
+                                printType: 1, labelPrinter: printerItem),
+                            ),
+                          ]),
 
                         ]
                     ),
@@ -591,7 +603,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
         );
   }
 
-  _singleModePrinter(int type, int receipt, bool isOff, bool isContinuous, String printIp, String printPort, int labelWidth) {
+  _singleModePrinter(int type, int receipt, bool isOff, bool isContinuous, String printIp, String printPort, int labelWidth, Map printerItem) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,7 +706,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   SearchType.net,
                   printIp,
                   printPort,
-                  printType: receipt, labelWidth: labelWidth.toDouble());
+                  printType: receipt, labelWidth: labelWidth.toDouble(), labelPrinter: printerItem);
             },
             child: Container(
               margin: EdgeInsets.only(
@@ -946,7 +958,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
     final _labelPrintSize = { "60x30":"450x225", "50x30":"375x225", "40x30":"300x225",
                               "60x40":"450x300", "50x40":"375x300", "40x40":"300x300", "50x60":"375x450",
-                              "60x50":"450x375", "60x60":"450x450", "50x50":"375x375", "40x50":"300x375"
+                              "60x50":"450x375", "60x60":"450x450", "50x50":"375x375", "40x50":"300x375", "30x60":"225x460"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(

@@ -27,6 +27,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/NumberCircle.dart';
 import '../views/label_constrained_box.dart';
+import '../views/product_label.dart';
 import '../views/receipt_constrained_box.dart';
 
 class PrintTask {
@@ -292,13 +293,11 @@ class PrintService extends GetxService {
         final Queue<PrintTask> labelPrintQueue = Queue<PrintTask>();
         final printSize = printer['labelSize'] ?? '300x225';
         final printHead = printer['printHead'] ?? true;
-        final printOptionCode = printer['printOptionCode'] ?? true;
         final printWidth = int.parse(printSize.split('x')[0]); // 获取标签宽度
         final printHeight = int.parse(printSize.split('x')[1]); // 获取标签高度
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
         final time = await DateTime.now().toString().substring(5, 16);
-        final orderIdTime = orderId + "#" + time;
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
@@ -315,35 +314,12 @@ class PrintService extends GetxService {
           for (var i = 0; i < qty; i++) {
             // Generate the receipt widget
             itemCount += 1;
-            Widget receiptWidget;
-
-            if (printOptionCode && printHeight >= 450 && printWidth >= 375) {
-              receiptWidget = largeLabelItem(
-                  name,
-                  orderSnCode,
-                  options,
-                  printWidth.toDouble(),
-                  printHeight.toDouble(),
-                  _labelMaxLine(printHeight),
-                  printOptionCode,
-                  extend1qr,
-                  rotate,
-                  '$totalQty-$itemCount',
-                  time,
-                  orderId,
-                  shopName);
-            } else {
-              receiptWidget = labelItem(
-                  name,
-                  orderSnCode,
-                  options,
-                  printWidth.toDouble(),
-                  printHeight.toDouble(),
-                  _labelMaxLine(printHeight),
-                  rotate,
-                  '$totalQty-$itemCount',
-                  orderIdTime);
-            }
+            final receiptWidget = buildProductLabel(printer, ProductLabelData(
+              name: name, number: orderSnCode,
+              options: options.entries.map((entry) => optionItem(entry.key, entry.value)).join('、'),
+              index: '$totalQty-$itemCount', time: time, orderId: orderId,
+              shopName: shopName, qr: extend1qr,
+            ), options: options);
 
             Map printInfo = Map.from(data);
             printInfo['fromPlate'] = fromPlate;
@@ -649,6 +625,25 @@ class PrintService extends GetxService {
             children: printMenus,
           ),
         )));
+  }
+
+  /// Shared by order printing, settings preview and test printing.
+  Widget buildProductLabel(Map printer, ProductLabelData data, {Map? options}) {
+    final settings = LabelPrintSettings.fromPrinter(printer);
+    if (!settings.isLegacy) return ProductLabel(settings: settings, data: data);
+    final legacyOptions = options ?? (data.options.isEmpty ? {} : {
+      'TEST': [{'name': data.options, 'qty': 1}]
+    });
+    if (settings.printQr && settings.height >= 450 && settings.width >= 375) {
+      return largeLabelItem(data.name, data.number, legacyOptions,
+        settings.width.toDouble(), settings.height.toDouble(),
+        _labelMaxLine(settings.height), settings.printQr, data.qr,
+        settings.rotate, data.index, data.time, data.orderId, data.shopName);
+    }
+    return labelItem(data.name, data.number, legacyOptions,
+      settings.width.toDouble(), settings.height.toDouble(),
+      _labelMaxLine(settings.height), settings.rotate, data.index,
+      '${data.orderId}#${data.time}');
   }
 
   Widget labelItem(

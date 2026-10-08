@@ -36,6 +36,7 @@ import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../settlement/views/label_constrained_box.dart';
+import '../../settlement/views/product_label.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
 import '../views/SetPosIp.dart';
 import '../views/set_subprinter.dart';
@@ -804,7 +805,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   updatePrinterInfo(int type, int receipt,
       {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option,
-        bool? printCategory, bool? printHead, bool? printOptionCode}) async {
+        bool? printCategory, bool? printHead, bool? printOptionCode, String? labelFontPreset}) async {
 
     if (machineInfo.printerList.isNotEmpty) {
       for (var i = 0; i < machineInfo.printerList.length; i++) {
@@ -813,6 +814,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if(continuous != null) machineInfo.printerList[i]['continuous'] = continuous;
           if(printerIp != null) machineInfo.printerList[i]['printIp'] = printerIp;
           if(port != null) machineInfo.printerList[i]['printPort'] = port;
+          if(labelFontPreset != null) machineInfo.printerList[i]['labelFontPreset'] = labelFontPreset;
           if(printSize != null) machineInfo.printerList[i]['labelSize'] = printSize;
           if(direction != null) machineInfo.printerList[i]['direction'] = direction;
           if(option != null) machineInfo.printerList[i]['option'] = option;
@@ -953,7 +955,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   //printType=0 receipt 1label
-  printTest(type, printIp, printPort, {printType = 0, double labelWidth = 384}) async {
+  printTest(type, printIp, printPort, {printType = 0, double labelWidth = 384, Map? labelPrinter}) async {
     // ignore: invalid_use_of_protected_member
     debugPrint("type:$type, printType : $printType");
     final printerInfo = type == SearchType.net
@@ -973,7 +975,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
     } else {
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: testLabel(printIp, labelWidth) as ATempWidget,
+          tempWidget: (labelPrinter?['type'] == 10
+              ? testLabel(printIp, labelWidth,
+                  labelHeight: LabelPrintSettings.fromPrinter(labelPrinter!).height.toDouble())
+              : printService.buildProductLabel(
+                  labelPrinter ?? {'labelSize': '${labelWidth.toInt()}x232'},
+                  ProductLabelData.sample)) as ATempWidget,
           printTypeEnum: PrintTypeEnum.label,
           params: PrinterInfo(ip: printIp),
         ),
@@ -1017,9 +1024,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
 
-  testLabel(printIp, double labelWidth) {
+  testLabel(printIp, double labelWidth, {double labelHeight = 232}) {
     return LabelConstrainedBox(
       pagerWidth: labelWidth,
+      pagerHeight: labelHeight,
         Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'label_print_controls.dart';
+import '../../settlement/views/product_label.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
@@ -1295,7 +1298,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   icon: const Icon(Icons.print, color: Colors.blue),
                   onPressed: () {
                     controller.printTest(SearchType.net, printIp, printPort,
-                        printType: receipt, labelWidth: labelWidth.toDouble());
+                        printType: receipt, labelWidth: labelWidth.toDouble(), labelPrinter: printer);
                   },
                 ),//SearchType.net,
             ],
@@ -1404,6 +1407,14 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 _settingContent('ラベル幅: '),
                 _setLabelPrintSize(type, receipt, labelSize),
               ],
+            ),
+          if (receipt == 1 && type != 10)
+            LabelPrintControls(
+              printer: printer,
+              onPresetChanged: (value) => controller.updatePrinterInfo(type, receipt, labelFontPreset: value),
+              buildSample: () => controller.printService.buildProductLabel(printer, ProductLabelData.sample),
+              onPrintSample: () => controller.printTest(SearchType.net, printIp, printPort,
+                printType: 1, labelPrinter: printer),
             ),
           if (type == 11)
             _printerSwitchRow(
@@ -1521,7 +1532,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       "60x60": "460x460",
       "50x50": "384x375",
       "50x60": "384x460",
-      "40x50": "300x375"
+      "40x50": "300x375",
+      "30x60": "225x460"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
