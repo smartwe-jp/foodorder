@@ -13,6 +13,18 @@ void main() {
     expect(invalid.isLegacy, isTrue);
   });
 
+  test('small fonts are 80 percent of standard and previous large migrates',
+      () {
+    final small = LabelPrintSettings.fromPrinter({'labelFontPreset': 'small'});
+    final standard =
+        LabelPrintSettings.fromPrinter({'labelFontPreset': 'standard'});
+    expect(small.nameSize, closeTo(standard.nameSize * .8, .0001));
+    expect(small.optionSize, closeTo(standard.optionSize * .8, .0001));
+    expect(small.metadataSize, closeTo(standard.metadataSize * .8, .0001));
+    expect(LabelPrintSettings.fromPrinter({'labelFontPreset': 'large'}).preset,
+        'standard');
+  });
+
   testWidgets(
       'all supported papers and presets render at print pixels with enlarged screen text',
       (tester) async {
@@ -31,7 +43,7 @@ void main() {
       '225x460'
     ];
     for (final size in sizes) {
-      for (final preset in ['standard', 'large']) {
+      for (final preset in ['small', 'standard']) {
         for (final qr in [false, true]) {
           final settings = LabelPrintSettings.fromPrinter({
             'labelSize': size,
@@ -67,7 +79,7 @@ void main() {
       (tester) async {
     final label = ProductLabel(
         settings: LabelPrintSettings.fromPrinter(
-            {'labelSize': '300x225', 'labelFontPreset': 'large'}),
+            {'labelSize': '300x225', 'labelFontPreset': 'standard'}),
         data: ProductLabelData(
             name: '商品名' * 30,
             number: '12345',

@@ -39,7 +39,7 @@ class LabelPrintControls extends StatelessWidget {
                     color: Colors.blue
                   ),
                 )),
-                DropdownMenuItem(value: 'standard', child: Text('標準',
+                DropdownMenuItem(value: 'small', child: Text('小',
                   style:TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontSize: 14,
@@ -47,7 +47,7 @@ class LabelPrintControls extends StatelessWidget {
                     color: Colors.blue
                   ),
                 )),
-                DropdownMenuItem(value: 'large', child: Text('大きい',
+                DropdownMenuItem(value: 'standard', child: Text('標準',
                   style:TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontSize: 14,

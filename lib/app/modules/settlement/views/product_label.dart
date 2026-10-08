@@ -27,7 +27,10 @@ class LabelPrintSettings {
     return LabelPrintSettings(
       width: width != null && width > 0 ? width : 300,
       height: height != null && height > 0 ? height : 225,
-      preset: preset == 'standard' || preset == 'large' ? preset : 'legacy',
+      // Migrate the previous large preset to the current standard size.
+      preset: preset == 'small'
+          ? 'small'
+          : (preset == 'standard' || preset == 'large' ? 'standard' : 'legacy'),
       rotate: printer['direction'] == 1,
       printQr: printer['printOptionCode'] ?? true,
     );
@@ -35,8 +38,10 @@ class LabelPrintSettings {
 
   bool get isLegacy => preset == 'legacy';
   bool get isNarrow => width < 300;
-  double get nameSize => preset == 'large' ? 38 : 32;
-  double get optionSize => preset == 'large' ? 32 : 28;
+  double get fontScale => preset == 'small' ? 0.8 : 1;
+  double get nameSize => 32 * fontScale;
+  double get optionSize => 28 * fontScale;
+  double get metadataSize => 18 * fontScale;
   // Keep the existing supported QR size and reserve its own footer region.
   bool get supportsQr => width >= 375 && height >= 450;
 }
@@ -115,7 +120,7 @@ class ProductLabel extends StatelessWidget with ATempWidget {
       clipped = painter.didExceedMaxLines || painter.height > height;
       painter.dispose();
       if (!clipped || size <= minimum) break;
-      size -= 1;
+      size = math.max(minimum, size - 1);
     } while (true);
     return _LabelText(value, size, lines, clipped, bold);
   }
@@ -135,17 +140,17 @@ class ProductLabel extends StatelessWidget with ATempWidget {
       settings.isNarrow ? _contentWidth : _contentWidth * .68,
       _nameHeight,
       settings.nameSize,
-      settings.nameSize - 4,
+      settings.nameSize - 4 * settings.fontScale,
       settings.isNarrow ? 3 : 2,
       bold: true);
   _LabelText get _options => _fit(data.options, _contentWidth, _optionHeight,
-      settings.optionSize, settings.optionSize - 2, 100);
+      settings.optionSize, settings.optionSize - 2 * settings.fontScale, 100);
 
   List<String> get warnings => [
         if (_name.clipped) '商品名が省略されています。',
         if (data.options.isNotEmpty &&
             (_optionHeight < settings.optionSize * 1.15 || _options.clipped))
-          'オプションが省略されています。標準文字または大きいラベルを選択してください。',
+          'オプションが省略されています。小さい文字または大きいラベルを選択してください。',
         if (settings.printQr && data.qr.isNotEmpty && !settings.supportsQr)
           'このサイズはQRコードに対応していません（50×60 / 60×60対応）。',
       ];
@@ -154,15 +159,20 @@ class ProductLabel extends StatelessWidget with ATempWidget {
   Widget build(BuildContext context) {
     final numberWidth =
         settings.isNarrow ? _contentWidth * .65 : _contentWidth * .32;
-    final number = _fit('# ${data.number}', numberWidth,
-        settings.nameSize * 1.15, settings.nameSize, settings.nameSize - 4, 1,
+    final number = _fit(
+        '# ${data.number}',
+        numberWidth,
+        settings.nameSize * 1.15,
+        settings.nameSize,
+        settings.nameSize - 4 * settings.fontScale,
+        1,
         bold: true);
     final index = _fit(
         data.index,
         settings.isNarrow ? _contentWidth * .35 : numberWidth,
         settings.nameSize * 1.15,
         settings.nameSize,
-        settings.nameSize - 4,
+        settings.nameSize - 4 * settings.fontScale,
         1,
         bold: true);
     final header = settings.isNarrow
@@ -238,16 +248,16 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                                         data.shopName,
                                                         _contentWidth - 146,
                                                         42,
-                                                        18,
-                                                        18,
+                                                        settings.metadataSize,
+                                                        settings.metadataSize,
                                                         2)
                                                     .widget,
                                                 _fit(
                                                         data.orderId,
                                                         _contentWidth - 146,
                                                         42,
-                                                        18,
-                                                        18,
+                                                        settings.metadataSize,
+                                                        settings.metadataSize,
                                                         2)
                                                     .widget
                                               ],
@@ -257,8 +267,8 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                                         data.orderId,
                                                         _contentWidth,
                                                         22,
-                                                        18,
-                                                        18,
+                                                        settings.metadataSize,
+                                                        settings.metadataSize,
                                                         1)
                                                     .widget,
                                               _fit(
@@ -266,8 +276,8 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                                       _contentWidth -
                                                           (_showQr ? 146 : 0),
                                                       24,
-                                                      18,
-                                                      18,
+                                                      settings.metadataSize,
+                                                      settings.metadataSize,
                                                       1)
                                                   .widget,
                                             ])),
