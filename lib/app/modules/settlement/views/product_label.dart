@@ -42,8 +42,7 @@ class LabelPrintSettings {
   double get nameSize => 32 * fontScale;
   double get optionSize => 28 * fontScale;
   double get metadataSize => 18 * fontScale;
-  // Keep the existing supported QR size and reserve its own footer region.
-  bool get supportsQr => width >= 375 && height >= 450;
+  bool get supportsQr => width >= 225 && height >= 225;
 }
 
 class ProductLabelData {
@@ -129,7 +128,13 @@ class ProductLabel extends StatelessWidget with ATempWidget {
   double get _contentWidth => settings.width - 12.0;
   bool get _showQr =>
       settings.printQr && settings.supportsQr && data.qr.isNotEmpty;
-  double get _footerHeight => _showQr ? 144 : (data.orderId.isEmpty ? 24 : 46);
+  // Smaller labels reserve a smaller QR region instead of hiding the code.
+  double get _qrSize =>
+      math.min(140, math.min(settings.width * .32, settings.height * .32));
+  double get _qrTextWidth => _contentWidth - _qrSize - 6;
+  int get _qrMetadataLines => _qrSize >= 110 ? 2 : 1;
+  double get _footerHeight =>
+      _showQr ? _qrSize + 4 : (data.orderId.isEmpty ? 24 : 46);
   double get _nameHeight =>
       settings.nameSize * 1.15 * (settings.isNarrow ? 3 : 2);
   double get _numberHeight => settings.isNarrow ? settings.nameSize * 1.15 : 0;
@@ -152,7 +157,7 @@ class ProductLabel extends StatelessWidget with ATempWidget {
             (_optionHeight < settings.optionSize * 1.15 || _options.clipped))
           'オプションが省略されています。小さい文字または大きいラベルを選択してください。',
         if (settings.printQr && data.qr.isNotEmpty && !settings.supportsQr)
-          'このサイズはQRコードに対応していません（50×60 / 60×60対応）。',
+          'このサイズはQRコードに対応していません。',
       ];
 
   @override
@@ -230,8 +235,8 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                       child: Row(children: [
                                         if (_showQr) ...[
                                           BarcodeWidget(
-                                              width: 140,
-                                              height: 140,
+                                              width: _qrSize,
+                                              height: _qrSize,
                                               barcode: Barcode.qrCode(),
                                               data: data.qr),
                                           const SizedBox(width: 6)
@@ -246,19 +251,23 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                               if (_showQr) ...[
                                                 _fit(
                                                         data.shopName,
-                                                        _contentWidth - 146,
-                                                        42,
+                                                        _qrTextWidth,
+                                                        settings.metadataSize *
+                                                            1.15 *
+                                                            _qrMetadataLines,
                                                         settings.metadataSize,
                                                         settings.metadataSize,
-                                                        2)
+                                                        _qrMetadataLines)
                                                     .widget,
                                                 _fit(
                                                         data.orderId,
-                                                        _contentWidth - 146,
-                                                        42,
+                                                        _qrTextWidth,
+                                                        settings.metadataSize *
+                                                            1.15 *
+                                                            _qrMetadataLines,
                                                         settings.metadataSize,
                                                         settings.metadataSize,
-                                                        2)
+                                                        _qrMetadataLines)
                                                     .widget
                                               ],
                                               if (!_showQr &&
@@ -274,7 +283,9 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                                               _fit(
                                                       data.time,
                                                       _contentWidth -
-                                                          (_showQr ? 146 : 0),
+                                                          (_showQr
+                                                              ? _qrSize + 6
+                                                              : 0),
                                                       24,
                                                       settings.metadataSize,
                                                       settings.metadataSize,

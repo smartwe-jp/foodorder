@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foodorder/app/modules/settlement/views/product_label.dart';
@@ -63,6 +64,8 @@ void main() {
                               data: ProductLabelData.sample))))));
           expect(tester.takeException(), isNull,
               reason: '$size $preset qr=$qr');
+          expect(find.byType(BarcodeWidget), qr ? findsOneWidget : findsNothing,
+              reason: '$size $preset must follow printOptionCode');
           final boundary =
               key.currentContext!.findRenderObject() as RenderRepaintBoundary;
           final image =
