@@ -1408,7 +1408,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 _setLabelPrintSize(type, receipt, labelSize),
               ],
             ),
-          if (receipt == 1 && type != 10)
+          if (receipt == 1)
             LabelPrintControls(
               printer: printer,
               onPresetChanged: (value) => controller.updatePrinterInfo(type, receipt, labelFontPreset: value),
