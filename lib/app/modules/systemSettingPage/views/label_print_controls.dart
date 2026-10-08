@@ -16,25 +16,59 @@ class LabelPrintControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = LabelPrintSettings.fromPrinter(printer);
-    return Wrap(
-        spacing: 16,
-        runSpacing: 8,
-        crossAxisAlignment: WrapCrossAlignment.center,
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Text('ラベル文字サイズ'),
+          const Text('ラベル文字サイズ',
+            style:TextStyle(
+              fontFamily: 'NotoSansJP',
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54
+            ),
+          ),
+          const Spacer(),
           DropdownButton<String>(
               value: settings.preset,
               items: const [
-                DropdownMenuItem(value: 'legacy', child: Text('従来')),
-                DropdownMenuItem(value: 'standard', child: Text('標準')),
-                DropdownMenuItem(value: 'large', child: Text('大きい')),
+                DropdownMenuItem(value: 'legacy', child: Text('従来',
+                  style:TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blue
+                  ),
+                )),
+                DropdownMenuItem(value: 'standard', child: Text('標準',
+                  style:TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blue
+                  ),
+                )),
+                DropdownMenuItem(value: 'large', child: Text('大きい',
+                  style:TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blue
+                  ),
+                )),
               ],
               onChanged: (value) {
                 if (value != null) onPresetChanged(value);
               }),
+              
           TextButton.icon(
-              icon: const Icon(Icons.preview),
-              label: const Text('プレビュー・試し印刷'),
+              icon: const Icon(Icons.preview, size: 20),
+              label: const Text('プレビュー',
+                style:TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54
+              ),),
               onPressed: () => showDialog<void>(
                   context: context,
                   builder: (context) {

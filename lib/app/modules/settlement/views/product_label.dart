@@ -54,7 +54,7 @@ class ProductLabelData {
       this.qr = ''});
 
   static const sample = ProductLabelData(
-      name: '特製チーズハンバーグ弁当',
+      name: '特製チーズハンバーグ弁当,特製チーズハンバーグ弁当',
       number: '12345',
       index: '12-3',
       options: 'ご飯: 大盛り、ソース: 別添え、追加: チーズ x 2、温泉卵、辛さ: 辛口',
