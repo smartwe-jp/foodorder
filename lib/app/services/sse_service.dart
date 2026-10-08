@@ -57,9 +57,9 @@ class SseService extends GetxService {
     final sub = stream.listen(
       (SSEResponse res) {
         // ...数据处理...
-        if (kDebugMode) {
-          print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
-        }
+        // if (kDebugMode) {
+        //   print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
+        // }
         subscriptions[url] = true;
         final event = res.event;
         Map? data;
@@ -90,9 +90,7 @@ class SseService extends GetxService {
             _printService.callbackBeforePrint(event, data);
           }
         } else {
-          // if (kDebugMode) {
-          //   print('SSE Service: Received event: $event');
-          // }
+          logI('SSE Service: Received event heartbeat?: $event data: $data');
         }
 
         // 每收到消息，重置65秒超时检测
