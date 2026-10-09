@@ -266,7 +266,8 @@ class CashMachineStartupService {
     switch (health) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
-        // The established flow repays/ends any transaction that was left open.
+        // An open session may still be counting. Check/fix the pending
+        // deposit below before ending it, just as startup recovery does.
         break;
       case HealthResultCode.OPOS_E_CLOSED:
       case HealthResultCode.OPOS_E_NOTCLAIMED:
@@ -282,7 +283,7 @@ class CashMachineStartupService {
 
         await _delayForCashChangerRecovery(mode);
         // The established 225 path checks the pending amount directly.
-        if (openCode != 225 || mode == CashMachineCheckMode.singlePass) {
+        if (openCode != 225) {
           onStep?.call(CashMachineStartupStep.startingDeposit);
           if (!await _startCashChangerDeposit(mode)) {
             return const CashMachineCheckResult.failed(
@@ -293,16 +294,6 @@ class CashMachineStartupService {
           await _delayForCashChangerRecovery(mode);
         }
 
-        onStep?.call(CashMachineStartupStep.checkingDepositAmount);
-        final depositAmountChecked = await _waitForChangerCommand(
-          () => CashChanger.depositAmount,
-          mode,
-        );
-        if (!depositAmountChecked) {
-          _logger.warning(
-            'CashChanger deposit amount failed; continuing with repay',
-          );
-        }
         break;
       case HealthResultCode.OPOS_E_BUSY:
         return const CashMachineCheckResult.failed(
@@ -313,6 +304,20 @@ class CashMachineStartupService {
           CashMachineCheckFailure.disconnected,
           detail: health.name,
         );
+    }
+
+    // depositAmount performs native FixDeposit before reading the amount.
+    // Both an already-open session and open result 225 need this step.
+    onStep?.call(CashMachineStartupStep.checkingDepositAmount);
+    final depositAmountChecked = await _waitForChangerCommand(
+      () => CashChanger.depositAmount,
+      mode,
+    );
+    if (!depositAmountChecked) {
+      // Preserve the established cleanup path even if amount checking fails.
+      _logger.warning(
+        'CashChanger deposit amount failed; continuing with repay',
+      );
     }
 
     await _delayForCashChangerRecovery(mode);
@@ -492,7 +497,7 @@ class CashMachineStartupService {
 }
 
 // Startup follows HomeControllerExtension before the 3.0 migration, including
-// its callback sequencing, with a one-minute watchdog and no fake close step.
+// its callback sequencing, without a watchdog or fake close step.
 // Payment checks use the separate flow.
 class _LegacyCashChangerStartup {
   _LegacyCashChangerStartup(this.onStep);
@@ -500,23 +505,19 @@ class _LegacyCashChangerStartup {
   final CashMachineStepCallback? onStep;
   final logger = Logger('LegacyCashChangerStartup');
   final _completion = Completer<CashMachineCheckResult>();
-  Timer? _watchdog;
   int _depositAttempts = 0;
 
-  Future<CashMachineCheckResult> run() async {
-    // One deadline for the entire startup, not a timeout reset per step.
-    _watchdog = Timer(const Duration(minutes: 1), () {
-      fail(CashMachineCheckFailure.timeout,
-          'Legacy CashChanger startup did not complete within one minute');
-    });
-    try {
-      unawaited(checkChangerStatus().catchError((Object error, StackTrace stack) {
-        logger.warning('Legacy CashChanger startup failed', error, stack);
-      }));
-      return await _completion.future;
-    } finally {
-      _watchdog?.cancel();
-    }
+  Future<CashMachineCheckResult> run() {
+    launch(checkChangerStatus);
+    return _completion.future;
+  }
+
+  void launch(Future<void> Function() step) {
+    if (_completion.isCompleted) return;
+    unawaited(Future<void>.sync(step).catchError((Object error, StackTrace stack) {
+      logger.warning('Legacy CashChanger startup failed', error, stack);
+      fail(CashMachineCheckFailure.unknown, error.toString());
+    }));
   }
 
   void fail(CashMachineCheckFailure failure, String detail) {
@@ -550,7 +551,7 @@ class _LegacyCashChangerStartup {
     debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
     if (resultCode == null) {
       debugPrint("Unknown error");
-      checkChangerStatus();
+      launch(checkChangerStatus);
       return;
     }
     if (resultCode == 0) {
@@ -563,7 +564,9 @@ class _LegacyCashChangerStartup {
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
-        await stopCashChanger(DepositAction.repay.index, true);
+        // An open OPOS session can still be counting a pending deposit.
+        // Use the same FixDeposit -> repay sequence as the open-225 path.
+        launch(_calculateAmount);
         break;
       case HealthResultCode.OPOS_E_CLOSED:
       case HealthResultCode.OPOS_E_NOTCLAIMED:
@@ -576,15 +579,17 @@ class _LegacyCashChangerStartup {
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
         debugPrint("checkChangerStatus error: $resultCode");
+        fail(CashMachineCheckFailure.disconnected, resultCodeEnum.name);
         break;
       default:
         debugPrint("checkChangerStatus error: $resultCode");
+        fail(CashMachineCheckFailure.disconnected, resultCodeEnum.name);
         break;
     }
   }
 
   //现金机开始 打开现金机，准备开始投币
-  openCashChanger() async {
+  Future<void> openCashChanger() async {
     if (_completion.isCompleted) return;
     debugPrint("OpenPayCube 1");
     onStep?.call(CashMachineStartupStep.opening);
@@ -595,14 +600,16 @@ class _LegacyCashChangerStartup {
         debugPrint("OpenPayCube 6");
         logger.info('-- openCashChanger success --');
         await Future.delayed(Duration(milliseconds: 200));
-        startDeposit();
+        launch(startDeposit);
       },
       catchError: (retCode, error) async {
         debugPrint("OpenPayCube error: $error");
         logger.info('-- openCashChanger error: $error --');
         if (retCode == 225) {
           //已打开 // clearinput?
-          _calculateAmount();
+          launch(_calculateAmount);
+        } else {
+          fail(CashMachineCheckFailure.disconnected, '$retCode: $error');
         }
       },
     );
@@ -628,20 +635,21 @@ class _LegacyCashChangerStartup {
       onSuccess: () async {
         logger.info('-- startDeposit success --');
         await Future<void>.delayed(const Duration(milliseconds: 200));
-        _calculateAmount();
+        launch(_calculateAmount);
       },
       onRetry: () async {
         await Future<void>.delayed(const Duration(milliseconds: 200));
-        await startDeposit();
+        launch(startDeposit);
       },
       showError: (String error) {
         logger.info('-- startDeposit error: $error --');
+        fail(CashMachineCheckFailure.recoveryFailed, error);
       },
     );
   }
 
   //计算投币金额
-  void _calculateAmount() async {
+  Future<void> _calculateAmount() async {
     if (_completion.isCompleted) return;
     debugPrint("CalculateAmount 1");
     onStep?.call(CashMachineStartupStep.checkingDepositAmount);
@@ -656,21 +664,21 @@ class _LegacyCashChangerStartup {
           debugPrint("CalculateAmount 2");
           logger.info('-- depositAmount success --');
           await Future.delayed(Duration(milliseconds: 200));
-          stopCashChanger(DepositAction.repay.index, true);
+          launch(() => stopCashChanger(DepositAction.repay.index, true));
         },
         onRetry: () async {
           debugPrint("CalculateAmount 3");
           await Future<void>.delayed(Duration(milliseconds: 200));
-          _calculateAmount();
+          launch(_calculateAmount);
         },
         showError: (String error) {
           logger.info('-- depositAmount error: $error --');
-          stopCashChanger(DepositAction.repay.index, true);
+          launch(() => stopCashChanger(DepositAction.repay.index, true));
           debugPrint("CalculateAmount error: $error");
         });
   }
 
-  stopCashChanger(action, next) async {
+  Future<void> stopCashChanger(action, next) async {
     if (_completion.isCompleted) return;
     debugPrint("stopPaycube 1");
     onStep?.call(CashMachineStartupStep.endingDeposit);
@@ -684,17 +692,18 @@ class _LegacyCashChangerStartup {
           logger.info('-- stopCashChanger success --');
           await Future.delayed(Duration(milliseconds: 200));
           if (next) {
-            getMachineCashInfo();
+            launch(getMachineCashInfo);
           }
         },
         onRetry: () async {
           debugPrint("stopPaycube 4");
           await Future.delayed(Duration(milliseconds: 200));
-          stopCashChanger(action, true);
+          launch(() => stopCashChanger(action, true));
         },
         showError: (String error) async {
           logger.info('-- stopCashChanger error: $error --');
           debugPrint("stopCashChanger error: $error");
+          fail(CashMachineCheckFailure.recoveryFailed, error);
         });
   }
 
@@ -710,6 +719,7 @@ class _LegacyCashChangerStartup {
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
         logger.info('-- getMachineCashInfo error: $error --');
+        fail(CashMachineCheckFailure.recoveryFailed, error);
       },
     );
     complete();
