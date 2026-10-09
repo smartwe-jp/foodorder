@@ -257,6 +257,10 @@ class CashMachineStartupService {
       );
     }
 
+    if (mode == CashMachineCheckMode.startupRecovery) {
+      return _LegacyCashChangerStartup(onStep).run();
+    }
+
     onStep?.call(CashMachineStartupStep.checkingStatus);
     final health = await _waitForCashChangerHealth(mode);
     switch (health) {
@@ -485,4 +489,230 @@ class CashMachineStartupService {
       _logger.warning('webBootTroubleNotify failed', error, stackTrace);
     }
   }
+}
+
+// Startup follows HomeControllerExtension before the 3.0 migration, including
+// its callback sequencing, with a one-minute watchdog and no fake close step.
+// Payment checks use the separate flow.
+class _LegacyCashChangerStartup {
+  _LegacyCashChangerStartup(this.onStep);
+
+  final CashMachineStepCallback? onStep;
+  final logger = Logger('LegacyCashChangerStartup');
+  final _completion = Completer<CashMachineCheckResult>();
+  Timer? _watchdog;
+  int _depositAttempts = 0;
+
+  Future<CashMachineCheckResult> run() async {
+    // One deadline for the entire startup, not a timeout reset per step.
+    _watchdog = Timer(const Duration(minutes: 1), () {
+      fail(CashMachineCheckFailure.timeout,
+          'Legacy CashChanger startup did not complete within one minute');
+    });
+    try {
+      unawaited(checkChangerStatus().catchError((Object error, StackTrace stack) {
+        logger.warning('Legacy CashChanger startup failed', error, stack);
+      }));
+      return await _completion.future;
+    } finally {
+      _watchdog?.cancel();
+    }
+  }
+
+  void fail(CashMachineCheckFailure failure, String detail) {
+    if (!_completion.isCompleted) {
+      _completion.complete(CashMachineCheckResult.failed(
+        failure,
+        detail: detail,
+      ));
+    }
+  }
+
+  void complete() {
+    if (_completion.isCompleted) return;
+    onStep?.call(CashMachineStartupStep.completed);
+    if (!_completion.isCompleted) {
+      _completion.complete(const CashMachineCheckResult.ready());
+    }
+  }
+
+  //打开之前 检查状态
+
+  Future<void> checkChangerStatus() async {
+    if (_completion.isCompleted) return;
+    debugPrint("checkChangerStatus 1");
+    logger.info('-- checkChangerStatus --');
+    onStep?.call(CashMachineStartupStep.checkingStatus);
+
+    int? resultCode = await CashChanger.checkChangerStatus;
+    if (_completion.isCompleted) return;
+    logger.info('-- checkChangerStatus : $resultCode --');
+    debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
+    if (resultCode == null) {
+      debugPrint("Unknown error");
+      checkChangerStatus();
+      return;
+    }
+    if (resultCode == 0) {
+      resultCode = 100;
+    }
+    final resultCodeEnum = HealthResultCode.values.fromIndex(resultCode - 100) ??
+        HealthResultCode.NONE;
+    debugPrint(
+        "checkChangerStatus resultCodeEnum:  " + resultCodeEnum.toString());
+    switch (resultCodeEnum) {
+      case HealthResultCode.OPOS_SUCCESS:
+      case HealthResultCode.OPOS_E_ILLEGAL:
+        await stopCashChanger(DepositAction.repay.index, true);
+        break;
+      case HealthResultCode.OPOS_E_CLOSED:
+      case HealthResultCode.OPOS_E_NOTCLAIMED:
+      case HealthResultCode.OPOS_E_DISABLED:
+        await openCashChanger();
+        break;
+      case HealthResultCode.OPOS_E_BUSY:
+        await Future.delayed(Duration(seconds: 5));
+        await checkChangerStatus();
+        break;
+      case HealthResultCode.OPOS_E_NOHARDWARE:
+        debugPrint("checkChangerStatus error: $resultCode");
+        break;
+      default:
+        debugPrint("checkChangerStatus error: $resultCode");
+        break;
+    }
+  }
+
+  //现金机开始 打开现金机，准备开始投币
+  openCashChanger() async {
+    if (_completion.isCompleted) return;
+    debugPrint("OpenPayCube 1");
+    onStep?.call(CashMachineStartupStep.opening);
+    //如果检测现金机打开错误，则重新打开一下
+    logger.info('-- openCashChanger --');
+    await CashChanger.openCashChanger(
+      onSuccess: () async {
+        debugPrint("OpenPayCube 6");
+        logger.info('-- openCashChanger success --');
+        await Future.delayed(Duration(milliseconds: 200));
+        startDeposit();
+      },
+      catchError: (retCode, error) async {
+        debugPrint("OpenPayCube error: $error");
+        logger.info('-- openCashChanger error: $error --');
+        if (retCode == 225) {
+          //已打开 // clearinput?
+          _calculateAmount();
+        }
+      },
+    );
+  }
+
+  //现金机开始 打开现金机，准备开始投币
+  Future<void> startDeposit() async {
+    if (_completion.isCompleted) return;
+    if (_depositAttempts >= 5) {
+      fail(CashMachineCheckFailure.recoveryFailed,
+          'Legacy CashChanger deposit start reached five attempts');
+      return;
+    }
+    _depositAttempts++;
+    onStep?.call(CashMachineStartupStep.startingDeposit);
+    logger.info('-- startDeposit attempt $_depositAttempts/5 --');
+    // Same command and result callbacks as CashChanger.startDeposit, with the
+    // retry callback owned here so the startup attempt limit is effective.
+    final result = await CashChangerPlatform.instance.startDeposit();
+    if (_completion.isCompleted) return;
+    await CashChanger.changerResultNext(
+      resultCode: result?['code'],
+      onSuccess: () async {
+        logger.info('-- startDeposit success --');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        _calculateAmount();
+      },
+      onRetry: () async {
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        await startDeposit();
+      },
+      showError: (String error) {
+        logger.info('-- startDeposit error: $error --');
+      },
+    );
+  }
+
+  //计算投币金额
+  void _calculateAmount() async {
+    if (_completion.isCompleted) return;
+    debugPrint("CalculateAmount 1");
+    onStep?.call(CashMachineStartupStep.checkingDepositAmount);
+    logger.info('-- calculateAmount --');
+    //int connectCount = 0;
+    //计算投币金额
+    final result = await CashChanger.depositAmount;
+    if (_completion.isCompleted) return;
+    await CashChanger.changerResultNext(
+        resultCode: result,
+        onSuccess: () async {
+          debugPrint("CalculateAmount 2");
+          logger.info('-- depositAmount success --');
+          await Future.delayed(Duration(milliseconds: 200));
+          stopCashChanger(DepositAction.repay.index, true);
+        },
+        onRetry: () async {
+          debugPrint("CalculateAmount 3");
+          await Future<void>.delayed(Duration(milliseconds: 200));
+          _calculateAmount();
+        },
+        showError: (String error) {
+          logger.info('-- depositAmount error: $error --');
+          stopCashChanger(DepositAction.repay.index, true);
+          debugPrint("CalculateAmount error: $error");
+        });
+  }
+
+  stopCashChanger(action, next) async {
+    if (_completion.isCompleted) return;
+    debugPrint("stopPaycube 1");
+    onStep?.call(CashMachineStartupStep.endingDeposit);
+    logger.info('-- stopCashChanger --');
+    int? result = await CashChanger.endDeposit(action);
+    if (_completion.isCompleted) return;
+    await CashChanger.changerResultNext(
+        resultCode: result,
+        onSuccess: () async {
+          debugPrint("stopPaycube 3");
+          logger.info('-- stopCashChanger success --');
+          await Future.delayed(Duration(milliseconds: 200));
+          if (next) {
+            getMachineCashInfo();
+          }
+        },
+        onRetry: () async {
+          debugPrint("stopPaycube 4");
+          await Future.delayed(Duration(milliseconds: 200));
+          stopCashChanger(action, true);
+        },
+        showError: (String error) async {
+          logger.info('-- stopCashChanger error: $error --');
+          debugPrint("stopCashChanger error: $error");
+        });
+  }
+
+  Future<void> getMachineCashInfo() async {
+    if (_completion.isCompleted) return;
+    debugPrint("getMachineCashInfo 0");
+    onStep?.call(CashMachineStartupStep.readingBalance);
+    logger.info('-- getMachineCashInfo --');
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        logger.info('-- getMachineCashInfo : $value --');
+      },
+      catchError: (error) {
+        debugPrint("getMachineCashInfo error: $error");
+        logger.info('-- getMachineCashInfo error: $error --');
+      },
+    );
+    complete();
+  }
+
 }
