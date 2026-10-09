@@ -268,19 +268,25 @@ class CashMachineStartupService {
       case HealthResultCode.OPOS_E_NOTCLAIMED:
       case HealthResultCode.OPOS_E_DISABLED:
         onStep?.call(CashMachineStartupStep.opening);
-        if (!await _openCashChanger(mode)) {
+        final openCode = await _openCashChanger(mode);
+        if (openCode == null) {
           return const CashMachineCheckResult.failed(
             CashMachineCheckFailure.disconnected,
             detail: 'CashChanger open failed',
           );
         }
 
-        onStep?.call(CashMachineStartupStep.startingDeposit);
-        if (!await _startCashChangerDeposit(mode)) {
-          return const CashMachineCheckResult.failed(
-            CashMachineCheckFailure.recoveryFailed,
-            detail: 'CashChanger deposit start failed',
-          );
+        await _delayForCashChangerRecovery(mode);
+        // The established 225 path checks the pending amount directly.
+        if (openCode != 225 || mode == CashMachineCheckMode.singlePass) {
+          onStep?.call(CashMachineStartupStep.startingDeposit);
+          if (!await _startCashChangerDeposit(mode)) {
+            return const CashMachineCheckResult.failed(
+              CashMachineCheckFailure.recoveryFailed,
+              detail: 'CashChanger deposit start failed',
+            );
+          }
+          await _delayForCashChangerRecovery(mode);
         }
 
         onStep?.call(CashMachineStartupStep.checkingDepositAmount);
@@ -305,6 +311,7 @@ class CashMachineStartupService {
         );
     }
 
+    await _delayForCashChangerRecovery(mode);
     onStep?.call(CashMachineStartupStep.endingDeposit);
     if (!await _waitForChangerCommand(
       () => CashChanger.endDeposit(DepositAction.repay.index),
@@ -316,6 +323,7 @@ class CashMachineStartupService {
       );
     }
 
+    await _delayForCashChangerRecovery(mode);
     onStep?.call(CashMachineStartupStep.applyingSettings);
     final sswResult = await CashChanger.setSixDigitDispenseAmount()
         .timeout(_timeoutFor(mode));
@@ -337,8 +345,6 @@ class CashMachineStartupService {
       _logger.warning('CashChanger balance read failed after recovery');
     }
 
-    // The original startup flow intentionally keeps the OPOS device open for
-    // settlement. "closeCashChanger" only completed bootstrap navigation.
     onStep?.call(CashMachineStartupStep.completed);
     return const CashMachineCheckResult.ready();
   }
@@ -346,22 +352,24 @@ class CashMachineStartupService {
   Future<HealthResultCode> _waitForCashChangerHealth(
     CashMachineCheckMode mode,
   ) async {
-    final deadline = DateTime.now().add(_stepTimeout);
-    while (DateTime.now().isBefore(deadline)) {
+    while (true) {
       var code = await CashChanger.checkChangerStatus
           .timeout(const Duration(seconds: 10));
-      if (code == null) return HealthResultCode.NONE;
+      if (code == null) {
+        if (mode == CashMachineCheckMode.singlePass) return HealthResultCode.NONE;
+        await Future<void>.delayed(const Duration(seconds: 5));
+        continue;
+      }
       if (code == 0) code = 100;
       final result = HealthResultCode.values.fromIndex(code - 100) ??
           HealthResultCode.NONE;
       if (result != HealthResultCode.OPOS_E_BUSY) return result;
       if (mode == CashMachineCheckMode.singlePass) return result;
-      await Future<void>.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 5));
     }
-    return HealthResultCode.OPOS_E_BUSY;
   }
 
-  Future<bool> _openCashChanger(CashMachineCheckMode mode) async {
+  Future<int?> _openCashChanger(CashMachineCheckMode mode) async {
     final deadline = DateTime.now().add(_stepTimeout);
     while (DateTime.now().isBefore(deadline)) {
       final result = await CashChangerPlatform.instance
@@ -370,16 +378,23 @@ class CashMachineStartupService {
       final code = result?['code'];
       // 0: opened, 301: OPOS already open. 225 is retained for compatibility
       // with existing field installations that report the legacy value.
-      if (code == 0 || code == 301 || code == 225) return true;
-      if (mode == CashMachineCheckMode.singlePass) return false;
-      await Future<void>.delayed(_retryDelay);
+      if (code == 0 || code == 301 || code == 225) return code as int;
+      if (mode == CashMachineCheckMode.singlePass) return null;
+      await _delayForCashChangerRecovery(mode);
     }
-    return false;
+    return null;
+  }
+
+  Future<void> _delayForCashChangerRecovery(CashMachineCheckMode mode) async {
+    if (mode == CashMachineCheckMode.startupRecovery) {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
   }
 
   Future<bool> _startCashChangerDeposit(CashMachineCheckMode mode) async {
     final deadline = DateTime.now().add(_stepTimeout);
-    while (DateTime.now().isBefore(deadline)) {
+    while (mode == CashMachineCheckMode.startupRecovery ||
+        DateTime.now().isBefore(deadline)) {
       final result = await CashChangerPlatform.instance
           .startDeposit()
           .timeout(const Duration(seconds: 15));
@@ -388,7 +403,7 @@ class CashMachineStartupService {
       if (oposResult.resultCode == HealthResultCode.OPOS_SUCCESS) return true;
       if (mode == CashMachineCheckMode.singlePass) return false;
       if (!await _recoverInterfaceError(oposResult)) return false;
-      await Future<void>.delayed(_retryDelay);
+      await _delayForCashChangerRecovery(mode);
     }
     return false;
   }
@@ -398,13 +413,14 @@ class CashMachineStartupService {
     CashMachineCheckMode mode,
   ) async {
     final deadline = DateTime.now().add(_stepTimeout);
-    while (DateTime.now().isBefore(deadline)) {
+    while (mode == CashMachineCheckMode.startupRecovery ||
+        DateTime.now().isBefore(deadline)) {
       final code = await command().timeout(const Duration(seconds: 15));
       final result = CashChanger.getOposResult(code) as OposResult;
       if (result.resultCode == HealthResultCode.OPOS_SUCCESS) return true;
       if (mode == CashMachineCheckMode.singlePass) return false;
       if (!await _recoverInterfaceError(result)) return false;
-      await Future<void>.delayed(_retryDelay);
+      await _delayForCashChangerRecovery(mode);
     }
     return false;
   }
@@ -426,7 +442,8 @@ class CashMachineStartupService {
 
   Future<bool> _readCashChangerBalance(CashMachineCheckMode mode) async {
     final deadline = DateTime.now().add(_stepTimeout);
-    while (DateTime.now().isBefore(deadline)) {
+    while (mode == CashMachineCheckMode.startupRecovery ||
+        DateTime.now().isBefore(deadline)) {
       final result = await CashChangerPlatform.instance
           .getCashBalance()
           .timeout(const Duration(seconds: 15));
@@ -438,7 +455,7 @@ class CashMachineStartupService {
       }
       if (mode == CashMachineCheckMode.singlePass) return false;
       if (!await _recoverInterfaceError(oposResult)) return false;
-      await Future<void>.delayed(_retryDelay);
+      await _delayForCashChangerRecovery(mode);
     }
     return false;
   }
