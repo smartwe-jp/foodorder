@@ -143,6 +143,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               //标题 ‘プリンター設定’
               const SizedBox(height: 16),
               _areaTitle('プリンター設定'),
+              if (Platform.isAndroid)
+                setMachinePrintSize(logic.machineInfo.machinePrintWidth),
               //如果是Windows系统，显示USB打印机设置
               if (Platform.isWindows) _usbPrinterSettingArea(logic.usbDevice),
 
@@ -1023,6 +1025,39 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
 //when is windows will add a additional card for printer settings
 // only one card as other settings
+
+  Widget setMachinePrintSize(double width) {
+    final paperWidths = <double, String>{385.0: '58mm', 530.0: '80mm'};
+
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _settingTitle('レシート用紙幅'),
+            CupertinoSegmentedControl<double>(
+              children: paperWidths.map((value, label) => MapEntry(
+                    value,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 10),
+                      child: Text(label,
+                          style: const TextStyle(
+                              fontFamily: 'NotoSansJP', fontSize: 20)),
+                    ),
+                  )),
+              groupValue: paperWidths.containsKey(width) ? width : null,
+              onValueChanged: controller.updateMachinePrintWidth,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _usbPrinterSettingArea(Map usbPrinterInfo) {
     return Card(
