@@ -1532,7 +1532,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       "50x50": "384x375",
       "50x60": "384x460",
       "40x50": "300x375",
-      "30x60": "225x460"
+      "40x60": "300x460"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(

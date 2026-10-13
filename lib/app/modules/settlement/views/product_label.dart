@@ -37,7 +37,7 @@ class LabelPrintSettings {
   }
 
   bool get isLegacy => preset == 'legacy';
-  bool get isNarrow => width < 300;
+  bool get isNarrow => width <= 300 && height >= 375;
   double get fontScale => preset == 'small' ? 0.8 : 1;
   double get nameSize => 32 * fontScale;
   double get optionSize => 28 * fontScale;
@@ -185,8 +185,17 @@ class ProductLabel extends StatelessWidget with ATempWidget {
             SizedBox(
                 height: _numberHeight,
                 child: Row(children: [
-                  Expanded(flex: 65, child: number.widget),
-                  Expanded(flex: 35, child: index.widget)
+                Expanded(
+                      flex: 65,
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: number.widget)),
+                  Expanded(
+                      flex: 35,
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: index.widget))
+
                 ])),
             SizedBox(height: _nameHeight, child: _name.widget)
           ])
@@ -198,7 +207,15 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                   flex: 32,
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [number.widget, index.widget]))
+                      children: [
+                        Align(
+                            alignment: Alignment.centerRight,
+                            child: number.widget),
+                        Align(
+                            alignment: Alignment.centerRight,
+                            child: index.widget),
+                      ]))
+
             ]));
     return SizedBox(
         width: settings.width.toDouble(),
