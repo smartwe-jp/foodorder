@@ -954,6 +954,19 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
+  /// Print the exact template displayed by the label preview dialog.
+  void printLabelPreview(Map printer, Widget sample) {
+    final ip = '${printer['printIp'] ?? ''}';
+    if (ip.isEmpty || sample is! ATempWidget) return;
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: sample as ATempWidget,
+        printTypeEnum: PrintTypeEnum.label,
+        params: PrinterInfo(ip: ip),
+      ),
+    );
+  }
+
   //printType=0 receipt 1label
   printTest(type, printIp, printPort, {printType = 0, double labelWidth = 384, Map? labelPrinter}) async {
     // ignore: invalid_use_of_protected_member

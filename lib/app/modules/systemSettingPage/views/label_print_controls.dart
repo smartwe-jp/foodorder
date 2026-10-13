@@ -5,7 +5,7 @@ class LabelPrintControls extends StatelessWidget {
   final Map printer;
   final ValueChanged<String> onPresetChanged;
   final Widget Function() buildSample;
-  final VoidCallback onPrintSample;
+  final ValueChanged<Widget> onPrintSample;
   const LabelPrintControls(
       {super.key,
       required this.printer,
@@ -105,7 +105,7 @@ class LabelPrintControls extends StatelessWidget {
                           TextButton(
                               onPressed: '${printer['printIp'] ?? ''}'.isEmpty
                                   ? null
-                                  : onPrintSample,
+                                  : () => onPrintSample(sample),
                               child: const Text('試し印刷')),
                         ]);
                   })),

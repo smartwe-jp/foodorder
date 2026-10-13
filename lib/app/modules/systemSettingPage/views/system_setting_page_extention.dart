@@ -451,8 +451,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                               printer: printerItem,
                               onPresetChanged: (value) => controller.updatePrinterInfo(type, receipt, labelFontPreset: value),
                               buildSample: () => controller.printService.buildProductLabel(printerItem, ProductLabelData.sample),
-                              onPrintSample: () => controller.printTest(SearchType.net, printIp, printPort,
-                                printType: 1, labelPrinter: printerItem),
+                              onPrintSample: (sample) => controller.printLabelPreview(printerItem, sample),
                             ),
                           ]),
 

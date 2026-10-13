@@ -1413,8 +1413,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               printer: printer,
               onPresetChanged: (value) => controller.updatePrinterInfo(type, receipt, labelFontPreset: value),
               buildSample: () => controller.printService.buildProductLabel(printer, ProductLabelData.sample),
-              onPrintSample: () => controller.printTest(SearchType.net, printIp, printPort,
-                printType: 1, labelPrinter: printer),
+              onPrintSample: (sample) => controller.printLabelPreview(printer, sample),
             ),
           if (type == 11)
             _printerSwitchRow(
