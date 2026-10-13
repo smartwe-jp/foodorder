@@ -181,7 +181,8 @@ class ProductLabel extends StatelessWidget with ATempWidget {
         1,
         bold: true);
     final header = settings.isNarrow
-        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ? Column(mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start, children: [
             SizedBox(
                 height: _numberHeight,
                 child: Row(children: [
@@ -197,11 +198,9 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                           child: index.widget))
 
                 ])),
-            SizedBox(height: _nameHeight, child: _name.widget)
+              _name.widget
           ])
-        : SizedBox(
-            height: _nameHeight,
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(flex: 68, child: _name.widget),
               Expanded(
                   flex: 32,
@@ -216,7 +215,7 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                             child: index.widget),
                       ]))
 
-            ]));
+            ]);
     return SizedBox(
         width: settings.width.toDouble(),
         height: settings.height.toDouble(),
@@ -232,6 +231,7 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  if (settings.isNarrow) const SizedBox(height:18),
                                   header,
                                   const SizedBox(
                                       height: 8,
