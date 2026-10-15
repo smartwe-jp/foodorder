@@ -227,7 +227,7 @@ class ProductLabel extends StatelessWidget with ATempWidget {
                     child: Transform.rotate(
                         angle: settings.rotate ? math.pi : 0,
                         child: Padding(
-                            padding: const EdgeInsets.all(6),
+                            padding: EdgeInsets.only(left:6, right: 6, top:1, bottom: settings.isNarrow ? 20:10),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
