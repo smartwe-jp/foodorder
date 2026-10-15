@@ -1556,18 +1556,18 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
   _setLabelPrintSize(int type, int receipt, String size) {
     final _labelPrintSize = {
-      "60x30": "460x225",
+      "60x30": "450x225",
       "50x30": "384x225",
       "40x30": "300x225",
-      "60x40": "460x300",
+      "60x40": "450x300",
       "50x40": "384x300",
       "40x40": "300x300",
-      "60x50": "460x375",
-      "60x60": "460x460",
+      "60x50": "450x375",
+      "60x60": "450x450",
       "50x50": "384x375",
-      "50x60": "384x460",
+      "50x60": "384x450",
       "40x50": "300x375",
-      "40x60": "300x460"
+      "40x60": "300x450"
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
