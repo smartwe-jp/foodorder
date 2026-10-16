@@ -303,4 +303,6 @@ const Map<String, String> vi_VN = {
   'menu_discount_applied': 'Đã áp dụng giảm giá ¥@amount',
   'menu_discount_minus': 'Giảm giá -¥@amount',
   'menu_discount_invalid': 'Mức giảm giá không hợp lệ. Vui lòng chọn mã khác',
+  "checkout_scan_not_found": "Không tìm thấy sản phẩm. Vui lòng quét lại.",
+  "checkout_scan_query_failed": "Quét thất bại. Vui lòng quét lại.",
 };

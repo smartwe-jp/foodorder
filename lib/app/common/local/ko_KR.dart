@@ -305,4 +305,6 @@ const Map<String, String> ko_KR = {
   "menu_discount_applied":"할인 적용 ¥@amount",
   "menu_discount_minus":"할인 -¥@amount",
   "menu_discount_invalid":"할인 금액이 맞지 않습니다. 할인을 다시 선택해 주세요",
+  "checkout_scan_not_found": "해당 상품이 없습니다. 다시 스캔해 주세요.",
+  "checkout_scan_query_failed": "스캔에 실패했습니다. 다시 스캔해 주세요.",
 };

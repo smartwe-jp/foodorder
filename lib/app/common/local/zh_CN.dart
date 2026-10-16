@@ -305,4 +305,6 @@ const Map<String, String> zh_CN = {
   "menu_discount_applied":"已优惠 ¥@amount",
   "menu_discount_minus":"优惠 -¥@amount",
   "menu_discount_invalid":"优惠金额不符，请重新选择优惠",
+  "checkout_scan_not_found": "无该商品，请重新扫码",
+  "checkout_scan_query_failed": "扫码失败，请重新扫码",
 };

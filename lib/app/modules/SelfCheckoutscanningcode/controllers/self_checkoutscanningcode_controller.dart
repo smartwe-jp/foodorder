@@ -42,6 +42,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   final player = AudioPlayer();
 
+  bool _scanQueryInFlight = false;
+
   bool get containTax => machineInfo.taxSystem;
 
   @override
@@ -183,35 +185,75 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  doScanQrCodeQuery(){
-    showOrderEasyLoading();//扫描后显示加载框
-    if(scanQrCodeController.text !=""){
-      var formData = {
-        "language": checkLanguage.value,
-        "machineCode": machineInfo.machineCode,
-        "barCode":scanQrCodeController.text
-      };
+  Future<void> doScanQrCodeQuery() async {
+    final barCode = scanQrCodeController.text.trim();
+    if (barCode.isEmpty || _scanQueryInFlight) return;
 
-      request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
-        //EasyLoading.dismiss();
-        //scanQrCodeController.text = "";
-        //scanQrCodeFocusNode.requestFocus();     // 获取焦点
-        debugPrint("---- doScanQrCodeQuery ---- $response");
-        //print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-
-          publicAddCart(response["data"]);
-
-        }else{
-          print("未查询出来");
-          _resetScanQrCode(true);
+    _scanQueryInFlight = true;
+    String? errorKey;
+    try {
+      showOrderEasyLoading();
+      final val = await request(
+        'webBootBarCodeQuery',
+        method: 'POST',
+        parameters: {
+          'language': checkLanguage.value,
+          'machineCode': machineInfo.machineCode,
+          'barCode': barCode,
+        },
+        timeout: const Duration(seconds: 15),
+      );
+      if (isClosed) return;
+      final response = json.decode(val.toString());
+      if (response is! Map || response['code'] != 200) {
+        errorKey = 'checkout_scan_query_failed';
+      } else {
+        final data = response['data'];
+        if (data == null ||
+            (data is Map && data.isEmpty) ||
+            (data is List && data.isEmpty)) {
+          errorKey = 'checkout_scan_not_found';
+        } else if (data is! Map ||
+            data['menuCode'] == null ||
+            data['mainTitle'] == null ||
+            data['currentPrice'] == null) {
+          errorKey = 'checkout_scan_query_failed';
+        } else {
+          await publicAddCart(data);
         }
-      });
+      }
+    } catch (error, stackTrace) {
+      errorKey = 'checkout_scan_query_failed';
+      debugPrint('Barcode scan failed: $error\n$stackTrace');
+    } finally {
+      EasyLoading.dismiss();
+      try {
+        if (errorKey != null && !isClosed) {
+
+          await Get.dialog(
+            DialogUtils.alertOneButton(
+              errorKey.tr,
+              title: 'tag_title'.tr,
+              confirmtitle: 'tag_button_yes'.tr,
+              confirm: () {
+                scanQrCodeController.clear();
+                scanQrCodeFocusNode.unfocus();
+                Get.back();
+              },
+            ),
+            barrierDismissible: false,
+          );
+        }
+      } finally {
+        _scanQueryInFlight = false;
+        if (!isClosed) {
+          _resetScanQrCode(false);
+        }
+      }
     }
   }
 
-  publicAddCart(item) async {
+  Future<void> publicAddCart(item) async {
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
@@ -223,30 +265,17 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
       "goodsNum": 1,
       "qtyBounds": item['qtyBounds']
     };
-    publicAddCartMenu(cartItem, true).then((val) {
-      //更改显示购物车价格
-      getCartPriceTotal();
-    });
+    await publicAddCartMenu(cartItem, true);
+    await getCartPriceTotal(hideLoading: false);
   }
 
-  //公共加入购物车
-  publicAddCartMenu(cartItem, checkItem) async {
-    var result = false;
-    try {
+  //公共加入购物车；让调用方统一处理失败并关闭加载框。
+  Future<void> publicAddCartMenu(cartItem, checkItem) async {
     await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
-    publicScanAddToCart(cartItem);
-
-      //ordersqlcontroller.getCardList();
-    result = true;
-
-    } catch (e) {
-      print(e);
-      result = false;
-    }
-    return result;
+    await publicScanAddToCart(cartItem);
   }
 
-  publicScanAddToCart(cartItem) async {
+  Future<void> publicScanAddToCart(cartItem) async {
     var processData = false;
     if(showScanCartItems.value.length>0){
       for(var i=0;i<showScanCartItems.value.length;i++){

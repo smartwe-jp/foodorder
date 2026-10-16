@@ -302,4 +302,6 @@ const Map<String, String> ja_JP = {
   "menu_discount_applied":"割引適用 ¥@amount",
   "menu_discount_minus":"割引 -¥@amount",
   "menu_discount_invalid":"割引金額が合いません。割引を選び直してください",
+  "checkout_scan_not_found": "該当する商品がありません。もう一度スキャンしてください",
+  "checkout_scan_query_failed": "スキャンに失敗しました。もう一度スキャンしてください",
 };

@@ -304,4 +304,6 @@ const Map<String, String> en_US = {
   "menu_discount_applied":"Discount applied ¥@amount",
   "menu_discount_minus":"Discount -¥@amount",
   "menu_discount_invalid":"Discount amount is invalid. Please select another discount",
+  "checkout_scan_not_found": "Item not found. Please scan again.",
+  "checkout_scan_query_failed": "Scan failed. Please scan again.",
 };
