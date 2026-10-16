@@ -20,7 +20,10 @@ class SettlementView extends GetView {
   final SettlementController controller = Get.find<SettlementController>();
   SettlementView({Key? key}) : super(key: key);
 
-
+  String get qrCodeImage {
+    if (controller.machineInfo.machineModelCode == "SWFX") return GImage.getImageString("imgpublic", "settlement_top_lead_qr_fx");
+    return GImage.getImageString("imgpublic", "settlement_top_lead_qr");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -433,7 +436,7 @@ class SettlementView extends GetView {
                       children: [
                         FadeInImage(
                           placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
-                          image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_qr")),
+                          image: AssetImage(qrCodeImage),
                           width: ScreenAdapter.width(1060),
                           fit: BoxFit.fitHeight,
                           // [占位符] 的淡出动画时间
