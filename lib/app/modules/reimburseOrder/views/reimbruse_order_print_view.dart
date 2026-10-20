@@ -18,7 +18,7 @@ class ReimbursePrintView extends StatelessWidget {
   final contentStyle = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: FontWeight.w400,
   );
 
