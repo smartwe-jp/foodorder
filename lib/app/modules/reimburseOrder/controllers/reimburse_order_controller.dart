@@ -75,11 +75,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   double get printWidth {
-    if (Platform.isWindows) {
-      return 530;
-    } else {
-      return appConfig.isAndroid11 ? 513 : 385;
-    }
+    return machineInfo.machinePrintWidth;
   }
 
   @override
@@ -339,7 +335,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   payconnectSocker({questData = ""}) async {
     //判断socket请求次数
     socketNumberTimes.value++;
-    if (socketNumberTimes.value > 20) {
+    if (socketNumberTimes.value > 3) {
       socketNumberTimes.value = 0;
       EasyLoading.dismiss();
       Get.dialog(
@@ -354,7 +350,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     Socket.connect(
       pos_ip.value,
       int.parse(pos_port.value),
-      //timeout: Duration(seconds: 5),
+      timeout: Duration(seconds: 25),
     ).then((Socket socket) {
       logI("连接成功了么");
       this._socket = socket;
