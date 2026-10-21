@@ -32,11 +32,12 @@ void main() {
           'machineCode': 'machine-001',
           'tableNo': '',
           'shopCode': 'shop-001',
+          'storedValuePayment': true,
           'linePayChannelMap': {
             'Cash': true,
             'Wechat': 1,
             'POS': '1',
-            'storedValuePayment': true,
+            'StoredValue': true,
             'Discover': false,
           },
           'languages': [
@@ -70,6 +71,7 @@ void main() {
       expect(response.activation?.paymentChannels.wechat, isTrue);
       expect(response.activation?.paymentChannels.creditCard, isTrue);
       expect(response.activation?.paymentChannels.storedValue, isTrue);
+      expect(response.activation?.storedValuePayment, isTrue);
       expect(response.activation?.paymentChannels.alipay, isFalse);
       expect(response.activation?.canReimburse, isTrue);
       expect(response.activation?.taxSystem, isTrue);
@@ -85,12 +87,32 @@ void main() {
     });
 
     test('stored value channel survives cache and legacy serialization', () {
-      final channels = MachinePaymentChannels.fromRemoteJson({'storedValuePayment': '1'});
+      final channels = MachinePaymentChannels.fromRemoteJson({'StoredValue': '1'});
       expect(channels.storedValue, isTrue);
       expect(MachinePaymentChannels.fromJson(channels.toJson()).storedValue, isTrue);
       expect(MachinePaymentChannels.fromLegacyJson(channels.toLegacyJson()).storedValue, isTrue);
       expect(MachinePaymentChannels.fromRemoteJson({}).storedValue, isFalse);
-      expect(MachinePaymentChannels.fromRemoteJson({'storedValuePayment': false}).storedValue, isFalse);
+      expect(MachinePaymentChannels.fromRemoteJson({'StoredValue': false}).storedValue, isFalse);
+    });
+
+    test('stored value flags are independent and survive activation cache', () {
+      for (final topLevel in [true, false]) {
+        for (final channel in [true, false]) {
+          final activation = MachineActivation.fromRemoteJson({
+            'storedValuePayment': topLevel,
+            'linePayChannelMap': {'Cash': true, 'StoredValue': channel},
+          });
+          expect(activation.storedValuePayment, topLevel);
+          expect(activation.paymentChannels.storedValue, channel);
+          expect(activation.paymentChannels.cash, isTrue);
+          final cached = MachineActivation.fromJson(activation.toJson());
+          expect(cached.storedValuePayment, topLevel);
+          expect(cached.paymentChannels.storedValue, channel);
+        }
+      }
+      final empty = MachineActivation.fromRemoteJson({});
+      expect(empty.storedValuePayment, isFalse);
+      expect(empty.paymentChannels.storedValue, isFalse);
     });
 
     test('represents a missing activation without parsing data', () {

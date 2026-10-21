@@ -81,6 +81,7 @@ class MachineActivation {
     required this.dynamicCode,
     required this.receiptRemark,
     required this.spicyHotPot,
+    this.storedValuePayment = false,
   });
 
   final String machineModelCode;
@@ -102,6 +103,7 @@ class MachineActivation {
   final bool dynamicCode;
   final String? receiptRemark;
   final bool spicyHotPot;
+  final bool storedValuePayment;
 
   factory MachineActivation.fromRemoteJson(Map<String, dynamic> json) {
     return MachineActivation(
@@ -123,6 +125,7 @@ class MachineActivation {
       dynamicCode: _asBool(json['dynamicCode']),
       receiptRemark: _asNullableString(json['receiptRemark']),
       spicyHotPot: _asBool(json['spicyHotPot']),
+      storedValuePayment: _asBool(json['storedValuePayment']),
     );
   }
 
@@ -146,6 +149,7 @@ class MachineActivation {
       dynamicCode: _asBool(json['dynamicCode']),
       receiptRemark: _asNullableString(json['receiptRemark']),
       spicyHotPot: _asBool(json['spicyHotPot']),
+      storedValuePayment: _asBool(json['storedValuePayment']),
     );
   }
 
@@ -201,6 +205,7 @@ class MachineActivation {
         'dynamicCode': dynamicCode,
         'receiptRemark': receiptRemark,
         'spicyHotPot': spicyHotPot,
+        'storedValuePayment': storedValuePayment,
       };
 
   Map<String, dynamic> toLegacyPaymentJson() => {
@@ -273,7 +278,7 @@ class MachinePaymentChannels {
       alipay: _asBool(json['Alipay']),
       payPay: _asBool(json['PayPay']),
       creditCard: _asBool(json['POS']),
-      storedValue: _asBool(json['storedValuePayment']),
+      storedValue: _asBool(json['StoredValue']),
       auPay: _asBool(json['au_Pay']),
       dPay: _asBool(json['d_Pay']),
       rPay: _asBool(json['R_Pay']),
