@@ -184,7 +184,9 @@ extension SettlementControllerUIExtension on SettlementController {
             InkWell(
               onLongPress: () {
                 //ScanCodeConfirmTimer?.cancel();
-                doScanCodeTimeOutLastQuery();
+                if (machineInfo.paymentMethod != '11') {
+                  doScanCodeTimeOutLastQuery();
+                }
               },
               child: Container(
                 //width: ScreenAdapter.width(400),

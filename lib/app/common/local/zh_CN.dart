@@ -76,6 +76,8 @@ const Map<String, String> zh_CN = {
         "show_please_select_error":"请选择",
 
         "settlement_top_title_cash":"现金",
+        'settlement_stored_value': '储值卡支付',
+        'settlement_stored_value_scan': '请扫描储值卡消费码',
         "settlement_top_title_qr":"扫码支付",
         "settlement_top_title_card":"信用卡",
         "settlement_top_title_wallet":"电子钱包",

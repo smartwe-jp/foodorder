@@ -76,6 +76,8 @@ const Map<String, String> en_US = {
         "show_please_select_error":"Please complete your order.",
 
         "settlement_top_title_cash":"Cash",
+        'settlement_stored_value': 'Stored-value Card',
+        'settlement_stored_value_scan': 'Scan your stored-value card payment code',
         "settlement_top_title_qr":"Code Payment",
         "settlement_top_title_card":"Credit Card",
         "settlement_top_title_wallet":"E-Wallet",

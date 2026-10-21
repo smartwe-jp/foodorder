@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -318,7 +319,68 @@ class SettlementController extends GetxController with StateMixin {
   }
   //缺少场景考虑 扫码支付手机端操作异常，但是后续又可以了，但是机器交易流程停止了，订单不正常
   //扫码支付
+  bool _storedValueInFlight = false;
+  bool _storedValuePaid = false;
+
+  Future<void> _doStoredValuePay() async {
+    if (_storedValueInFlight || _storedValuePaid || isClosed) return;
+    final code = scanQrCodeController.text.trim();
+    if (machineInfo.machineCode.isEmpty || code.isEmpty || orderId.value.isEmpty) return;
+    _storedValueInFlight = true;
+    paymentTimer?.cancel();
+    showEasyLoadingScan();
+    try {
+      final value = await request('webBootStoredValue',
+        method: 'POST',
+        parameters: {
+          'storedValueConsumeCode': code,
+          'machineCode': machineInfo.machineCode,
+          'orderId': orderId.value,
+          'payType': '',
+        },
+        timeout: const Duration(seconds: 180),
+      );
+      final response = json.decode(value.toString());
+      if (isClosed) return;
+      final data = response['data'];
+      if (response['code'] == 200 && data is Map && data['result'] == true) {
+        _storedValuePaid = true;
+        doPrintOrderMenu(machineInfo.receiptPrintType);
+      } else {
+        await _showScanCodeNoOpenDialog(3, _storedValueError(response));
+      }
+    } catch (error) {
+      if (isClosed) return;
+      String message = '';
+      if (error is DioException && error.response?.data != null) {
+        try {
+          final body = error.response!.data;
+          message = _storedValueError(body is String ? json.decode(body) : body);
+        } catch (_) {}
+      }
+      await _showScanCodeNoOpenDialog(3, message);
+    } finally {
+      _storedValueInFlight = false;
+      if (!_storedValuePaid && !isClosed) _startPaymentTimer();
+    }
+  }
+
+  String _storedValueError(dynamic response) {
+    if (response is! Map) return '';
+    final data = response['data'];
+    final candidates = [
+      if (data is Map) data['exceptionMessage'],
+      response['msg'],
+      response['message'],
+    ];
+    for (final message in candidates) {
+      if (message is String && message.trim().isNotEmpty) return message;
+    }
+    return '';
+  }
+
   doToPay({int retryCount = 0}) {
+    if (machineInfo.paymentMethod == '11') return _doStoredValuePay();
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
     //print(scanQrCodeController.text);
@@ -405,13 +467,16 @@ class SettlementController extends GetxController with StateMixin {
     }
     //支付状态
 
-    Get.dialog(
+    await Get.dialog(
         barrierDismissible: false,
         DialogUtils.alertOneButton(showDialogContent,
             title: "tag_title".tr,
             confirmtitle: "tag_button_yes".tr,
             confirm: () {
           Get.back();
+          if (machineInfo.paymentMethod == '11') {
+            scanQrCodeFocusNode.requestFocus();
+          }
           if (payType == "pos") {
             Get.back();
           }

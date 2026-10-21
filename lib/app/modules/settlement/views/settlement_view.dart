@@ -119,7 +119,7 @@ class SettlementView extends GetView {
                             ),
                           ],
                         ),
-                      if (controller.machineInfo.paymentMethod  == "2")
+                      if (controller.machineInfo.paymentMethod == "2" || controller.machineInfo.paymentMethod == "11")
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,7 +134,8 @@ class SettlementView extends GetView {
                             SizedBox(
                               width: ScreenAdapter.width(15),
                             ),
-                            Text("settlement_top_title_qr".tr,
+                            Text((controller.machineInfo.paymentMethod == "11"
+                                ? 'settlement_stored_value' : 'settlement_top_title_qr').tr,
                               style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -427,6 +428,21 @@ class SettlementView extends GetView {
                       fadeInCurve: Curves.easeIn,
                       // [图像] 的渐入动画时间
                       fadeInDuration: Duration(milliseconds: 100),
+                    ),
+                  ),
+                if (controller.machineInfo.paymentMethod == "11")
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.qr_code_scanner, size: ScreenAdapter.width(200)),
+                          SizedBox(height: ScreenAdapter.height(40)),
+                          Text('settlement_stored_value_scan'.tr,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontFamily: GFont.getFontFamily(), fontSize: ScreenAdapter.fontSize(36))),
+                        ],
+                      ),
                     ),
                   ),
                 if (controller.machineInfo.paymentMethod == "2")
@@ -1279,7 +1295,8 @@ class SettlementView extends GetView {
                       ],
                     ),
                   ),
-                if (controller.machineInfo.paymentMethod == "2" ||
+                if (controller.machineInfo.paymentMethod == "11" ||
+                    controller.machineInfo.paymentMethod == "2" ||
                     controller.machineInfo.paymentMethod == "3" ||
                     controller.machineInfo.paymentMethod == "4" ||
                     controller.machineInfo.paymentMethod == "5" ||

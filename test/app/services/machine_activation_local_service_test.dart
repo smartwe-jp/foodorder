@@ -36,6 +36,7 @@ void main() {
             'Cash': true,
             'Wechat': 1,
             'POS': '1',
+            'storedValuePayment': true,
             'Discover': false,
           },
           'languages': [
@@ -68,6 +69,7 @@ void main() {
       expect(response.activation?.paymentChannels.cash, isTrue);
       expect(response.activation?.paymentChannels.wechat, isTrue);
       expect(response.activation?.paymentChannels.creditCard, isTrue);
+      expect(response.activation?.paymentChannels.storedValue, isTrue);
       expect(response.activation?.paymentChannels.alipay, isFalse);
       expect(response.activation?.canReimburse, isTrue);
       expect(response.activation?.taxSystem, isTrue);
@@ -80,6 +82,15 @@ void main() {
         response.activation?.languageOptions.map((item) => item.name),
         ['日本語', '中文', 'English', '한국말', 'Tiếng Việt'],
       );
+    });
+
+    test('stored value channel survives cache and legacy serialization', () {
+      final channels = MachinePaymentChannels.fromRemoteJson({'storedValuePayment': '1'});
+      expect(channels.storedValue, isTrue);
+      expect(MachinePaymentChannels.fromJson(channels.toJson()).storedValue, isTrue);
+      expect(MachinePaymentChannels.fromLegacyJson(channels.toLegacyJson()).storedValue, isTrue);
+      expect(MachinePaymentChannels.fromRemoteJson({}).storedValue, isFalse);
+      expect(MachinePaymentChannels.fromRemoteJson({'storedValuePayment': false}).storedValue, isFalse);
     });
 
     test('represents a missing activation without parsing data', () {

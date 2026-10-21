@@ -222,6 +222,7 @@ class MachinePaymentChannels {
     required this.alipay,
     required this.payPay,
     required this.creditCard,
+    this.storedValue = false,
     required this.auPay,
     required this.dPay,
     required this.rPay,
@@ -246,6 +247,7 @@ class MachinePaymentChannels {
   final bool alipay;
   final bool payPay;
   final bool creditCard;
+  final bool storedValue;
   final bool auPay;
   final bool dPay;
   final bool rPay;
@@ -271,6 +273,7 @@ class MachinePaymentChannels {
       alipay: _asBool(json['Alipay']),
       payPay: _asBool(json['PayPay']),
       creditCard: _asBool(json['POS']),
+      storedValue: _asBool(json['storedValuePayment']),
       auPay: _asBool(json['au_Pay']),
       dPay: _asBool(json['d_Pay']),
       rPay: _asBool(json['R_Pay']),
@@ -298,6 +301,7 @@ class MachinePaymentChannels {
       alipay: _asBool(json['alipay']),
       payPay: _asBool(json['payPay']),
       creditCard: _asBool(json['creditCard']),
+      storedValue: _asBool(json['storedValue']),
       auPay: _asBool(json['auPay']),
       dPay: _asBool(json['dPay']),
       rPay: _asBool(json['rPay']),
@@ -325,6 +329,7 @@ class MachinePaymentChannels {
       alipay: _asBool(json['showAlipay']),
       payPay: _asBool(json['showPayPay']),
       creditCard: _asBool(json['showCreditCard']),
+      storedValue: _asBool(json['showStoredValue']),
       auPay: _asBool(json['au_Pay']),
       dPay: _asBool(json['d_Pay']),
       rPay: _asBool(json['R_Pay']),
@@ -351,6 +356,7 @@ class MachinePaymentChannels {
         'alipay': alipay,
         'payPay': payPay,
         'creditCard': creditCard,
+        'storedValue': storedValue,
         'auPay': auPay,
         'dPay': dPay,
         'rPay': rPay,
@@ -376,6 +382,7 @@ class MachinePaymentChannels {
         'showAlipay': alipay,
         'showPayPay': payPay,
         'showCreditCard': creditCard,
+        'showStoredValue': storedValue,
         'au_Pay': auPay,
         'd_Pay': dPay,
         'R_Pay': rPay,

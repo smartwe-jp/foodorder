@@ -29,6 +29,7 @@ const servicePath = {
   'webBootOrder': base_url + 'pad/web/boot/v4/order', //提交订单请求地址
   'webBootCalculateOrder': base_url + 'pad/web/boot/v3/calculate/order', //自助收银提交订单请求地址
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
+  'webBootStoredValue': base_url + 'pad/web/boot/toPay/storedValue',
   'webBootToPayv2': base_url + 'pad/web/boot/toPay/v2', //支付提交请求地址
   'webBootPosPayReport': base_url + 'pad/web/boot/pos/pay/report', //支付提交请求地址
   //'webBootToPayV2': base_url + 'pad/web/boot/v2/toPay', //支付提交请求地址 新 增加交易失败退出扫码情况

@@ -84,6 +84,7 @@ class MachineInfoController extends GetxController {
   late bool showDPay;
   late bool showRPay;
   late bool showMPay;
+  bool showStoredValue = false;
   late bool showCreditCard;
   late bool showPosEdy;
   late bool showPosiD;
@@ -285,6 +286,7 @@ class MachineInfoController extends GetxController {
     showAlipay = paymentChannels?.alipay ?? false;
     showPayPay = paymentChannels?.payPay ?? false;
     showCreditCard = paymentChannels?.creditCard ?? false;
+    showStoredValue = paymentChannels?.storedValue ?? false;
     logI('loadMachineSettingInfo 2');
     showAuPay = paymentChannels?.auPay ?? false;
     showDPay = paymentChannels?.dPay ?? false;

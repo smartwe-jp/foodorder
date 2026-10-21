@@ -1131,6 +1131,36 @@ class SelectPaymentPage extends StatelessWidget {
                                 ),*/
                                 ],
                               ),
+                            if (machineInfo.showStoredValue)
+                              Padding(
+                                padding: EdgeInsets.only(top: ScreenAdapter.height(30)),
+                                child: Center(
+                                  child: KioskTap(
+                                    onTap: () {
+                                      machineInfo.paymentMethod = '11';
+                                      onConfrimClick();
+                                    },
+                                    child: Container(
+                                      width: ScreenAdapter.width(700),
+                                      padding: EdgeInsets.symmetric(vertical: ScreenAdapter.height(25)),
+                                      decoration: BoxDecoration(
+                                        color: ColorsUtil.hexToColor('#F3F3F3'),
+                                        border: Border.all(color: ColorsUtil.hexToColor('#9e9e9e'), width: 2),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.account_balance_wallet_outlined, size: ScreenAdapter.fontSize(44)),
+                                          SizedBox(width: ScreenAdapter.width(20)),
+                                          Text('settlement_stored_value'.tr,
+                                            style: TextStyle(fontFamily: GFont.getFontFamily(), fontSize: ScreenAdapter.fontSize(34), fontWeight: FontWeight.w600)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             if (machineInfo.isAllowPos == "1" &&
                                 (machineInfo.showPosEdy == true ||
                                     machineInfo.showPosiD == true ||
