@@ -38,9 +38,10 @@ class StoredValuePaymentGuide extends StatelessWidget {
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 30,
               children: [
                 Expanded(
-                  flex: 6,
+                  flex: 1,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -67,9 +68,12 @@ class StoredValuePaymentGuide extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: ScreenAdapter.width(30)),
+                Container(
+                  width: ScreenAdapter.width(2),
+                  color: Colors.black12,
+                ),
                 Expanded(
-                  flex: 4,
+                  flex: 1,
                   child: Container(
                     padding: EdgeInsets.all(ScreenAdapter.width(20)),
                     decoration: BoxDecoration(
