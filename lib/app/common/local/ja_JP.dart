@@ -78,7 +78,7 @@ const Map<String, String> ja_JP = {
         "show_please_select_error":"メニューをお選びください",
 
         "settlement_top_title_cash":"現金",
-        'settlement_stored_value': 'プリペイドカード決済',
+        'settlement_stored_value': 'SmartWe Wallet',
         'settlement_stored_value_scan': 'プリペイドカードの決済コードをスキャンしてください',
         "settlement_top_title_qr":"バーコード決済",
         "settlement_top_title_card":"クレジットカード",

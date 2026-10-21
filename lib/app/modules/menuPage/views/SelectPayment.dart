@@ -1142,7 +1142,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       onConfrimClick();
                                     },
                                     child: Container(
-                                      width: double.infinity,
+                                      width: ScreenAdapter.width(870),
                                       padding: EdgeInsets.symmetric(
                                           horizontal: ScreenAdapter.width(25),
                                           vertical: ScreenAdapter.height(25)),

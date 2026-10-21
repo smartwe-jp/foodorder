@@ -74,7 +74,7 @@ const Map<String, String> vi_VN = {
   'show_server_error': 'Lỗi hệ thống. Vui lòng thử lại sau.',
   'show_please_select_error': 'Vui lòng chọn món.',
   'settlement_top_title_cash': 'Tiền mặt',
-  'settlement_stored_value': 'Thanh toán thẻ trả trước',
+  'settlement_stored_value': 'SmartWe Wallet',
         'settlement_stored_value_scan': 'Vui lòng quét mã thanh toán thẻ trả trước',
         'settlement_top_title_qr': 'Thanh toán mã QR',
   'settlement_top_title_card': 'Thẻ tín dụng',

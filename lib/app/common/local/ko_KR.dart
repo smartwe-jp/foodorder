@@ -77,7 +77,7 @@ const Map<String, String> ko_KR = {
         "show_please_select_error":"선택하세요",
 
         "settlement_top_title_cash":"현금",
-        'settlement_stored_value': '선불카드 결제',
+        'settlement_stored_value': 'SmartWe Wallet',
         'settlement_stored_value_scan': '선불카드 결제 코드를 스캔해 주세요',
         "settlement_top_title_qr":"스캔 코드 결제",
         "settlement_top_title_card":"신용카드",
