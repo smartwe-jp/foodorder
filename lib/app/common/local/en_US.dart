@@ -77,7 +77,10 @@ const Map<String, String> en_US = {
 
         "settlement_top_title_cash":"Cash",
         'settlement_stored_value': 'SmartWe Wallet',
-        'settlement_stored_value_scan': 'Scan your stored-value card payment code',
+        'settlement_stored_value_scan': 'Show your SmartWe Wallet payment code',
+        'settlement_stored_value_scan_hint': 'Hold your payment code over the machine scanner',
+        'settlement_stored_value_open': 'Open SmartWe Wallet',
+        'settlement_stored_value_open_hint': 'Scan with your phone to check your balance or top up',
         "settlement_top_title_qr":"Code Payment",
         "settlement_top_title_card":"Credit Card",
         "settlement_top_title_wallet":"E-Wallet",

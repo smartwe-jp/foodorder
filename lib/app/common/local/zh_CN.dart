@@ -77,7 +77,10 @@ const Map<String, String> zh_CN = {
 
         "settlement_top_title_cash":"现金",
         'settlement_stored_value': 'SmartWe Wallet',
-        'settlement_stored_value_scan': '请扫描储值卡消费码',
+        'settlement_stored_value_scan': '请出示 SmartWe Wallet 付款码',
+        'settlement_stored_value_scan_hint': '请将付款码对准机器扫码口',
+        'settlement_stored_value_open': '打开 SmartWe Wallet',
+        'settlement_stored_value_open_hint': '使用手机扫描，可查看余额或充值',
         "settlement_top_title_qr":"扫码支付",
         "settlement_top_title_card":"信用卡",
         "settlement_top_title_wallet":"电子钱包",

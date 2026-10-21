@@ -79,7 +79,10 @@ const Map<String, String> ja_JP = {
 
         "settlement_top_title_cash":"現金",
         'settlement_stored_value': 'SmartWe Wallet',
-        'settlement_stored_value_scan': 'プリペイドカードの決済コードをスキャンしてください',
+        'settlement_stored_value_scan': 'SmartWe Wallet の支払いコードをご提示ください',
+        'settlement_stored_value_scan_hint': '支払いコードを本機の読取口にかざしてください',
+        'settlement_stored_value_open': 'SmartWe Wallet を開く',
+        'settlement_stored_value_open_hint': 'スマートフォンで読み取り、残高確認・チャージができます',
         "settlement_top_title_qr":"バーコード決済",
         "settlement_top_title_card":"クレジットカード",
         "settlement_top_title_wallet":"電子マネー",

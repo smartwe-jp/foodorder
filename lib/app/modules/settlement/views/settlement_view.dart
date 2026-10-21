@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
-import 'package:foodorder/app/widget/StoredValueWalletQr.dart';
+import 'stored_value_payment_guide.dart';
 import 'package:foodorder/app/widget/PressScaleButton.dart';
 
 import 'package:get/get.dart';
@@ -432,20 +432,7 @@ class SettlementView extends GetView {
                     ),
                   ),
                 if (controller.machineInfo.paymentMethod == "11")
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          StoredValueWalletQr(size: ScreenAdapter.width(300)),
-                          SizedBox(height: ScreenAdapter.height(40)),
-                          Text('settlement_stored_value_scan'.tr,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontFamily: GFont.getFontFamily(), fontSize: ScreenAdapter.fontSize(36))),
-                        ],
-                      ),
-                    ),
-                  ),
+                  const Expanded(child: StoredValuePaymentGuide()),
                 if (controller.machineInfo.paymentMethod == "2")
                   Container(
                     //height: ScreenAdapter.height(940),
