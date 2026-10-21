@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/widget/KioskTap.dart';
+import 'package:foodorder/app/widget/StoredValueWalletQr.dart';
 import 'package:foodorder/app/widget/PressScaleButton.dart';
 
 import 'package:get/get.dart';
@@ -436,7 +437,7 @@ class SettlementView extends GetView {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.qr_code_scanner, size: ScreenAdapter.width(200)),
+                          StoredValueWalletQr(size: ScreenAdapter.width(300)),
                           SizedBox(height: ScreenAdapter.height(40)),
                           Text('settlement_stored_value_scan'.tr,
                             textAlign: TextAlign.center,

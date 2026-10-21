@@ -1,4 +1,5 @@
 import 'package:foodorder/app/widget/KioskTap.dart';
+import 'package:foodorder/app/widget/StoredValueWalletQr.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -1141,8 +1142,10 @@ class SelectPaymentPage extends StatelessWidget {
                                       onConfrimClick();
                                     },
                                     child: Container(
-                                      width: ScreenAdapter.width(700),
-                                      padding: EdgeInsets.symmetric(vertical: ScreenAdapter.height(25)),
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: ScreenAdapter.width(25),
+                                          vertical: ScreenAdapter.height(25)),
                                       decoration: BoxDecoration(
                                         color: ColorsUtil.hexToColor('#F3F3F3'),
                                         border: Border.all(color: ColorsUtil.hexToColor('#9e9e9e'), width: 2),
@@ -1153,8 +1156,12 @@ class SelectPaymentPage extends StatelessWidget {
                                         children: [
                                           Icon(Icons.account_balance_wallet_outlined, size: ScreenAdapter.fontSize(44)),
                                           SizedBox(width: ScreenAdapter.width(20)),
-                                          Text('settlement_stored_value'.tr,
-                                            style: TextStyle(fontFamily: GFont.getFontFamily(), fontSize: ScreenAdapter.fontSize(34), fontWeight: FontWeight.w600)),
+                                          Expanded(
+                                            child: Text('settlement_stored_value'.tr,
+                                              style: TextStyle(fontFamily: GFont.getFontFamily(), fontSize: ScreenAdapter.fontSize(34), fontWeight: FontWeight.w600)),
+                                          ),
+                                          SizedBox(width: ScreenAdapter.width(20)),
+                                          StoredValueWalletQr(size: ScreenAdapter.width(150)),
                                         ],
                                       ),
                                     ),
