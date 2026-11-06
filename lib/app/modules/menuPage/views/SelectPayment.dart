@@ -371,7 +371,8 @@ class SelectPaymentPage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                if(machineInfo.showAlipay || machineInfo.showWechat || machineInfo.showPayPay||
+                                if(machineInfo.showAlipay || machineInfo.showWechat ||
+                                    (machineInfo.showPayPay && machineInfo.isAllowPos == "1") ||
                                     machineInfo.showAuPay || machineInfo.showDPay || machineInfo.showRPay || machineInfo.showMPay)
 
                                   KioskTap(
@@ -426,9 +427,8 @@ class SelectPaymentPage extends StatelessWidget {
                                                     alignment:
                                                     WrapAlignment.center,
                                                     children: [
-                                                      if (machineInfo
-                                                          .showPayPay ==
-                                                          true)
+                                                      if (machineInfo.showPayPay &&
+                                                          machineInfo.isAllowPos == "1")
                                                         Container(
                                                           height:
                                                           ScreenAdapter

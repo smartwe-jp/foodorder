@@ -460,7 +460,8 @@ class SettlementView extends GetView {
                                   runSpacing: ScreenAdapter.height(5),
                                   alignment: WrapAlignment.center,
                                   children: [
-                                    if (controller.machineInfo.showPayPay == true)
+                                    if (controller.machineInfo.showPayPay &&
+                                        controller.machineInfo.isAllowPos == "1")
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
