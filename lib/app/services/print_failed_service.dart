@@ -186,17 +186,22 @@ class PrintFailedService extends GetxService {
   }
 
   Future<void> pruneExpired() async {
-    final expireBefore = DateTime.now()
+    final now = DateTime.now();
+    final expireBefore = now
         .subtract(const Duration(minutes: keepMinutes))
         .millisecondsSinceEpoch;
-    final keysToRemove = _box.values
+    final expiredRecords = _box.values
         .where((r) => r.createdAt < expireBefore)
-        .map((r) => r.uuid)
         .toList();
-    for (final key in keysToRemove) {
-      await _box.delete(key);
+    for (final record in expiredRecords) {
+      await _box.delete(record.uuid);
+      logI('打印记录超过 $keepMinutes 分钟，已丢弃 '
+          'uuid=${record.uuid} ip=${record.printerIp} '
+          'printerType=${record.printerType} status=${record.status} '
+          'retryCount=${record.retryCount} '
+          'ageMs=${now.millisecondsSinceEpoch - record.createdAt}');
     }
-    if (keysToRemove.isNotEmpty) {
+    if (expiredRecords.isNotEmpty) {
       _refresh();
     }
   }

@@ -201,8 +201,15 @@ class HomeController extends GetxController {
       }
 
       try {
-        await printerController.enqueue(printerInfo.ip!, printData);
-        //2.打印成功 更新状态 success
+        final sendWatch = Stopwatch()..start();
+        final bytesWritten =
+            await printerController.enqueue(printerInfo.ip!, printData);
+        sendWatch.stop();
+        logI('网络打印发送成功（socket 写入及 flush 完成，未确认出纸） '
+            'uuid=$uuid ip=${printerInfo.ip!} '
+            'printerType=${printerInfo.printerType} bytes=$bytesWritten '
+            'elapsedMs=${sendWatch.elapsedMilliseconds}');
+        //2.本地发送完成 更新状态 success
         if (Get.isRegistered<PrintFailedService>() && uuid.isNotEmpty) {
           await Get.find<PrintFailedService>().markSuccess(uuid);
         }

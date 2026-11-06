@@ -430,7 +430,11 @@ class PrintService extends GetxService {
       PicGenerateTask<PrinterInfo>(
         tempWidget: imageWidget as ATempWidget,
         printTypeEnum: PrintTypeEnum.label,
-        params: PrinterInfo(ip: printer["printIp"]),
+        params: PrinterInfo(
+          ip: printer["printIp"],
+          printerType: 10,
+          printInfo: Map<String, dynamic>.from(data),
+        ),
       ),
     );
   }
