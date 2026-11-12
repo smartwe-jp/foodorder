@@ -80,19 +80,19 @@ class PrintService extends GetxService {
   bool _labelDraining = false;
 
   void _processLabelPrintQueueNew(
-      String printerIp, Queue<PrintTask> labelPrintQueue) {
+      Queue<PrintTask> labelPrintQueue) {
     if (labelPrintQueue.isEmpty) return;
     _labelQueue.addAll(labelPrintQueue); // 合并到全局队列
-    _ensureLabelDrain(printerIp); // 启动/复用单次循环
+    _ensureLabelDrain(); // 启动/复用单次循环
   }
 
-  void _ensureLabelDrain(String printerIp) {
+  void _ensureLabelDrain() {
     if (_labelDraining) return;
     _labelDraining = true;
-    _drainLabelQueue(printerIp);
+    _drainLabelQueue();
   }
 
-  Future<void> _drainLabelQueue(String printerIp) async {
+  Future<void> _drainLabelQueue() async {
     try {
       while (_labelQueue.isNotEmpty) {
         final task = _labelQueue.removeFirst();
@@ -100,7 +100,7 @@ class PrintService extends GetxService {
           PicGenerateTask<PrinterInfo>(
             tempWidget: task.widget as ATempWidget,
             printTypeEnum: PrintTypeEnum.label,
-            params: PrinterInfo(ip: printerIp, printerType: 11, printInfo: task.printInfo), // 不做 IP 检查
+            params: PrinterInfo(ip: task.printerIp, printerType: task.printerType, printInfo: task.printInfo),
           ),
         );
         await Future.delayed(const Duration(seconds: 1)); // 每张间隔 1 秒
@@ -109,7 +109,7 @@ class PrintService extends GetxService {
       _labelDraining = false;
       // 若刚结束又入队了，补一次启动
       if (_labelQueue.isNotEmpty) {
-        _ensureLabelDrain(printerIp);
+        _ensureLabelDrain();
       }
     }
   }
@@ -225,7 +225,7 @@ class PrintService extends GetxService {
     logI("---printData---: ${data}");
     String uuid = fromSSE ? data['uuid'].toString() : Uuid().v4();
     //如果数据库已经有该uuid则不打印返回
-    if (_service.records.any((r) => r.uuid.contains(uuid))) {
+    if (_service.records.any((r) => r.uuid == uuid || r.uuid.startsWith('$uuid:'))) {
       logI("PrintData: uuid $uuid already received, skipping print.");
       return;
     }
@@ -327,7 +327,7 @@ class PrintService extends GetxService {
             printInfo['orderTime'] = orderTime;
             printInfo['printType'] = 1;
             printInfo['items'] = [item];
-            printInfo['uuid'] = uuid + ':1';
+            printInfo['uuid'] = PrinterInfo.ticketId(uuid, printerType, printerIp, 'label-$itemCount');
 
             final printTask = PrintTask(widget: receiptWidget, printerIp: printerIp, printerType: printerType, printInfo: printInfo);
 
@@ -353,12 +353,12 @@ class PrintService extends GetxService {
           printInfo['orderSnCode'] = orderSnCode;
           printInfo['orderTime'] = orderTime;
           printInfo['printType'] = 0;
-          printInfo['uuid'] = uuid + ':0';
+          printInfo['uuid'] = PrinterInfo.ticketId(uuid, printerType, printerIp, 'header');
 
           labelPrintQueue.addFirst(PrintTask(widget: headReceipt, printerIp: printerIp, printerType: printerType, printInfo: printInfo));
         }
 
-        _processLabelPrintQueueNew(printerIp, labelPrintQueue);
+        _processLabelPrintQueueNew(labelPrintQueue);
         continue;
       }
 
@@ -1226,7 +1226,8 @@ class PrintService extends GetxService {
     printInfo['orderTime'] = orderTime;
     printInfo['printType'] = 3;
     printInfo['items'] = items;
-    printInfo['uuid'] = payload['uuid'] + ':3';
+    printInfo['uuid'] = PrinterInfo.ticketId(payload['uuid'], printerType, printerIp,
+        isCenterPrint ? 'center' : 'continuous');
 
     // Add the receipt widget to the print queue
     PictureGeneratorProvider.instance.addPicGeneratorTask(
@@ -1296,7 +1297,7 @@ class PrintService extends GetxService {
       printInfo['orderSnCode'] = orderSnCode;
       printInfo['orderTime'] = orderTime;
       printInfo['items'] = [item];
-      printInfo['uuid'] = printInfo['uuid'] + ':2-$index';
+      printInfo['uuid'] = PrinterInfo.ticketId(payload['uuid'], printerType, printerIp, 'single-$index');
       index += 1;
 
       // Add the receipt widget to the print queue

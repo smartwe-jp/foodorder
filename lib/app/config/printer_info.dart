@@ -1,5 +1,6 @@
 // ignore: depend_on_referenced_packages
 import 'package:android_usb_printer/android_usb_printer.dart';
+
 class PrinterInfo {
   final String? ip;
   final int printerType;
@@ -12,6 +13,11 @@ class PrinterInfo {
     this.printInfo = const {},
     this.usbDevice,
   });
+
+  // Keep the source UUID as a prefix for SSE deduplication.
+  static String ticketId(
+          String sourceUuid, int printerType, String ip, String ticket) =>
+      '$sourceUuid:$printerType:$ip:$ticket';
 
   String get name {
     if (ip != null) {

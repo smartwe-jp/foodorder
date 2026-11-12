@@ -22,8 +22,8 @@ class PrinterFailedListController extends GetxController {
 
   get printerList => _machineInfo.printerList;
 
-  get curPrinter => printerList.firstWhere(
-        (p) => p["type"] == 10 && p["isOff"] == false,
+  _printerForType(int type) => printerList.firstWhere(
+        (p) => p["type"] == type && p["isOff"] == false,
     orElse: () => null,
   );
 
@@ -96,6 +96,7 @@ class PrinterFailedListController extends GetxController {
 
   void retrySelectedRecord(PrintRecord record) async {
     //根据打印机类型 获取当前实际的IP地址
+    final curPrinter = _printerForType(record.printerType);
     if (curPrinter == null) {
       Get.snackbar('Error', 'No available printer found for retrying');
       return;
